@@ -84,7 +84,7 @@ Otomatik test yalnızca klavye ve DOM/ARIA düzeyinde yapılır; NVDA, VoiceOver
 
 Service Worker sadece allowlist'teki app-shell dosyalarını precache eder. Navigation ve local asset'ler aynı version'ın cache'inden gelir. Gemini POST'ları, tüm external istekler ve allowlist dışındaki URL'ler intercept/cache edilmez. Kayıtlı kelimeler, History, Test/Recall, Archive/Undo, Settings ve swipe işlemleri offline çalışır. AI gereken işlemler localized hata verir; spinner `finally` ile kapanır, kayıtlar korunur. Bağlantı geri gelince normal fetch/fallback akışı devam eder.
 
-`sw.js` içindeki `VERSION` **her app-shell değişikliğinde yükseltilmelidir**. Tüm paketi atomik yayınlayın; worker/shell dosyalarının karışık eski-yeni sürümlerini sunmayın. Registration `updateViaCache: none` kullanır; açılışta ve sekme görünür olduğunda update kontrol edilir. Yeni worker complete shell'i cache'ler ve waiting durumunda kalır. “Yeni sürüm hazır · Yenile” kullanıcı onayıyla aktive eder. Açık panel/Quiz/Flip, AI, pending write veya Undo varsa önce işlemi bitirme istenir. Başka sekmeler zorla reload edilmez. Aktivasyonda yalnızca bu scope'un eski `vocvoc-shell-…` cache'leri temizlenir. IndexedDB ve secret storage güncellemede silinmez.
+`sw.js` içindeki `VERSION` **her app-shell değişikliğinde yükseltilmelidir**. Tüm paketi atomik yayınlayın; worker/shell dosyalarının karışık eski-yeni sürümlerini sunmayın. Registration `updateViaCache: none` kullanır; açılışta ve sekme görünür olduğunda update kontrol edilir. Yeni worker complete shell'i cache'ler ve waiting durumunda kalır. “Yeni sürüm hazır · Yenile” kullanıcı onayıyla aktive eder. Açık panel, devam eden Test, Flip, AI isteği, pending write veya Undo varsa önce işlemi bitirme istenir; sonuç ekranı gösterilen **bitmiş** bir Test açık işlem sayılmaz. Başka sekmeler zorla reload edilmez. Aktivasyonda yalnızca bu scope'un eski `vocvoc-shell-…` cache'leri temizlenir. IndexedDB ve secret storage güncellemede silinmez.
 
 ### Service Worker sertleştirmesi
 
@@ -130,8 +130,8 @@ Service Worker IndexedDB'ye hiç dokunmaz ve diğer sekmeleri reload etmez; bu y
 
 ```
 cd tests && npm ci      # test araçları: playwright, fake-indexeddb (uygulamanın çalışma zamanı bağımlılığı yoktur)
-npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 39 doğrulama + 43 veri testi
-npm run test:browser    # Chrome regresyon paketi (95 senaryo, yaklaşık 3 dk)
+npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 40 doğrulama + 43 veri testi
+npm run test:browser    # Chrome regresyon paketi (97 senaryo, yaklaşık 3 dk)
 npm run test:all        # ikisi birden
 npm run checksums       # SHA256SUMS'ı yeniden üretir (kökten; sürüm yayınlama adımı)
 ```

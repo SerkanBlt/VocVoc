@@ -1,9 +1,9 @@
 {
-  "version": "1.0.11",
+  "version": "1.0.12",
   "source": "vocvoc_spa_v1_0_candidate.html",
   "sourceSha256": "7b8e5727e0e63e2d2fcbc4312a7d70b6533a904ddb0d842977ccdcec04ee3f8f",
   "schemaVersion": 1,
   "indexedDbVersion": 1,
-  "browserSmokePassed": 95,
+  "browserSmokePassed": 97,
   "stage": 2
 }

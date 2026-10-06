@@ -252,6 +252,12 @@ describe('Storage safety (static guards)',()=>{
     assert(pwa.includes('storage=initialization||isStorageFailure(error)')&&html.includes('showStorageBootError(error,{initialization:true})')&&html.includes('await VocVocData.init();}'));
     assert(storage.includes("error?.name==='InvalidStateError'&&!reopened")&&html.includes('deleteWords:words=>transaction(deleteWords,[words],{backup:'));
   });
+  it('only a running Test counts as an open operation: a finished one (result still on screen) must not block an update',()=>{
+    assert(/function quizRunning\(\)\{return !!quizSession&&quizSession\.index<quizSession\.questions\.length;\}/.test(pwa));
+    const busy=pwa.match(/function operationBusy\(\)\{([^]*?)\n\}/)[1];
+    assert(busy.includes('quizRunning()')&&!busy.includes('!!quizSession'),'operationBusy must ask quizRunning(), not whether a session object exists');
+    assert(/!document\.getElementById\("searchInput"\)\.value\.trim\(\)&&!quizSession\)renderAllLocal\(\)/.test(html),'adopting another tab\'s data must not replace a Test result');
+  });
   it('another tab\'s commit is adopted only while this tab is idle; a busy tab keeps its data and shows the banner',()=>{
     assert(pwa.includes('channel.onmessage=event=>syncExternalCommit(event.data)'));
     assert(/if\(operationBusy\(\)\)\{showPwaUpdate\(true\);return;\}\s*await adoptExternalChange\(\);/.test(pwa),'the busy check must come before the adoption');

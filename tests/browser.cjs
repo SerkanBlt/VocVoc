@@ -714,6 +714,35 @@ async function main(){
   record('archive paging: a page of 400, every word reachable (filter, Show more, restore from a later page), reopening starts over');
   await context.close();
  }
+ // ===== The "Reload" button of an update banner is blocked only by something really open =====
+ {
+  context=await browser.newContext({viewport:{width:1000,height:900}});
+  const A=await context.newPage();A.on('pageerror',e=>errors.push(e.message));await A.goto(url);await ready(A);
+  await A.evaluate(()=>VocVocData.addWordBatch(Array.from({length:30},(_,i)=>({word:'mot'+String(i).padStart(2,'0'),meaning:'anlam '+i}))));await A.evaluate(()=>{renderHistory();renderAllLocal();});
+  const alertText=()=>A.evaluate(()=>document.querySelector('.app-alert .app-alert-text')?.textContent||'');
+  assert.equal(await A.evaluate(()=>operationBusy()),false);
+  // a Test that is running blocks the reload and says why; nothing reloads
+  await A.evaluate(()=>{window.__sameDocument=true;startQuiz();showPwaUpdate(true);});
+  assert.equal(await A.evaluate(()=>operationBusy()),true);
+  await A.locator('#pwaUpdate .ui-button').click();await A.waitForFunction(()=>/Önce açık işlemi tamamlayın/.test(document.querySelector('.app-alert .app-alert-text')?.textContent||''));
+  assert.equal(await A.evaluate(()=>window.__sameDocument),true);
+  // the Test is finished and its result is on screen: nothing is open any more
+  for(let question=0;question<10;question++){await A.locator('.quiz-option:not([disabled])').first().click();await A.waitForFunction(count=>quizSession.index>count,question);}
+  await A.waitForSelector('.quiz-result-card');
+  assert.deepEqual(await A.evaluate(()=>[!!quizSession,operationBusy()]),[true,false]);               // the finished session is still around, but it does not count
+  // another tab commits while the result is on screen: the data is adopted, the result screen is not replaced, the stale banner goes away
+  const B=await context.newPage();B.on('pageerror',e=>errors.push(e.message));await B.goto(url);await ready(B);
+  await B.evaluate(()=>markMemorized('mot00'));
+  await A.waitForFunction(()=>VocVocData.getWordProgress('mot00').status==='memorized'&&!document.getElementById('pwaUpdate'));
+  assert.equal(await A.locator('.quiz-result-card').count(),1);await B.close();
+  record('two tabs: a finished Test\'s result screen is not replaced by the other tab\'s commit (the data still follows)');
+  // and now the button works: the page reloads
+  await A.evaluate(()=>showPwaUpdate(true));
+  await Promise.all([A.waitForNavigation(),A.locator('#pwaUpdate .ui-button').click()]);await ready(A);
+  assert.equal(await A.evaluate(()=>window.__sameDocument===undefined),true);assert.equal(await A.evaluate(()=>VocVocData.getWordProgress('mot00').status),'memorized');
+  record('update button: a running Test blocks it with an explanation, a finished Test (result on screen) does not');
+  await context.close();
+ }
  // ===== Two tabs: an idle tab follows the other one, a busy tab is protected =====
  {
   context=await browser.newContext({viewport:{width:1000,height:800}});

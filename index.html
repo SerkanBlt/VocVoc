@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.0.11">
+  <meta name="vocvoc-shell" content="1.0.12">
   <meta name="theme-color" content="#111111">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3254,7 +3254,8 @@ async function adoptExternalChange(){
   // A theme or font change leaves the lists alone; a language change rewrites every label in them.
   if(interfaceSignature()!==listsBefore||[getAppLanguage(),getNativeLanguageCode(),getTargetLanguageCode()].join()!==languagesBefore){
     renderHistory();
-    if(!document.getElementById("searchInput").value.trim())renderAllLocal();   // a search result on screen is not replaced
+    // A search result or a finished Test (its result screen is still on screen) is not replaced.
+    if(!document.getElementById("searchInput").value.trim()&&!quizSession)renderAllLocal();
     refreshArchiveButtonState();
   }
 }

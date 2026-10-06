@@ -35,8 +35,10 @@ function exportLegacyBackup(){
   try{const db=JSON.parse(LocalStorageAdapter.getRaw(VOCVOC_DB_KEY));VocVocStorage.validate(db);downloadBackup({exportVersion:1,exportedAt:new Date().toISOString(),...db});}
   catch(_){showError(pwaText('invalidData'));}
 }
+// A Test whose result is on screen has nothing left to lose: only a running one counts as an open operation.
+function quizRunning(){return !!quizSession&&quizSession.index<quizSession.questions.length;}
 function operationBusy(){
-  return VocVocData.pending>0||dailyBusy||geminiControllers.size>0||!!quizSession||!!pendingArchiveUndo||!!flipSession||
+  return VocVocData.pending>0||dailyBusy||geminiControllers.size>0||quizRunning()||!!pendingArchiveUndo||!!flipSession||
     [...document.querySelectorAll('.modal-overlay,.word-popup-overlay,#archiveOverlay')].some(el=>getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden');
 }
 async function importVocVocData(input){
