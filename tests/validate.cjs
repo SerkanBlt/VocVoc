@@ -144,6 +144,21 @@ describe('API key handling (static guards)',()=>{
   });
 });
 
+describe('Card controls',()=>{
+  it('memorizing and closing are swipes: no status buttons under cards, popups or Flip (the Flip M shortcut stays)',()=>{
+    for(const leftover of ['data-card-memorize','data-card-dismiss','data-word-status','data-flip-status','word-status-actions','flip-actions','renderCardActions','renderStatusActions'])
+      assert(!html.includes(leftover),`${leftover} is still in index.html`);
+    assert(html.includes('renderSwipeFooter(isMem)')&&html.includes('renderSwipeFooter(false,{dismissLeft:true})'),'the swipe hints must stay');
+    assert(/e\.key==="m"\|\|e\.key==="M"\)\)\{e\.preventDefault\(\);toggleFlipMemorized\(\);\}/.test(html),'the Flip M shortcut must stay');
+  });
+  it('the Flip previous/next arrows have no border of their own',()=>{
+    const rules=[...html.matchAll(/\.flip-(?:stage|panel) \.flip-nav[^{]*\{([^}]*)\}/g)].map(match=>match[1]);
+    assert(rules.length>=3);
+    assert(rules.some(body=>/border:0\b/.test(body)),'the arrows must reset their border');
+    for(const body of rules)assert(!/border-(?:left|right|top|bottom)\s*:\s*[1-9]/.test(body)&&!/border\s*:\s*[1-9]/.test(body),`a Flip arrow rule draws a border: ${body}`);
+  });
+});
+
 describe('Code hygiene',()=>{
   const sources=['index.html','pwa.js','a11y.js','storage.js'].map(read),everything=sources.join('\n');
   it('no function is defined and then never used (dead code stays out)',()=>{

@@ -73,7 +73,7 @@ Tasarım ve davranış korunarak eklenenler (`a11y.js` + işaretleme):
 - **Dialoglar** (Ayarlar, onaylar, Arşiv, kelime ayrıntısı, ilgili kelime, Flip): `role="dialog"`, `aria-modal="true"`, başlıktan gelen erişilebilir ad, odak tuzağı (Tab/Shift+Tab dialog içinde kalır), Escape ile kapanma (iç içe dialogda yalnızca en üsttekini; açık dropdown varsa önce onu), kapanınca odak açan elemana döner (yeniden çizilen History çipi bulunur; bulunamazsa arama kutusu). Onay dialoglarında başlangıç odağı güvenli düğmedir (Vazgeç).
 - **Etiketler:** tüm metin alanları ve dropdown'lar erişilebilir ada sahiptir (`for`, `aria-labelledby`, dile göre güncellenen `aria-label`); History/Arşiv filtre ve sıralama dropdown'ları "Durum filtresi: Tümü" gibi okunur.
 - **Dil işaretleme:** öğrenilen dildeki kelime, eş/zıt anlam, örnek cümle, deyim, test şıkkı, Flip ön yüzü ve arama kutusu `lang="{öğrenilen dil}"` taşır; anlamlar ve çeviriler sayfa dilinde kalır (`<html lang>` arayüz dilini izler).
-- **Swipe'a bağımlı işlemler için düğme:** ana kartta *Ezberimde* / *Kapat*, History ve ilgili kelime penceresinde *Ezberimde* / *Ezberimden çıkar*, Flip'te aynı düğme. Swipe davranışı aynen duruyor.
+- **Ezberleme ve kapatma yalnızca swipe'tır (bilinçli ürün kararı, 1.0.11):** ana kartta, History/ilgili kelime pencerelerinde ve Flip'te kartların altında düğme yoktur; sağa kaydırmak *Ezberimde*, sola kaydırmak *Kapat / Ezberimden çıkar* yapar ve kartın altındaki ipucu satırı bunu gösterir. Flip'te *M* kısayolu durur. **Sonuç:** ana kart ile History/ilgili kelime pencerelerinde bu iki işlemin klavye veya ekran okuyucu karşılığı yoktur (WCAG 2.1.1 / 2.5.1); 1.0.8'deki düğmeler bunun içindi. Gerekirse görünmeyen, odaklanınca çıkan bir karşılık eklenebilir.
 - **Klavye:** dropdown'lar (Enter/Boşluk açar, ↑ ↓ Home End gezinir, Enter seçer, Esc kapatır, seçimden sonra odak düğmeye döner); Flip: *F* çevirir, *← →* kart değiştirir, *M* ezber durumunu değiştirir, *Esc* kapatır; Test'te her soruda odak ilk şıkka, bitişte "yeni test" düğmesine gider ve doğru/yanlış sesli duyurulur; yeniden çizimlerde odak kaybolmaz.
 
 - **Kopyalanabilir kelime:** kelime ayrıntısı ve ilgili kelime pencerelerinin başlığındaki kelime seçilebilir (çift tık / uzun basış, sağ tık menüsü); başlığın geri kalanı swipe yüzeyi olarak seçilemez kalır. Başlığı seçtikten sonra başlayan bir swipe seçimi temizler.
@@ -130,8 +130,8 @@ Service Worker IndexedDB'ye hiç dokunmaz ve diğer sekmeleri reload etmez; bu y
 
 ```
 cd tests && npm ci      # test araçları: playwright, fake-indexeddb (uygulamanın çalışma zamanı bağımlılığı yoktur)
-npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 37 doğrulama + 43 veri testi
-npm run test:browser    # Chrome regresyon paketi (94 senaryo, yaklaşık 3 dk)
+npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 39 doğrulama + 43 veri testi
+npm run test:browser    # Chrome regresyon paketi (95 senaryo, yaklaşık 3 dk)
 npm run test:all        # ikisi birden
 npm run checksums       # SHA256SUMS'ı yeniden üretir (kökten; sürüm yayınlama adımı)
 ```

@@ -524,44 +524,40 @@ async function main(){
   await page.evaluate(()=>VocVocData.setStatus('Merci','active'));await page.evaluate(()=>{renderHistory();renderAllLocal();});
   record('a11y: Archive dialog semantics, trap, Escape, focus not lost');
 
-  // --- History details: dialog, target-language markup, memorize / unmemorize without a gesture, focus return
+  // --- History details: dialog, target-language markup, no status buttons (the swipe does that), focus return
   const chip=word=>page.locator('.history-chip',{hasText:new RegExp(`^${word}( ✓)?$`)});
   await chip('Bonjour').focus();await press('Enter');await waitShown('historyDetails');
   assert.deepEqual(await dialogInfo('historyDetails'),['dialog','true','Bonjour']);assert.equal((await active()).dialog,'historyDetails');
   assert.deepEqual(await page.evaluate(()=>[document.querySelector('#historyDetails .word-title').lang,document.querySelector('#historyDetails .fr-text').lang,document.querySelector('.history-chip span').lang,document.querySelector('#historyDetails .section p').lang||'(inherits)']),['fr','fr','fr','(inherits)']);
   assert.deepEqual(await unnamed(),[],'history details');
-  assert.equal(await tabUntil(a=>a.text==='Ezberimde'&&a.tag==='BUTTON'),true);await press('Enter');await waitShown('historyDetails',false);
-  assert.equal(await page.evaluate(()=>VocVocData.getWordProgress('Bonjour').status),'memorized');
+  assert.deepEqual(await page.evaluate(()=>[document.querySelectorAll('#historyDetails .word-status-actions,#historyDetails [data-word-status]').length,document.querySelectorAll('#historyDetails .swipe-footer').length]),[0,1]);
+  await press('Escape');await waitShown('historyDetails',false);
+  assert.equal(await page.evaluate(()=>VocVocData.getWordProgress('Bonjour').status),'active');   // nothing changed without a swipe
   assert.equal((await active()).history,await page.evaluate(()=>encodeDomText('Bonjour'))); // back on the same chip
-  await press('Enter');await waitShown('historyDetails');assert.equal(await tabUntil(a=>a.text==='Ezberimden Çıkar'&&a.tag==='BUTTON'),true);await press('Enter');await waitShown('historyDetails',false);
-  assert.equal(await page.evaluate(()=>VocVocData.getWordProgress('Bonjour').status),'active');
   await press('Enter');await waitShown('historyDetails');await press('Escape');await waitShown('historyDetails',false);assert.equal((await active()).history,await page.evaluate(()=>encodeDomText('Bonjour')));
-  record('a11y: History details dialog; Memorize/Unmemorize buttons; target language marked; Escape returns focus to the chip');
+  record('a11y: History details dialog; no status buttons under the card, swipe hints shown; target language marked; Escape returns focus to the chip');
 
   // --- Related word popup (opened from a synonym) stacks on top of the details dialog
   await page.route('https://generativelanguage.googleapis.com/**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({candidates:[{content:{parts:[{text:JSON.stringify({word:'Salut',type:'interj.',meaning:'selam',synonyms:[],antonyms:[],examples:[],expressions:[]})}]}}]})}));
   await chip('Bonjour').focus();await press('Enter');await waitShown('historyDetails');
   await page.evaluate(()=>{document.querySelector('#historyDetails details.fold').open=true;});
   assert.equal(await tabUntil(a=>a.cls.includes('clickable-badge')),true);await press('Enter');await waitShown('relatedWordPopup');
-  await page.waitForFunction(()=>!!document.querySelector('#relatedWordPopup [data-word-status]'));
+  await page.waitForFunction(()=>!!document.querySelector('#relatedWordPopup [data-add-related-word]'));
   assert.deepEqual(await dialogInfo('relatedWordPopup'),['dialog','true','Salut']);assert.equal((await active()).dialog,'relatedWordPopup');await trapped('relatedWordPopup',25);
   await press('Escape');await waitShown('relatedWordPopup',false);assert.deepEqual([await shown('historyDetails'),(await active()).cls.includes('clickable-badge')],[true,true]);
   await press('Escape');await waitShown('historyDetails',false);
   record('a11y: related word popup is a stacked dialog (trap, Escape closes only the top one, focus returns to the synonym)');
 
-  // --- Main word card: keyboard memorize button
+  // --- Main word card: opens from the keyboard; memorizing and closing are swipes, so there are no buttons under the card
   await page.evaluate(()=>{document.getElementById('searchInput').value='';renderAllLocal();});
   await page.locator('.main-word-toggle').first().focus();await press('Enter');
   assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('aria-expanded')),'true');
   const cardWord=await page.evaluate(()=>decodeDomText(document.activeElement.closest('.main-word-card').dataset.word));
-  assert.equal(await tabUntil(a=>a.tag==='BUTTON'&&a.text==='Ezberimde'),true);await press('Enter');
-  await page.waitForFunction(w=>VocVocData.getWordProgress(w).status==='memorized',cardWord);
-  assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('main-word-toggle')),true); // focus moved on to the next card
-  await page.waitForFunction(()=>document.getElementById('a11yAnnouncer')?.textContent==='Ezberimde'); // announced politely, a few ms after the change
-  await page.evaluate(w=>VocVocData.setStatus(w,'active'),cardWord);await page.evaluate(()=>{renderHistory();renderAllLocal();});
-  record('a11y: main card has Memorize / dismiss buttons (swipe alternative) and keeps keyboard focus');
+  assert.deepEqual(await page.evaluate(()=>[document.querySelectorAll('#contentArea .main-word-card.open .word-status-actions,#contentArea .main-word-card.open button[data-card-memorize],#contentArea .main-word-card.open button[data-card-dismiss]').length,document.querySelectorAll('#contentArea .main-word-card.open .swipe-footer').length]),[0,1]);
+  await page.evaluate(()=>{renderHistory();renderAllLocal();});
+  record('a11y: main card opens from the keyboard and has no status buttons; the swipe hints are shown');
 
-  // --- Flip: keyboard shortcuts + button, focus kept
+  // --- Flip: keyboard shortcuts, focus kept; no status button under the card (the swipe does that)
   await page.locator('#flipButton').focus();await press('Enter');await waitShown('flipOverlay');
   assert.deepEqual(await dialogInfo('flipOverlay'),['dialog','true','Anlamı görmek için dokun']);assert.equal((await active()).id,'flipCard');
   assert.deepEqual(await unnamed(),[],'flip');
@@ -569,11 +565,12 @@ async function main(){
   const firstCard=await page.locator('#flipCard').textContent();await press('ArrowRight');await page.waitForFunction(text=>document.querySelector('#flipCard').textContent!==text,firstCard);
   const flipWord=(await page.locator('#flipCard').textContent()).trim(),before=await page.evaluate(w=>VocVocData.getWordProgress(w).status,flipWord);
   await press('m');await page.waitForFunction(([w,was])=>VocVocData.getWordProgress(w).status!==was,[flipWord,before]);
-  assert.equal(await page.evaluate(()=>document.activeElement.hasAttribute('data-flip-status')),true); // focus stayed on the status button after the re-render
-  await press('Enter');await page.waitForFunction(([w,was])=>VocVocData.getWordProgress(w).status===was,[flipWord,before]); // the button does the same as the shortcut
+  assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('flip-card')),true); // focus is back on the card after the re-render
+  await press('m');await page.waitForFunction(([w,was])=>VocVocData.getWordProgress(w).status===was,[flipWord,before]); // the same shortcut undoes it
+  assert.equal(await page.locator('#flipOverlay [data-flip-status],#flipOverlay .flip-actions').count(),0);
   await page.locator('[data-flip-face="front"] [data-flip-nav="1"]').focus();await press('Enter');assert.equal(await page.evaluate(()=>document.activeElement.dataset.flipNav),'1'); // next-card button keeps focus
   await press('Escape');await waitShown('flipOverlay',false);assert.equal((await active()).id,'flipButton');
-  record('a11y: Flip is fully keyboard-driven (F flips, arrows move, M or the button memorizes, Escape closes) and focus is kept/returned');
+  record('a11y: Flip is fully keyboard-driven (F flips, arrows move, M memorizes/undoes, Escape closes), has no status button, and focus is kept/returned');
 
   // --- Test (quiz) with the keyboard only
   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'quizword'+i,meaning:'anlam '+i}))));await page.evaluate(()=>{renderHistory();renderAllLocal();});
@@ -688,7 +685,7 @@ async function main(){
   await page.locator('#contentArea .main-word-toggle').first().focus();await page.keyboard.press('Enter');
   assert.deepEqual([(await counts()).bodiesBuilt,(await counts()).footers],[1,1]);
   assert.equal(await page.locator('#contentArea .main-word-card.open .section p').first().textContent(),'anlam mot0448');
-  assert.equal(await page.locator('#contentArea .main-word-card.open [data-card-memorize]').count(),1);
+  assert.equal(await page.locator('#contentArea .main-word-card.open .word-status-actions').count(),0);
   assert.deepEqual(await page.evaluate(()=>{const unnamed=[...document.querySelectorAll('.show-more-btn')].filter(b=>!b.textContent.trim()).length;return [unnamed,document.querySelectorAll('[data-show-more]').length];}),[0,2]); // one for the chips, one for the cards
   record('large vocabulary: pages of chips/cards, every word still reachable (filter, Show more, status changes keep expansion), card details built on first open');
   await context.close();
@@ -771,6 +768,18 @@ async function main(){
   assert.equal(await banner(A),null);assert.equal(await revision(A),await revision(B));
   record('two tabs: a burst of commits is adopted completely');
   await context.close();
+ }
+ // ===== Flip: the previous/next arrows have no borders =====
+ {
+  for(const colorScheme of ['light','dark']){
+   context=await browser.newContext({viewport:{width:390,height:844},colorScheme});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+   await page.goto(url);await ready();await page.evaluate(()=>startFlip());await page.waitForSelector('#flipOverlay [data-flip-face="front"] .flip-nav');
+   const arrows=await page.evaluate(()=>[...document.querySelectorAll('#flipOverlay .flip-nav')].map(button=>{const style=getComputedStyle(button);return [style.borderTopWidth,style.borderRightWidth,style.borderBottomWidth,style.borderLeftWidth,style.borderStyle].join(' ');}));
+   assert.equal(arrows.length,4);                                                                   // two arrows on each of the two faces
+   assert(arrows.every(border=>/^0px 0px 0px 0px /.test(border)),`the arrows still have a border (${colorScheme}): ${arrows}`);
+   await context.close();
+  }
+  record('Flip: the previous/next arrows have no border on either face, in the light and the dark theme');
  }
  // ===== Popup headword: selectable and copyable; the rest of the header is a swipe surface =====
  {

@@ -5,7 +5,7 @@
 **Yöntem:** Statik kod incelemesi. Testler çalıştırılmadı (`tests/node_modules` yok), uygulama tarayıcıda açılmadı. Kod değiştirilmedi.
 **Doğrulama:** `SHA256SUMS` içindeki tüm dosyalar eşleşiyor. Gemini model adları (`gemini-3.8-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`) Google'ın model listesinde stabil olarak yer alıyor (<https://ai.google.dev/gemini-api/docs/models>).
 
-**Güncelleme (2026-10-06, sürüm 1.0.10):** Bu rapor ilk audit'in kaydıdır; "Yöntem" ve "Bulgular" o günkü koda aittir ve değiştirilmedi. "Yapılacaklar" listesinin onay kutuları yapılan işe göre güncellendi; ayrıntılar README'de (Performans, Yerelleştirme, Erişilebilirlik, Offline ve güncelleme, CI), `RELEASE_REPORT.md`'de ve `v1.0.8-stage2` etiketindedir.
+**Güncelleme (2026-10-06, sürüm 1.0.11):** Bu rapor ilk audit'in kaydıdır; "Yöntem" ve "Bulgular" o günkü koda aittir ve değiştirilmedi. "Yapılacaklar" listesinin onay kutuları yapılan işe göre güncellendi; ayrıntılar README'de (Performans, Yerelleştirme, Erişilebilirlik, Offline ve güncelleme, CI), `RELEASE_REPORT.md`'de ve `v1.0.8-stage2` etiketindedir.
 
 ## Özet
 
@@ -81,7 +81,7 @@ Efor: **S** = birkaç saat, **M** = 1–2 gün, **L** = daha uzun.
 > Uygulama notları: `persist()` ilk kullanıcı etkileşiminde istenir (Firefox izin sorabilir), reddedilirse Ayarlar → Veri yedeği altında uyarı çıkar. Sıfırlama/dil değişimi, kelime varsa `before-import` kurtarma kopyasını alır (boş DB kopyayı ezmez). `settings.appLanguage` isteğe bağlı alandır, şema sürümü 1 kalır; kaydı olmayan veri eskisi gibi orijinal dili izler. `sw.js` VERSION 1.0.1.
 
 ### P1 — kısa vade (erişilebilirlik ve sağlamlık) — uygulandı
-- [x] **M** Detay panellerine ve ana karta "Ezberledim / Ezberden çıkar" butonu; Flip'e klavye kısayolu. (H3)
+- [x] **M** Detay panellerine ve ana karta "Ezberledim / Ezberden çıkar" butonu; Flip'e klavye kısayolu. (H3) — **1.0.11'de düğmeler ürün kararıyla kaldırıldı** (ezberleme/kapatma yalnızca swipe); yalnızca Flip'in *M* kısayolu kaldı. H3 bu ölçüde yeniden açıktır: ana kart ve pencerelerde klavye/ekran okuyucu karşılığı yok.
 - [x] **M** Tüm modallara `role="dialog"`, `aria-modal`, focus tuzağı, Escape, focus dönüşü; `label for` ve arama etiketi. (M4)
 - [x] **S** Hedef dil metinlerine `lang="{targetLanguage}"`. (M5)
 - [x] **S** `connect-src 'self' https://generativelanguage.googleapis.com` içeren CSP meta etiketi. (M6) — 1.0.9. `script-src` ve `style-src` hâlâ `'unsafe-inline'` içerir, çünkü sayfada yaklaşık 100 satır içi `onclick` var; sıkı CSP için aşağıdaki P3 maddesi gerekir.

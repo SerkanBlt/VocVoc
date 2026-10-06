@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.0.10">
+  <meta name="vocvoc-shell" content="1.0.11">
   <meta name="theme-color" content="#111111">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2126,8 +2126,8 @@ body{
 .flip-panel .word-panel-scroll-body{display:flex;flex-direction:column;padding:0}
 .flip-stage{flex:1;min-height:0;position:relative}
 .flip-stage .flip-nav{position:absolute;top:0;bottom:0;width:clamp(56px,18%,88px);min-width:0;max-width:none;height:100%;transform:none;border:0;border-radius:0;z-index:1;font-size:var(--font-2xl)}
-.flip-stage .flip-nav:first-child{left:0;border-right:1px solid var(--border)}
-.flip-stage .flip-nav:last-child{right:0;border-left:1px solid var(--border)}
+.flip-stage .flip-nav:first-child{left:0}
+.flip-stage .flip-nav:last-child{right:0}
 .flip-card{display:grid;place-items:safe center;position:relative;min-width:0;width:100%;height:100%;box-sizing:border-box;padding:var(--ui-panel-y) var(--ui-panel-x);border:0;background:transparent;color:var(--text);font-family:inherit;cursor:pointer;touch-action:pan-y;overflow-y:auto;overflow-wrap:anywhere;white-space:normal}
 .flip-card:focus-visible{outline:2px solid var(--primary);outline-offset:-2px;border-radius:var(--ui-panel-radius)}
 .flip-word{font-size:var(--font-display);font-weight:700;line-height:var(--line-tight);white-space:nowrap;overflow-wrap:normal}
@@ -2149,7 +2149,6 @@ body{
 #contentArea .show-more-btn{width:100%;}
 .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
 [role="dialog"] [tabindex="-1"]:focus,[role="dialog"][tabindex="-1"]:focus{outline:none;}
-.word-status-actions,.flip-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--ui-panel-gap,12px);margin-top:var(--ui-panel-gap,12px);}
 .flip-rotator{height:min(360px,calc(100dvh - 170px));}
 /* The headword in a popup header can be selected and copied; the rest of the header stays a swipe surface (see inHeaderChrome). */
 .word-panel-fixed-header .word-title,
@@ -3672,33 +3671,6 @@ async function archiveFromCardButton(button){
   showArchiveUndoToast(archiveState);
 }
 
-// Buttons that do what the swipe gestures do, for keyboard and assistive technology.
-function renderCardActions(encodedWord){
-  return `<div class="word-status-actions"><button type="button" class="ui-button ui-button-success" data-card-memorize="${encodedWord}">${esc(t("rememberCue"))}</button><button type="button" class="ui-button ui-button-secondary" data-card-dismiss>${esc(t("close"))}</button></div>`;
-}
-function renderStatusActions(word,isMemorized){
-  return `<div class="word-status-actions"><button type="button" class="ui-button ${isMemorized?"ui-button-secondary":"ui-button-success"}" data-word-status="${isMemorized?"forget":"remember"}" data-status-word="${encodeDomText(word)}">${esc(t(isMemorized?"forgetCue":"rememberCue"))}</button></div>`;
-}
-function neighbourCardToggle(wrap){return wrap?.nextElementSibling?.querySelector(".main-word-toggle")||wrap?.previousElementSibling?.querySelector(".main-word-toggle")||null;}
-function focusAfterCardRemoval(next){(next?.isConnected?next:document.getElementById("searchInput"))?.focus({preventScroll:true});}
-async function memorizeFromCardButton(button){
-  const word=decodeDomText(button.dataset.cardMemorize||""),wrap=button.closest(".main-word-wrap");
-  if(!word)return;
-  const next=neighbourCardToggle(wrap);
-  try{await markMemorized(word);}catch(error){reportStorageError(error);return;}
-  wrap?.remove();announceStatus("rememberCue");focusAfterCardRemoval(next);
-}
-function dismissCardFromButton(button){
-  const wrap=button.closest(".main-word-wrap"),next=neighbourCardToggle(wrap);
-  wrap?.remove();focusAfterCardRemoval(next);
-}
-async function changeStatusFromButton(button){
-  const word=decodeDomText(button.dataset.statusWord||""),remember=button.dataset.wordStatus==="remember",inRelated=!!button.closest("#relatedWordPopup");
-  if(!word)return;
-  try{await (remember?markMemorized(word):removeMemorized(word));}catch(error){reportStorageError(error);return;}
-  if(inRelated)closeRelatedWordPopup();
-  announceStatus(remember?"rememberCue":"forgetCue");
-}
 function renderWordCard(data){
   // Rendering is intentionally side-effect free. Persistence happens when a word
   // enters the app (search/daily/starter sync), not every time its card repaints.
@@ -4411,7 +4383,7 @@ async function toggleFlipMemorized(){
   catch(error){session.sliding=false;renderFlip();reportStorageError(error);return;}
   session.sliding=false;renderHistory();renderAllLocal();announceStatus(wasMemorized?"forgetCue":"rememberCue");
   if(flipSession!==session||!refreshFlipCards())return;
-  renderFlip();refocusFlip("[data-flip-status]");
+  renderFlip();refocusFlip(VISIBLE_FLIP_CARD);
 }
 function enableFlipMemorizeDrag(){
   const area=document.getElementById("flipOverlay");
@@ -4538,7 +4510,7 @@ function renderFlip(){
     <div id="flipRotator" class="flip-rotator${flipped?' is-flipped':''}">${face(false)}${face(true)}</div>
     <div class="flip-drag-cue" aria-live="polite"></div>
   </div>
-  <div class="flip-actions"><button type="button" class="ui-button ${isMemorized?"ui-button-secondary":"ui-button-success"}" data-flip-status="${isMemorized?"forget":"remember"}" aria-keyshortcuts="M">${esc(t(isMemorized?"forgetCue":"rememberCue"))}</button></div></div>`;
+  </div>`;
   const area=document.getElementById("flipOverlay");
   area.flipWordResizeObserver?.disconnect();
   area.flipWordResizeObserver=new ResizeObserver(fitFlipWord);
@@ -4968,7 +4940,7 @@ function toggleHistoryDetail(word){
     swipe:true,
     isMemorized:isMem,
     closeAction:"closeHistoryDetail()",
-    footer:renderStatusActions(data.word,isMem)+renderSwipeFooter(isMem)
+    footer:renderSwipeFooter(isMem)
   });
   enableHistorySwipe(card,word,isMem);
 }
@@ -5021,7 +4993,7 @@ async function openRelatedWordPopup(word){
       swipe:true,
       isMemorized:isMem,
       closeAction:"closeRelatedWordPopup()",
-      footer:`${renderStatusActions(data.word,isMem)}${renderSwipeFooter(isMem)}
+      footer:`${renderSwipeFooter(isMem)}
       <div class="related-actions ui-panel-actions">
         <button class="related-add ui-button ui-button-success" type="button" data-add-related-word="${encodeDomText(data.word)}">${t("addToList")}</button>
         <button type="button" class="related-cancel ui-button ui-button-secondary" onclick="closeRelatedWordPopup()">${t("cancel")}</button>
@@ -5036,16 +5008,8 @@ async function openRelatedWordPopup(word){
 document.getElementById("archiveUndoBtn")?.addEventListener("click",undoLastArchive);
 
 document.addEventListener("click",e=>{
-  const cardMemorize=e.target.closest("button[data-card-memorize]");
-  if(cardMemorize){e.preventDefault();memorizeFromCardButton(cardMemorize);return;}
-  const cardDismiss=e.target.closest("button[data-card-dismiss]");
-  if(cardDismiss){e.preventDefault();dismissCardFromButton(cardDismiss);return;}
-  const statusButton=e.target.closest("button[data-word-status]");
-  if(statusButton){e.preventDefault();changeStatusFromButton(statusButton);return;}
   const moreButton=e.target.closest("button[data-show-more]");
   if(moreButton){e.preventDefault();showMore(moreButton.dataset.showMore);return;}
-  const flipStatus=e.target.closest("button[data-flip-status]");
-  if(flipStatus){e.preventDefault();toggleFlipMemorized();return;}
   const archiveBtn=e.target.closest(".card-archive-btn[data-archive-card-word]");
   if(archiveBtn){
     e.preventDefault();
@@ -5264,7 +5228,6 @@ function fillMainWordBody(card,body){
   if(!body||body.dataset.filled)return;
   const encoded=card.dataset.word||"",word=decodeDomText(encoded),data=getHistoryWordData(word)||{word};
   body.innerHTML=`<div class="shared-detail-content">${renderWordDetailBody(data,{showHeader:false})}</div>
-        ${renderCardActions(encoded)}
         ${renderSwipeFooter(false,{dismissLeft:true})}`;
   body.dataset.filled="1";
 }
