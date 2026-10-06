@@ -1,0 +1,11 @@
+{
+  "name": "vocvoc",
+  "private": true,
+  "description": "VocVoc PWA. The app has no build step and no runtime dependencies; these scripts only run the release validation in tests/.",
+  "scripts": {
+    "test": "npm test --prefix tests",
+    "test:browser": "npm run test:browser --prefix tests",
+    "test:all": "npm run test:all --prefix tests",
+    "lock-shell": "node tools/lock-shell.js"
+  }
+}

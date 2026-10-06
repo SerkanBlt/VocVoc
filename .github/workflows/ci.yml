@@ -1,0 +1,89 @@
+# Release validation for VocVoc. Runs on every push and pull request.
+#
+#   validate : fast checks, no browser   -> `npm test`
+#              (JavaScript syntax, manifest, Service Worker precache + VERSION guard, API-key guards,
+#               data layer: migration idempotency, archive/restore, backups, recovery copies, rollback)
+#   browser  : Chrome regression suite   -> `npm run test:browser`
+#              (offline/cold start, update lifecycle, IndexedDB persistence, Gemini errors, accessibility, i18n, large lists)
+#
+# The app itself has no build step and no runtime dependencies; npm is only used for the test tools (tests/package.json).
+
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same branch/PR makes the older run pointless.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate (syntax, manifest, Service Worker, data layer)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+
+      - name: Install test tools
+        working-directory: tests
+        run: npm ci
+
+      # Fails when ASSETS or any app-shell file changed but the Service Worker VERSION was not bumped
+      # (run `node tools/lock-shell.js` after bumping), among the other checks listed above.
+      - name: Run release validation
+        run: npm test
+
+  browser:
+    name: Browser tests (Chrome)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+
+      - name: Install test tools
+        working-directory: tests
+        run: npm ci
+
+      # GitHub-hosted Ubuntu runners ship Google Chrome; the suite drives it through Playwright.
+      # If it is ever missing, fall back to the Chromium that Playwright downloads.
+      - name: Find Chrome
+        run: |
+          echo "PWA_BROWSER_PATH=$(command -v google-chrome || true)" >> "$GITHUB_ENV"
+          google-chrome --version || true
+
+      - name: Install Chromium (only when the runner has no Chrome)
+        if: env.PWA_BROWSER_PATH == ''
+        working-directory: tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser regression tests
+        run: npm run test:browser
+
+      - name: List the scenarios in the job summary
+        if: success()
+        run: |
+          node -e "
+          const fs = require('fs');
+          const r = JSON.parse(fs.readFileSync('tests/browser-results.json', 'utf8'));
+          const lines = ['### Browser tests: ' + r.passed + ' scenarios passed', '', ...r.results.map(name => '- ' + name)];
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n');
+          "

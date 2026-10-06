@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>VocVoc</title>
+  <meta name="vocvoc-shell" content="1.0.8">
   <meta name="theme-color" content="#111111">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,7 +22,8 @@
       --card-bg: #ffffff;
       --text: #0f172a;
       --text-muted: #64748b;
-      --phonetic: #d97706;
+      --phonetic: #b45309;
+      --brand: #ea580c;
       --border: #e2e8f0;
       --accent-bg: #f1f5f9;
       --success: #10b981;
@@ -54,7 +56,7 @@
     .error-box { background:#fef2f2; border:1px solid #fecaca; color:var(--danger); padding:12px; border-radius:8px; margin-bottom:16px; font-size:.9rem; }
   
     @media (prefers-color-scheme: dark) {
-      :root { --bg:#0f172a; --card-bg:#111827; --text:#f8fafc; --text-muted:#94a3b8; --border:#334155; --accent-bg:#1e293b; --primary:#818cf8; --primary-hover:#6366f1; --phonetic:#fbbf24; }
+      :root { --bg:#0f172a; --card-bg:#111827; --text:#f8fafc; --text-muted:#94a3b8; --border:#334155; --accent-bg:#1e293b; --primary:#818cf8; --primary-hover:#6366f1; --phonetic:#fbbf24; --brand:#f97316; }
       .modal { background:#111827; }
       .error-box { background:#3f1717; border-color:#7f1d1d; }
     }
@@ -388,18 +390,19 @@ header{
   color-scheme:light;
   --bg:#f8fafc;--card-bg:#ffffff;--text:#0f172a;--text-muted:#64748b;
   --border:#e2e8f0;--accent-bg:#f1f5f9;
+  --primary:#4f46e5;--primary-hover:#4338ca;--phonetic:#b45309;--brand:#ea580c;
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
   --primary:#f5f5f5;--primary-hover:#ffffff;
   --bg:#090909;--card-bg:#111111;--text:#f5f5f5;--text-muted:#9b9b9b;
-  --border:#292929;--accent-bg:#181818;--phonetic:#d6a85f;
+  --border:#292929;--accent-bg:#181818;--phonetic:#d6a85f;--brand:#f97316;
 }
 @media(prefers-color-scheme:dark){
   :root:not([data-theme="light"]):not([data-theme="dark"]){
     --primary:#f5f5f5;--primary-hover:#ffffff;
     --bg:#090909;--card-bg:#111111;--text:#f5f5f5;--text-muted:#9b9b9b;
-    --border:#292929;--accent-bg:#181818;--phonetic:#d6a85f;
+    --border:#292929;--accent-bg:#181818;--phonetic:#d6a85f;--brand:#f97316;
   }
 }
 .quiz-head-v91{margin-bottom:14px}
@@ -526,7 +529,7 @@ body{overflow-x:visible!important;max-width:100%!important}
 }
 
 button{font-family:inherit;-webkit-tap-highlight-color:transparent}
-header h1{color:#f97316}
+header h1{color:var(--brand)}
 
 /* ---------- layout rhythm ---------- */
 .header-actions,.search-box,.study-actions,.history-toolbar,.api-key-row,.ui-panel-actions{
@@ -2138,11 +2141,19 @@ body{
 #storageBoot[hidden],#storageBoot button[hidden]{display:none;}
 #pwaUpdate{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:10001;max-width:calc(100vw - 32px);}
 #pwaUpdate .ui-panel{padding:12px 52px 12px 16px;display:flex;align-items:center;gap:12px;}
+.settings-hint{margin:6px 0 0;font-size:.82em;line-height:1.35;color:var(--text-muted,inherit);}
+.settings-hint[hidden]{display:none;}
+.show-more-btn{flex:0 0 100%;margin-top:var(--ui-panel-gap,12px);}
+#contentArea .show-more-btn{width:100%;}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+[role="dialog"] [tabindex="-1"]:focus,[role="dialog"][tabindex="-1"]:focus{outline:none;}
+.word-status-actions,.flip-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--ui-panel-gap,12px);margin-top:var(--ui-panel-gap,12px);}
+.flip-rotator{height:min(360px,calc(100dvh - 170px));}
 
 </style></head>
 <body>
 <div id="storageBoot" role="status" style="position:fixed;inset:0;z-index:10000;background:var(--bg);place-items:center;padding:24px">
-  <div class="ui-panel" style="padding:24px;max-width:520px"><p id="storageBootMessage">VocVoc…</p><button id="storageRetry" hidden class="ui-button ui-button-secondary" onclick="location.reload()">↻</button><button id="legacyBackup" hidden class="ui-button ui-button-secondary" onclick="exportLegacyBackup()">JSON ↓</button></div>
+  <div class="ui-panel" style="padding:24px;max-width:520px"><p id="storageBootMessage">VocVoc…</p><button id="storageRetry" hidden class="ui-button ui-button-secondary" onclick="retryStartup()">↻</button><button id="legacyBackup" hidden class="ui-button ui-button-secondary" onclick="exportLegacyBackup()">JSON ↓</button></div>
 </div>
 <div id="appAlertLayer" class="app-alert-layer" aria-live="assertive" aria-atomic="true"></div>
 <div id="archiveUndoToast" class="archive-undo-toast" role="status" aria-live="polite" aria-atomic="true">
@@ -2157,7 +2168,7 @@ body{
   <button type="button" class="ui-icon-button" onclick="openModal()" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.1 13.4a7.4 7.4 0 0 0 0-2.8l2-1.55-2-3.45-2.45 1a7.4 7.4 0 0 0-2.4-1.4L13.9 2h-3.8l-.35 3.2a7.4 7.4 0 0 0-2.4 1.4l-2.45-1-2 3.45 2 1.55a7.4 7.4 0 0 0 0 2.8l-2 1.55 2 3.45 2.45-1a7.4 7.4 0 0 0 2.4 1.4l.35 3.2h3.8l.35-3.2a7.4 7.4 0 0 0 2.4-1.4l2.45 1 2-3.45-2-1.55z"></path></svg></button>
 </div></header>
   <div class="search-box">
-    <input type="text" id="searchInput" class="ui-input" placeholder="Enter a word...">
+    <input type="text" id="searchInput" class="ui-input" placeholder="Enter a word..." aria-label="Enter a word...">
     <button type="button" class="ui-icon-button" onclick="handleSearch()" title="Search" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.2 4.2"></path></svg></button>
     <button type="button" class="ui-icon-button" onclick="randomWord()" title="Random word" aria-label="Random word"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h2.2c4.7 0 5.2 10 10 10H20"></path><path d="M17 14l3 3-3 3"></path><path d="M4 17h2.2c1.8 0 3-1.5 4.1-3.3"></path><path d="M13.7 9.8C14.5 8.2 15.3 7 16.2 7H20"></path><path d="M17 4l3 3-3 3"></path></svg></button>
   </div>
@@ -2169,13 +2180,13 @@ body{
   </div><!-- /topChrome -->
 
   <div id="errorArea"></div>
-  <div id="loader" class="loader">AI response is being prepared, please wait...</div>
+  <div id="loader" class="loader" role="status">AI response is being prepared, please wait...</div>
   <div id="contentSwipeViewport"><div id="contentSwipeStage"><div id="contentArea"></div>
 
 </div></div>
 <div id="historyPanel">
   <div id="historySection" class="toolbar history-toolbar">
-    <input id="historyFilterInput" class="ui-input" type="search" placeholder="Search my list..." oninput="renderHistory()">
+    <input id="historyFilterInput" class="ui-input" type="search" placeholder="Search my list..." aria-label="Search my list..." oninput="renderHistory()">
     <div class="history-dropdown ui-dropdown" id="historyStatusDropdown" data-ui-change="history">
       <button type="button" class="history-dropdown-trigger ui-dropdown-trigger" onclick="toggleUiDropdown('historyStatusDropdown')" aria-expanded="false">
         <span class="history-dropdown-label ui-dropdown-label">All</span><span class="history-dropdown-chevron ui-chevron" aria-hidden="true"></span>
@@ -2203,15 +2214,15 @@ body{
   <div id="historyDockSpacer" aria-hidden="true"></div>
 </div>
 </div><!-- /container: fixed overlays are viewport siblings -->
-<div id="archiveOverlay" class="word-popup-overlay" onclick="if(event.target===this)closeArchive()">
+<div id="archiveOverlay" class="word-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="archiveTitle" onclick="if(event.target===this)closeArchive()">
   <div class="archive-panel ui-panel">
     <div class="ui-panel-header">
-      <h3 class="ui-panel-title">Archive</h3>
+      <h3 class="ui-panel-title" id="archiveTitle">Archive</h3>
       <button type="button" class="ui-panel-close" onclick="closeArchive()" aria-label="Close">×</button>
     </div>
     <div class="archive-panel-body ui-panel-body">
       <div class="archive-toolbar">
-        <input id="archiveSearchInput" class="ui-input" type="search" placeholder="Search archive..." oninput="renderArchive()">
+        <input id="archiveSearchInput" class="ui-input" type="search" placeholder="Search archive..." aria-label="Search archive..." oninput="renderArchive()">
 
         <div class="ui-dropdown" id="archiveStatusDropdown" data-ui-change="archive">
           <button type="button" class="ui-dropdown-trigger" onclick="toggleUiDropdown('archiveStatusDropdown')" aria-expanded="false">
@@ -2248,10 +2259,10 @@ body{
     </div>
   </div>
 </div>
-<div id="historyDetails" class="word-popup-overlay" onclick="if(event.target===this)closeHistoryDetail()"></div>
-<div id="relatedWordPopup" class="word-popup-overlay" onclick="if(event.target===this)closeRelatedWordPopup()"></div>
+<div id="historyDetails" class="word-popup-overlay" role="dialog" aria-modal="true" onclick="if(event.target===this)closeHistoryDetail()"></div>
+<div id="relatedWordPopup" class="word-popup-overlay" role="dialog" aria-modal="true" onclick="if(event.target===this)closeRelatedWordPopup()"></div>
 <div id="flipOverlay" class="word-popup-overlay" role="dialog" aria-modal="true" aria-label="Flip" onclick="if(event.target===this)closeFlip()"></div>
-<div class="modal-overlay" id="modalOverlay">
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
   <div class="modal settings-modal ui-panel">
     <div class="settings-panel-header ui-panel-header">
       <h3 class="ui-panel-title" id="settingsTitle">Settings</h3>
@@ -2261,10 +2272,29 @@ body{
       <p id="settingsSubtitle">Gemini connection and app settings.</p>
 
       <div class="settings-row">
-        <label id="apiKeyLabel">Gemini API Key</label>
+        <label id="apiKeyLabel" for="apiKeyInput">Gemini API Key</label>
         <div class="api-key-row">
           <input type="password" id="apiKeyInput" class="ui-input" placeholder="AIzaSy...">
           <button type="button" id="apiToggleBtn" class="api-toggle ui-button ui-button-secondary" onclick="toggleApiKeyVisibility()">Show</button>
+        </div>
+        <p id="apiKeyHint" class="settings-hint"></p>
+      </div>
+
+      <div class="settings-row">
+        <label id="appLanguageLabel">App language</label>
+        <div class="settings-dropdown ui-dropdown" id="appLanguageDropdown" data-ui-change="appLanguage">
+          <button type="button" class="settings-dropdown-trigger ui-dropdown-trigger" onclick="toggleUiDropdown('appLanguageDropdown')" aria-expanded="false">
+            <span class="settings-dropdown-label ui-dropdown-label">Türkçe</span><span class="settings-dropdown-chevron ui-chevron"></span>
+          </button>
+          <div class="settings-dropdown-menu ui-dropdown-menu">
+            <button type="button" class="ui-dropdown-option" data-value="tr" onclick="selectUiDropdown('appLanguageDropdown','tr','Türkçe')">Türkçe</button>
+            <button type="button" class="ui-dropdown-option" data-value="en" onclick="selectUiDropdown('appLanguageDropdown','en','English')">English</button>
+            <button type="button" class="ui-dropdown-option" data-value="fr" onclick="selectUiDropdown('appLanguageDropdown','fr','Français')">Français</button>
+            <button type="button" class="ui-dropdown-option" data-value="de" onclick="selectUiDropdown('appLanguageDropdown','de','Deutsch')">Deutsch</button>
+            <button type="button" class="ui-dropdown-option" data-value="es" onclick="selectUiDropdown('appLanguageDropdown','es','Español')">Español</button>
+            <button type="button" class="ui-dropdown-option" data-value="it" onclick="selectUiDropdown('appLanguageDropdown','it','Italiano')">Italiano</button>
+          </div>
+          <input type="hidden" id="appLanguageSelect" value="tr">
         </div>
       </div>
 
@@ -2321,7 +2351,7 @@ body{
       </div>
 
       <div class="settings-row">
-        <label id="dailyLimitLabel">Daily word limit</label>
+        <label id="dailyLimitLabel" for="dailyLimitInput">Daily word limit</label>
         <div class="daily-limit-combo ui-combo" id="dailyLimitCombo">
           <div class="daily-limit-input-wrap ui-combo-control">
             <input type="text" inputmode="numeric" id="dailyLimitInput" class="ui-input" value="10" autocomplete="off" placeholder="Enter a limit">
@@ -2369,7 +2399,7 @@ body{
         </div>
       </div>
 
-      <details id="backupControls" class="settings-row"><summary id="backupLabel">JSON backup</summary><div class="ui-panel-actions"><button type="button" id="exportDataBtn" class="ui-button ui-button-secondary" onclick="exportVocVocData()">Export</button><button type="button" id="importDataBtn" class="ui-button ui-button-secondary" onclick="document.getElementById('importDataFile').click()">Import</button><button type="button" id="recoveryDataBtn" class="ui-button ui-button-secondary" onclick="exportRecoveryBackup()">↶ JSON</button><input id="importDataFile" type="file" accept="application/json,.json" hidden onchange="importVocVocData(this)"></div></details>
+      <details id="backupControls" class="settings-row"><summary id="backupLabel">JSON backup</summary><p id="persistNotice" class="settings-hint" role="status" hidden></p><div class="ui-panel-actions"><button type="button" id="exportDataBtn" class="ui-button ui-button-secondary" onclick="exportVocVocData()">Export</button><button type="button" id="importDataBtn" class="ui-button ui-button-secondary" onclick="document.getElementById('importDataFile').click()">Import</button><button type="button" id="recoveryDataBtn" class="ui-button ui-button-secondary" onclick="exportRecoveryBackup()">↶ JSON</button><input id="importDataFile" type="file" accept="application/json,.json" hidden onchange="importVocVocData(this)"></div></details>
     </div>
     <div class="settings-panel-footer">
       <div class="settings-row">
@@ -2387,7 +2417,7 @@ body{
   </div>
 </div>
 
-<div id="languageChangeOverlay" class="modal-overlay confirm-overlay">
+<div id="languageChangeOverlay" class="modal-overlay confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="languageChangeTitle">
   <div class="confirm-panel ui-panel">
     <div class="ui-panel-header">
       <h3 class="ui-panel-title" id="languageChangeTitle">Change learning languages?</h3>
@@ -2404,7 +2434,7 @@ body{
   </div>
 </div>
 
-<div id="resetConfirmOverlay" class="modal-overlay confirm-overlay">
+<div id="resetConfirmOverlay" class="modal-overlay confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="resetTitle">
   <div class="confirm-panel ui-panel">
     <div class="ui-panel-header">
       <h3 class="ui-panel-title" id="resetTitle">Reset progress</h3>
@@ -2434,7 +2464,7 @@ const LANGUAGE_META={
 };
 const I18N={
   en:{
-    geminiTimeout:"Gemini took too long. Please try again.",invalidApiKey:"Check your Gemini API key in Settings.",geminiQuota:"Gemini quota or rate limit reached. Please try later.",geminiUnavailable:"Gemini is temporarily unavailable. Please try later.",invalidGeminiResponse:"Gemini returned invalid word data. Please try again.",
+    geminiTimeout:"Gemini took too long. Please try again.",invalidApiKey:"Check your Gemini API key and its restrictions in Settings.",geminiBudget:"Gemini exceeded the total time limit. Nothing was changed; please try again later.",geminiQuota:"Gemini quota or rate limit reached. Please try later.",geminiUnavailable:"Gemini is temporarily unavailable. Please try later.",invalidGeminiResponse:"Gemini returned invalid word data. Please try again.",
     flip:"Flip",flipHint:"Tap to flip",previousCard:"Previous card",nextCard:"Next card",flipEmpty:"No saved word with a meaning is available.",
     settings:"Settings",settingsSub:"Gemini connection and app settings.",originalLanguage:"Original language",learningLanguage:"Learning language",appLanguage:"App language",
     difficulty:"Word difficulty",dailyLimit:"Daily word limit",theme:"Theme",fontSize:"Font size",show:"Show",hide:"Hide",showArchive:"Show archive",resetProgress:"Reset progress",save:"Save",
@@ -2448,27 +2478,27 @@ const I18N={
     testDone:"Test complete",correct:"correct",wrong:"wrong",bravo:"Bravo!",testNeed:"A 10-question Test needs at least 10 active, non-memorized words with details.",
     recallNeed:"Recall needs at least 10 active memorized words.",archivedWord:"This word is archived. Reactivate it from Settings → Show archive.",
     apiNeeded:"Add a Gemini API key in Settings to query new words.",dailyError:"Daily words could not be added",dailyLimitReached:"Daily limit reached. Change it in Settings.",
-    difficultyA:"Beginner",difficultyB:"Intermediate",difficultyC:"Advanced",system:"System",light:"Light",dark:"Dark",newTest:"New 10-question test",wordLabel:"Word",chooseWord:"Choose the correct word",wrongSelected:"Incorrect answers",unlimited:"Unlimited",dailyPreparing:"Preparing daily words",dailyAction:"Daily — add 10 words",settingsAction:"Settings",randomAction:"Random word",aiPreparing:"AI response is being prepared, please wait...",openDetails:"Open details",memorizedOpenDetails:"Memorized — open details",rememberCue:"Memorized",forgetCue:"Remove memorized",archiveCue:"↓ Archive",archiveToast:"Archived",undo:"Undo",wordFallback:"Word",detailsLoadError:"Word details could not be loaded.",unknownError:"An unknown error occurred.",dailyUniqueError:"Only {count}/10 unique new words could be prepared. Please try again.",alertClose:"Close alert",optionShow:"Show options",close:"Close",searchAction:"Search",testAction:"Test active words",recallAction:"Test memorized words",limitPlaceholder:"Enter a limit",connectionError:"Gemini connection failed. Check your internet connection and try again.",noGeminiResponse:"Gemini did not return a response.",noWordGenerated:"No word was generated.",randomError:"Random word could not be generated."
+    difficultyA:"Beginner",difficultyB:"Intermediate",difficultyC:"Advanced",system:"System",light:"Light",dark:"Dark",newTest:"New 10-question test",wordLabel:"Word",chooseWord:"Choose the correct word",wrongSelected:"Incorrect answers",unlimited:"Unlimited",dailyPreparing:"Preparing daily words",dailyAction:"Daily — add 10 words",settingsAction:"Settings",randomAction:"Random word",aiPreparing:"AI response is being prepared, please wait...",openDetails:"Open details",memorizedOpenDetails:"Memorized — open details",rememberCue:"Memorized",forgetCue:"Remove memorized",archiveCue:"↓ Archive",archiveToast:"Archived",undo:"Undo",wordFallback:"Word",detailsLoadError:"Word details could not be loaded.",unknownError:"An unknown error occurred.",dailyUniqueError:"Only {count}/10 unique new words could be prepared. Please try again.",alertClose:"Close alert",optionShow:"Show options",close:"Close",searchAction:"Search",testAction:"Test active words",recallAction:"Test memorized words",limitPlaceholder:"Enter a limit",connectionError:"Gemini connection failed. Check your internet connection and try again.",noGeminiResponse:"Gemini did not return a response.",noWordGenerated:"No word was generated.",randomError:"Random word could not be generated.",apiKeyHint:"Stored only in this browser. In Google AI Studio, restrict the key to this site's address (HTTP referrer) and to the Gemini API.",statusFilter:"Status filter",sortOrder:"Sort order",apiKeyLabel:"Gemini API key",swipeActions:"Swipe actions",fontSmall:"Small",fontNormal:"Normal",fontLarge:"Large",fontXLarge:"Extra large",showMore:"Show more ({count})"
   },
   tr:{
-    geminiTimeout:"Gemini yanıtı zaman aşımına uğradı. Tekrar deneyin.",invalidApiKey:"Ayarlardaki Gemini API anahtarınızı kontrol edin.",geminiQuota:"Gemini kota veya istek sınırına ulaşıldı. Daha sonra deneyin.",geminiUnavailable:"Gemini şu anda kullanılamıyor. Daha sonra deneyin.",invalidGeminiResponse:"Gemini geçersiz kelime verisi döndürdü. Tekrar deneyin.",
-    flip:"Flip",flipHint:"Anlamı görmek için dokun",previousCard:"Önceki kart",nextCard:"Sonraki kart",flipEmpty:"Anlamı kayıtlı bir History kelimesi bulunamadı.",
+    geminiTimeout:"Gemini yanıtı zaman aşımına uğradı. Tekrar deneyin.",invalidApiKey:"Ayarlardaki Gemini API anahtarınızı ve kısıtlamalarını kontrol edin.",geminiBudget:"Gemini toplam süre sınırını aştı. Hiçbir kayıt değişmedi; daha sonra tekrar deneyin.",geminiQuota:"Gemini kota veya istek sınırına ulaşıldı. Daha sonra deneyin.",geminiUnavailable:"Gemini şu anda kullanılamıyor. Daha sonra deneyin.",invalidGeminiResponse:"Gemini geçersiz kelime verisi döndürdü. Tekrar deneyin.",
+    flip:"Flip",flipHint:"Anlamı görmek için dokun",previousCard:"Önceki kart",nextCard:"Sonraki kart",flipEmpty:"Anlamı kayıtlı kelime bulunamadı.",
     settings:"Ayarlar",settingsSub:"Gemini bağlantısı ve uygulama ayarları.",originalLanguage:"Orijinal dil",learningLanguage:"Öğrenilen dil",appLanguage:"Uygulama dili",
-    difficulty:"Kelime zorluk derecesi",dailyLimit:"Günlük kelime limiti",theme:"Tema",fontSize:"Font büyüklüğü",show:"Göster",hide:"Gizle",showArchive:"Arşivi göster",resetProgress:"İlerlemeyi Sıfırla",save:"Kaydet",
+    difficulty:"Kelime zorluk derecesi",dailyLimit:"Günlük kelime limiti",theme:"Tema",fontSize:"Yazı boyutu",show:"Göster",hide:"Gizle",showArchive:"Arşivi göster",resetProgress:"İlerlemeyi Sıfırla",save:"Kaydet",
     test:"Test",recall:"Hatırla",searchPlaceholder:"Kelime girin...",historySearch:"Listemde ara...",all:"Tümü",active:"Aktifler",memorized:"Ezberimdekiler",flipOther:"Diğer",noSort:"Sıralama Yok",
     archive:"Arşiv",archiveSearch:"Arşivde ara...",fromActive:"Aktiften",fromMemorized:"Ezberimden",activate:"Aktif hale getir",delete:"Sil",cancel:"Vazgeç",reset:"Sıfırla",
-    resetCopy:"History, Ezberimde, Arşiv ve kayıtlı kelime verileri silinecek.",irreversible:"Bu işlem geri alınamaz.",languageChangeTitle:"Dil seçimi değiştirilsin mi?",
+    resetCopy:"Listem, Ezberimde, Arşiv ve kayıtlı kelime verileri silinecek.",irreversible:"Bu işlem geri alınamaz.",languageChangeTitle:"Dil seçimi değiştirilsin mi?",
     languageChangeCopy:"Orijinal veya öğrenilen dil değiştiğinde tüm kayıtlı kelimeler ve ilerleme sıfırlanır.",continueReset:"Değiştir ve sıfırla",
     meaning:"Anlam",synonyms:"Eş Anlamlılar",antonyms:"Zıt Anlamlılar",examples:"Örnek Cümleler",expressions:"Deyimler & Kalıplar",pronunciation:"Okunuş",addToList:"Listeme ekle",loading:"Yükleniyor…",
     swipeLeftForget:"← Sola kaydır · Ezberimden çıkar",swipeLeftDismiss:"← Sola kaydır · Kapat",swipeRightMem:"Sağa kaydır · Ezberimde →",
     archiveEmpty:"Arşiv boş.",archiveNoMatch:"Filtreye uygun arşiv kelimesi yok.",selected:"seçili",words:"kelime",
     testDone:"Test tamamlandı",correct:"doğru",wrong:"yanlış",bravo:"Bravo!",testNeed:"10 soruluk Test için aktif, Ezberimde olmayan ve detay verisi bulunan en az 10 kelime gerekli.",
     recallNeed:"Hatırla testi için Ezberimde en az 10 aktif kelime gerekli.",archivedWord:"Bu kelime arşivde. Ayarlar → Arşivi göster bölümünden tekrar aktif hale getirebilirsiniz.",
-    apiNeeded:"Yeni kelime sorgulamak için Ayarlar bölümünden Gemini API Key ekleyin.",dailyError:"Günlük kelimeler eklenemedi",dailyLimitReached:"Günlük limite ulaşıldı. Ayarlardaki limiti değiştirin.",
-    difficultyA:"Başlangıç",difficultyB:"Orta",difficultyC:"İleri",system:"Sistem",light:"Açık",dark:"Koyu",newTest:"Yeni 10 Soruluk Test",wordLabel:"Kelime",chooseWord:"Doğru kelimeyi seç",wrongSelected:"Yanlış işaretlediklerin",unlimited:"Sınırsız",dailyPreparing:"Preparing daily words",dailyAction:"Günlük — 10 kelime ekle",settingsAction:"Ayarlar",randomAction:"Rastgele kelime",aiPreparing:"AI response is being prepared, please wait...",openDetails:"Detayı aç",memorizedOpenDetails:"Ezberimde — detayı aç",rememberCue:"Ezberimde",forgetCue:"Ezberimden Çıkar",archiveCue:"↓ Arşivle",archiveToast:"Arşivlendi",undo:"Geri al",wordFallback:"Kelime",detailsLoadError:"Kelime detayı alınamadı.",unknownError:"Bilinmeyen bir hata oluştu.",dailyUniqueError:"Yalnızca {count}/10 benzersiz yeni kelime hazırlanabildi. Lütfen tekrar deneyin.",alertClose:"Uyarıyı kapat",optionShow:"Seçenekleri göster",close:"Kapat",searchAction:"Ara",testAction:"Aktif kelimelerden test",recallAction:"Ezberimdeki kelimelerden test",limitPlaceholder:"Limit girin",connectionError:"Gemini bağlantısı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",noGeminiResponse:"Gemini yanıt vermedi.",noWordGenerated:"Kelime üretilemedi.",randomError:"Rastgele kelime üretilemedi."
+    apiNeeded:"Yeni kelime sorgulamak için Ayarlar bölümünden Gemini API anahtarı ekleyin.",dailyError:"Günlük kelimeler eklenemedi",dailyLimitReached:"Günlük limite ulaşıldı. Ayarlardaki limiti değiştirin.",
+    difficultyA:"Başlangıç",difficultyB:"Orta",difficultyC:"İleri",system:"Sistem",light:"Açık",dark:"Koyu",newTest:"Yeni 10 Soruluk Test",wordLabel:"Kelime",chooseWord:"Doğru kelimeyi seç",wrongSelected:"Yanlış işaretlediklerin",unlimited:"Sınırsız",dailyPreparing:"Günlük kelimeler hazırlanıyor",dailyAction:"Günlük — 10 kelime ekle",settingsAction:"Ayarlar",randomAction:"Rastgele kelime",aiPreparing:"AI yanıtı hazırlanıyor, lütfen bekleyin...",openDetails:"Detayı aç",memorizedOpenDetails:"Ezberimde — detayı aç",rememberCue:"Ezberimde",forgetCue:"Ezberimden Çıkar",archiveCue:"↓ Arşivle",archiveToast:"Arşivlendi",undo:"Geri al",wordFallback:"Kelime",detailsLoadError:"Kelime detayı alınamadı.",unknownError:"Bilinmeyen bir hata oluştu.",dailyUniqueError:"Yalnızca {count}/10 benzersiz yeni kelime hazırlanabildi. Lütfen tekrar deneyin.",alertClose:"Uyarıyı kapat",optionShow:"Seçenekleri göster",close:"Kapat",searchAction:"Ara",testAction:"Aktif kelimelerden test",recallAction:"Ezberimdeki kelimelerden test",limitPlaceholder:"Limit girin",connectionError:"Gemini bağlantısı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",noGeminiResponse:"Gemini yanıt vermedi.",noWordGenerated:"Kelime üretilemedi.",randomError:"Rastgele kelime üretilemedi.",apiKeyHint:"Yalnızca bu tarayıcıda saklanır. Google AI Studio'da anahtarı bu sitenin adresiyle (HTTP referrer) ve Gemini API ile sınırlayın.",statusFilter:"Durum filtresi",sortOrder:"Sıralama",apiKeyLabel:"Gemini API anahtarı",swipeActions:"Kaydırma eylemleri",fontSmall:"Küçük",fontNormal:"Normal",fontLarge:"Büyük",fontXLarge:"Çok büyük",showMore:"Daha fazla göster ({count})"
   },
   fr:{
-    geminiTimeout:"Gemini a mis trop de temps. Réessayez.",invalidApiKey:"Vérifiez votre clé API Gemini dans les réglages.",geminiQuota:"Quota ou limite de requêtes Gemini atteint. Réessayez plus tard.",geminiUnavailable:"Gemini est temporairement indisponible. Réessayez plus tard.",invalidGeminiResponse:"Gemini a renvoyé des données invalides. Réessayez.",
+    geminiTimeout:"Gemini a mis trop de temps. Réessayez.",invalidApiKey:"Vérifiez votre clé API Gemini et ses restrictions dans les réglages.",geminiBudget:"Gemini a dépassé le temps total autorisé. Rien n’a été modifié ; réessayez plus tard.",geminiQuota:"Quota ou limite de requêtes Gemini atteint. Réessayez plus tard.",geminiUnavailable:"Gemini est temporairement indisponible. Réessayez plus tard.",invalidGeminiResponse:"Gemini a renvoyé des données invalides. Réessayez.",
     flip:"Flip",flipHint:"Touchez pour retourner",previousCard:"Carte précédente",nextCard:"Carte suivante",flipEmpty:"Aucun mot enregistré avec une signification.",
     settings:"Réglages",settingsSub:"Connexion Gemini et réglages de l’application.",originalLanguage:"Langue d’origine",learningLanguage:"Langue apprise",appLanguage:"Langue de l’application",
     difficulty:"Niveau des mots",dailyLimit:"Limite quotidienne",theme:"Thème",fontSize:"Taille du texte",show:"Afficher",hide:"Masquer",showArchive:"Afficher l’archive",resetProgress:"Réinitialiser la progression",save:"Enregistrer",
@@ -2482,10 +2512,10 @@ const I18N={
     testDone:"Test terminé",correct:"correct",wrong:"incorrect",bravo:"Bravo !",testNeed:"Le test de 10 questions nécessite au moins 10 mots actifs non mémorisés avec leurs détails.",
     recallNeed:"La révision nécessite au moins 10 mots mémorisés actifs.",archivedWord:"Ce mot est archivé. Réactivez-le via Réglages → Afficher l’archive.",
     apiNeeded:"Ajoutez une clé API Gemini dans Réglages pour rechercher de nouveaux mots.",dailyError:"Impossible d’ajouter les mots du jour",dailyLimitReached:"Limite quotidienne atteinte. Modifiez-la dans Réglages.",
-    difficultyA:"Débutant",difficultyB:"Intermédiaire",difficultyC:"Avancé",system:"Système",light:"Clair",dark:"Sombre",newTest:"Nouveau test de 10 questions",wordLabel:"Mot",chooseWord:"Choisissez le bon mot",wrongSelected:"Réponses incorrectes",unlimited:"Illimité",dailyPreparing:"Préparation des mots du jour",dailyAction:"Quotidien — ajouter 10 mots",settingsAction:"Réglages",randomAction:"Mot aléatoire",aiPreparing:"La réponse de l’IA est en préparation, veuillez patienter...",openDetails:"Ouvrir les détails",memorizedOpenDetails:"Mémorisé — ouvrir les détails",rememberCue:"Mémorisé",forgetCue:"Retirer des mémorisés",archiveCue:"↓ Archiver",archiveToast:"Archivé",undo:"Annuler",wordFallback:"Mot",detailsLoadError:"Impossible de charger les détails du mot.",unknownError:"Une erreur inconnue s’est produite.",dailyUniqueError:"Seulement {count}/10 nouveaux mots uniques ont pu être préparés. Veuillez réessayer.",alertClose:"Fermer l’alerte",optionShow:"Afficher les options",close:"Fermer",searchAction:"Rechercher",testAction:"Tester les mots actifs",recallAction:"Tester les mots mémorisés",limitPlaceholder:"Saisir une limite",connectionError:"Connexion à Gemini impossible. Vérifiez votre connexion Internet et réessayez.",noGeminiResponse:"Gemini n’a pas répondu.",noWordGenerated:"Aucun mot n’a été généré.",randomError:"Impossible de générer un mot aléatoire."
+    difficultyA:"Débutant",difficultyB:"Intermédiaire",difficultyC:"Avancé",system:"Système",light:"Clair",dark:"Sombre",newTest:"Nouveau test de 10 questions",wordLabel:"Mot",chooseWord:"Choisissez le bon mot",wrongSelected:"Réponses incorrectes",unlimited:"Illimité",dailyPreparing:"Préparation des mots du jour",dailyAction:"Quotidien — ajouter 10 mots",settingsAction:"Réglages",randomAction:"Mot aléatoire",aiPreparing:"La réponse de l’IA est en préparation, veuillez patienter...",openDetails:"Ouvrir les détails",memorizedOpenDetails:"Mémorisé — ouvrir les détails",rememberCue:"Mémorisé",forgetCue:"Retirer des mémorisés",archiveCue:"↓ Archiver",archiveToast:"Archivé",undo:"Annuler",wordFallback:"Mot",detailsLoadError:"Impossible de charger les détails du mot.",unknownError:"Une erreur inconnue s’est produite.",dailyUniqueError:"Seulement {count}/10 nouveaux mots uniques ont pu être préparés. Veuillez réessayer.",alertClose:"Fermer l’alerte",optionShow:"Afficher les options",close:"Fermer",searchAction:"Rechercher",testAction:"Tester les mots actifs",recallAction:"Tester les mots mémorisés",limitPlaceholder:"Saisir une limite",connectionError:"Connexion à Gemini impossible. Vérifiez votre connexion Internet et réessayez.",noGeminiResponse:"Gemini n’a pas répondu.",noWordGenerated:"Aucun mot n’a été généré.",randomError:"Impossible de générer un mot aléatoire.",apiKeyHint:"Stockée uniquement dans ce navigateur. Dans Google AI Studio, limitez la clé à l’adresse de ce site (référent HTTP) et à l’API Gemini.",statusFilter:"Filtre de statut",sortOrder:"Ordre de tri",apiKeyLabel:"Clé API Gemini",swipeActions:"Actions par glissement",fontSmall:"Petit",fontNormal:"Normal",fontLarge:"Grand",fontXLarge:"Très grand",showMore:"Afficher plus ({count})"
   },
   de:{
-    geminiTimeout:"Gemini hat zu lange gebraucht. Erneut versuchen.",invalidApiKey:"Prüfen Sie Ihren Gemini-API-Schlüssel in den Einstellungen.",geminiQuota:"Gemini-Kontingent oder Anfragelimit erreicht. Später versuchen.",geminiUnavailable:"Gemini ist vorübergehend nicht verfügbar. Später versuchen.",invalidGeminiResponse:"Gemini hat ungültige Wortdaten zurückgegeben. Erneut versuchen.",
+    geminiTimeout:"Gemini hat zu lange gebraucht. Erneut versuchen.",invalidApiKey:"Prüfen Sie Ihren Gemini-API-Schlüssel und dessen Einschränkungen in den Einstellungen.",geminiBudget:"Gemini hat das Gesamtzeitlimit überschritten. Nichts wurde geändert; bitte später erneut versuchen.",geminiQuota:"Gemini-Kontingent oder Anfragelimit erreicht. Später versuchen.",geminiUnavailable:"Gemini ist vorübergehend nicht verfügbar. Später versuchen.",invalidGeminiResponse:"Gemini hat ungültige Wortdaten zurückgegeben. Erneut versuchen.",
     flip:"Flip",flipHint:"Zum Umdrehen tippen",previousCard:"Vorherige Karte",nextCard:"Nächste Karte",flipEmpty:"Kein gespeichertes Wort mit Bedeutung verfügbar.",
     settings:"Einstellungen",settingsSub:"Gemini-Verbindung und App-Einstellungen.",originalLanguage:"Ausgangssprache",learningLanguage:"Lernsprache",appLanguage:"App-Sprache",
     difficulty:"Wortschwierigkeit",dailyLimit:"Tägliches Wortlimit",theme:"Design",fontSize:"Schriftgröße",show:"Anzeigen",hide:"Ausblenden",showArchive:"Archiv anzeigen",resetProgress:"Fortschritt zurücksetzen",save:"Speichern",
@@ -2500,10 +2530,10 @@ const I18N={
     recallNeed:"Für Wiederholen werden mindestens 10 aktive gelernte Wörter benötigt.",archivedWord:"Dieses Wort ist archiviert. Reaktivieren Sie es unter Einstellungen → Archiv anzeigen.",
     apiNeeded:"Fügen Sie in den Einstellungen einen Gemini-API-Schlüssel hinzu, um neue Wörter abzufragen.",dailyError:"Tägliche Wörter konnten nicht hinzugefügt werden",dailyLimitReached:"Tageslimit erreicht. Ändern Sie es in den Einstellungen.",
     difficultyA:"Anfänger",difficultyB:"Mittelstufe",difficultyC:"Fortgeschritten",system:"System",light:"Hell",dark:"Dunkel",newTest:"Neuer Test mit 10 Fragen",wordLabel:"Wort",chooseWord:"Wählen Sie das richtige Wort",wrongSelected:"Falsche Antworten",
-    unlimited:"Unbegrenzt",dailyPreparing:"Tägliche Wörter werden vorbereitet",dailyAction:"Täglich — 10 Wörter hinzufügen",settingsAction:"Einstellungen",randomAction:"Zufälliges Wort",aiPreparing:"KI-Antwort wird vorbereitet, bitte warten...",openDetails:"Details öffnen",memorizedOpenDetails:"Gelernt — Details öffnen",rememberCue:"Gelernt",forgetCue:"Aus Gelernt entfernen",archiveCue:"↓ Archivieren",archiveToast:"Archiviert",undo:"Rückgängig",wordFallback:"Wort",detailsLoadError:"Wortdetails konnten nicht geladen werden.",unknownError:"Ein unbekannter Fehler ist aufgetreten.",dailyUniqueError:"Nur {count}/10 eindeutige neue Wörter konnten vorbereitet werden. Bitte erneut versuchen.",alertClose:"Warnung schließen",optionShow:"Optionen anzeigen",close:"Schließen",searchAction:"Suchen",testAction:"Aktive Wörter testen",recallAction:"Gelernte Wörter testen",limitPlaceholder:"Limit eingeben",connectionError:"Verbindung zu Gemini fehlgeschlagen. Internetverbindung prüfen und erneut versuchen.",noGeminiResponse:"Gemini hat nicht geantwortet.",noWordGenerated:"Es wurde kein Wort erzeugt.",randomError:"Zufälliges Wort konnte nicht erzeugt werden."
+    unlimited:"Unbegrenzt",dailyPreparing:"Tägliche Wörter werden vorbereitet",dailyAction:"Täglich — 10 Wörter hinzufügen",settingsAction:"Einstellungen",randomAction:"Zufälliges Wort",aiPreparing:"KI-Antwort wird vorbereitet, bitte warten...",openDetails:"Details öffnen",memorizedOpenDetails:"Gelernt — Details öffnen",rememberCue:"Gelernt",forgetCue:"Aus Gelernt entfernen",archiveCue:"↓ Archivieren",archiveToast:"Archiviert",undo:"Rückgängig",wordFallback:"Wort",detailsLoadError:"Wortdetails konnten nicht geladen werden.",unknownError:"Ein unbekannter Fehler ist aufgetreten.",dailyUniqueError:"Nur {count}/10 eindeutige neue Wörter konnten vorbereitet werden. Bitte erneut versuchen.",alertClose:"Warnung schließen",optionShow:"Optionen anzeigen",close:"Schließen",searchAction:"Suchen",testAction:"Aktive Wörter testen",recallAction:"Gelernte Wörter testen",limitPlaceholder:"Limit eingeben",connectionError:"Verbindung zu Gemini fehlgeschlagen. Internetverbindung prüfen und erneut versuchen.",noGeminiResponse:"Gemini hat nicht geantwortet.",noWordGenerated:"Es wurde kein Wort erzeugt.",randomError:"Zufälliges Wort konnte nicht erzeugt werden.",apiKeyHint:"Wird nur in diesem Browser gespeichert. Beschränken Sie den Schlüssel in Google AI Studio auf die Adresse dieser Seite (HTTP-Referrer) und die Gemini-API.",statusFilter:"Statusfilter",sortOrder:"Sortierung",apiKeyLabel:"Gemini-API-Schlüssel",swipeActions:"Wischaktionen",fontSmall:"Klein",fontNormal:"Normal",fontLarge:"Groß",fontXLarge:"Sehr groß",showMore:"Mehr anzeigen ({count})"
   },
   es:{
-    geminiTimeout:"Gemini tardó demasiado. Inténtalo de nuevo.",invalidApiKey:"Comprueba tu clave API de Gemini en Ajustes.",geminiQuota:"Se alcanzó la cuota o límite de Gemini. Inténtalo más tarde.",geminiUnavailable:"Gemini no está disponible temporalmente. Inténtalo más tarde.",invalidGeminiResponse:"Gemini devolvió datos no válidos. Inténtalo de nuevo.",
+    geminiTimeout:"Gemini tardó demasiado. Inténtalo de nuevo.",invalidApiKey:"Comprueba tu clave API de Gemini y sus restricciones en Ajustes.",geminiBudget:"Gemini superó el tiempo total permitido. No se cambió nada; inténtalo más tarde.",geminiQuota:"Se alcanzó la cuota o límite de Gemini. Inténtalo más tarde.",geminiUnavailable:"Gemini no está disponible temporalmente. Inténtalo más tarde.",invalidGeminiResponse:"Gemini devolvió datos no válidos. Inténtalo de nuevo.",
     flip:"Flip",flipHint:"Toca para girar",previousCard:"Tarjeta anterior",nextCard:"Tarjeta siguiente",flipEmpty:"No hay palabras guardadas con significado.",
     settings:"Ajustes",settingsSub:"Conexión con Gemini y ajustes de la aplicación.",originalLanguage:"Idioma de origen",learningLanguage:"Idioma aprendido",appLanguage:"Idioma de la aplicación",
     difficulty:"Dificultad de palabras",dailyLimit:"Límite diario de palabras",theme:"Tema",fontSize:"Tamaño del texto",show:"Mostrar",hide:"Ocultar",showArchive:"Mostrar archivo",resetProgress:"Restablecer progreso",save:"Guardar",
@@ -2518,10 +2548,10 @@ const I18N={
     recallNeed:"Repasar necesita al menos 10 palabras memorizadas activas.",archivedWord:"Esta palabra está archivada. Reactívala en Ajustes → Mostrar archivo.",
     apiNeeded:"Añade una clave API de Gemini en Ajustes para consultar palabras nuevas.",dailyError:"No se pudieron añadir las palabras diarias",dailyLimitReached:"Se alcanzó el límite diario. Cámbialo en Ajustes.",
     difficultyA:"Principiante",difficultyB:"Intermedio",difficultyC:"Avanzado",system:"Sistema",light:"Claro",dark:"Oscuro",newTest:"Nuevo test de 10 preguntas",wordLabel:"Palabra",chooseWord:"Elige la palabra correcta",wrongSelected:"Respuestas incorrectas",
-    unlimited:"Ilimitado",dailyPreparing:"Preparando palabras diarias",dailyAction:"Diario — añadir 10 palabras",settingsAction:"Ajustes",randomAction:"Palabra aleatoria",aiPreparing:"Preparando la respuesta de IA, espera...",openDetails:"Abrir detalles",memorizedOpenDetails:"Memorizado — abrir detalles",rememberCue:"Memorizado",forgetCue:"Quitar de memorizados",archiveCue:"↓ Archivar",archiveToast:"Archivado",undo:"Deshacer",wordFallback:"Palabra",detailsLoadError:"No se pudieron cargar los detalles de la palabra.",unknownError:"Ocurrió un error desconocido.",dailyUniqueError:"Solo se pudieron preparar {count}/10 palabras nuevas únicas. Inténtalo de nuevo.",alertClose:"Cerrar aviso",optionShow:"Mostrar opciones",close:"Cerrar",searchAction:"Buscar",testAction:"Probar palabras activas",recallAction:"Probar palabras memorizadas",limitPlaceholder:"Introduce un límite",connectionError:"No se pudo conectar con Gemini. Comprueba Internet e inténtalo de nuevo.",noGeminiResponse:"Gemini no respondió.",noWordGenerated:"No se generó ninguna palabra.",randomError:"No se pudo generar una palabra aleatoria."
+    unlimited:"Ilimitado",dailyPreparing:"Preparando palabras diarias",dailyAction:"Diario — añadir 10 palabras",settingsAction:"Ajustes",randomAction:"Palabra aleatoria",aiPreparing:"Preparando la respuesta de IA, espera...",openDetails:"Abrir detalles",memorizedOpenDetails:"Memorizado — abrir detalles",rememberCue:"Memorizado",forgetCue:"Quitar de memorizados",archiveCue:"↓ Archivar",archiveToast:"Archivado",undo:"Deshacer",wordFallback:"Palabra",detailsLoadError:"No se pudieron cargar los detalles de la palabra.",unknownError:"Ocurrió un error desconocido.",dailyUniqueError:"Solo se pudieron preparar {count}/10 palabras nuevas únicas. Inténtalo de nuevo.",alertClose:"Cerrar aviso",optionShow:"Mostrar opciones",close:"Cerrar",searchAction:"Buscar",testAction:"Probar palabras activas",recallAction:"Probar palabras memorizadas",limitPlaceholder:"Introduce un límite",connectionError:"No se pudo conectar con Gemini. Comprueba Internet e inténtalo de nuevo.",noGeminiResponse:"Gemini no respondió.",noWordGenerated:"No se generó ninguna palabra.",randomError:"No se pudo generar una palabra aleatoria.",apiKeyHint:"Se guarda solo en este navegador. En Google AI Studio, restringe la clave a la dirección de este sitio (referente HTTP) y a la API de Gemini.",statusFilter:"Filtro de estado",sortOrder:"Orden",apiKeyLabel:"Clave API de Gemini",swipeActions:"Acciones de deslizamiento",fontSmall:"Pequeño",fontNormal:"Normal",fontLarge:"Grande",fontXLarge:"Muy grande",showMore:"Mostrar más ({count})"
   },
   it:{
-    geminiTimeout:"Gemini ha impiegato troppo tempo. Riprova.",invalidApiKey:"Controlla la chiave API Gemini nelle Impostazioni.",geminiQuota:"Quota o limite di richieste Gemini raggiunto. Riprova più tardi.",geminiUnavailable:"Gemini non è temporaneamente disponibile. Riprova più tardi.",invalidGeminiResponse:"Gemini ha restituito dati non validi. Riprova.",
+    geminiTimeout:"Gemini ha impiegato troppo tempo. Riprova.",invalidApiKey:"Controlla la chiave API Gemini e le sue restrizioni nelle Impostazioni.",geminiBudget:"Gemini ha superato il tempo totale consentito. Nulla è stato modificato; riprova più tardi.",geminiQuota:"Quota o limite di richieste Gemini raggiunto. Riprova più tardi.",geminiUnavailable:"Gemini non è temporaneamente disponibile. Riprova più tardi.",invalidGeminiResponse:"Gemini ha restituito dati non validi. Riprova.",
     flip:"Flip",flipHint:"Tocca per girare",previousCard:"Carta precedente",nextCard:"Carta successiva",flipEmpty:"Nessuna parola salvata con significato disponibile.",
     settings:"Impostazioni",settingsSub:"Connessione Gemini e impostazioni dell’app.",originalLanguage:"Lingua originale",learningLanguage:"Lingua studiata",appLanguage:"Lingua dell’app",
     difficulty:"Difficoltà delle parole",dailyLimit:"Limite giornaliero di parole",theme:"Tema",fontSize:"Dimensione testo",show:"Mostra",hide:"Nascondi",showArchive:"Mostra archivio",resetProgress:"Azzera progressi",save:"Salva",
@@ -2536,11 +2566,26 @@ const I18N={
     recallNeed:"Ripassa richiede almeno 10 parole memorizzate attive.",archivedWord:"Questa parola è archiviata. Riattivala da Impostazioni → Mostra archivio.",
     apiNeeded:"Aggiungi una chiave API Gemini nelle Impostazioni per cercare nuove parole.",dailyError:"Impossibile aggiungere le parole giornaliere",dailyLimitReached:"Limite giornaliero raggiunto. Modificalo nelle Impostazioni.",
     difficultyA:"Principiante",difficultyB:"Intermedio",difficultyC:"Avanzato",system:"Sistema",light:"Chiaro",dark:"Scuro",newTest:"Nuovo test di 10 domande",wordLabel:"Parola",chooseWord:"Scegli la parola corretta",wrongSelected:"Risposte errate",
-    unlimited:"Illimitato",dailyPreparing:"Preparazione delle parole giornaliere",dailyAction:"Giornaliero — aggiungi 10 parole",settingsAction:"Impostazioni",randomAction:"Parola casuale",aiPreparing:"Preparazione della risposta AI, attendi...",openDetails:"Apri dettagli",memorizedOpenDetails:"Memorizzato — apri dettagli",rememberCue:"Memorizzato",forgetCue:"Rimuovi dai memorizzati",archiveCue:"↓ Archivia",archiveToast:"Archiviato",undo:"Annulla",wordFallback:"Parola",detailsLoadError:"Impossibile caricare i dettagli della parola.",unknownError:"Si è verificato un errore sconosciuto.",dailyUniqueError:"È stato possibile preparare solo {count}/10 nuove parole uniche. Riprova.",alertClose:"Chiudi avviso",optionShow:"Mostra opzioni",close:"Chiudi",searchAction:"Cerca",testAction:"Testa parole attive",recallAction:"Testa parole memorizzate",limitPlaceholder:"Inserisci un limite",connectionError:"Connessione a Gemini non riuscita. Controlla Internet e riprova.",noGeminiResponse:"Gemini non ha risposto.",noWordGenerated:"Nessuna parola generata.",randomError:"Impossibile generare una parola casuale."
+    unlimited:"Illimitato",dailyPreparing:"Preparazione delle parole giornaliere",dailyAction:"Giornaliero — aggiungi 10 parole",settingsAction:"Impostazioni",randomAction:"Parola casuale",aiPreparing:"Preparazione della risposta AI, attendi...",openDetails:"Apri dettagli",memorizedOpenDetails:"Memorizzato — apri dettagli",rememberCue:"Memorizzato",forgetCue:"Rimuovi dai memorizzati",archiveCue:"↓ Archivia",archiveToast:"Archiviato",undo:"Annulla",wordFallback:"Parola",detailsLoadError:"Impossibile caricare i dettagli della parola.",unknownError:"Si è verificato un errore sconosciuto.",dailyUniqueError:"È stato possibile preparare solo {count}/10 nuove parole uniche. Riprova.",alertClose:"Chiudi avviso",optionShow:"Mostra opzioni",close:"Chiudi",searchAction:"Cerca",testAction:"Testa parole attive",recallAction:"Testa parole memorizzate",limitPlaceholder:"Inserisci un limite",connectionError:"Connessione a Gemini non riuscita. Controlla Internet e riprova.",noGeminiResponse:"Gemini non ha risposto.",noWordGenerated:"Nessuna parola generata.",randomError:"Impossibile generare una parola casuale.",apiKeyHint:"Salvata solo in questo browser. In Google AI Studio, limita la chiave all’indirizzo di questo sito (referrer HTTP) e all’API Gemini.",statusFilter:"Filtro di stato",sortOrder:"Ordinamento",apiKeyLabel:"Chiave API Gemini",swipeActions:"Azioni di scorrimento",fontSmall:"Piccolo",fontNormal:"Normale",fontLarge:"Grande",fontXLarge:"Molto grande",showMore:"Mostra altri ({count})"
   }
 };
+// Interface language is its own setting. Data saved before it existed has none,
+// so it falls back to the native language, which is what the interface always followed.
 function getAppLanguage(){
-  return getNativeLanguageCode();
+  try{
+    const settings=VocVocData.getSettings();
+    return settings.appLanguage||settings.nativeLanguage||"tr";
+  }catch(_){
+    // The data layer is not ready (start-up, storage failure): use the language the old SPA saved, else the default.
+    try{return LocalStorageAdapter.getRaw("NATIVE_LANGUAGE")||"tr";}catch(__){return "tr";}
+  }
+}
+// "Unlimited" may be shown or typed in any supported language: this is the single place that decides whether a text means it.
+const UNLIMITED_SPELLINGS=new Set(["unlimited","sinirsiz","illimite","unbegrenzt","ilimitado","illimitato","∞"]);
+function normalizeLimitText(value){return String(value??"").trim().toLocaleLowerCase("en").normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
+function isUnlimitedText(value){
+  const text=normalizeLimitText(value);
+  return !!text&&(UNLIMITED_SPELLINGS.has(text)||Object.values(I18N).some(table=>normalizeLimitText(table.unlimited)===text));
 }
 /* ============================================================
    VocVoc Data Layer — Schema v1
@@ -2595,7 +2640,10 @@ const VocVocData=(()=>{
       const draft=VocVocStorage.clone(dbCache);
       mutationDb=draft;dirty=false;let result;
       try{result=fn(...args);}finally{mutationDb=null;}
-      if(dirty){await adapter.write(draft,options);dbCache=draft;invalidateArchiveCache();}
+      // `backup` may be a predicate on the committed state, so an already-empty
+      // database never overwrites the recovery copy of the data it replaced.
+      const writeOptions={...options,backup:typeof options.backup==="function"?options.backup(dbCache):!!options.backup};
+      if(dirty){await adapter.write(draft,writeOptions);dbCache=draft;invalidateArchiveCache();}
       return result;
     });
     mutationQueue=task.catch(()=>{});
@@ -2952,29 +3000,38 @@ const VocVocData=(()=>{
     return repaired;
   }
 
-  function getProgressEntries(){
+  // Every commit, import and refresh replaces dbCache, so a list derived from it stays valid until then: typing in the History
+  // filter, sorting, the pools of Test/Recall and the archive no longer re-scan and re-copy every record. A draft inside a
+  // transaction changes while it is being edited and is never cached. Callers get their own array (the entries are shared, read-only).
+  let derivedFor=null,derivedLists={};
+  function derived(name,build){
     const db=getDb();
-    return Object.values(db.progress).map(p=>({...p,word:db.words[p.wordId]?.word||""}))
-      .filter(x=>x.word);
+    if(db!==dbCache)return build(db);
+    if(derivedFor!==db){derivedFor=db;derivedLists={};}
+    return name in derivedLists?derivedLists[name]:(derivedLists[name]=build(db));
   }
+  function progressEntries(){
+    return derived("entries",db=>Object.values(db.progress).map(p=>({...p,word:db.words[p.wordId]?.word||""})).filter(x=>x.word));
+  }
+  function getProgressEntries(){return progressEntries().slice();}
   function getHistoryWords(){
-    return getProgressEntries()
+    return derived("history",()=>progressEntries()
       .filter(p=>p.status!=="archived")
       .sort((a,b)=>String(b.lastSeenAt||"").localeCompare(String(a.lastSeenAt||"")))
-      .map(p=>p.word);
+      .map(p=>p.word)).slice();
   }
   function getMemorizedWords(){
-    return getProgressEntries().filter(p=>p.status==="memorized").map(p=>p.word);
+    return derived("memorized",()=>progressEntries().filter(p=>p.status==="memorized").map(p=>p.word)).slice();
   }
   function getArchivedEntries(){
-    return getProgressEntries()
+    return derived("archived",()=>progressEntries()
       .filter(p=>p.status==="archived")
       .sort((a,b)=>String(b.archivedAt||"").localeCompare(String(a.archivedAt||"")))
       .map(p=>({
         word:p.word,
         sourceStatus:p.archiveSourceStatus==="memorized"?"memorized":"active",
         archivedAt:p.archivedAt?Date.parse(p.archivedAt):0
-      }));
+      }))).slice();
   }
   function isArchived(word){
     const db=getDb(),target=db.settings.targetLanguage,native=db.settings.nativeLanguage;
@@ -3008,6 +3065,7 @@ const VocVocData=(()=>{
     write(db);
   }
 
+  const hasWords=db=>Object.keys(db?.words||{}).length>0;
   function clearProgressAndWords(){
     const db=getDb();
     db.words={};db.aliases={};db.progress={};db.dailyUsage={date:null,count:0};
@@ -3035,8 +3093,11 @@ const VocVocData=(()=>{
     ensureStarterWords:words=>transaction(()=>{if(getSettings().targetLanguage==="fr"&&getSettings().nativeLanguage==="tr")return ensureStarterWords(words);}),restoreArchivedProgress:asynchronous(restoreArchivedProgress),
     addWordBatch:(words,options={})=>transaction(addWordBatch,[words,options],{guard:options.guard}),touchWord:asynchronous(touchWord),setStatus:asynchronous(setStatus),
     repairMissingProgress:asynchronous(repairMissingProgress),restoreArchived:asynchronous(restoreArchived),
-    deleteWords:asynchronous(deleteWords),clearProgressAndWords:asynchronous(clearProgressAndWords),addDailyUsage:asynchronous(addDailyUsage),
-    changeLanguage:patch=>transaction(()=>{updateSettings(patch);clearProgressAndWords();}),
+    // Bulk deletion (more than one word) also keeps the recovery copy; a single-word delete does not.
+    deleteWords:words=>transaction(deleteWords,[words],{backup:()=>new Set((words||[]).map(String)).size>1}),addDailyUsage:asynchronous(addDailyUsage),
+    // Reset and language change delete every word: keep a recovery copy (the "↶ JSON" export) when there is data.
+    clearProgressAndWords:()=>transaction(clearProgressAndWords,[],{backup:hasWords}),
+    changeLanguage:patch=>transaction(()=>{updateSettings(patch);clearProgressAndWords();},[],{backup:hasWords}),
     saveAndTouch:(data,alias,guard)=>transaction(()=>{const id=saveWord(data,alias);if(id)touchWord(data.word);return id;},[],{guard}),
     refresh:async()=>{await mutationQueue;const current=await adapter.read();VocVocStorage.validate(current.db);dbCache=current.db;adapter.revision=current.revision;invalidateArchiveCache();},
     flush:()=>mutationQueue,
@@ -3058,16 +3119,17 @@ const VocVocData=(()=>{
 
 
 function getNativeLanguageCode(){
-  return VocVocData.getSettings().nativeLanguage||"tr";
+  return VocVocData.getDb().settings.nativeLanguage||"tr"; // read in place: getSettings() copies the object and this runs thousands of times per render
 }
 function getTargetLanguageCode(){
-  return VocVocData.getSettings().targetLanguage||"fr";
+  return VocVocData.getDb().settings.targetLanguage||"fr";
 }
 function languageNameForPrompt(code){return LANGUAGE_META[code]?.prompt||String(code||"English");}
+// Text lookup that cannot fail: unknown language -> English; missing key -> English text, then the key itself.
 function t(key,vars={}){
   const lang=getAppLanguage();
   let value=(I18N[lang]||I18N.en)[key]??I18N.en[key]??key;
-  for(const [k,v] of Object.entries(vars))value=String(value).replaceAll(`{${k}}`,String(v));
+  for(const [k,v] of Object.entries(vars||{}))value=String(value).replaceAll(`{${k}}`,String(v));
   return value;
 }
 function setText(selector,key){const el=document.querySelector(selector);if(el)el.textContent=t(key);}
@@ -3081,17 +3143,11 @@ function applyAppLanguage(){
   document.documentElement.lang=lang;
 
   setText("#settingsTitle","settings");setText("#settingsSubtitle","settingsSub");
+  setText("#appLanguageLabel","appLanguage");setText("#apiKeyLabel","apiKeyLabel");setText("#apiKeyHint","apiKeyHint");
   setText("#nativeLanguageLabel","originalLanguage");setText("#targetLanguageLabel","learningLanguage");
   setText("#difficultyLabel","difficulty");setText("#dailyLimitLabel","dailyLimit");setText("#fontSizeLabel","fontSize");setText("#themeLabel","theme");
-  const fontLabels={
-    en:{small:"Small",normal:"Normal",large:"Large",xlarge:"Extra large"},
-    tr:{small:"Küçük",normal:"Normal",large:"Büyük",xlarge:"Çok büyük"},
-    fr:{small:"Petit",normal:"Normal",large:"Grand",xlarge:"Très grand"},
-    de:{small:"Klein",normal:"Normal",large:"Groß",xlarge:"Sehr groß"},
-    es:{small:"Pequeño",normal:"Normal",large:"Grande",xlarge:"Muy grande"},
-    it:{small:"Piccolo",normal:"Normale",large:"Grande",xlarge:"Molto grande"}
-  }[lang]||{};
-  for(const [value,label] of Object.entries(fontLabels))setDropdownText("fontSizeDropdown",value,label);
+  const fontKeys=[["small","fontSmall"],["normal","fontNormal"],["large","fontLarge"],["xlarge","fontXLarge"]];
+  for(const [value,key] of fontKeys)setDropdownText("fontSizeDropdown",value,t(key));
   syncUiDropdown("fontSizeDropdown",normalizeFontSizePreference(document.getElementById("fontSizeSelect")?.value));
   setText("#archiveShowBtn","showArchive");setText("#resetProgressBtn","resetProgress");setText("#settingsSaveBtn","save");
   setText("#resetTitle","resetProgress");setText("#resetCopy","resetCopy");setText("#resetWarning","irreversible");
@@ -3099,7 +3155,7 @@ function applyAppLanguage(){
   setText("#languageChangeTitle","languageChangeTitle");setText("#languageChangeCopy","languageChangeCopy");
   setText("#languageChangeWarning","irreversible");setText("#languageChangeCancelBtn","cancel");setText("#languageChangeConfirmBtn","continueReset");
 
-  const search=document.getElementById("searchInput");if(search)search.placeholder=t("searchPlaceholder");
+  const search=document.getElementById("searchInput");if(search){search.placeholder=t("searchPlaceholder");search.setAttribute("lang",getTargetLanguageCode());}
   const hs=document.getElementById("historyFilterInput");if(hs)hs.placeholder=t("historySearch");
   const as=document.getElementById("archiveSearchInput");if(as)as.placeholder=t("archiveSearch");
 
@@ -3138,7 +3194,7 @@ function applyAppLanguage(){
   const unlimitedOption=document.querySelector('.daily-limit-menu .ui-dropdown-option[data-value="unlimited"]');
   if(unlimitedOption)unlimitedOption.textContent=t("unlimited");
   const dailyInput=document.getElementById("dailyLimitInput");
-  if(dailyInput&&/^(sınırsız|sinirsiz|unlimited|illimité|illimite)$/i.test(dailyInput.value.trim()))dailyInput.value=t("unlimited");
+  if(dailyInput&&isUnlimitedText(dailyInput.value))dailyInput.value=t("unlimited");
 
   syncUiDropdown("difficultyDropdown",document.getElementById("difficultySelect")?.value||"A1-A2");
   syncUiDropdown("themeDropdown",document.getElementById("themeSelect")?.value||"system");
@@ -3156,6 +3212,7 @@ function applyAppLanguage(){
 
   if(document.getElementById("archiveOverlay")?.classList.contains("open"))renderArchive();
   if(quizSession)renderQuizQuestion();
+  if(typeof refreshAccessibleNames==="function")refreshAccessibleNames();
   if(typeof refreshPwaLabels==="function")refreshPwaLabels();
 }
 async function syncSavedWordsToHistory(){
@@ -3204,7 +3261,9 @@ async function confirmLearningLanguageChange(){
   if(!pendingLearningLanguageChange)return;
   const change=pendingLearningLanguageChange;
   invalidateAsyncWork();
-  await VocVocData.changeLanguage({[change.field]:change.value});
+  // If the atomic reset+language commit fails nothing was changed: close the dialog, restore the dropdown, tell the user.
+  try{await VocVocData.changeLanguage({[change.field]:change.value});}
+  catch(error){cancelLearningLanguageChange();reportStorageError(error);return;}
   const inputId=change.field==="nativeLanguage"?"nativeLanguageSelect":"targetLanguageSelect";
   const input=document.getElementById(inputId);if(input)input.value=change.value;
   syncUiDropdown(change.dropdownId,change.value);
@@ -3256,7 +3315,7 @@ function syncUiDropdown(id,value){
   const option=[...dd.querySelectorAll(".ui-dropdown-option")].find(btn=>btn.dataset.value===String(value));
   if(!option)return;
   dd.querySelector(".ui-dropdown-label").textContent=option.textContent.trim();
-  dd.querySelectorAll(".ui-dropdown-option").forEach(btn=>btn.classList.toggle("selected",btn===option));
+  dd.querySelectorAll(".ui-dropdown-option").forEach(btn=>{const on=btn===option;btn.classList.toggle("selected",on);btn.setAttribute("aria-current",String(on));});
 }
 function selectUiDropdown(id,value,label){
   const dd=document.getElementById(id);
@@ -3267,7 +3326,7 @@ function selectUiDropdown(id,value,label){
   const visibleLabel=option?.textContent?.trim()||label||value;
   const labelEl=dd.querySelector(".ui-dropdown-label");
   if(labelEl)labelEl.textContent=visibleLabel;
-  dd.querySelectorAll(".ui-dropdown-option").forEach(btn=>btn.classList.toggle("selected",btn.dataset.value===value));
+  dd.querySelectorAll(".ui-dropdown-option").forEach(btn=>{const on=btn.dataset.value===value;btn.classList.toggle("selected",on);btn.setAttribute("aria-current",String(on));});
   dd.classList.remove("open");
   dd.querySelector(".ui-dropdown-trigger")?.setAttribute("aria-expanded","false");
 
@@ -3276,6 +3335,21 @@ function selectUiDropdown(id,value,label){
   if(change==="archive")renderArchive();
   if(change==="theme")previewTheme(value);
   if(change==="fontSize")previewFontSize(value);
+  if(change==="appLanguage")changeAppLanguage(value);
+}
+async function changeAppLanguage(value){
+  if(!LANGUAGE_META[value]||value===getAppLanguage())return;
+  try{
+    // Interface language only: words, progress and learning languages are untouched.
+    await VocVocData.updateSettings({appLanguage:value});
+  }catch(error){
+    syncUiDropdown("appLanguageDropdown",getAppLanguage());
+    document.getElementById("appLanguageSelect").value=getAppLanguage();
+    reportStorageError(error);return;
+  }
+  applyAppLanguage();
+  // Cards carry translated labels; rebuild them once (applyAppLanguage itself never renders the main area).
+  preservePageScroll(()=>{renderHistory();if(!quizSession)renderAllLocal();});
 }
 function closeDailyLimitMenu(){
  const c=document.getElementById("dailyLimitCombo");if(!c)return;c.classList.remove("open");c.querySelector(".daily-limit-toggle")?.setAttribute("aria-expanded","false");
@@ -3292,7 +3366,7 @@ function syncDailyLimitSelection(){
   const c=document.getElementById("dailyLimitCombo"),i=document.getElementById("dailyLimitInput");
   if(!c||!i)return;
   const raw=i.value.trim();
-  const isUnlimited=/^(sınırsız|sinirsiz|unlimited|illimité|illimite)$/i.test(raw);
+  const isUnlimited=isUnlimitedText(raw);
   c.querySelectorAll(".daily-limit-menu button").forEach(b=>{
     b.classList.toggle("selected",isUnlimited?b.dataset.value==="unlimited":b.dataset.value===raw);
   });
@@ -3343,8 +3417,10 @@ const localDictionary={
 };
 const BUILTIN_DICTIONARY_KEYS=new Set(Object.keys(localDictionary));
 document.addEventListener('DOMContentLoaded',async()=>{
+  // Two separate phases: a database failure and an interface failure must not share one message.
+  try{await VocVocData.init();}
+  catch(error){showStorageBootError(error,{initialization:true});return;}
   try{
-  await VocVocData.init();
   const settings=VocVocData.getSettings();
   const savedKey=VocVocSecrets.getApiKey();
   if(savedKey)document.getElementById('apiKeyInput').value=savedKey;
@@ -3355,6 +3431,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   document.getElementById('fontSizeSelect').value=normalizeFontSizePreference(settings.fontSize);
   document.getElementById('nativeLanguageSelect').value=settings.nativeLanguage||'tr';
   document.getElementById('targetLanguageSelect').value=settings.targetLanguage||'fr';
+  document.getElementById('appLanguageSelect').value=getAppLanguage();
 
   applyTheme(settings.theme||'system');
   applyFontSize(normalizeFontSizePreference(settings.fontSize));
@@ -3367,6 +3444,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   }
   loadSavedWords();
 
+  syncUiDropdown("appLanguageDropdown",getAppLanguage());
   syncUiDropdown("nativeLanguageDropdown",getNativeLanguageCode());
   syncUiDropdown("targetLanguageDropdown",getTargetLanguageCode());
   syncUiDropdown("difficultyDropdown",document.getElementById('difficultySelect').value);
@@ -3388,7 +3466,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   document.getElementById('storageBoot').hidden=true;
   initPwaControls();
   deferStartup(()=>{syncSavedWordsToHistory().catch(reportStorageError);});
-  }catch(error){showStorageBootError(error);}
+  }catch(error){showStorageBootError(error);}  // classified there: storage error or interface error
 });
 function openModal(){
   const overlay=document.getElementById("modalOverlay");
@@ -3397,6 +3475,8 @@ function openModal(){
   requestAnimationFrame(()=>{
     document.getElementById("nativeLanguageSelect").value=getNativeLanguageCode();
     document.getElementById("targetLanguageSelect").value=getTargetLanguageCode();
+    document.getElementById("appLanguageSelect").value=getAppLanguage();
+    syncUiDropdown("appLanguageDropdown",getAppLanguage());
     syncUiDropdown("nativeLanguageDropdown",getNativeLanguageCode());
     syncUiDropdown("targetLanguageDropdown",getTargetLanguageCode());
     syncUiDropdown("difficultyDropdown",document.getElementById("difficultySelect").value);
@@ -3413,7 +3493,7 @@ async function saveApiKey(){
   VocVocSecrets.setApiKey(key);
 
   const rawLimit=String(document.getElementById('dailyLimitInput')?.value||'10').trim();
-  const unlimited=/^(sınırsız|sinirsiz|unlimited|illimité|illimite|unbegrenzt|ilimitado|illimitato|∞)$/i.test(rawLimit);
+  const unlimited=isUnlimitedText(rawLimit);
   const n=parseInt(rawLimit,10);
   const lim=unlimited?'unlimited':String(Number.isFinite(n)&&n>0?n:10);
   const difficulty=document.getElementById('difficultySelect').value||'A1-A2';
@@ -3459,6 +3539,9 @@ function showError(msg,{type="error"}={}){
   }
 }
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+// Language of the words being learned: lets screen readers and browsers treat them as that language.
+function langAttr(){return ` lang="${esc(getTargetLanguageCode())}"`;}
+function announceStatus(key){window.announce?.(t(key));}
 function encodeDomText(value){
  const bytes=new TextEncoder().encode(String(value??""));let binary="";
  for(const b of bytes)binary+=String.fromCharCode(b);
@@ -3552,6 +3635,33 @@ async function archiveFromCardButton(button){
   showArchiveUndoToast(archiveState);
 }
 
+// Buttons that do what the swipe gestures do, for keyboard and assistive technology.
+function renderCardActions(encodedWord){
+  return `<div class="word-status-actions"><button type="button" class="ui-button ui-button-success" data-card-memorize="${encodedWord}">${esc(t("rememberCue"))}</button><button type="button" class="ui-button ui-button-secondary" data-card-dismiss>${esc(t("close"))}</button></div>`;
+}
+function renderStatusActions(word,isMemorized){
+  return `<div class="word-status-actions"><button type="button" class="ui-button ${isMemorized?"ui-button-secondary":"ui-button-success"}" data-word-status="${isMemorized?"forget":"remember"}" data-status-word="${encodeDomText(word)}">${esc(t(isMemorized?"forgetCue":"rememberCue"))}</button></div>`;
+}
+function neighbourCardToggle(wrap){return wrap?.nextElementSibling?.querySelector(".main-word-toggle")||wrap?.previousElementSibling?.querySelector(".main-word-toggle")||null;}
+function focusAfterCardRemoval(next){(next?.isConnected?next:document.getElementById("searchInput"))?.focus({preventScroll:true});}
+async function memorizeFromCardButton(button){
+  const word=decodeDomText(button.dataset.cardMemorize||""),wrap=button.closest(".main-word-wrap");
+  if(!word)return;
+  const next=neighbourCardToggle(wrap);
+  try{await markMemorized(word);}catch(error){reportStorageError(error);return;}
+  wrap?.remove();announceStatus("rememberCue");focusAfterCardRemoval(next);
+}
+function dismissCardFromButton(button){
+  const wrap=button.closest(".main-word-wrap"),next=neighbourCardToggle(wrap);
+  wrap?.remove();focusAfterCardRemoval(next);
+}
+async function changeStatusFromButton(button){
+  const word=decodeDomText(button.dataset.statusWord||""),remember=button.dataset.wordStatus==="remember",inRelated=!!button.closest("#relatedWordPopup");
+  if(!word)return;
+  try{await (remember?markMemorized(word):removeMemorized(word));}catch(error){reportStorageError(error);return;}
+  if(inRelated)closeRelatedWordPopup();
+  announceStatus(remember?"rememberCue":"forgetCue");
+}
 function renderWordCard(data){
   // Rendering is intentionally side-effect free. Persistence happens when a word
   // enters the app (search/daily/starter sync), not every time its card repaints.
@@ -3563,14 +3673,11 @@ function renderWordCard(data){
     <div class="main-swipe-cue main-swipe-cue-dismiss">${t("close")}</div>
     <div class="main-swipe-cue main-swipe-cue-remember">${t("rememberCue")}</div>
     <div class="card main-word-card" data-word="${encoded}">
-      <button class="main-word-toggle" type="button" onclick="toggleMainWordCard(this)">
-        <span class="word-header"><span class="word-title">${esc(data.word)}</span><span class="word-type">${esc(data.type||"")}</span></span>
+      <button class="main-word-toggle" type="button" aria-expanded="false" onclick="toggleMainWordCard(this)">
+        <span class="word-header"><span class="word-title"${langAttr()}>${esc(data.word)}</span><span class="word-type">${esc(data.type||"")}</span></span>
         <span class="main-card-chevron" aria-hidden="true">▶</span>
       </button>
-      <div class="main-word-body" hidden>
-        <div class="shared-detail-content">${renderWordDetailBody(data,{showHeader:false})}</div>
-        ${renderSwipeFooter(false,{dismissLeft:true})}
-      </div>
+      <div class="main-word-body" hidden></div>
     </div>
   </div>`;
 }
@@ -3680,7 +3787,7 @@ async function archiveWord(word){
 function openArchive(){
   if(getArchivedWords().length===0){return;}
   closeModal();
-  archiveSelection.clear();
+  archiveSelection.clear();archiveShownSignature=""; // always start at the first page
   const overlay=document.getElementById("archiveOverlay");
   if(!overlay)return;
   overlay.classList.add("open");
@@ -3727,8 +3834,12 @@ function renderArchive(){
   let items=[...all];
   if(q)items=items.filter(x=>normalizeHistoryKey(x.word).includes(q));
   if(status!=="all")items=items.filter(x=>x.sourceStatus===status);
-  if(sort==="az")items.sort((a,b)=>a.word.localeCompare(b.word,getTargetLanguageCode(),{sensitivity:"base"}));
-  if(sort==="za")items.sort((a,b)=>b.word.localeCompare(a.word,getTargetLanguageCode(),{sensitivity:"base"}));
+  if(sort==="az"){const collator=sortCollator();items.sort((a,b)=>collator.compare(a.word,b.word));}
+  if(sort==="za"){const collator=sortCollator();items.sort((a,b)=>collator.compare(b.word,a.word));}
+  const signature=`${q}|${status}|${sort}`;
+  if(signature!==archiveShownSignature){archiveShownSignature=signature;archiveShownCount=HISTORY_CHIP_PAGE;}
+  const hiddenCount=Math.max(0,items.length-archiveShownCount);
+  items=items.slice(0,archiveShownCount);
 
   area.innerHTML=items.length?items.map(item=>{
     const key=normalizeHistoryKey(item.word),selected=archiveSelection.has(key);
@@ -3736,9 +3847,9 @@ function renderArchive(){
       data-archive-word="${encodeDomText(item.word)}"
       onclick="toggleArchiveSelection(decodeDomText(this.dataset.archiveWord))"
       aria-pressed="${selected?'true':'false'}">
-      <span class="archive-check" aria-hidden="true">${selected?'✓':''}</span><span>${esc(item.word)}</span>
+      <span class="archive-check" aria-hidden="true">${selected?'✓':''}</span><span${langAttr()}>${esc(item.word)}</span>
     </button>`;
-  }).join(""):`<div class="archive-empty">${all.length?t("archiveNoMatch"):t("archiveEmpty")}</div>`;
+  }).join("")+showMoreButton("archive",hiddenCount):`<div class="archive-empty">${all.length?t("archiveNoMatch"):t("archiveEmpty")}</div>`;
 
   const selectedCount=archiveSelection.size;
   document.getElementById("archiveMeta").textContent=`${all.length} ${t("words")}${selectedCount?` · ${selectedCount} ${t("selected")}`:""}`;
@@ -3814,6 +3925,26 @@ async function addHistory(word){
 
 
 
+// Paging of the two long lists. Rendering every word made start-up, every re-render and every full-page layout (opening any dialog)
+// grow with the size of the vocabulary; a page is built instead and the rest is one button (or one filter) away.
+const HISTORY_CHIP_PAGE=400,MAIN_CARD_PAGE=100;
+let historyShownCount=HISTORY_CHIP_PAGE,historyShownSignature="",mainCardsShown=MAIN_CARD_PAGE,archiveShownCount=HISTORY_CHIP_PAGE,archiveShownSignature="";
+function showMoreButton(kind,remaining){
+  if(!(remaining>0))return "";
+  return `<button type="button" class="ui-button ui-button-secondary show-more-btn" data-show-more="${kind}">${esc(t("showMore",{count:remaining}))}</button>`;
+}
+function showMore(kind){
+  if(kind==="history"){
+    const before=historyShownCount;historyShownCount+=HISTORY_CHIP_PAGE;renderHistory();
+    document.querySelectorAll("#historyArea .history-chip")[before]?.focus({preventScroll:true});
+  }else if(kind==="archive"){
+    const before=archiveShownCount;archiveShownCount+=HISTORY_CHIP_PAGE;renderArchive();
+    document.querySelectorAll("#archiveList .archive-word")[before]?.focus({preventScroll:true});
+  }else{
+    const before=mainCardsShown;mainCardsShown+=MAIN_CARD_PAGE;renderAllLocal();
+    document.querySelectorAll("#contentArea .main-word-toggle")[before]?.focus({preventScroll:true});
+  }
+}
 function renderHistory(){
   const area=document.getElementById('historyArea');
   if(!area)return;
@@ -3836,15 +3967,20 @@ function renderHistory(){
   if(q)words=words.filter(w=>normalizeHistoryKey(w).includes(q));
   if(status==="active")words=words.filter(w=>!memorized.has(normalizeHistoryKey(w)));
   if(status==="memorized")words=words.filter(w=>memorized.has(normalizeHistoryKey(w)));
-  if(sort==="az")words.sort((a,b)=>a.localeCompare(b,getTargetLanguageCode(),{sensitivity:'base'}));
-  if(sort==="za")words.sort((a,b)=>b.localeCompare(a,getTargetLanguageCode(),{sensitivity:'base'}));
+  if(sort==="az"){const collator=sortCollator();words.sort((a,b)=>collator.compare(a,b));}
+  if(sort==="za"){const collator=sortCollator();words.sort((a,b)=>collator.compare(b,a));}
 
+  // Page size limits the DOM, not the list: the filter above always searches every word, and "Show more" reveals the rest.
+  const signature=`${q}|${status}|${sort}`;
+  if(signature!==historyShownSignature){historyShownSignature=signature;historyShownCount=HISTORY_CHIP_PAGE;}
+  const hiddenCount=Math.max(0,words.length-historyShownCount);
+  words=words.slice(0,historyShownCount);
   area.innerHTML=words.map(w=>{
     const key=normalizeHistoryKey(w),isMem=memorized.has(key),encoded=encodeDomText(w);
     return `<button type="button" class="history-chip ui-pill${isMem?' memorized':''}"
       data-history-word="${encoded}"
-      title="${isMem?t("memorizedOpenDetails"):t("openDetails")}">${esc(w)}${isMem?' ✓':''}</button>`;
-  }).join('');
+      title="${isMem?t("memorizedOpenDetails"):t("openDetails")}"><span${langAttr()}>${esc(w)}</span>${isMem?' ✓':''}</button>`;
+  }).join('')+showMoreButton("history",hiddenCount);
   refreshArchiveButtonState();
 }
 async function clearHistory(){
@@ -3864,12 +4000,17 @@ function renderAllLocal(){
       seen.add(key);return renderWordCard(data);
     }).join("");return;
   }
-  const source=history.map(getHistoryWordData),seen=new Set();
-  area.innerHTML=source.map(data=>{
-    if(!data)return "";
-    const key=normalizeHistoryKey(data.word);if(!key||seen.has(key))return "";
-    seen.add(key);return renderWordCard(data);
-  }).join("");
+  const source=history.map(getHistoryWordData),seen=new Set(),eligible=[];
+  for(const data of source){
+    if(!data)continue;
+    const key=normalizeHistoryKey(data.word);if(!key||seen.has(key))continue;
+    seen.add(key);
+    // the same exclusions renderWordCard applies, decided before building any HTML
+    if(isArchivedWord(data.word)||VocVocData.getWordProgress(data.word)?.status==="memorized")continue;
+    eligible.push(data);
+  }
+  const shown=eligible.slice(0,mainCardsShown),rest=eligible.length-shown.length;
+  area.innerHTML=shown.map(data=>renderWordCard(data)).join("")+showMoreButton("cards",rest);
 }
 async function handleSearch(requestId=++mainRequestId){
   document.getElementById("loader").style.display="none";
@@ -3907,7 +4048,7 @@ Return ONLY valid JSON:
 {"word":"dictionary headword","type":"part of speech and grammatical properties","meaning":"detailed meaning in ${native}","synonyms":["${target} synonym"],"antonyms":["${target} antonym"],"examples":[{"text":"${target} sentence","phonetic":"pronunciation guide for a ${native} speaker","translation":"${native} translation"}],"expressions":[{"text":"${target} idiom or phrase","phonetic":"pronunciation guide","translation":"meaning in ${native}","exampleText":"${target} example sentence","examplePhonetic":"pronunciation guide","exampleTranslation":"${native} translation"}]}`;
 
   try{
-    const parsedData=await callGeminiJSON(promptText,{apiKey,epoch,validate:validateWordPayload});
+    const parsedData=await callGeminiJSON(promptText,{apiKey,epoch,validate:validateWordPayload,schema:GEMINI_SCHEMAS.word});
     if(epoch!==appDataEpoch||requestId!==mainRequestId)return;
     await VocVocData.saveAndTouch(parsedData,word,()=>assertRequestContext(epoch));
     if(epoch!==appDataEpoch||requestId!==mainRequestId)return;
@@ -3920,7 +4061,9 @@ Return ONLY valid JSON:
 }
 
 const GEMINI_MODELS=["gemini-3.8-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite"];
-const GEMINI_TIMEOUT_MS=15000;
+// Limits are one object so tests can shorten them. timeoutMs: one request; dailyBudgetMs: the whole Daily run (all attempts and models);
+// minSliceMs: do not start another request with less budget than this left.
+const GEMINI_LIMITS={timeoutMs:15000,dailyBudgetMs:45000,minSliceMs:500};
 let appDataEpoch=0,mainRequestId=0,relatedRequestId=0,dailyBusy=false;
 const geminiControllers=new Set();
 function invalidateAsyncWork(){
@@ -3947,49 +4090,90 @@ function validateWordPayload(data,{meaning=true}={}){
     examples:(data.examples||[]).filter(x=>x&&typeof x==="object"),
     expressions:(data.expressions||[]).filter(x=>x&&typeof x==="object")};
 }
-async function callGeminiJSON(promptText,{validate=value=>value,epoch=appDataEpoch,apiKey=VocVocSecrets.getApiKey()}={}){
+const GEMINI_ENDPOINT="https://generativelanguage.googleapis.com/v1beta/models/";
+// Printable ASCII without spaces: anything else can never be a valid key, and would make fetch throw while reading the header.
+const GEMINI_KEY_SHAPE=/^[\x21-\x7e]+$/;
+const geminiSchemaRefused=new Set(); // models that rejected a structured-output schema this session: they get plain JSON mode
+// Structured output (generationConfig.responseSchema). The shapes mirror validateWordPayload; the client still validates every response.
+const GEMINI_TEXT={type:"STRING"},GEMINI_TEXTS={type:"ARRAY",items:GEMINI_TEXT};
+const GEMINI_WORD_SCHEMA={type:"OBJECT",required:["word","meaning"],properties:{
+  word:GEMINI_TEXT,type:GEMINI_TEXT,meaning:GEMINI_TEXT,synonyms:GEMINI_TEXTS,antonyms:GEMINI_TEXTS,
+  examples:{type:"ARRAY",items:{type:"OBJECT",required:["text","translation"],properties:{text:GEMINI_TEXT,phonetic:GEMINI_TEXT,translation:GEMINI_TEXT}}},
+  expressions:{type:"ARRAY",items:{type:"OBJECT",required:["text","translation"],properties:{text:GEMINI_TEXT,phonetic:GEMINI_TEXT,translation:GEMINI_TEXT,exampleText:GEMINI_TEXT,examplePhonetic:GEMINI_TEXT,exampleTranslation:GEMINI_TEXT}}}}};
+const GEMINI_SCHEMAS={
+  word:GEMINI_WORD_SCHEMA,
+  words:{type:"OBJECT",required:["words"],properties:{words:{type:"ARRAY",items:GEMINI_WORD_SCHEMA}}},
+  headword:{type:"OBJECT",required:["word"],properties:{word:GEMINI_TEXT}}
+};
+// Map an HTTP failure to one localized message and to whether trying another model could help.
+function geminiFailure(status,body){
+  const info=body?.error||{},reasons=(Array.isArray(info.details)?info.details:[]).map(item=>String(item?.reason||"")).join(" ");
+  if([401,403].includes(status)||(status===400&&(/API_KEY/i.test(reasons)||/api.?key|api_key/i.test(String(info.message||"")))))
+    return {key:"invalidApiKey",terminal:true};                        // missing/invalid/leaked key, or a restriction that blocks this site
+  if(status===429)return {key:"geminiQuota",terminal:false};             // rate limit or quota: another model may still answer
+  if(status===400)return {key:"geminiUnavailable",terminal:true,rejected:true}; // our request was refused: other models will refuse it too
+  return {key:"geminiUnavailable",terminal:false};                       // 404 unknown model, 5xx, ...: try the next model
+}
+function geminiError(key,details={}){return Object.assign(new Error(t(key)),{kind:key},details);}
+async function geminiRequest(model,promptText,{apiKey,schema,validate,epoch,timeoutMs}){
+  const controller=new AbortController();geminiControllers.add(controller);
+  let timer;
+  try{
+    const run=async()=>{
+      const generationConfig={responseMimeType:"application/json"};
+      if(schema)generationConfig.responseSchema=schema;
+      const response=await fetch(`${GEMINI_ENDPOINT}${model}:generateContent`,{
+        method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":apiKey},signal:controller.signal,
+        body:JSON.stringify({contents:[{parts:[{text:promptText}]}],generationConfig})
+      });
+      if(!response.ok){
+        const failure=geminiFailure(response.status,await response.json().catch(()=>({})));
+        // A 400 that is not about the key, while a schema was sent: the model may not accept this schema.
+        throw geminiError(failure.key,{terminal:failure.terminal,schemaRefused:!!(schema&&failure.rejected)});
+      }
+      const data=await response.json().catch(()=>{throw geminiError("invalidGeminiResponse");});
+      const parts=data?.candidates?.[0]?.content?.parts||[];
+      if(!Array.isArray(parts))throw geminiError("invalidGeminiResponse");
+      const raw=parts.map(part=>typeof part?.text==="string"?part.text:"").join("").trim();
+      if(!raw)throw geminiError("noGeminiResponse");
+      let parsed;
+      try{parsed=JSON.parse(raw.replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/, ""));}
+      catch(_){throw geminiError("invalidGeminiResponse");}
+      if(!parsed||typeof parsed!=="object")throw geminiError("invalidGeminiResponse");
+      assertRequestContext(epoch);return validate(parsed);
+    };
+    const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>{
+      reject(geminiError("geminiTimeout"));controller.abort();
+    },timeoutMs);});
+    return await Promise.race([run(),timeout]);
+  }finally{clearTimeout(timer);geminiControllers.delete(controller);}
+}
+// Models are tried in GEMINI_MODELS order. `deadline` (absolute ms) caps the whole call, e.g. a Daily run.
+async function callGeminiJSON(promptText,{validate=value=>value,epoch=appDataEpoch,apiKey=VocVocSecrets.getApiKey(),schema=null,deadline=Infinity}={}){
   if(!apiKey)throw new Error(t("apiNeeded"));
+  if(!GEMINI_KEY_SHAPE.test(apiKey))throw new Error(t("invalidApiKey"));
   if(navigator.onLine===false)throw new Error(pwaText("offline"));
-  let lastError=null;
+  const left=()=>deadline-Date.now();
+  let lastError=null,quotaError=null;
   for(const model of GEMINI_MODELS){
-    assertRequestContext(epoch);
-    const controller=new AbortController();geminiControllers.add(controller);
-    let timer;
-    try{
-      const attempt=async()=>{
-        const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,{
-          method:"POST",headers:{"Content-Type":"application/json"},signal:controller.signal,
-          body:JSON.stringify({contents:[{parts:[{text:promptText}]}],generationConfig:{responseMimeType:"application/json"}})
-        });
-        if(!response.ok){
-          const failure=await response.json().catch(()=>({}));
-          const invalidKey=[401,403].includes(response.status)||
-            (response.status===400&&/api.?key|api_key/i.test(String(failure.error?.message||"")));
-          const error=new Error(t(invalidKey?"invalidApiKey":response.status===429?"geminiQuota":"geminiUnavailable"));
-          error.terminal=[400,401,403].includes(response.status);throw error;
-        }
-        const data=await response.json().catch(()=>{throw new Error(t("invalidGeminiResponse"));});
-        const parts=data?.candidates?.[0]?.content?.parts||[];
-        if(!Array.isArray(parts))throw new Error(t("invalidGeminiResponse"));
-        const raw=parts.map(part=>typeof part?.text==="string"?part.text:"").join("").trim();
-        if(!raw)throw new Error(t("noGeminiResponse"));
-        let parsed;
-        try{parsed=JSON.parse(raw.replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/, ""));}
-        catch(_){throw new Error(t("invalidGeminiResponse"));}
-        if(!parsed||typeof parsed!=="object")throw new Error(t("invalidGeminiResponse"));
-        assertRequestContext(epoch);return validate(parsed);
-      };
-      const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>{
-        reject(new Error(t("geminiTimeout")));controller.abort();
-      },GEMINI_TIMEOUT_MS);});
-      return await Promise.race([attempt(),timeout]);
-    }catch(error){
+    for(const useSchema of schema&&!geminiSchemaRefused.has(model)?[true,false]:[false]){
       assertRequestContext(epoch);
-      lastError=error instanceof TypeError?new Error(t("connectionError")):error;
-      if(error.terminal||error instanceof TypeError)throw lastError;
-    }finally{clearTimeout(timer);geminiControllers.delete(controller);}
+      if(left()<GEMINI_LIMITS.minSliceMs)throw geminiError("geminiBudget");
+      try{
+        return await geminiRequest(model,promptText,{apiKey,schema:useSchema?schema:null,validate,epoch,timeoutMs:Math.min(GEMINI_LIMITS.timeoutMs,left())});
+      }catch(error){
+        assertRequestContext(epoch);
+        if(error instanceof TypeError)throw new Error(t("connectionError"));
+        if(left()<=0)throw geminiError("geminiBudget");
+        if(error.schemaRefused){geminiSchemaRefused.add(model);continue;} // same model again, plain JSON mode
+        if(error.terminal)throw error;
+        lastError=error;if(error.kind==="geminiQuota")quotaError=error;
+        break;                                                           // next model
+      }
+    }
   }
-  throw lastError||new Error(t("noGeminiResponse"));
+  // Every model failed: a quota/rate-limit answer is the most useful one to show (retrying later helps).
+  throw quotaError||lastError||new Error(t("noGeminiResponse"));
 }
 function showDailyLoading(){const o=document.getElementById("dailyLoadingOverlay");if(o)o.classList.add("show");const w=document.getElementById("dailyLoadingWord");const c=document.getElementById("dailyLoadingCount");if(w)w.textContent="•••";if(c)c.textContent="";}
 function updateDailyLoadingWord(word,current,total=10){
@@ -4049,10 +4233,15 @@ async function addDailyWords(){
     // Gemini bazen eksik, tekrar veya History'de olan kelimeler döndürebilir.
     // Bu yüzden 10 benzersiz YENİ kelime tamamlanana kadar otomatik ek istek yapıyoruz.
     const maxAttempts=5;
+    // Network or Gemini trouble must not keep the user waiting: the whole run (every attempt and model) shares one time budget.
+    const deadline=Date.now()+GEMINI_LIMITS.dailyBudgetMs;
 
     for(let attempt=1; attempt<=maxAttempts && fresh.length<target; attempt++){
       const missing=target-fresh.length;
-      const forbidden=[...blocked].filter(Boolean).slice(-100).join(", ");
+      // The prompt lists at most 100 words. `blocked` is not in recency order (History newest-first, then
+      // archived, then words accepted during this run appended last), so rank explicitly: words accepted in
+      // this run (must never repeat), then History newest-first, then archived. Everything stays blocked locally.
+      const forbidden=[...new Set([...fresh.map(data=>normalizeHistoryKey(data.word)),...blocked])].filter(Boolean).slice(0,100).join(", ");
 
       const r=await callGeminiJSON(
         `You are a ${targetLanguage} language teacher. Generate EXACTLY ${missing} different NEW useful ${targetLanguage} words for a ${level} learner. `+
@@ -4062,7 +4251,7 @@ async function addDailyWords(){
         `{"words":[{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${nativeLanguage}","synonyms":["${targetLanguage} synonym"],"antonyms":["${targetLanguage} antonym"],`+
         `"examples":[{"text":"${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"}],`+
         `"expressions":[{"text":"${targetLanguage} phrase","phonetic":"pronunciation","translation":"meaning in ${nativeLanguage}","exampleText":"${targetLanguage} example","examplePhonetic":"pronunciation","exampleTranslation":"${nativeLanguage} translation"}]}]}`,
-        {epoch,validate:value=>{if(!Array.isArray(value.words))throw new Error(t("invalidGeminiResponse"));
+        {epoch,deadline,schema:GEMINI_SCHEMAS.words,validate:value=>{if(!Array.isArray(value.words))throw new Error(t("invalidGeminiResponse"));
           return {words:value.words.map(data=>validateWordPayload(data))};}}
       );
 
@@ -4124,10 +4313,10 @@ async function randomWord(){
   const loader=document.getElementById("loader"),area=document.getElementById("contentArea");
   loader.style.display="block";
   const level=VocVocData.getSettings().difficulty||"A1-A2";
-  const avoid=[...getHistory(),...getArchivedWords().map(x=>x.word)].slice(-100).join(", ");
+  const avoid=[...getHistory(),...getArchivedWords().map(x=>x.word)].slice(0,100).join(", ");
   const target=languageNameForPrompt(getTargetLanguageCode());
   try{
-    const r=await callGeminiJSON(`Choose ONE useful ${target} word for a ${level} learner. Avoid these words: ${avoid||"(none)"}. Return the dictionary headword without an article/determiner. Return only {"word":"headword"} JSON.`,{epoch,validate:data=>validateWordPayload(data,{meaning:false})});
+    const r=await callGeminiJSON(`Choose ONE useful ${target} word for a ${level} learner. Avoid these words: ${avoid||"(none)"}. Return the dictionary headword without an article/determiner. Return only {"word":"headword"} JSON.`,{epoch,schema:GEMINI_SCHEMAS.headword,validate:data=>validateWordPayload(data,{meaning:false})});
     if(epoch!==appDataEpoch||requestId!==mainRequestId)return;
     if(!r.word)throw new Error(t("noWordGenerated"));
     r.word=normalizeGeneratedHeadword(r.word);
@@ -4176,7 +4365,24 @@ function toggleFlipFilter(group){
   if(group!=="includeMemorized"&&group!=="includeOther")return;
   flipSession[group]=!flipSession[group];
   if(!flipSession.includeMemorized&&!flipSession.includeOther){closeFlip();return;}
-  if(refreshFlipCards())renderFlip();
+  if(refreshFlipCards()){renderFlip();refocusFlip(`[data-flip-filter="${group==="includeMemorized"?"memorized":"other"}"]`);}
+}
+// renderFlip rebuilds the dialog: put keyboard focus back on the control that was in use.
+function refocusFlip(selector){document.querySelector(`#flipOverlay ${selector}`)?.focus({preventScroll:true});}
+const VISIBLE_FLIP_CARD='[data-flip-face]:not([inert]) .flip-card';
+async function toggleFlipMemorized(){
+  const session=flipSession;if(!session||session.dragging)return;
+  // A card slide lasts ~180 ms; a key pressed meanwhile waits for it instead of being swallowed.
+  for(let waited=0;session.sliding&&waited<1000;waited+=50)await new Promise(resolve=>setTimeout(resolve,50));
+  if(flipSession!==session||session.sliding)return;
+  const word=session.cards[session.index]?.word;if(!word||isArchivedWord(word))return;
+  const wasMemorized=getMemorizedWords().some(w=>normalizeHistoryKey(w)===normalizeHistoryKey(word));
+  session.sliding=true;
+  try{await VocVocData.setStatus(word,wasMemorized?"active":"memorized");}
+  catch(error){session.sliding=false;renderFlip();reportStorageError(error);return;}
+  session.sliding=false;renderHistory();renderAllLocal();announceStatus(wasMemorized?"forgetCue":"rememberCue");
+  if(flipSession!==session||!refreshFlipCards())return;
+  renderFlip();refocusFlip("[data-flip-status]");
 }
 function enableFlipMemorizeDrag(){
   const area=document.getElementById("flipOverlay");
@@ -4288,9 +4494,9 @@ function renderFlip(){
     <button type="button" class="word-popup-close ui-panel-close" onclick="closeFlip()" aria-label="${esc(t("close"))}">×</button>
     <div class="word-panel-scroll-body ui-panel-body">
       <div class="flip-stage">
-        <button type="button" class="flip-nav ui-icon-button" onclick="moveFlip(-1)" aria-label="${esc(t("previousCard"))}" ${cards.length<2?'disabled':''}>‹</button>
-        <button type="button" id="${back?'flipCardBack':'flipCard'}" class="flip-card ${back?'flip-meaning':'flip-word'}" onclick="toggleFlip()" aria-pressed="${flipped}"><span class="${back?'flip-meaning-text':'flip-word-text'}">${esc(back?card.meaning:card.word)}</span></button>
-        <button type="button" class="flip-nav ui-icon-button" onclick="moveFlip(1)" aria-label="${esc(t("nextCard"))}" ${cards.length<2?'disabled':''}>›</button>
+        <button type="button" class="flip-nav ui-icon-button" onclick="moveFlip(-1)" data-flip-nav="-1" aria-label="${esc(t("previousCard"))}" ${cards.length<2?'disabled':''}>‹</button>
+        <button type="button" id="${back?'flipCardBack':'flipCard'}" class="flip-card ${back?'flip-meaning':'flip-word'}" onclick="toggleFlip()" aria-pressed="${flipped}"><span class="${back?'flip-meaning-text':'flip-word-text'}"${back?'':langAttr()}>${esc(back?card.meaning:card.word)}</span></button>
+        <button type="button" class="flip-nav ui-icon-button" onclick="moveFlip(1)" data-flip-nav="1" aria-label="${esc(t("nextCard"))}" ${cards.length<2?'disabled':''}>›</button>
       </div>
     </div>
   </div>`;
@@ -4302,7 +4508,8 @@ function renderFlip(){
     <div class="word-popup-shell flip-shell">
     <div id="flipRotator" class="flip-rotator${flipped?' is-flipped':''}">${face(false)}${face(true)}</div>
     <div class="flip-drag-cue" aria-live="polite"></div>
-  </div></div>`;
+  </div>
+  <div class="flip-actions"><button type="button" class="ui-button ${isMemorized?"ui-button-secondary":"ui-button-success"}" data-flip-status="${isMemorized?"forget":"remember"}" aria-keyshortcuts="M">${esc(t(isMemorized?"forgetCue":"rememberCue"))}</button></div></div>`;
   const area=document.getElementById("flipOverlay");
   area.flipWordResizeObserver?.disconnect();
   area.flipWordResizeObserver=new ResizeObserver(fitFlipWord);
@@ -4325,7 +4532,7 @@ function toggleFlip(){
 }
 async function moveFlip(direction){
   if(!flipSession||flipSession.cards.length<2||flipSession.sliding||flipSession.dragging)return;
-  const session=flipSession;
+  const session=flipSession,onNav=document.activeElement?.closest?.("[data-flip-nav]");
   const shell=document.querySelector("#flipOverlay .flip-shell");
   const animate=shell?.animate&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   session.sliding=true;
@@ -4341,6 +4548,7 @@ async function moveFlip(direction){
     session.index=(session.index+direction+session.cards.length)%session.cards.length;
     session.flipped=false;
     renderFlip();
+    refocusFlip(onNav?`[data-flip-face="front"] [data-flip-nav="${onNav.dataset.flipNav}"]`:`[data-flip-face="front"] .flip-card`);
     const next=document.querySelector("#flipOverlay .flip-shell");
     if(animate&&next?.animate){
       const enter=next.animate([
@@ -4369,6 +4577,8 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape"){e.preventDefault();closeFlip();}
   else if(e.key==="ArrowRight"){e.preventDefault();moveFlip(1);}
   else if(e.key==="ArrowLeft"){e.preventDefault();moveFlip(-1);}
+  else if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&(e.key==="f"||e.key==="F")){e.preventDefault();toggleFlip();}
+  else if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&(e.key==="m"||e.key==="M")){e.preventDefault();toggleFlipMemorized();}
 });
 
 let quizSession=null;
@@ -4437,7 +4647,7 @@ function renderQuizWrongBadges(){
   if(!words.length)return "";
   return `<div class="quiz-wrong-v91"><div class="quiz-wrong-title">${t("wrongSelected")}</div><div class="quiz-wrong-badges">${words.map(w=>{
     const enc=encodeDomText(w);
-    return `<button class="quiz-wrong-badge ui-pill" type="button" data-word="${enc}">${esc(w)}</button>`;
+    return `<button class="quiz-wrong-badge ui-pill" type="button"${langAttr()} data-word="${enc}">${esc(w)}</button>`;
   }).join("")}</div></div>`;
 }
 function openQuizHistoryDetail(word){
@@ -4470,7 +4680,15 @@ function renderQuizResult(){
     </div>
   </div>`;
 }
-function renderQuizQuestion(){
+// After each question the options are replaced: keep keyboard users in the quiz instead of dropping focus to the page start.
+function focusQuizControl(){
+  if(!quizSession)return;
+  const area=document.getElementById("contentArea"),active=document.activeElement;
+  if(active&&active!==document.body&&!area.contains(active)&&!active.closest(".study-actions"))return;
+  area.querySelector(".quiz-option:not([disabled]),.quiz-restart-btn")?.focus({preventScroll:true});
+}
+function renderQuizQuestion(){renderQuizQuestionContent();focusQuizControl();}
+function renderQuizQuestionContent(){
   if(!quizSession)return;
   const area=document.getElementById("contentArea");
   if(quizSession.index>=quizSession.questions.length){
@@ -4491,7 +4709,7 @@ function renderQuizQuestion(){
       <div class="quiz-word-v91">${esc(masked||meaning||t("chooseWord"))}</div>
       <div class="quiz-count-v91">${t("wordLabel")} ${quizSession.index+1}/10</div>
     </div>
-    <div class="quiz-options">${options.map(x=>`<button class="quiz-option" type="button" data-quiz-answer="${encodeDomText(x)}">${esc(x)}</button>`).join("")}</div>
+    <div class="quiz-options">${options.map(x=>`<button class="quiz-option" type="button"${langAttr()} data-quiz-answer="${encodeDomText(x)}">${esc(x)}</button>`).join("")}</div>
     ${renderQuizWrongBadges()}
   </div>`;
 }
@@ -4500,6 +4718,7 @@ function answerQuiz(choice){
   quizSession.answered=true;
   const q=quizSession.questions[quizSession.index];
   const correct=normalizeHistoryKey(choice)===normalizeHistoryKey(q.word);
+  window.announce?.(correct?t("correct"):`${t("wrong")}: ${q.word}`);
   if(correct){
     quizSession.score++;
   }else{
@@ -4570,9 +4789,25 @@ function stripFrenchArticleFromGeneratedWord(value){
     .replace(/^(?:(?:de\s+la|les|une|des|le|la|un|du)\s+|(?:de\s+)?l['’]\s*)/iu,"")
     .trim();
 }
+// Normalizing a word (lower-casing for the language, stripping accents) runs several times per word on every render: remember results.
+const historyKeyCache=new Map();let historyKeyLang="";
 function normalizeHistoryKey(v){
-  return String(v||"").trim().toLocaleLowerCase(getTargetLanguageCode())
-    .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  const lang=getTargetLanguageCode(),raw=typeof v==="string"?v:String(v||"");
+  if(lang!==historyKeyLang){historyKeyCache.clear();historyKeyLang=lang;}
+  let key=historyKeyCache.get(raw);
+  if(key===undefined){
+    key=raw.trim().toLocaleLowerCase(lang).normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    if(historyKeyCache.size>=50000)historyKeyCache.clear();
+    historyKeyCache.set(raw,key);
+  }
+  return key;
+}
+// String.localeCompare(locale, options) builds a new collator for every comparison; sorting thousands of words used to pay that n log n times.
+let sortCollatorLang="",sortCollatorInstance=null;
+function sortCollator(){
+  const lang=getTargetLanguageCode();
+  if(!sortCollatorInstance||lang!==sortCollatorLang){sortCollatorLang=lang;sortCollatorInstance=new Intl.Collator(lang,{sensitivity:"base"});}
+  return sortCollatorInstance;
 }
 function getHistoryWordData(word){
   const stored=VocVocData.getWordByText(word);
@@ -4617,13 +4852,17 @@ const swipeFooterMutationObserver=new MutationObserver(()=>{
   });
   scheduleSwipeFooterFit();
 });
-swipeFooterMutationObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
+// Footers only exist in opened main cards and in the two word dialogs; the chips, the archive list, toasts etc. need no watching.
+for(const id of ["contentArea","historyDetails","relatedWordPopup"]){
+  const container=document.getElementById(id);
+  if(container)swipeFooterMutationObserver.observe(container,{childList:true,subtree:true,characterData:true});
+}
 // Typography settings can change without replacing a card.
 new MutationObserver(scheduleSwipeFooterFit).observe(document.documentElement,
   {attributes:true,attributeFilter:["data-font-size"]});
 
 function renderSwipeFooter(isMemorized=false,{dismissLeft=false}={}){
-  return `<div class="swipe-footer" aria-label="Swipe actions">
+  return `<div class="swipe-footer" aria-label="${esc(t("swipeActions"))}">
     <div class="swipe-footer-slot swipe-footer-left">${dismissLeft?t("swipeLeftDismiss"):(isMemorized?t("swipeLeftForget"):"")}</div>
     <div class="swipe-footer-slot swipe-footer-center"></div>
     <div class="swipe-footer-slot swipe-footer-right">${isMemorized?"":t("swipeRightMem")}</div>
@@ -4648,12 +4887,12 @@ function renderWordPanel(area,data,options={}){
     <div class="card word-detail-panel ui-panel ${swipe?'history-detail-card':''}">
       <div class="word-panel-fixed-header ui-panel-header">
         <div class="word-header">
-          <div class="word-title ui-panel-title">${esc(data.word)}</div>
+          <div class="word-title ui-panel-title" id="${area.id}Title"${langAttr()}>${esc(data.word)}</div>
           <div class="word-type">${esc(data.type||"")}</div>
         </div>
         <div class="word-panel-header-actions">
           ${canArchive?`<button type="button" class="card-archive-btn" data-archive-card-word="${encodeDomText(data.word||"")}" title="${archiveActionLabel()}" aria-label="${archiveActionLabel()}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h16v12H4z"></path><path d="M3 4.5h18v3H3z"></path><path d="M9 11.5h6"></path></svg></button>`:""}
-          <button type="button" class="word-popup-close ui-panel-close" onclick="event.stopPropagation();${closeAction}" aria-label="Close">×</button>
+          <button type="button" class="word-popup-close ui-panel-close" onclick="event.stopPropagation();${closeAction}" aria-label="${esc(t("close"))}">×</button>
         </div>
       </div>
       <div class="word-panel-scroll-body ui-panel-body">
@@ -4662,6 +4901,7 @@ function renderWordPanel(area,data,options={}){
       </div>
     </div>
   </div>`;
+  area.setAttribute("aria-labelledby",`${area.id}Title`);
   return area.querySelector(".word-detail-panel");
 }
 
@@ -4699,7 +4939,7 @@ function toggleHistoryDetail(word){
     swipe:true,
     isMemorized:isMem,
     closeAction:"closeHistoryDetail()",
-    footer:renderSwipeFooter(isMem)
+    footer:renderStatusActions(data.word,isMem)+renderSwipeFooter(isMem)
   });
   enableHistorySwipe(card,word,isMem);
 }
@@ -4713,21 +4953,22 @@ async function getWordDataForPopup(word,epoch=appDataEpoch){
   const target=languageNameForPrompt(getTargetLanguageCode());
   const native=languageNameForPrompt(getNativeLanguageCode());
   const r=await callGeminiJSON(`You are a ${target} language teacher. Create a complete ${difficulty} vocabulary card for "${word}". Explanations and translations must be in ${native}. The "word" must be the dictionary headword without an article/determiner. Grammar and gender belong in "type". Pronunciation guidance should be useful to a native ${native} speaker. Return only JSON:
-{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${native}","synonyms":["${target} synonym"],"antonyms":["${target} antonym"],"examples":[{"text":"${target} sentence","phonetic":"pronunciation","translation":"${native} translation"}],"expressions":[{"text":"${target} phrase","phonetic":"pronunciation","translation":"meaning in ${native}","exampleText":"${target} example","examplePhonetic":"pronunciation","exampleTranslation":"${native} translation"}]}`,{epoch,validate:validateWordPayload});
+{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${native}","synonyms":["${target} synonym"],"antonyms":["${target} antonym"],"examples":[{"text":"${target} sentence","phonetic":"pronunciation","translation":"${native} translation"}],"expressions":[{"text":"${target} phrase","phonetic":"pronunciation","translation":"meaning in ${native}","exampleText":"${target} example","examplePhonetic":"pronunciation","exampleTranslation":"${native} translation"}]}`,{epoch,schema:GEMINI_SCHEMAS.word,validate:validateWordPayload});
   assertRequestContext(epoch);
-  if(!r?.word)throw new Error("Word details could not be loaded.");
+  if(!r?.word)throw new Error(t("detailsLoadError"));
   r.word=normalizeGeneratedHeadword(r.word);
   localDictionary[String(r.word).toLocaleLowerCase(getTargetLanguageCode())]=r;
   return r;
 }
 function renderPopupStatus(area,word,message,{error=false}={}){
+  area.setAttribute("aria-labelledby",`${area.id}Title`);
   area.innerHTML=`<div class="word-popup-shell" data-panel-mode="status">
     <div class="card word-detail-panel ui-panel">
       <div class="word-panel-fixed-header ui-panel-header">
         <div class="word-header">
-          <div class="word-title ui-panel-title">${esc(word||t("wordFallback"))}</div>
+          <div class="word-title ui-panel-title" id="${area.id}Title"${langAttr()}>${esc(word||t("wordFallback"))}</div>
         </div>
-        <button type="button" class="word-popup-close ui-panel-close" onclick="closeRelatedWordPopup()" aria-label="Close">×</button>
+        <button type="button" class="word-popup-close ui-panel-close" onclick="closeRelatedWordPopup()" aria-label="${esc(t("close"))}">×</button>
       </div>
       <div class="word-panel-scroll-body ui-panel-body">
         <div class="${error?'error-box':'popup-status-text'}">${esc(message)}</div>
@@ -4751,7 +4992,7 @@ async function openRelatedWordPopup(word){
       swipe:true,
       isMemorized:isMem,
       closeAction:"closeRelatedWordPopup()",
-      footer:`${renderSwipeFooter(isMem)}
+      footer:`${renderStatusActions(data.word,isMem)}${renderSwipeFooter(isMem)}
       <div class="related-actions ui-panel-actions">
         <button class="related-add ui-button ui-button-success" type="button" data-add-related-word="${encodeDomText(data.word)}">${t("addToList")}</button>
         <button type="button" class="related-cancel ui-button ui-button-secondary" onclick="closeRelatedWordPopup()">${t("cancel")}</button>
@@ -4766,6 +5007,16 @@ async function openRelatedWordPopup(word){
 document.getElementById("archiveUndoBtn")?.addEventListener("click",undoLastArchive);
 
 document.addEventListener("click",e=>{
+  const cardMemorize=e.target.closest("button[data-card-memorize]");
+  if(cardMemorize){e.preventDefault();memorizeFromCardButton(cardMemorize);return;}
+  const cardDismiss=e.target.closest("button[data-card-dismiss]");
+  if(cardDismiss){e.preventDefault();dismissCardFromButton(cardDismiss);return;}
+  const statusButton=e.target.closest("button[data-word-status]");
+  if(statusButton){e.preventDefault();changeStatusFromButton(statusButton);return;}
+  const moreButton=e.target.closest("button[data-show-more]");
+  if(moreButton){e.preventDefault();showMore(moreButton.dataset.showMore);return;}
+  const flipStatus=e.target.closest("button[data-flip-status]");
+  if(flipStatus){e.preventDefault();toggleFlipMemorized();return;}
   const archiveBtn=e.target.closest(".card-archive-btn[data-archive-card-word]");
   if(archiveBtn){
     e.preventDefault();
@@ -4845,7 +5096,7 @@ async function addRelatedWordToList(word){
 function renderWordDetailBody(data,{showHeader=true}={}){
   const badgeButtons=(items)=>(items||[]).map(x=>{
     const encoded=encodeDomText(x);
-    return `<button class="clickable-badge ui-pill" type="button" data-related-word="${encoded}">${esc(x)}</button>`;
+    return `<button class="clickable-badge ui-pill" type="button" data-related-word="${encoded}"><span${langAttr()}>${esc(x)}</span></button>`;
   }).join("");
 
   const examples=(data.examples||[]).map(ex=>({
@@ -4867,8 +5118,8 @@ function renderWordDetailBody(data,{showHeader=true}={}){
     <div class="section"><div class="section-title">${t("meaning")}</div><p>${esc(data.meaning||"")}</p></div>
     ${data.synonyms?.length?`<details class="fold"><summary>${t("synonyms")}</summary><div class="fold-body badge-list">${badgeButtons(data.synonyms)}</div></details>`:""}
     ${data.antonyms?.length?`<details class="fold"><summary>${t("antonyms")}</summary><div class="fold-body badge-list">${badgeButtons(data.antonyms)}</div></details>`:""}
-    ${examples.length?`<details class="fold"><summary>${t("examples")}</summary><div class="fold-body">${examples.map(ex=>`<div class="example-item"><div class="fr-text">${esc(ex.text)}</div>${ex.phonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(ex.phonetic)}</div>`:""}<div class="tr-text">${esc(ex.translation)}</div></div>`).join("")}</div></details>`:""}
-    ${expressions.length?`<details class="fold"><summary>${t("expressions")}</summary><div class="fold-body">${expressions.map(exp=>`<div class="expression-item"><div class="fr-text">${esc(exp.text)}</div>${exp.phonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(exp.phonetic)}</div>`:""}<div class="tr-text">${esc(exp.translation)}</div>${exp.exampleText?`<div class="expression-example"><div class="fr-text">${esc(exp.exampleText)}</div>${exp.examplePhonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(exp.examplePhonetic)}</div>`:""}<div class="tr-text">${esc(exp.exampleTranslation)}</div></div>`:""}</div>`).join("")}</div></details>`:""}
+    ${examples.length?`<details class="fold"><summary>${t("examples")}</summary><div class="fold-body">${examples.map(ex=>`<div class="example-item"><div class="fr-text"${langAttr()}>${esc(ex.text)}</div>${ex.phonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(ex.phonetic)}</div>`:""}<div class="tr-text">${esc(ex.translation)}</div></div>`).join("")}</div></details>`:""}
+    ${expressions.length?`<details class="fold"><summary>${t("expressions")}</summary><div class="fold-body">${expressions.map(exp=>`<div class="expression-item"><div class="fr-text"${langAttr()}>${esc(exp.text)}</div>${exp.phonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(exp.phonetic)}</div>`:""}<div class="tr-text">${esc(exp.translation)}</div>${exp.exampleText?`<div class="expression-example"><div class="fr-text"${langAttr()}>${esc(exp.exampleText)}</div>${exp.examplePhonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(exp.examplePhonetic)}</div>`:""}<div class="tr-text">${esc(exp.exampleTranslation)}</div></div>`:""}</div>`).join("")}</div></details>`:""}
   `;
 }
 
@@ -4972,13 +5223,25 @@ function enableWordPopupSwipe(card,word,isMemorized,actions){
     cleanup();
   },{passive:true});
 }
+// A card's details (synonyms, examples, idioms, buttons, swipe hint) are built the first time it is opened. Building them for every
+// word up front made start-up and every re-render scale with the size of the list, and the DOM about five times larger.
+function fillMainWordBody(card,body){
+  if(!body||body.dataset.filled)return;
+  const encoded=card.dataset.word||"",word=decodeDomText(encoded),data=getHistoryWordData(word)||{word};
+  body.innerHTML=`<div class="shared-detail-content">${renderWordDetailBody(data,{showHeader:false})}</div>
+        ${renderCardActions(encoded)}
+        ${renderSwipeFooter(false,{dismissLeft:true})}`;
+  body.dataset.filled="1";
+}
 function toggleMainWordCard(button){
   const card=button.closest(".main-word-card");
   if(!card || card.dataset.didSwipe==="1") return;
   const body=card.querySelector(".main-word-body");
   const opening=body.hidden;
+  if(opening)fillMainWordBody(card,body);
   body.hidden=!opening;
   card.classList.toggle("open",opening);
+  button.setAttribute("aria-expanded",String(opening));
 }
 
 
@@ -5128,6 +5391,8 @@ window.VocVocRegression=Object.freeze({
 });
 
 </script>
+
+<script src="./a11y.js"></script>
 
 <script src="./pwa.js"></script>
 

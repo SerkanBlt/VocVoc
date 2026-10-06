@@ -1,0 +1,912 @@
+{
+  "label": "after",
+  "when": "2026-10-06T15:35:56.237Z",
+  "mix": [
+    50,
+    30,
+    20
+  ],
+  "viewport": "390x844",
+  "results": [
+    {
+      "n": 100,
+      "rate": 1,
+      "startup": {
+        "readyMs": 124.1,
+        "paintedMs": 197.3,
+        "initMs": 27.1,
+        "longTasks": 0,
+        "longTaskMs": 0,
+        "renders": {
+          "history": 1,
+          "content": 1
+        },
+        "renderHistoryMs": 4,
+        "renderAllLocalMs": 6.3,
+        "idbReads": 1
+      },
+      "times": {
+        "renderAllLocal": {
+          "sync": 5.6,
+          "total": 33.6
+        },
+        "renderHistory": {
+          "sync": 1.8,
+          "total": 32.9
+        },
+        "filterNarrow": {
+          "sync": 0.5,
+          "total": 32.8
+        },
+        "filterBroad": {
+          "sync": 1.4,
+          "total": 33.6
+        },
+        "sortAZ": {
+          "sync": 1.9,
+          "total": 33
+        },
+        "popupOpen": {
+          "sync": 9.5,
+          "total": 49.5
+        },
+        "archiveOpen": {
+          "sync": 9.8,
+          "total": 53.6
+        },
+        "quizPoolOnly": {
+          "sync": 0.5,
+          "total": 32.6
+        },
+        "recallPoolOnly": {
+          "sync": 0.2,
+          "total": 33.1
+        },
+        "startTest": {
+          "sync": 1,
+          "total": 33.5
+        },
+        "startRecall": {
+          "sync": 0.7,
+          "total": 33
+        },
+        "setStatusCommit": {
+          "sync": 9.5,
+          "total": 34
+        },
+        "renderAllLocal_withoutFooterObserver": {
+          "sync": 4.7,
+          "total": 33.4
+        },
+        "popupOpen_footerObserverOff": {
+          "sync": 9.9,
+          "total": 52
+        },
+        "popupOpen_scrollLockObserverAlsoOff": {
+          "sync": 3.2,
+          "total": 50.5
+        }
+      },
+      "dom": {
+        "nodes": 1020,
+        "cards": 50,
+        "chips": 80,
+        "footers": 0
+      },
+      "heapMB": 2.1,
+      "nodesMetric": 19745,
+      "errors": [],
+      "wallSeconds": 4.2
+    },
+    {
+      "n": 500,
+      "rate": 1,
+      "startup": {
+        "readyMs": 202.5,
+        "paintedMs": 380.1,
+        "initMs": 54,
+        "longTasks": 2,
+        "longTaskMs": 241,
+        "renders": {
+          "history": 1,
+          "content": 1
+        },
+        "renderHistoryMs": 12.6,
+        "renderAllLocalMs": 14.8,
+        "idbReads": 1
+      },
+      "times": {
+        "renderAllLocal": {
+          "sync": 14.6,
+          "total": 49.9
+        },
+        "renderHistory": {
+          "sync": 7,
+          "total": 34.6
+        },
+        "filterNarrow": {
+          "sync": 1.9,
+          "total": 33.2
+        },
+        "filterBroad": {
+          "sync": 7.4,
+          "total": 33
+        },
+        "sortAZ": {
+          "sync": 7.5,
+          "total": 32.9
+        },
+        "popupOpen": {
+          "sync": 20.5,
+          "total": 61.5
+        },
+        "archiveOpen": {
+          "sync": 29.9,
+          "total": 60.6
+        },
+        "quizPoolOnly": {
+          "sync": 2,
+          "total": 33.5
+        },
+        "recallPoolOnly": {
+          "sync": 0.7,
+          "total": 33.5
+        },
+        "startTest": {
+          "sync": 2.4,
+          "total": 33.9
+        },
+        "startRecall": {
+          "sync": 1.2,
+          "total": 33
+        },
+        "setStatusCommit": {
+          "sync": 41.2,
+          "total": 50.3
+        },
+        "renderAllLocal_withoutFooterObserver": {
+          "sync": 10.6,
+          "total": 51
+        },
+        "popupOpen_footerObserverOff": {
+          "sync": 19.4,
+          "total": 52.6
+        },
+        "popupOpen_scrollLockObserverAlsoOff": {
+          "sync": 3.1,
+          "total": 32.9
+        }
+      },
+      "dom": {
+        "nodes": 2401,
+        "cards": 100,
+        "chips": 400,
+        "footers": 0
+      },
+      "heapMB": 4.1,
+      "nodesMetric": 14362,
+      "errors": [],
+      "wallSeconds": 4.8
+    },
+    {
+      "n": 1000,
+      "rate": 1,
+      "startup": {
+        "readyMs": 309.6,
+        "paintedMs": 376.5,
+        "initMs": 103.3,
+        "longTasks": 2,
+        "longTaskMs": 195,
+        "renders": {
+          "history": 1,
+          "content": 1
+        },
+        "renderHistoryMs": 16.8,
+        "renderAllLocalMs": 22.9,
+        "idbReads": 1
+      },
+      "times": {
+        "renderAllLocal": {
+          "sync": 13.1,
+          "total": 32.6
+        },
+        "renderHistory": {
+          "sync": 5.9,
+          "total": 32.6
+        },
+        "filterNarrow": {
+          "sync": 1.9,
+          "total": 32.6
+        },
+        "filterBroad": {
+          "sync": 7.4,
+          "total": 34.5
+        },
+        "sortAZ": {
+          "sync": 8.4,
+          "total": 33.8
+        },
+        "popupOpen": {
+          "sync": 20.8,
+          "total": 63.2
+        },
+        "archiveOpen": {
+          "sync": 37.2,
+          "total": 86.3
+        },
+        "quizPoolOnly": {
+          "sync": 4.1,
+          "total": 34
+        },
+        "recallPoolOnly": {
+          "sync": 1.7,
+          "total": 33.1
+        },
+        "startTest": {
+          "sync": 5.7,
+          "total": 33.5
+        },
+        "startRecall": {
+          "sync": 2.2,
+          "total": 33
+        },
+        "setStatusCommit": {
+          "sync": 54.1,
+          "total": 67.2
+        },
+        "renderAllLocal_withoutFooterObserver": {
+          "sync": 12.2,
+          "total": 32.4
+        },
+        "popupOpen_footerObserverOff": {
+          "sync": 17.9,
+          "total": 56.6
+        },
+        "popupOpen_scrollLockObserverAlsoOff": {
+          "sync": 3.1,
+          "total": 34
+        }
+      },
+      "dom": {
+        "nodes": 2702,
+        "cards": 100,
+        "chips": 400,
+        "footers": 0
+      },
+      "heapMB": 6.4,
+      "nodesMetric": 14964,
+      "errors": [],
+      "wallSeconds": 4.9
+    },
+    {
+      "n": 2000,
+      "rate": 1,
+      "startup": {
+        "readyMs": 395.7,
+        "paintedMs": 481.4,
+        "initMs": 138.4,
+        "longTasks": 4,
+        "longTaskMs": 438,
+        "renders": {
+          "history": 1,
+          "content": 1
+        },
+        "renderHistoryMs": 22.5,
+        "renderAllLocalMs": 37.6,
+        "idbReads": 1
+      },
+      "times": {
+        "renderAllLocal": {
+          "sync": 29.1,
+          "total": 67.2
+        },
+        "renderHistory": {
+          "sync": 7.8,
+          "total": 33.5
+        },
+        "filterNarrow": {
+          "sync": 2.1,
+          "total": 34.4
+        },
+        "filterBroad": {
+          "sync": 5.9,
+          "total": 32.3
+        },
+        "sortAZ": {
+          "sync": 6.8,
+          "total": 33.6
+        },
+        "popupOpen": {
+          "sync": 18.9,
+          "total": 59.3
+        },
+        "archiveOpen": {
+          "sync": 45,
+          "total": 107.1
+        },
+        "quizPoolOnly": {
+          "sync": 4.9,
+          "total": 32.9
+        },
+        "recallPoolOnly": {
+          "sync": 2.5,
+          "total": 34
+        },
+        "startTest": {
+          "sync": 6.5,
+          "total": 35
+        },
+        "startRecall": {
+          "sync": 2.6,
+          "total": 33.2
+        },
+        "setStatusCommit": {
+          "sync": 163.5,
+          "total": 183.5
+        },
+        "renderAllLocal_withoutFooterObserver": {
+          "sync": 18.1,
+          "total": 49.7
+        },
+        "popupOpen_footerObserverOff": {
+          "sync": 17.9,
+          "total": 61.1
+        },
+        "popupOpen_scrollLockObserverAlsoOff": {
+          "sync": 3.5,
+          "total": 50.6
+        }
+      },
+      "dom": {
+        "nodes": 3302,
+        "cards": 100,
+        "chips": 400,
+        "footers": 0
+      },
+      "heapMB": 11.1,
+      "nodesMetric": 16164,
+      "errors": [],
+      "wallSeconds": 5.8
+    },
+    {
+      "n": 5000,
+      "rate": 1,
+      "startup": {
+        "readyMs": 795.8,
+        "paintedMs": 864.7,
+        "initMs": 345.7,
+        "longTasks": 4,
+        "longTaskMs": 854,
+        "renders": {
+          "history": 1,
+          "content": 1
+        },
+        "renderHistoryMs": 39.3,
+        "renderAllLocalMs": 66,
+        "idbReads": 1
+      },
+      "times": {
+        "renderAllLocal": {
+          "sync": 36.4,
+          "total": 66.5
+        },
+        "renderHistory": {
+          "sync": 10.2,
+          "total": 34.9
+        },
+        "filterNarrow": {
+          "sync": 3.2,
+          "total": 33.7
+        },
+        "filterBroad": {
+          "sync": 6.8,
+          "total": 32.6
+        },
+        "sortAZ": {
+          "sync": 8.1,
+          "total": 34.8
+        },
+        "popupOpen": {
+          "sync": 12.5,
+          "total": 45.4
+        },
+        "archiveOpen": {
+          "sync": 57.8,
+          "total": 129.2
+        },
+        "quizPoolOnly": {
+          "sync": 12.6,
+          "total": 33.9
+        },
+        "recallPoolOnly": {
+          "sync": 4.5,
+          "total": 32.7
+        },
+        "startTest": {
+          "sync": 15.7,
+          "total": 35.1
+        },
+        "startRecall": {
+          "sync": 5.5,
+          "total": 33.1
+        },
+        "setStatusCommit": {
+          "sync": 282.8,
+          "total": 299.4
+        },
+        "renderAllLocal_withoutFooterObserver": {
+          "sync": 34.6,
+          "total": 66.5
+        },
+        "popupOpen_footerObserverOff": {
+          "sync": 13.2,
+          "total": 47.6
+        },
+        "popupOpen_scrollLockObserverAlsoOff": {
+          "sync": 5.8,
+          "total": 49.3
+        }
+      },
+      "dom": {
+        "nodes": 3303,
+        "cards": 100,
+        "chips": 400,
+        "footers": 0
+      },
+      "heapMB": 25.1,
+      "nodesMetric": 16166,
+      "errors": [],
+      "wallSeconds": 7.3
+    },
+    {
+      "n": 100,
+      "rate": 4,
+      "startup": {
+        "readyMs": 256.4,
+        "paintedMs": 470,
+        "initMs": 44.9,
+        "longTasks": 2,
+        "longTaskMs": 297,
+        "renders": {
+          "history": 1,
+          "content": 1
+        },
+        "renderHistoryMs": 14.6,
+        "renderAllLocalMs": 31.4,
+        "idbReads": 1
+      },
+      "times": {
+        "renderAllLocal": {
+          "sync": 32.9,
+          "total": 116.4
+        },
+        "renderHistory": {
+          "sync": 8.2,
+          "total": 32.9
+        },
+        "filterNarrow": {
+          "sync": 2.7,
+          "total": 33.8
+        },
+        "filterBroad": {
+          "sync": 8.5,
+          "total": 49
+        },
+        "sortAZ": {
+          "sync": 11,
+          "total": 33.4
+        },
+        "popupOpen": {
+          "sync": 41.8,
+          "total": 89.7
+        },
+        "archiveOpen": {
+          "sync": 49.7,
+          "total": 97
+        },
+        "quizPoolOnly": {
+          "sync": 1.7,
+          "total": 32.3
+        },
+        "recallPoolOnly": {
+          "sync": 1.2,
+          "total": 33.8
+        },
+        "startTest": {
+          "sync": 5.2,
+          "total": 33.3
+        },
+        "startRecall": {
+          "sync": 3.4,
+          "total": 33.4
+        },
+        "setStatusCommit": {
+          "sync": 20.1,
+          "total": 34
+        },
+        "renderAllLocal_withoutFooterObserver": {
+          "sync": 22.7,
+          "total": 83
+        },
+        "popupOpen_footerObserverOff": {
+          "sync": 35.2,
+          "total": 71.4
+        },
+        "popupOpen_scrollLockObserverAlsoOff": {
+          "sync": 9.4,
+          "total": 47.6
+        }
+      },
+      "dom": {
+        "nodes": 1020,
+        "cards": 50,
+        "chips": 80,
+        "footers": 0
+      },
+      "heapMB": 2.1,
+      "nodesMetric": 19745,
+      "errors": [],
+      "wallSeconds": 5.5
+    },
+    {
+      "n": 500,
+      "rate": 4,
+      "startup": {
+        "readyMs": 465.9,
+        "paintedMs": 732,
+        "initMs": 155.5,
+        "longTasks": 3,
+        "longTaskMs": 553,
+        "renders": {
+          "history": 1,
+          "content": 1
+        },
+        "renderHistoryMs": 24.6,
+        "renderAllLocalMs": 38.9,
+        "idbReads": 1
+      },
+      "times": {
+        "renderAllLocal": {
+          "sync": 64.5,
+          "total": 216.7
+        },
+        "renderHistory": {
+          "sync": 11.7,
+          "total": 66.3
+        },
+        "filterNarrow": {
+          "sync": 4.5,
+          "total": 31.9
+        },
+        "filterBroad": {
+          "sync": 38.3,
+          "total": 134.8
+        },
+        "sortAZ": {
+          "sync": 23.7,
+          "total": 101.3
+        },
+        "popupOpen": {
+          "sync": 94.3,
+          "total": 133.5
+        },
+        "archiveOpen": {
+          "sync": 116.5,
+          "total": 184.2
+        },
+        "quizPoolOnly": {
+          "sync": 7.8,
+          "total": 31.8
+        },
+        "recallPoolOnly": {
+          "sync": 2.8,
+          "total": 34
+        },
+        "startTest": {
+          "sync": 3.7,
+          "total": 33.1
+        },
+        "startRecall": {
+          "sync": 2.2,
+          "total": 29.6
+        },
+        "setStatusCommit": {
+          "sync": 116.5,
+          "total": 149.1
+        },
+        "renderAllLocal_withoutFooterObserver": {
+          "sync": 46,
+          "total": 183
+        },
+        "popupOpen_footerObserverOff": {
+          "sync": 61.8,
+          "total": 83.4
+        },
+        "popupOpen_scrollLockObserverAlsoOff": {
+          "sync": 15.8,
+          "total": 47.1
+        }
+      },
+      "dom": {
+        "nodes": 2401,
+        "cards": 100,
+        "chips": 400,
+        "footers": 0
+      },
+      "heapMB": 4.1,
+      "nodesMetric": 14362,
+      "errors": [],
+      "wallSeconds": 9.3
+    },
+    {
+      "n": 1000,
+      "rate": 4,
+      "startup": {
+        "readyMs": 845,
+        "paintedMs": 1171.9,
+        "initMs": 315.1,
+        "longTasks": 4,
+        "longTaskMs": 1066,
+        "renders": {
+          "history": 1,
+          "content": 1
+        },
+        "renderHistoryMs": 68.3,
+        "renderAllLocalMs": 88.4,
+        "idbReads": 1
+      },
+      "times": {
+        "renderAllLocal": {
+          "sync": 91.2,
+          "total": 238.3
+        },
+        "renderHistory": {
+          "sync": 28.6,
+          "total": 132.9
+        },
+        "filterNarrow": {
+          "sync": 8.4,
+          "total": 33.4
+        },
+        "filterBroad": {
+          "sync": 20,
+          "total": 100.1
+        },
+        "sortAZ": {
+          "sync": 34.2,
+          "total": 134.6
+        },
+        "popupOpen": {
+          "sync": 89.4,
+          "total": 147.6
+        },
+        "archiveOpen": {
+          "sync": 199.8,
+          "total": 346.8
+        },
+        "quizPoolOnly": {
+          "sync": 9.7,
+          "total": 34.4
+        },
+        "recallPoolOnly": {
+          "sync": 7.6,
+          "total": 33.2
+        },
+        "startTest": {
+          "sync": 18.6,
+          "total": 33.1
+        },
+        "startRecall": {
+          "sync": 4.8,
+          "total": 32.9
+        },
+        "setStatusCommit": {
+          "sync": 245.8,
+          "total": 266.9
+        },
+        "renderAllLocal_withoutFooterObserver": {
+          "sync": 73.5,
+          "total": 216
+        },
+        "popupOpen_footerObserverOff": {
+          "sync": 111.9,
+          "total": 133.5
+        },
+        "popupOpen_scrollLockObserverAlsoOff": {
+          "sync": 17.3,
+          "total": 46.6
+        }
+      },
+      "dom": {
+        "nodes": 2702,
+        "cards": 100,
+        "chips": 400,
+        "footers": 0
+      },
+      "heapMB": 6.4,
+      "nodesMetric": 14964,
+      "errors": [],
+      "wallSeconds": 11.8
+    },
+    {
+      "n": 2000,
+      "rate": 4,
+      "startup": {
+        "readyMs": 1106.1,
+        "paintedMs": 1269.7,
+        "initMs": 356.2,
+        "longTasks": 4,
+        "longTaskMs": 1369,
+        "renders": {
+          "history": 1,
+          "content": 1
+        },
+        "renderHistoryMs": 66.6,
+        "renderAllLocalMs": 136.8,
+        "idbReads": 1
+      },
+      "times": {
+        "renderAllLocal": {
+          "sync": 88.5,
+          "total": 182.2
+        },
+        "renderHistory": {
+          "sync": 41.6,
+          "total": 149.7
+        },
+        "filterNarrow": {
+          "sync": 12.1,
+          "total": 32.4
+        },
+        "filterBroad": {
+          "sync": 31,
+          "total": 115.9
+        },
+        "sortAZ": {
+          "sync": 15.7,
+          "total": 65
+        },
+        "popupOpen": {
+          "sync": 100.3,
+          "total": 140.1
+        },
+        "archiveOpen": {
+          "sync": 103.6,
+          "total": 292.1
+        },
+        "quizPoolOnly": {
+          "sync": 21.8,
+          "total": 33.4
+        },
+        "recallPoolOnly": {
+          "sync": 11.6,
+          "total": 32.6
+        },
+        "startTest": {
+          "sync": 21.8,
+          "total": 34.7
+        },
+        "startRecall": {
+          "sync": 8.7,
+          "total": 32.8
+        },
+        "setStatusCommit": {
+          "sync": 416.3,
+          "total": 433.2
+        },
+        "renderAllLocal_withoutFooterObserver": {
+          "sync": 68.4,
+          "total": 166.7
+        },
+        "popupOpen_footerObserverOff": {
+          "sync": 98.3,
+          "total": 116.3
+        },
+        "popupOpen_scrollLockObserverAlsoOff": {
+          "sync": 6.1,
+          "total": 51.9
+        }
+      },
+      "dom": {
+        "nodes": 3302,
+        "cards": 100,
+        "chips": 400,
+        "footers": 0
+      },
+      "heapMB": 11.1,
+      "nodesMetric": 16185,
+      "errors": [],
+      "wallSeconds": 11.3
+    },
+    {
+      "n": 5000,
+      "rate": 4,
+      "startup": {
+        "readyMs": 1445.6,
+        "paintedMs": 1783.2,
+        "initMs": 707.7,
+        "longTasks": 3,
+        "longTaskMs": 1579,
+        "renders": {
+          "history": 1,
+          "content": 1
+        },
+        "renderHistoryMs": 38.4,
+        "renderAllLocalMs": 136.3,
+        "idbReads": 1
+      },
+      "times": {
+        "renderAllLocal": {
+          "sync": 203.8,
+          "total": 328.7
+        },
+        "renderHistory": {
+          "sync": 28.8,
+          "total": 83.4
+        },
+        "filterNarrow": {
+          "sync": 8.3,
+          "total": 34
+        },
+        "filterBroad": {
+          "sync": 26.3,
+          "total": 116.6
+        },
+        "sortAZ": {
+          "sync": 35.2,
+          "total": 100.1
+        },
+        "popupOpen": {
+          "sync": 114,
+          "total": 132.3
+        },
+        "archiveOpen": {
+          "sync": 129.5,
+          "total": 383.5
+        },
+        "quizPoolOnly": {
+          "sync": 42.4,
+          "total": 51.7
+        },
+        "recallPoolOnly": {
+          "sync": 20.4,
+          "total": 33.2
+        },
+        "startTest": {
+          "sync": 39.6,
+          "total": 50.4
+        },
+        "startRecall": {
+          "sync": 6,
+          "total": 32.9
+        },
+        "setStatusCommit": {
+          "sync": 791.3,
+          "total": 803.6
+        },
+        "renderAllLocal_withoutFooterObserver": {
+          "sync": 113.6,
+          "total": 216.8
+        },
+        "popupOpen_footerObserverOff": {
+          "sync": 59.2,
+          "total": 112.6
+        },
+        "popupOpen_scrollLockObserverAlsoOff": {
+          "sync": 9.4,
+          "total": 47.8
+        }
+      },
+      "dom": {
+        "nodes": 3303,
+        "cards": 100,
+        "chips": 400,
+        "footers": 0
+      },
+      "heapMB": 25.1,
+      "nodesMetric": 16166,
+      "errors": [],
+      "wallSeconds": 16.6
+    }
+  ]
+}
