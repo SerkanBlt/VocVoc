@@ -47,6 +47,19 @@ describe('Web app manifest',()=>{
     const has=(size,purpose)=>manifest.icons.some(icon=>icon.sizes===size&&icon.purpose===purpose);
     assert(has('192x192','any')&&has('512x512','any')&&has('512x512','maskable'));
   });
+  it('declares its language and install screenshots: real PNGs of the declared size, a narrow and a wide one',()=>{
+    assert.match(manifest.lang,/^[a-z]{2}(?:-[A-Z]{2})?$/);
+    assert(manifest.screenshots.length>=2);
+    for(const shot of manifest.screenshots){
+      const bytes=fs.readFileSync(path.join(root,shot.src)),[width,height]=shot.sizes.split('x').map(Number);
+      assert.equal(bytes.subarray(1,4).toString(),'PNG',`${shot.src} is not a PNG`);
+      assert.deepEqual([bytes.readUInt32BE(16),bytes.readUInt32BE(20)],[width,height],`${shot.src} size`);
+      assert(Math.min(width,height)>=320&&Math.max(width,height)<=3840&&Math.max(width,height)/Math.min(width,height)<=2.3,`${shot.src} is outside what Chrome accepts`);
+      assert.equal(shot.form_factor,width>height?'wide':'narrow',`${shot.src} form_factor`);
+      assert.equal(typeof shot.label,'string');
+    }
+    assert(manifest.screenshots.some(shot=>shot.form_factor==='narrow')&&manifest.screenshots.some(shot=>shot.form_factor==='wide'));
+  });
 });
 
 describe('Service Worker precache list (ASSETS)',()=>{
@@ -128,6 +141,24 @@ describe('API key handling (static guards)',()=>{
   });
   it('structured output and the Daily time budget are wired in',()=>{
     assert(html.includes('responseSchema')&&html.includes('GEMINI_SCHEMAS.words')&&html.includes('GEMINI_LIMITS.dailyBudgetMs')&&html.includes('geminiSchemaRefused'));
+  });
+});
+
+describe('Code hygiene',()=>{
+  const sources=['index.html','pwa.js','a11y.js','storage.js'].map(read),everything=sources.join('\n');
+  it('no function is defined and then never used (dead code stays out)',()=>{
+    const escape=name=>name.replace(/\$/g,'\\$');
+    const dead=[];
+    for(const text of sources)for(const name of new Set([...text.matchAll(/(?:^|[\s;{}])(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(match=>match[1])))
+      if((everything.match(new RegExp(`(?<![\\w$.])${escape(name)}(?![\\w$])`,'g'))||[]).length<=1)dead.push(name);
+    assert.deepEqual(dead,[],`defined but never used: ${dead.join(', ')}`);
+  });
+  it('maps keyed by user-typed words have no prototype, so a word named __proto__ cannot corrupt them',()=>{
+    assert(/const localDictionary=Object\.assign\(Object\.create\(null\),\{/.test(html));
+    assert(/function getSavedWordMap\(\)\{\s*const db=getDb\(\),map=Object\.create\(null\);/.test(html));
+  });
+  it('the backup file name uses the local date, not the UTC date',()=>{
+    assert(/function backupDateStamp\(/.test(pwa)&&pwa.includes('${backupDateStamp()}')&&!/download=`[^`]*toISOString/.test(pwa));
   });
 });
 

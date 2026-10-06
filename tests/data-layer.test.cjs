@@ -203,6 +203,25 @@ describe('Import, reset and recovery copies',()=>{
   });
 });
 
+describe('Words that look like object internals',()=>{
+  const names=['__proto__','constructor','toString'];
+  const check=app=>{
+    const map=app.data.getSavedWordMap(),keys=Object.keys(map);
+    assert.equal(Object.getPrototypeOf(map),null);                                           // keyed by word text: no prototype to corrupt
+    for(const name of names){
+      assert(keys.includes(name.toLowerCase()),`${name} is an own key of the saved-word map`);
+      assert.equal(map[name.toLowerCase()].word,name);assert.equal(app.data.getWordByText(name).word,name);
+    }
+    assert(keys.includes('bonjour'));                                                          // the other words are untouched
+  };
+  it('a word called __proto__, constructor or toString is an ordinary entry, also after a restart',async()=>{
+    const profile=newProfile(legacySpa()),app=await start(profile);
+    for(const word of names)await app.data.saveAndTouch({word,meaning:'meaning of '+word,synonyms:[],antonyms:[],examples:[],expressions:[]},word);
+    check(app);
+    check(await start(profile));
+  });
+});
+
 describe('Failed writes',()=>{
   it('a write that fails (storage full) is rolled back in memory and on disk, and the next write works',async()=>{
     const app=await start(),write=app.adapter.write.bind(app.adapter),before=plain(app.data.getDb());

@@ -4,7 +4,7 @@ Bu paket frozen `vocvoc_spa_v1_0_candidate.html` kaynağından oluşturuldu. Ori
 
 ## Yayınlama / kurulum
 
-`VocVoc/` içeriğini aynı HTTPS adresindeki bir klasöre yayınlayın. `index.html`, `storage.js`, `a11y.js`, `pwa.js`, `sw.js`, manifest ve `icons/` birlikte yayınlanmalıdır. Framework, build veya uygulama backend'i gerekmez. Service Worker için `sw.js` dosyasını `text/javascript` olarak sunun; güncelleme kontrolünü engelleyen uzun HTTP cache süresi vermeyin. Manifest için `application/manifest+json` önerilir. Site başka route'lara ait istekleri index.html'e yönlendiriyorsa gerçek `sw.js`/manifest/icon dosyalarını istisna tutun.
+`VocVoc/` içeriğini aynı HTTPS adresindeki bir klasöre yayınlayın. `index.html`, `storage.js`, `a11y.js`, `pwa.js`, `sw.js`, manifest, `icons/` ve `screenshots/` birlikte yayınlanmalıdır (ekran görüntüleri yalnızca tarayıcının kurulum penceresinde görünür, çevrimdışı kabuğa girmez; UI değişince `node tools/make-screenshots.js` ile yeniden üretilir). Framework, build veya uygulama backend'i gerekmez. Service Worker için `sw.js` dosyasını `text/javascript` olarak sunun; güncelleme kontrolünü engelleyen uzun HTTP cache süresi vermeyin. Manifest için `application/manifest+json` önerilir. Site başka route'lara ait istekleri index.html'e yönlendiriyorsa gerçek `sw.js`/manifest/icon dosyalarını istisna tutun.
 
 Yerel test: `python3 -m http.server 8000 --directory VocVoc`, ardından `http://localhost:8000/`. ZIP'i açıp `index.html` dosyasına çift tıklamak PWA kurmaz; `file://` Service Worker çalıştırmaz. İlk online açılışta Service Worker'ın kurulmasını bekleyin. Chrome/Chromium menüsünden uygulamayı yükleyin; iOS'ta Safari → Paylaş → Ana Ekrana Ekle. Gerçek cihazın kurulum ve safe-area kontrolünü yayınlanan HTTPS adresinde yapın.
 
@@ -28,7 +28,7 @@ Tarayıcı güvenliği nedeniyle dosya/content URL'sindeki veya başka domain/pr
 
 Ayarlar gövdesindeki tek açılır JSON yedeği bölümünde export/import bulunur. Export schemaVersion, exportVersion, exportedAt, meta, settings, words, aliases, progress ve dailyUsage taşır. Secret storage dahil edilmez.
 
-Import bir **restore/overwrite** işlemidir, merge değildir. Dosya boyutu (en fazla ~10 MB, gerçek dosya boyutuna göre)/JSON sözdizimi/version/schema/ID/referans/status/alan tipi kontrolü (hepsi `VocVocStorage.parseBackup` tek giriş noktasında) ve açık confirmation sonrası tek transaction çalışır. Önceki veri aynı transaction içinde `before-import` kurtarma kopyasına alınır. `↶ JSON` düğmesi bu önceki kopyayı dışa aktarır; geri dönmek için bu dosyayı import edin. Başarısız işlemde mevcut veri korunur. Son başarılı import'un önceki kopyası tutulur; sınırsız yedek geçmişi değildir. **İlerlemeyi sıfırla**, **öğrenilen/orijinal dil değişikliği** ve birden fazla kelimeyi silen **toplu arşiv silme** de veri sildiği için aynı kurtarma kopyasını (`before-import`) önceden alır; bu durumda da `↶ JSON` ile dışa aktarıp import edebilirsiniz. Veritabanı zaten boşsa kopya alınmaz, böylece ikinci bir sıfırlama önceki kopyanın üzerine yazmaz. Uygulama ilk kullanıcı etkileşiminde `navigator.storage.persist()` ile kalıcı depolama ister; tarayıcı vermezse (özellikle iOS Safari'de ana ekrana eklenmemiş sitelerde) Ayarlar → Veri yedeği bölümünde uyarı gösterilir. Düzenli export alın: tarayıcı verilerini silmek, origin değiştirmek veya storage eviction yerel veriyi kaybettirebilir; cloud backup yoktur.
+Import bir **restore/overwrite** işlemidir, merge değildir. Dosya boyutu (en fazla ~10 MB, gerçek dosya boyutuna göre)/JSON sözdizimi/version/schema/ID/referans/status/alan tipi kontrolü (hepsi `VocVocStorage.parseBackup` tek giriş noktasında) ve açık confirmation sonrası tek transaction çalışır. Önceki veri aynı transaction içinde `before-import` kurtarma kopyasına alınır. `↶ JSON` düğmesi bu önceki kopyayı dışa aktarır; geri dönmek için bu dosyayı import edin. Başarısız işlemde mevcut veri korunur. Son başarılı import'un önceki kopyası tutulur; sınırsız yedek geçmişi değildir. **İlerlemeyi sıfırla**, **öğrenilen/orijinal dil değişikliği** ve birden fazla kelimeyi silen **toplu arşiv silme** de veri sildiği için aynı kurtarma kopyasını (`before-import`) önceden alır; bu durumda da `↶ JSON` ile dışa aktarıp import edebilirsiniz. Veritabanı zaten boşsa kopya alınmaz, böylece ikinci bir sıfırlama önceki kopyanın üzerine yazmaz. Uygulama ilk kullanıcı etkileşiminde `navigator.storage.persist()` ile kalıcı depolama ister; tarayıcı vermezse (özellikle iOS Safari'de ana ekrana eklenmemiş sitelerde) Ayarlar → Veri yedeği bölümünde uyarı gösterilir. Export dosya adındaki tarih UTC değil, kullanıcının yerel günüdür (`VocVoc-backup-YYYY-MM-DD.json`). Düzenli export alın: tarayıcı verilerini silmek, origin değiştirmek veya storage eviction yerel veriyi kaybettirebilir; cloud backup yoktur.
 
 Kapanan IndexedDB bağlantısı bir sonraki işlemde otomatik yeniden açılır; depo dışarıdan silinmişse eski revision ile yazma `conflict` ile reddedilir, boş veri yeniden oluşturulmaz. Fatal DB/migration hatasında uygulama boş veritabanıyla açılmaz. Arayüz (render) hatası veritabanı hatasından ayrı bir mesajla gösterilir; bu durumda veriler açıktır ve ekrandaki JSON düğmesi mevcut veriyi dışa aktarır. Retry ve geçerli eski Schema v1 JSON'unu export etme seçenekleri gösterilir. Corrupt JSON kaynak otomatik silinmez/düzeltilmez. IndexedDB açılamıyorsa kullanıcı başka sekmeleri kapatmalı, alan/izin kontrolü yapmalı ve tekrar denemelidir.
 
@@ -75,6 +75,8 @@ Tasarım ve davranış korunarak eklenenler (`a11y.js` + işaretleme):
 - **Dil işaretleme:** öğrenilen dildeki kelime, eş/zıt anlam, örnek cümle, deyim, test şıkkı, Flip ön yüzü ve arama kutusu `lang="{öğrenilen dil}"` taşır; anlamlar ve çeviriler sayfa dilinde kalır (`<html lang>` arayüz dilini izler).
 - **Swipe'a bağımlı işlemler için düğme:** ana kartta *Ezberimde* / *Kapat*, History ve ilgili kelime penceresinde *Ezberimde* / *Ezberimden çıkar*, Flip'te aynı düğme. Swipe davranışı aynen duruyor.
 - **Klavye:** dropdown'lar (Enter/Boşluk açar, ↑ ↓ Home End gezinir, Enter seçer, Esc kapatır, seçimden sonra odak düğmeye döner); Flip: *F* çevirir, *← →* kart değiştirir, *M* ezber durumunu değiştirir, *Esc* kapatır; Test'te her soruda odak ilk şıkka, bitişte "yeni test" düğmesine gider ve doğru/yanlış sesli duyurulur; yeniden çizimlerde odak kaybolmaz.
+
+- **Kopyalanabilir kelime:** kelime ayrıntısı ve ilgili kelime pencerelerinin başlığındaki kelime seçilebilir (çift tık / uzun basış, sağ tık menüsü); başlığın geri kalanı swipe yüzeyi olarak seçilemez kalır. Başlığı seçtikten sonra başlayan bir swipe seçimi temizler.
 
 Otomatik test yalnızca klavye ve DOM/ARIA düzeyinde yapılır; NVDA, VoiceOver veya TalkBack ile elle doğrulama yapılmadı.
 
@@ -128,8 +130,8 @@ Service Worker IndexedDB'ye hiç dokunmaz ve diğer sekmeleri reload etmez; bu y
 
 ```
 cd tests && npm ci      # test araçları: playwright, fake-indexeddb (uygulamanın çalışma zamanı bağımlılığı yoktur)
-npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 33 doğrulama + 42 veri testi
-npm run test:browser    # Chrome regresyon paketi (92 senaryo, yaklaşık 3 dk)
+npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 37 doğrulama + 43 veri testi
+npm run test:browser    # Chrome regresyon paketi (94 senaryo, yaklaşık 3 dk)
 npm run test:all        # ikisi birden
 npm run checksums       # SHA256SUMS'ı yeniden üretir (kökten; sürüm yayınlama adımı)
 ```

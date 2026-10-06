@@ -5,7 +5,7 @@
 **Yöntem:** Statik kod incelemesi. Testler çalıştırılmadı (`tests/node_modules` yok), uygulama tarayıcıda açılmadı. Kod değiştirilmedi.
 **Doğrulama:** `SHA256SUMS` içindeki tüm dosyalar eşleşiyor. Gemini model adları (`gemini-3.8-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`) Google'ın model listesinde stabil olarak yer alıyor (<https://ai.google.dev/gemini-api/docs/models>).
 
-**Güncelleme (2026-10-06, sürüm 1.0.9):** Bu rapor ilk audit'in kaydıdır; "Yöntem" ve "Bulgular" o günkü koda aittir ve değiştirilmedi. "Yapılacaklar" listesinin onay kutuları yapılan işe göre güncellendi; ayrıntılar README'de (Performans, Yerelleştirme, Erişilebilirlik, Offline ve güncelleme, CI), `RELEASE_REPORT.md`'de ve `v1.0.8-stage2` etiketindedir.
+**Güncelleme (2026-10-06, sürüm 1.0.10):** Bu rapor ilk audit'in kaydıdır; "Yöntem" ve "Bulgular" o günkü koda aittir ve değiştirilmedi. "Yapılacaklar" listesinin onay kutuları yapılan işe göre güncellendi; ayrıntılar README'de (Performans, Yerelleştirme, Erişilebilirlik, Offline ve güncelleme, CI), `RELEASE_REPORT.md`'de ve `v1.0.8-stage2` etiketindedir.
 
 ## Özet
 
@@ -95,15 +95,15 @@ Efor: **S** = birkaç saat, **M** = 1–2 gün, **L** = daha uzun.
 - [x] **M** `renderAllLocal`'ı sınırla (son N kart / sayfalama); MutationObserver'ı konteynerle sınırla; 2–5 bin kelimeyle ölç. (M2) — 5000 kelimede açılış 432 ms, commit 267 ms (README → Performans).
 - [x] **L** Ölçüm kötü çıkarsa tek snapshot yerine kayıt bazlı store'lara geç. (M2) — Ölçüm gerektirmedi, tek snapshot korundu (yavaşlatılmış CPU'da 5000 kelimede commit 916 ms).
 - [x] **S** Import doğrulamasını derinleştir ve boyut sınırını ~10 MB yap; bağlantı kapanınca yeniden aç. (L4, L6)
-- [ ] **S** Runtime sözlüklerini (`localDictionary`, `getSavedWordMap`) `Map` veya prototipsiz nesne yap. (L5)
+- [x] **S** Runtime sözlüklerini (`localDictionary`, `getSavedWordMap`) prototipsiz nesne yap. (L5) — 1.0.10. `__proto__` adlı bir kelime eski haritada gerçekten bozulma yaratıyordu; veri katmanı testi artık bunu sınar.
 - [ ] **S** Periyodik yedek hatırlatması (ör. 30 günde bir).
 
 ### P3 — bakım
-- [ ] **S** Ölü kodu temizle. (L9) — `clearHistory` ve `saveWordData` hâlâ tanımlı ve çağrılmıyor.
+- [x] **S** Ölü kodu temizle. (L9) — 1.0.10: `clearHistory`, `saveWordData` ve `searchWord` silindi; kullanılmayan fonksiyon bırakılmadığını bir test denetler.
 - [x] **M** Testleri okunur biçime getir; `npm test` için GitHub Actions kur.
 - [x] **S** `SHA256SUMS`'ı script ile üret (`npm run checksums`; bir test dosyalarla uyumunu denetler). `BUILD_INFO.json` sürümü elle yükseltilir, `sw.js` ve `index.html` ile uyumunu bir test denetler.
 - [ ] **L** Inline `onclick`'leri delegasyona taşı (sıkı CSP için); CSS/JS'i ayrı dosyalara böl, `!important` katmanlarını sadeleştir.
-- [ ] **S** Manifest'e `screenshots`/`lang`; export dosya adında yerel tarih; başlıklarda metin seçimine izin ver. (L8, L11)
+- [x] **S** Manifest'e `screenshots`/`lang`; export dosya adında yerel tarih; başlıkta metin seçimine izin ver. (L8, L11) — 1.0.10. Kelime başlığı seçilip kopyalanabilir; başlığın geri kalanı swipe yüzeyi olarak kalır.
 
 ### Rapor kapsamı dışında kalan açık işler
 - Gerçek cihazda ve ekran okuyucuyla (NVDA, VoiceOver, TalkBack) erişilebilirlik testi yapılmadı.

@@ -772,6 +772,39 @@ async function main(){
   record('two tabs: a burst of commits is adopted completely');
   await context.close();
  }
+ // ===== Popup headword: selectable and copyable; the rest of the header is a swipe surface =====
+ {
+  context=await browser.newContext({viewport:{width:1000,height:800}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(url);await ready();
+  await page.evaluate(()=>toggleHistoryDetail('Bonjour'));await page.waitForSelector('#historyDetails.open');
+  const style=selector=>page.evaluate(selector=>getComputedStyle(document.querySelector(selector)).userSelect,selector);
+  assert.deepEqual([await style('#historyDetails .word-title'),await style('#historyDetails .word-type'),await style('#historyDetails .ui-panel-header')],['text','none','none']);
+  // a real double-click selects the headword; the same gesture on the part-of-speech label selects nothing
+  await page.dblclick('#historyDetails .word-title');assert.equal(await page.evaluate(()=>getSelection().toString().trim()),'Bonjour');
+  await page.evaluate(()=>getSelection().removeAllRanges());await page.dblclick('#historyDetails .word-type');assert.equal(await page.evaluate(()=>getSelection().toString().trim()),'');
+  // selectstart (its target is a text node) and the context menu are only blocked on the swipe surface, and nothing throws
+  const prevented=await page.evaluate(()=>{
+   const fire=(node,type)=>{const event=new Event(type,{bubbles:true,cancelable:true});node.dispatchEvent(event);return event.defaultPrevented;};
+   const title=document.querySelector('#historyDetails .word-title'),label=document.querySelector('#historyDetails .word-type'),close=document.querySelector('#historyDetails .word-popup-close');
+   return {titleText:fire(title.firstChild,'selectstart'),titleMenu:fire(title,'contextmenu'),labelText:fire(label.firstChild,'selectstart'),labelMenu:fire(label,'contextmenu'),closeMenu:fire(close,'contextmenu')};});
+  assert.deepEqual(prevented,{titleText:false,titleMenu:false,labelText:true,labelMenu:true,closeMenu:true});
+  // a press that selected the headword and then became a swipe leaves no selection behind
+  assert.equal(await page.evaluate(()=>{getSelection().selectAllChildren(document.querySelector('#historyDetails .word-title'));const before=getSelection().toString().trim();releaseCardSwipeGesture();claimCardSwipeGesture({cancelable:false});const after=getSelection().toString();releaseCardSwipeGesture();return before+'|'+after;}),'Bonjour|');
+  record('popup headword: selectable and copyable (double-click, context menu), the rest of the header stays a swipe surface, a swipe clears the selection');
+  await context.close();
+ }
+ // ===== Backup file name carries the user's local day =====
+ {
+  context=await browser.newContext({timezoneId:'Pacific/Auckland'});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(url);await ready();
+  await page.clock.setFixedTime(new Date('2026-10-05T23:30:00Z'));                                   // 12:30 on 6 October in Auckland, still 5 October in UTC
+  assert.deepEqual(await page.evaluate(()=>[new Date().toISOString().slice(0,10),backupDateStamp()]),['2026-10-05','2026-10-06']);
+  await page.evaluate(()=>openModal());await page.locator('#backupLabel').click();
+  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#exportDataBtn').click()]);
+  assert.equal(download.suggestedFilename(),'VocVoc-backup-2026-10-06.json');
+  record('backup file name uses the local date (6 October in Auckland, not the UTC 5 October)');
+  await context.close();
+ }
  // ===== Content Security Policy =====
  {
   context=await browser.newContext();page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));

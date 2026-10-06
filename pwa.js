@@ -26,7 +26,9 @@ function showStorageBootError(error,{initialization=false}={}){
   // Database failed: only the retained pre-migration source can be exported. Interface failed: the DB is open, export it.
   backup.onclick=storage?exportLegacyBackup:exportVocVocData;
 }
-function downloadBackup(value){const blob=new Blob([JSON.stringify(value,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`VocVoc-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+// The date in the file name is the user's local day, not the UTC day (which is yesterday or tomorrow for part of every evening or morning).
+function backupDateStamp(date=new Date()){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;}
+function downloadBackup(value){const blob=new Blob([JSON.stringify(value,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`VocVoc-backup-${backupDateStamp()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 async function exportRecoveryBackup(){try{const backup=await VocVocData.recoveryExport();if(!backup){showError(pwaText('invalidData'));return;}downloadBackup(backup);}catch(error){reportStorageError(error);}}
 async function exportVocVocData(){try{downloadBackup(await VocVocData.export());}catch(error){reportStorageError(error);}}
 function exportLegacyBackup(){

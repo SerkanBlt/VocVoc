@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.0.9">
+  <meta name="vocvoc-shell" content="1.0.10">
   <meta name="theme-color" content="#111111">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2151,6 +2151,9 @@ body{
 [role="dialog"] [tabindex="-1"]:focus,[role="dialog"][tabindex="-1"]:focus{outline:none;}
 .word-status-actions,.flip-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--ui-panel-gap,12px);margin-top:var(--ui-panel-gap,12px);}
 .flip-rotator{height:min(360px,calc(100dvh - 170px));}
+/* The headword in a popup header can be selected and copied; the rest of the header stays a swipe surface (see inHeaderChrome). */
+.word-panel-fixed-header .word-title,
+#historyDetails .history-detail-card > .word-panel-fixed-header.ui-panel-header .word-title{user-select:text!important;-webkit-user-select:text!important;}
 
 </style></head>
 <body>
@@ -2918,7 +2921,7 @@ const VocVocData=(()=>{
     return Object.values(getDb().words);
   }
   function getSavedWordMap(){
-    const db=getDb(),map={};
+    const db=getDb(),map=Object.create(null);                       // keyed by word text: see localDictionary
     for(const [alias,id] of Object.entries(db.aliases)){
       const data=db.words[id];
       if(data)map[alias.split(":").slice(2).join(":")]=data;
@@ -3445,11 +3448,12 @@ function previewFontSize(value){applyFontSize(value);}
 function previewTheme(value){applyTheme(value);}
 
 
-const localDictionary={
+// No prototype: a word called __proto__, constructor or toString must be an ordinary key, not the object's own machinery.
+const localDictionary=Object.assign(Object.create(null),{
 "bonjour":{word:"Bonjour",type:"ünlem / isim (interjection / nom)",meaning:"Merhaba; birini selamlamak için kullanılan en temel Fransızca ifadelerden biridir.",synonyms:["Salut"],antonyms:["Au revoir"],examples:[{fr:"Bonjour, comment allez-vous ?",phonetic:"bonjur, koman tale vu",tr:"Merhaba, nasılsınız?"}],expressions:[{fr:"Dire bonjour",phonetic:"dir bonjur",tr:"Merhaba demek / selam vermek",exampleFr:"N'oublie pas de dire bonjour.",examplePhonetic:"nubli pa dö dir bonjur",exampleTr:"Merhaba demeyi unutma."}]},
 "merci":{word:"Merci",type:"ünlem (interjection)",meaning:"Teşekkür ederim / teşekkürler anlamında kullanılan çok yaygın bir ifadedir.",synonyms:["Je vous remercie"],antonyms:[],examples:[{fr:"Merci beaucoup pour ton aide.",phonetic:"mersi boku pur ton ed",tr:"Yardımın için çok teşekkür ederim."}],expressions:[{fr:"Merci beaucoup",phonetic:"mersi boku",tr:"Çok teşekkür ederim",exampleFr:"Merci beaucoup, c'est gentil.",examplePhonetic:"mersi boku, se janti",exampleTr:"Çok teşekkür ederim, çok naziksin."}]},
 "je":{word:"Je",type:"şahıs zamiri (pronom personnel)",meaning:"Ben anlamına gelen birinci tekil şahıs zamiridir. Fiilden önce kullanılır.",synonyms:[],antonyms:[],examples:[{fr:"Je parle français.",phonetic:"jö parl Franse",tr:"Ben Fransızca konuşuyorum."},{fr:"Je suis étudiant.",phonetic:"jö süi zetüdyan",tr:"Ben öğrenciyim."}],expressions:[{fr:"Je pense que...",phonetic:"jö pans kö",tr:"Bence / düşünüyorum ki...",exampleFr:"Je pense que c'est une bonne idée.",examplePhonetic:"jö pans kö set ün bon ide",exampleTr:"Bence bu iyi bir fikir."}]}
-};
+});
 const BUILTIN_DICTIONARY_KEYS=new Set(Object.keys(localDictionary));
 document.addEventListener('DOMContentLoaded',async()=>{
   // Two separate phases: a database failure and an interface failure must not share one message.
@@ -3587,8 +3591,6 @@ function decodeDomText(value){
  const binary=atob(b64),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
  return new TextDecoder().decode(bytes);}catch{return "";}
 }
-function searchWord(word){document.getElementById('searchInput').value=word;handleSearch();}
-
 function archiveActionLabel(){
   return String(t("archiveCue")||"Archive").replace(/^↓\s*/u,"");
 }
@@ -3738,6 +3740,7 @@ function claimCardSwipeGesture(ev){
   if(cardSwipeGestureActive)return;
   cardSwipeGestureActive=true;
   document.body.classList.add("card-swipe-active");
+  window.getSelection?.()?.removeAllRanges();   // a headword selected by the press that became a swipe
   if(ev?.cancelable)ev.preventDefault();
 }
 function releaseCardSwipeGesture(){
@@ -3944,10 +3947,6 @@ function getSavedWords(){
 function loadSavedWords(){
   Object.assign(localDictionary,VocVocData.getSavedWordMap());
 }
-function saveWordData(data,queryAlias){
-  return VocVocData.saveWord(data,queryAlias);
-}
-
 async function addHistory(word){
   const clean=String(word||"").trim();
   if(!clean||isArchivedWord(clean))return false;
@@ -4017,11 +4016,6 @@ function renderHistory(){
       title="${isMem?t("memorizedOpenDetails"):t("openDetails")}"><span${langAttr()}>${esc(w)}</span>${isMem?' ✓':''}</button>`;
   }).join('')+showMoreButton("history",hiddenCount);
   refreshArchiveButtonState();
-}
-async function clearHistory(){
-  await VocVocData.clearProgressAndWords();
-  renderHistory();
-  renderAllLocal();
 }
 function renderAllLocal(){
   const area=document.getElementById("contentArea");if(!area)return;
@@ -5105,11 +5099,17 @@ document.addEventListener("click",e=>{
     ".related-word-panel .ui-panel-header",
     ".related-word-panel .word-detail-header"
   ].join(",");
+  // The rest of a popup header is a swipe surface, but the headword itself stays selectable and copyable (selection and context menu).
+  // A selection never survives a swipe: claimCardSwipeGesture clears it. (selectstart's target is often a text node.)
+  const inHeaderChrome=node=>{
+    const el=node?.nodeType===1?node:node?.parentElement;
+    return !!el&&!!el.closest(headerSelector)&&!el.closest(".word-title");
+  };
   document.addEventListener("selectstart",e=>{
-    if(e.target.closest(headerSelector))e.preventDefault();
+    if(inHeaderChrome(e.target))e.preventDefault();
   },{capture:true});
   document.addEventListener("contextmenu",e=>{
-    if(e.target.closest(headerSelector))e.preventDefault();
+    if(inHeaderChrome(e.target))e.preventDefault();
   },{capture:true});
 })();
 
