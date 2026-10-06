@@ -1,4 +1,4 @@
-# Release validation for VocVoc. Runs on every push and pull request.
+# Release validation for VocVoc. Runs on every push to master and on pull requests into master (not on other branches or tags).
 #
 #   validate : fast checks, no browser   -> `npm test`
 #              (JavaScript syntax, manifest, Service Worker precache + VERSION guard, API-key guards,
@@ -12,7 +12,9 @@ name: CI
 
 on:
   push:
+    branches: [master]
   pull_request:
+    branches: [master]
   workflow_dispatch:
 
 # A newer push to the same branch/PR makes the older run pointless.

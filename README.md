@@ -140,7 +140,7 @@ npm run checksums       # SHA256SUMS'ı yeniden üretir (kökten; sürüm yayın
 
 `.gitattributes` metin dosyalarını her platformda LF olarak çıkarır (`eol=lf`). Windows'ta `core.autocrlf=true` olsa bile `sha256sum -c SHA256SUMS` ve fixture'ın SHA-256'sı tutar.
 
-**GitHub Actions** (`.github/workflows/ci.yml`): her push ve pull request'te iki iş paralel çalışır: *Validate* (`npm test`) ve *Browser tests* (`npm run test:browser`, runner'ın Chrome'u ile; yoksa Chromium indirir). `tests/package-lock.json` repoda olmalıdır (`npm ci` ve önbellek ona bağlıdır).
+**GitHub Actions** (`.github/workflows/ci.yml`): master'a her push'ta ve master'a açılan her pull request'te (başka dal ve etiketlerde çalışmaz; elle de başlatılabilir) iki iş paralel çalışır: *Validate* (`npm test`) ve *Browser tests* (`npm run test:browser`, runner'ın Chrome'u ile; yoksa Chromium indirir). `tests/package-lock.json` repoda olmalıdır (`npm ci` ve önbellek ona bağlıdır).
 
 | İstenen kontrol | Nerede (test adı) |
 |---|---|
