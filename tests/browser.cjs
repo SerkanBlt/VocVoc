@@ -12,6 +12,11 @@ async function main(){
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`,url=base+'/VocVoc/';
  const launch={headless:true};if(process.env.PWA_BROWSER_PATH){launch.executablePath=process.env.PWA_BROWSER_PATH;launch.args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'];}
  browser=await chromium.launch(launch);
+ // Every context of the suite reports Content Security Policy violations: a normal session must never trigger one (the CSP scenario at the end causes one on purpose and removes it).
+ const cspViolations=[],rawNewContext=browser.newContext.bind(browser);
+ browser.newContext=async(...args)=>{const c=await rawNewContext(...args);
+  await c.addInitScript(()=>document.addEventListener('securitypolicyviolation',e=>{if(!window.__cspExpected)console.error('CSP-VIOLATION '+e.violatedDirective+' '+e.blockedURI);},true));
+  c.on('console',m=>{if(/CSP-VIOLATION|Content Security Policy/i.test(m.text()))cspViolations.push(m.text());});return c;};
  const errors=[];let context=await browser.newContext();await context.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>{window.bootRenderCounts={history:0,content:0};for(const [name,key] of [['renderHistory','history'],['renderAllLocal','content']]){const original=window[name];window[name]=(...args)=>{bootRenderCounts[key]++;return original(...args);};}}));let page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  const ready=async(p=page)=>{await p.waitForFunction(()=>document.getElementById('storageBoot').hidden);await p.evaluate(()=>VocVocData.flush());};
  await page.goto(url);await ready();assert.equal(await page.evaluate(()=>VocVocData.getHistoryWords().length),3);assert.equal(await page.evaluate(()=>VocVocRegression.run().passed),true);assert.deepEqual(await page.evaluate(()=>bootRenderCounts),{history:1,content:1});assert.equal(await page.locator('#storageBoot').isVisible(),false);record('fresh initialization + 12 SPA guards + one main render pass');
@@ -46,7 +51,8 @@ async function main(){
  const backup=await page.evaluate(()=>VocVocData.export());assert(!JSON.stringify(backup).includes('secret-test-value'));assert.equal(backup.exportVersion,1);await page.evaluate(()=>VocVocData.setStatus('word1','active'));const preImport=await page.evaluate(()=>VocVocData.getDb());await page.evaluate(data=>VocVocData.import(data),backup);const imported=await page.evaluate(()=>VocVocData.getDb()),expected=Object.fromEntries(Object.entries(backup).filter(([k])=>!['exportVersion','exportedAt'].includes(k)));expected.meta.updatedAt=imported.meta.updatedAt;assert.deepEqual(imported,expected);const recovery=await page.evaluate(()=>VocVocStorage.adapter.recoveryBackup());assert.deepEqual(recovery,preImport);record('secret-free export + transactional restore + recovery snapshot');
  const valid=await page.evaluate(()=>JSON.stringify(VocVocData.getDb()));const invalidCases=[{...backup,schemaVersion:2},{...backup,progress:{bad:{wordId:'bad',status:'active'}}},{...backup,apiKey:'secret'},{...backup,exportVersion:9}];for(const invalid of invalidCases){assert.equal(await page.evaluate(async data=>{try{await VocVocData.import(data);return false;}catch(_){return true;}},invalid),true);}assert.equal(await page.evaluate(()=>JSON.stringify(VocVocData.getDb())),valid);record('invalid imports reject without changing data');
  // Second tab cannot overwrite a newer revision with a stale snapshot.
- const other=await context.newPage();await other.goto(url);await ready(other);await page.evaluate(()=>VocVocData.setStatus('word1','active'));assert.equal(await other.evaluate(async()=>{try{await VocVocData.setStatus('word1','memorized');return false;}catch(e){return e.storageCode==='conflict';}}),true);await other.close();record('multi-tab stale writer rejected');
+ const other=await context.newPage();await other.goto(url);await ready(other);await other.evaluate(()=>{window.syncExternalCommit=()=>{};}); // a tab that never received the broadcast (frozen in the background)
+ await page.evaluate(()=>VocVocData.setStatus('word1','active'));assert.equal(await other.evaluate(async()=>{try{await VocVocData.setStatus('word1','memorized');return false;}catch(e){return e.storageCode==='conflict';}}),true);await other.close();record('multi-tab stale writer rejected');
  await context.setOffline(true);await page.reload();await ready();await page.evaluate(()=>{startQuiz();startRecallQuiz();quizSession=null;openModal();});await page.evaluate(()=>{closeModal();});await page.evaluate(()=>VocVocData.restoreArchived(['word5']));await page.evaluate(()=>VocVocData.deleteWords(['word8']));await page.evaluate(()=>VocVocData.updateSettings({theme:'light',fontSize:'xlarge'}));await page.reload();await ready();assert.equal(await page.evaluate(()=>VocVocData.getWordByText('word8')),null);assert.equal(await page.evaluate(()=>VocVocData.getSettings().theme),'light');record('offline History/Test/Recall/Archive restore/delete/Settings + reload');
  await context.setOffline(false);
  // Model fallback, malformed response and connection error with real browser fetch interception.
@@ -277,7 +283,7 @@ async function main(){
   // --- 7: old shell + current DB. A tab keeps running old code while another tab activates the update.
   {
    const {c,p:A}=await installed(),B=track(await c.newPage());await B.goto(url);await ready(B);
-   await deploy(B,null);await B.waitForFunction(()=>!!pwaRegistration.waiting);await B.waitForSelector('#pwaUpdate');await A.evaluate(()=>{window.__oldShell=true;});
+   await deploy(B,null);await B.waitForFunction(()=>!!pwaRegistration.waiting);await B.waitForSelector('#pwaUpdate');await A.evaluate(()=>{window.__oldShell=true;window.syncExternalCommit=()=>showPwaUpdate(true);}); // an old shell has no adoption: it only shows the banner
    await Promise.all([B.waitForNavigation(),B.locator('#pwaUpdate .ui-button').click()]);await ready(B);assert.equal(await B.title(),'VocVoc update test');
    assert.equal(await A.evaluate(()=>[window.__oldShell,document.title,document.querySelector('.container').inert].join()),'true,VocVoc,false'); // not reloaded, not frozen
    await B.evaluate(()=>VocVocData.setStatus('Bonjour','memorized')); // the new shell commits
@@ -711,7 +717,81 @@ async function main(){
   record('archive paging: a page of 400, every word reachable (filter, Show more, restore from a later page), reopening starts over');
   await context.close();
  }
+ // ===== Two tabs: an idle tab follows the other one, a busy tab is protected =====
+ {
+  context=await browser.newContext({viewport:{width:1000,height:800}});
+  const A=await context.newPage();A.on('pageerror',e=>errors.push(e.message));await A.goto(url);await ready(A);
+  const B=await context.newPage();B.on('pageerror',e=>errors.push(e.message));await B.goto(url);await ready(B);
+  const cards=p=>p.evaluate(()=>[...document.querySelectorAll('#contentArea .main-word-card')].map(card=>card.querySelector('.word-title')?.textContent.trim()));
+  const revision=p=>p.evaluate(()=>VocVocStorage.adapter.revision);
+  const banner=p=>p.evaluate(()=>document.getElementById('pwaUpdate')?.dataset.kind||null);
+  assert.deepEqual((await cards(A)).sort(),['Bonjour','Je','Merci']);
+  await A.evaluate(()=>{window.__sameDocument=true;});
+  // 1. B memorizes a word: A, idle, adopts it without a reload, without a banner, and can write right away
+  await B.evaluate(()=>markMemorized('Merci'));
+  await A.waitForFunction(()=>VocVocData.getWordProgress('Merci').status==='memorized');
+  assert.deepEqual((await cards(A)).sort(),['Bonjour','Je']);assert.equal(await banner(A),null);
+  assert.equal(await A.evaluate(()=>window.__sameDocument),true);assert.equal(await revision(A),await revision(B));
+  await A.evaluate(()=>VocVocData.setStatus('Je','memorized'));                                    // no conflict: the cache and revision were adopted
+  await B.waitForFunction(()=>VocVocData.getWordProgress('Je').status==='memorized');
+  assert.deepEqual(await cards(B),['Bonjour']);assert.equal(await banner(B),null);
+  record('two tabs: an idle tab adopts the other tab\'s commit (lists, revision) without reload or banner, and its own next write succeeds');
+  // 2. a theme change in B reaches A, and a card A's reader has opened stays open
+  await A.locator('#contentArea .main-word-toggle').first().click();
+  assert.equal(await A.evaluate(()=>document.querySelectorAll('#contentArea .main-word-card.open').length),1);
+  await B.evaluate(()=>VocVocData.updateSettings({theme:'dark'}));
+  await A.waitForFunction(()=>document.documentElement.dataset.theme==='dark');
+  assert.equal(await A.evaluate(()=>document.querySelectorAll('#contentArea .main-word-card.open').length),1);assert.equal(await A.evaluate(()=>document.getElementById('themeSelect').value),'dark');
+  record('two tabs: settings (theme) follow the other tab and an opened card is not collapsed by it');
+  // 3. a search result on screen is not replaced; the History chips still follow
+  await A.fill('#searchInput','zzz');const shown=await A.evaluate(()=>document.getElementById('contentArea').innerHTML);
+  await B.evaluate(()=>markMemorized('Bonjour'));
+  await A.waitForFunction(()=>VocVocData.getWordProgress('Bonjour').status==='memorized');
+  assert.equal(await A.evaluate(()=>document.getElementById('contentArea').innerHTML),shown);
+  assert.equal(await A.evaluate(()=>[...document.querySelectorAll('#historyArea .history-chip.memorized')].length),3);
+  await A.fill('#searchInput','');
+  record('two tabs: a query being typed keeps its content; the History chips follow');
+  // 4. a busy tab (Settings open) does not swap its data underneath: it shows the banner instead; its stale write is rejected
+  await A.evaluate(()=>openModal());
+  await B.evaluate(()=>VocVocData.setStatus('Bonjour','active'));
+  await A.waitForFunction(()=>document.getElementById('pwaUpdate')?.dataset.kind==='external');
+  assert.equal(await A.evaluate(()=>VocVocData.getWordProgress('Bonjour').status),'memorized');           // untouched while busy
+  assert.equal(await A.evaluate(async()=>{try{await VocVocData.setStatus('Merci','active');return 'written';}catch(e){return e.storageCode||e.name;}}),'conflict');
+  record('two tabs: a busy tab keeps its data and shows the reload banner; a stale write is still rejected');
+  // 5. once it is idle again, the next commit is adopted and the external banner goes away by itself
+  await A.evaluate(()=>closeModal());
+  await B.evaluate(()=>VocVocData.setStatus('Merci','active'));
+  await A.waitForFunction(()=>VocVocData.getWordProgress('Merci').status==='active'&&!document.getElementById('pwaUpdate'));
+  assert.equal(await A.evaluate(()=>VocVocData.getWordProgress('Bonjour').status),'active');                  // it also caught up with what it had missed
+  assert.deepEqual((await cards(A)).sort(),['Bonjour','Merci']);assert.equal(await revision(A),await revision(B));
+  record('two tabs: back to idle, the tab catches up on everything it missed and the banner disappears');
+  // 6. a burst of commits ends in the final state with no banner
+  await B.evaluate(async()=>{for(const word of ['Je','Merci','Bonjour'])await VocVocData.setStatus(word,'memorized');});
+  await A.waitForFunction(()=>['Je','Merci','Bonjour'].every(word=>VocVocData.getWordProgress(word).status==='memorized'));
+  assert.equal(await banner(A),null);assert.equal(await revision(A),await revision(B));
+  record('two tabs: a burst of commits is adopted completely');
+  await context.close();
+ }
+ // ===== Content Security Policy =====
+ {
+  context=await browser.newContext();page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  await page.route('https://generativelanguage.googleapis.com/**',route=>route.fulfill({status:200,contentType:'application/json',body:'{}'}));
+  await page.route('https://example.com/**',route=>route.fulfill({status:200,contentType:'text/plain',body:'reachable'}));   // would answer if the browser let the request out
+  await page.goto(url);await ready();
+  assert((await page.evaluate(()=>document.querySelector('meta[http-equiv="Content-Security-Policy"]').content)).includes("connect-src 'self' https://generativelanguage.googleapis.com;"));
+  const mark=cspViolations.length;
+  const probe=await page.evaluate(async()=>{
+   window.__cspExpected=true;const seen=[],out={};document.addEventListener('securitypolicyviolation',e=>seen.push(e.violatedDirective));
+   for(const [name,target,method] of [['gemini',GEMINI_ENDPOINT+'probe:generateContent','POST'],['sameOrigin',location.href,'GET'],['other','https://example.com/','GET']]){
+    try{out[name]='reachable '+(await fetch(target,{method})).status;}catch(error){out[name]=error.name;}}
+   await new Promise(resolve=>setTimeout(resolve,100));out.violations=seen;return out;});
+  assert.deepEqual(probe,{gemini:'reachable 200',sameOrigin:'reachable 200',other:'TypeError',violations:['connect-src']});
+  await pause(300);assert(cspViolations.splice(mark).length>=1,'the violation collector did not see the blocked request');   // caused on purpose; proves the suite-wide collector works
+  record('CSP: requests to this origin and the Gemini API pass, a request to any other origin is blocked by connect-src');
+  await context.close();
+ }
  assert.deepEqual(errors,[]);record('no browser JavaScript errors');
+ assert.deepEqual(cspViolations,[]);record('CSP: the whole suite (every screen, backup, update, offline, Gemini calls) ran without a single policy violation');
  console.log(JSON.stringify({passed:results.length,startup1000ms:startupMs,results},null,2));fs.writeFileSync(path.join(root,'tests','browser-results.json'),JSON.stringify({passed:results.length,startup1000ms:startupMs,results},null,2));
 }
 main().catch(e=>{console.error(e);console.error(`

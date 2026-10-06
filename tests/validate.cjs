@@ -131,6 +131,53 @@ describe('API key handling (static guards)',()=>{
   });
 });
 
+describe('Release checksums',()=>{
+  const checksums=require('../tools/update-checksums.js');
+  it('SHA256SUMS lists real files, matches their bytes and leaves out generated output',()=>{
+    const problems=checksums.verify(root);
+    assert.deepEqual(problems,[],`SHA256SUMS is out of date (run "npm run checksums"): ${problems.join('; ')}`);
+    const names=checksums.parse(read('SHA256SUMS')).map(entry=>entry.file);
+    for(const generated of ['SHA256SUMS','tests/browser-results.json','tests/package-lock.json'])assert(!names.includes(generated),`${generated} must not be listed`);
+    assert(names.includes('index.html')&&names.includes('sw.js')&&names.includes('tests/fixtures/spa-v1.html'));
+  });
+  it('hashing ignores the line endings of text files (a CRLF checkout agrees with LF everywhere) but never touches binary files',()=>{
+    const lf=Buffer.from('a\nb\n'),crlf=Buffer.from('a\r\nb\r\n'),png=Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x00,0x0a]);
+    assert.equal(checksums.hashOf(crlf),checksums.hashOf(lf));
+    assert.notEqual(checksums.hashOf(png),checksums.hashOf(Buffer.from([0x89,0x50,0x4e,0x47,0x0a,0x00,0x0a])));
+    assert.notEqual(checksums.hashOf(Buffer.from('a\nb')),checksums.hashOf(lf));
+  });
+});
+
+describe('Content Security Policy (static guards)',()=>{
+  const meta=html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)">/);
+  const policy=Object.fromEntries((meta?.[1]||'').split(';').map(part=>part.trim().split(/\s+/)).filter(parts=>parts[0]).map(([name,...sources])=>[name,sources]));
+  const geminiOrigin=new URL(html.match(/GEMINI_ENDPOINT="([^"]+)"/)[1]).origin;
+  it('index.html carries one CSP meta tag, before any script, style or link, so nothing loads outside it',()=>{
+    assert(meta,'no Content-Security-Policy meta tag');
+    assert.equal(html.match(/http-equiv="Content-Security-Policy"/g).length,1);
+    assert(html.indexOf(meta[0])<html.search(/<(?:script|style|link)\b/),'the policy must come before the first script, style or link');
+  });
+  it('connect-src allows this origin and the Gemini API, nothing else; no directive names any other origin',()=>{
+    assert.deepEqual(policy['connect-src'],["'self'",geminiOrigin]);
+    for(const [name,sources] of Object.entries(policy))for(const source of sources){
+      assert(!/^https?:/.test(source)||source===geminiOrigin,`${name} allows ${source}`);
+      assert(!['*','data:','blob:',"'unsafe-eval'"].includes(source),`${name} allows ${source}`);
+    }
+    assert.deepEqual(policy['object-src'],["'none'"]);assert.deepEqual(policy['base-uri'],["'self'"]);assert.deepEqual(policy['form-action'],["'self'"]);
+    assert.deepEqual(policy['worker-src'],["'self'"]);assert.deepEqual(policy['manifest-src'],["'self'"]);
+  });
+  it('the code needs nothing the policy forbids: one fetch (Gemini), no eval, no external resources, no frames or forms',()=>{
+    const fetches=[...appScript.matchAll(/\bfetch\(([^)]*)/g)].map(match=>match[1]);
+    assert.equal(fetches.length,1);assert(fetches[0].includes('GEMINI_ENDPOINT'));
+    for(const file of ['pwa.js','storage.js','a11y.js'])assert(!/\bfetch\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon/.test(read(file)),`${file} opens a network connection`);
+    for(const [name,source] of [['index.html',html],['pwa.js',pwa],['storage.js',storage],['a11y.js',read('a11y.js')]]){
+      assert(!/\beval\(|new Function\(|\bsetTimeout\(\s*["'`]|\bsetInterval\(\s*["'`]/.test(source),`${name} evaluates strings as code (needs 'unsafe-eval')`);
+    }
+    assert(!/(?:src|href|action)="https?:/i.test(html)&&!/url\(\s*["']?(?:https?:|data:)/i.test(html),'index.html loads an external or data: resource');
+    assert(!/<(?:iframe|object|embed|form)\b/i.test(html));
+  });
+});
+
 describe('Word list regressions',()=>{
   it('the prompt word cap keeps the NEWEST 100 words: slice(0,100) on newest-first lists, never slice(-100)',()=>{
     assert(!/\.slice\(-100\)/.test(html));
@@ -158,6 +205,11 @@ describe('Storage safety (static guards)',()=>{
   it('database failures and interface failures are told apart; a closed connection is reopened; bulk deletes keep a recovery copy',()=>{
     assert(pwa.includes('storage=initialization||isStorageFailure(error)')&&html.includes('showStorageBootError(error,{initialization:true})')&&html.includes('await VocVocData.init();}'));
     assert(storage.includes("error?.name==='InvalidStateError'&&!reopened")&&html.includes('deleteWords:words=>transaction(deleteWords,[words],{backup:'));
+  });
+  it('another tab\'s commit is adopted only while this tab is idle; a busy tab keeps its data and shows the banner',()=>{
+    assert(pwa.includes('channel.onmessage=event=>syncExternalCommit(event.data)'));
+    assert(/if\(operationBusy\(\)\)\{showPwaUpdate\(true\);return;\}\s*await adoptExternalChange\(\);/.test(pwa),'the busy check must come before the adoption');
+    assert(/async function adoptExternalChange\(\)\{[^]*?await VocVocData\.refresh\(\);/.test(html)&&!/channel\.onmessage=\(\)=>showPwaUpdate/.test(pwa));
   });
 });
 

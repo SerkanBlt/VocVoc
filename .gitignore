@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Written by every run of tests/browser.cjs (the scenario list); a test output, not source
+tests/browser-results.json

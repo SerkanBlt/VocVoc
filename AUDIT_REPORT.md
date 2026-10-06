@@ -5,6 +5,8 @@
 **Yöntem:** Statik kod incelemesi. Testler çalıştırılmadı (`tests/node_modules` yok), uygulama tarayıcıda açılmadı. Kod değiştirilmedi.
 **Doğrulama:** `SHA256SUMS` içindeki tüm dosyalar eşleşiyor. Gemini model adları (`gemini-3.8-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`) Google'ın model listesinde stabil olarak yer alıyor (<https://ai.google.dev/gemini-api/docs/models>).
 
+**Güncelleme (2026-10-06, sürüm 1.0.9):** Bu rapor ilk audit'in kaydıdır; "Yöntem" ve "Bulgular" o günkü koda aittir ve değiştirilmedi. "Yapılacaklar" listesinin onay kutuları yapılan işe göre güncellendi; ayrıntılar README'de (Performans, Yerelleştirme, Erişilebilirlik, Offline ve güncelleme, CI), `RELEASE_REPORT.md`'de ve `v1.0.8-stage2` etiketindedir.
+
 ## Özet
 
 Veri katmanı, migration ve Service Worker sağlam tasarlanmış. XSS açığı bulunmadı. Asıl riskler:
@@ -78,26 +80,32 @@ Efor: **S** = birkaç saat, **M** = 1–2 gün, **L** = daha uzun.
 
 > Uygulama notları: `persist()` ilk kullanıcı etkileşiminde istenir (Firefox izin sorabilir), reddedilirse Ayarlar → Veri yedeği altında uyarı çıkar. Sıfırlama/dil değişimi, kelime varsa `before-import` kurtarma kopyasını alır (boş DB kopyayı ezmez). `settings.appLanguage` isteğe bağlı alandır, şema sürümü 1 kalır; kaydı olmayan veri eskisi gibi orijinal dili izler. `sw.js` VERSION 1.0.1.
 
-### P1 — kısa vade (erişilebilirlik ve sağlamlık)
-- [ ] **M** Detay panellerine ve ana karta "Ezberledim / Ezberden çıkar" butonu; Flip'e klavye kısayolu. (H3)
-- [ ] **M** Tüm modallara `role="dialog"`, `aria-modal`, focus tuzağı, Escape, focus dönüşü; `label for` ve arama etiketi. (M4)
-- [ ] **S** Hedef dil metinlerine `lang="{targetLanguage}"`. (M5)
-- [ ] **S** `connect-src 'self' https://generativelanguage.googleapis.com` içeren CSP meta etiketi. (M6)
-- [ ] **S** `validate.cjs`: ASSETS içeriği değişmiş ama `VERSION` aynıysa test başarısız olsun. (M7)
-- [ ] **S** "Sınırsız" kontrolünü tek yardımcıya topla; sabit İngilizce metinleri `t()` ile çevir. (L2, L3)
-- [ ] **S** Açılışta storage hatası ile render hatasını ayrı mesajlarla göster. (M9)
+### P1 — kısa vade (erişilebilirlik ve sağlamlık) — uygulandı
+- [x] **M** Detay panellerine ve ana karta "Ezberledim / Ezberden çıkar" butonu; Flip'e klavye kısayolu. (H3)
+- [x] **M** Tüm modallara `role="dialog"`, `aria-modal`, focus tuzağı, Escape, focus dönüşü; `label for` ve arama etiketi. (M4)
+- [x] **S** Hedef dil metinlerine `lang="{targetLanguage}"`. (M5)
+- [x] **S** `connect-src 'self' https://generativelanguage.googleapis.com` içeren CSP meta etiketi. (M6) — 1.0.9. `script-src` ve `style-src` hâlâ `'unsafe-inline'` içerir, çünkü sayfada yaklaşık 100 satır içi `onclick` var; sıkı CSP için aşağıdaki P3 maddesi gerekir.
+- [x] **S** `validate.cjs`: ASSETS içeriği değişmiş ama `VERSION` aynıysa test başarısız olsun. (M7)
+- [x] **S** "Sınırsız" kontrolünü tek yardımcıya topla; sabit İngilizce metinleri `t()` ile çevir. (L2, L3)
+- [x] **S** Açılışta storage hatası ile render hatasını ayrı mesajlarla göster. (M9)
 
 ### P2 — orta vade (performans ve UX)
-- [ ] **M** Gemini'ye `responseSchema`; Daily için toplam süre sınırı, daha az deneme. (M8)
-- [ ] **M** Başka sekme commit ettiğinde, bekleyen işlem yoksa otomatik `refresh()` + render; banner yalnızca gerçek çakışmada. (M3)
-- [ ] **M** `renderAllLocal`'ı sınırla (son N kart / sanal liste); MutationObserver'ı konteynerle sınırla; 2–5 bin kelimeyle mobilde ölç. (M2)
-- [ ] **L** Ölçüm kötü çıkarsa tek snapshot yerine kayıt bazlı store'lara geç. (M2)
-- [ ] **S** Import doğrulamasını derinleştir, boyut sınırını ~10 MB yap; runtime sözlükleri `Map` yap; bağlantı kapanınca yeniden aç. (L4, L5, L6)
+- [x] **M** Gemini'ye `responseSchema`; Daily için toplam süre sınırı. (M8) — Daily'nin toplam bütçesi 45 sn; deneme sayısı 5 olarak kaldı, bütçe sınırlıyor. `responseSchema` canlı Gemini API'ye karşı henüz denenmedi (model reddederse düz JSON moduna dönülür).
+- [x] **M** Başka sekme commit ettiğinde, bekleyen işlem yoksa otomatik yenileme; banner yalnızca güvenli olmadığında. (M3) — 1.0.9. Boştaki sekme veriyi ve listeleri sayfayı yenilemeden alır; Ayarlar, Quiz, Flip, AI isteği veya bekleyen yazma varken veri değiştirilmez, banner gösterilir.
+- [x] **M** `renderAllLocal`'ı sınırla (son N kart / sayfalama); MutationObserver'ı konteynerle sınırla; 2–5 bin kelimeyle ölç. (M2) — 5000 kelimede açılış 432 ms, commit 267 ms (README → Performans).
+- [x] **L** Ölçüm kötü çıkarsa tek snapshot yerine kayıt bazlı store'lara geç. (M2) — Ölçüm gerektirmedi, tek snapshot korundu (yavaşlatılmış CPU'da 5000 kelimede commit 916 ms).
+- [x] **S** Import doğrulamasını derinleştir ve boyut sınırını ~10 MB yap; bağlantı kapanınca yeniden aç. (L4, L6)
+- [ ] **S** Runtime sözlüklerini (`localDictionary`, `getSavedWordMap`) `Map` veya prototipsiz nesne yap. (L5)
 - [ ] **S** Periyodik yedek hatırlatması (ör. 30 günde bir).
 
 ### P3 — bakım
-- [ ] **S** Ölü kodu temizle. (L9)
-- [ ] **M** Testleri okunur biçime getir; `npm test` için GitHub Actions kur.
-- [ ] **S** `SHA256SUMS` ve `BUILD_INFO`'yu script ile üret.
+- [ ] **S** Ölü kodu temizle. (L9) — `clearHistory` ve `saveWordData` hâlâ tanımlı ve çağrılmıyor.
+- [x] **M** Testleri okunur biçime getir; `npm test` için GitHub Actions kur.
+- [x] **S** `SHA256SUMS`'ı script ile üret (`npm run checksums`; bir test dosyalarla uyumunu denetler). `BUILD_INFO.json` sürümü elle yükseltilir, `sw.js` ve `index.html` ile uyumunu bir test denetler.
 - [ ] **L** Inline `onclick`'leri delegasyona taşı (sıkı CSP için); CSS/JS'i ayrı dosyalara böl, `!important` katmanlarını sadeleştir.
 - [ ] **S** Manifest'e `screenshots`/`lang`; export dosya adında yerel tarih; başlıklarda metin seçimine izin ver. (L8, L11)
+
+### Rapor kapsamı dışında kalan açık işler
+- Gerçek cihazda ve ekran okuyucuyla (NVDA, VoiceOver, TalkBack) erişilebilirlik testi yapılmadı.
+- Türkçe dışındaki beş dilin çevirisi insan gözüyle okunmadı.
+- `responseSchema` ve model adları gerçek bir Gemini anahtarıyla denenmedi.

@@ -1,5 +1,7 @@
 # VocVoc PWA v1.0 — Aşama 2 teslim raporu
 
+> **Güncel durum (2026-10-06):** Bu rapor ilk Aşama 2 teslimini (sürüm 1.0.0) anlatır; "Doğrulama sonuçları"ndaki sayılar o günün sayılarıdır. Teslimden sonra yapılan sertleştirme (veri güvenliği, Service Worker güncellemesi, Gemini hata yönetimi, erişilebilirlik, yerelleştirme, 5000 kelime performansı, CI) `README.md`'de ve `AUDIT_REPORT.md`'de anlatılır. Güncel doğrulama: `npm test` 33 doğrulama + 42 veri testi, Chrome paketi 92 senaryo, GitHub Actions yeşil. Freeze etiketi `v1.0.8-stage2`; CSP ve başka sekme yenileme sürüm 1.0.9'dadır.
+
 Kaynak: `vocvoc_spa_v1_0_candidate.html`. Orijinal SHA-256: `7b8e5727e0e63e2d2fcbc4312a7d70b6533a904ddb0d842977ccdcec04ee3f8f`. Kaynak değiştirilmedi; test fixture'ı byte-for-byte aynıdır. Kullanıcının yazdığı `canditate` adına karşılık mevcut dosyanın adı `candidate` idi; farklı bir SPA revizyonu kullanılmadı.
 
 ## Audit sonucu ve değişiklik kapsamı
@@ -26,7 +28,7 @@ Fatal migration/DB hatasında boş DB ile sessiz devam edilmez. Retry ve geçerl
 
 ## Offline/cache/update
 
-Versioned, scope'a özel `vocvoc-shell-…-1.0.0` cache; yalnızca app-shell allowlist'i. Install bütün asset'leri almadan tamamlanmaz. Navigation/local asset'ler installed sürüm cache'inden okunur. Gemini POST, external URL ve allowlist dışındaki local URL'ler cache/intercept edilmez.
+Versioned, scope'a özel `vocvoc-shell-…-<VERSION>` cache (ilk teslimde 1.0.0); yalnızca app-shell allowlist'i. Install bütün asset'leri almadan tamamlanmaz. Navigation/local asset'ler installed sürüm cache'inden okunur. Gemini POST, external URL ve allowlist dışındaki local URL'ler cache/intercept edilmez.
 
 Yeni worker waiting durumunda kalır. Açılış/görünürlük değişiminde update kontrolü, kullanıcı kontrollü Yeni sürüm hazır → Yenile. Açık panel/Quiz/Flip, AI, Undo veya pending write sırasında reload engellenir. Update diğer sekmeleri zorla reload etmez. Activate yalnızca aynı scope'un obsolete cache'lerini siler; yeni cache/IndexedDB/secret korunur. Her app-shell değişikliğinde sw.js VERSION yükseltilmeli ve paket atomik yayınlanmalıdır.
 
@@ -36,7 +38,7 @@ Offline local özellikler mevcut memory/IndexedDB verileriyle çalışır. AI ge
 
 JSON formatı: schemaVersion=1, exportVersion=1, exportedAt, meta, settings, words, aliases, progress, dailyUsage. API key yoktur. Import validate/version/ID/reference/status kontrolü ve açık confirmation sonrası overwrite/restore'dur; merge değildir. Önceki snapshot ve yeni state aynı transaction'dadır. Yanlış dosya veya transaction failure mevcut veriyi değiştirmez.
 
-## Doğrulama sonuçları
+## Doğrulama sonuçları (ilk teslim, sürüm 1.0.0)
 
 - Gerçek headless Chromium: **39 senaryo PASS**, tarayıcı JS error yok.
 - 1000 kelimelik migration + ilk açılış bu ortamda **252 ms**. Tek örnek smoke ölçümüdür; fiziksel telefon benchmark'ı değildir.
@@ -53,14 +55,14 @@ JSON formatı: schemaVersion=1, exportVersion=1, exportedAt, meta, settings, wor
 - `node --check`: tüm JS dosyaları ve bütün inline JS PASS. Manifest JSON, icon boyut/path, HTML local references, SW asset listesi ve registration scope PASS.
 - Kaynak SHA-256 eşleşmesi PASS.
 
-Test komutları ve tüm senaryo isimleri `README.md`, `tests/browser-results.json` içindedir. Opt-in console guard'ları: `VocVocRegression.run()` ve `await VocVocPWARegression.run()`.
+Test komutları `README.md`'dedir; senaryo isimleri her tarayıcı koşusunun yazdığı `tests/browser-results.json` dosyasında (git'te izlenmez) ve CI iş özetindedir. Opt-in console guard'ları: `VocVocRegression.run()` ve `await VocVocPWARegression.run()`.
 
 ## Kalan sınırlar
 
-Bu paket henüz gerçek bir public HTTPS hosting'e yayınlanmadı. Fiziksel Android/iOS Add to Home Screen / installed safe-area testi yapılmadı; gerçek Gemini hesabı/model erişimi kullanılmadı. Bu testler kullanılan Chromium otomasyonunun kapsamı dışındadır. Static HTTPS yayın, kullanıcı cihazı kurulum denemesi ve farklı-origin veri aktarımı yönergeleri README'dedir. Tarayıcı verisi silinmesi/storage eviction için cloud backup yoktur; düzenli export gerekir.
+Paket GitHub Pages ile HTTPS üzerinden yayınlanıyor (`https://serkanblt.github.io/VocVoc/`). Fiziksel Android/iOS Add to Home Screen / installed safe-area testi ve ekran okuyucu testi yapılmadı; gerçek Gemini hesabı/model erişimi (`responseSchema` dahil) denenmedi. Bu testler kullanılan Chromium otomasyonunun kapsamı dışındadır. Kullanıcı cihazı kurulum denemesi ve farklı-origin veri aktarımı yönergeleri README'dedir. Tarayıcı verisi silinmesi/storage eviction için cloud backup yoktur; düzenli export gerekir.
 
 Çözümsüz bir uygulama kodu blocker'ı tespit edilmedi. Aşama 3 uygulanmadı.
 
-**VocVoc PWA v1.0 / Aşama 2 freeze için hazır.**
+**VocVoc PWA v1.0 / Aşama 2 freeze için hazır** (etiket `v1.0.8-stage2`).
 
 Teknik lifecycle referansları: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB ve https://web.dev/articles/service-worker-lifecycle

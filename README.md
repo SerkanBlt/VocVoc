@@ -99,12 +99,21 @@ Service Worker sadece allowlist'teki app-shell dosyalarını precache eder. Navi
 - **Süre sınırları** (`GEMINI_LIMITS`): istek başına 15 sn, Daily için tüm denemeler ve modeller toplamında 45 sn. Bütçe dolunca yeni istek başlatılmaz.
 - **Hatalar:** hepsi yerelleştirilmiş tek mesaj verir, yükleme göstergesi kapanır, kayıtlı veri değişmez ve uygulama kullanılabilir kalır: offline, zaman aşımı, HTTP hatası (5xx), 429/kota (başka model denenir; hepsi başarısızsa kota mesajı öncelikli), geçersiz anahtar veya anahtar kısıtlaması (denemeyi durdurur, fallback tüketmez), bozuk JSON, boş yanıt, bulunamayan model (404 → sonraki model), tüm modellerin başarısız olması, kopan bağlantı (tekrar denenmez), Daily toplam süre aşımı.
 
+### Çoklu sekme
+
+Bir sekme veri yazınca (commit) diğer sekmelere `BroadcastChannel` ile revision bildirilir. **Boştaki** sekme (açık panel/Ayarlar, Quiz, Flip, AI isteği, bekleyen yazma ve Undo yok) bu değişikliği sayfayı yenilemeden alır: veri ve revision güncellenir, ayarlar (tema, yazı boyutu, diller) uygulanır, yalnızca değişen listeler yeniden çizilir. Açık bir kart, ekranda duran arama sonucu veya yazılmakta olan sorgu bu yüzden bozulmaz. Sekme **meşgulse** verinin altından çekilmez; “başka sekmede değişti” bandı gösterilir ve eski revision ile yazma `conflict` olarak reddedilir (üzerine yazamaz). Sekme boşa çıkıp bir sonraki değişiklik gelince eksiklerini de alır ve bant kendiliğinden kapanır. Bir başka sekme şema/veritabanı sürümünü yükseltirse (`versionchange`) uygulama sayfanın yenilenmesini ister.
+
+### İçerik güvenlik politikası (CSP)
+
+`index.html` başındaki CSP meta etiketi ağ hedeflerini sınırlar: `connect-src 'self' https://generativelanguage.googleapis.com` (kendi origin'iniz ve Gemini API'si; başka hiçbir adrese bağlanılamaz), `img-src`, `manifest-src` ve `worker-src` yalnızca `'self'`, `object-src 'none'`, `base-uri` ve `form-action` `'self'`. Kodda `eval`, dış kaynak, iframe veya form yoktur; testler bunu denetler. **Sınır:** `script-src` ve `style-src` hâlâ `'unsafe-inline'` içerir, çünkü sayfada yaklaşık 100 satır içi `onclick` vardır; bu yüzden politika, enjekte edilmiş bir betiğin çalışmasını değil, çalışan bir betiğin veriyi başka bir adrese göndermesini engeller. Sıkı politika için olay işleyicileri `addEventListener`'a taşınmalıdır. Service Worker kendi isteklerini meta etiketten bağımsız yapar.
+
 ### Sürüm yayınlama adımları
 
 1. `sw.js` içindeki `VERSION`'ı, `index.html` içindeki `<meta name="vocvoc-shell" content="…">` değerini ve `BUILD_INFO.json` `version`'ını aynı sayıya yükseltin.
 2. `node tools/lock-shell.js` çalıştırın (shell parmak izini `tests/shell-lock.json`'a yazar; shell değişmiş ama VERSION değişmemişse reddeder).
-3. `npm test --prefix tests`: `validate.cjs`, ASSETS listesi, `sw.js` veya herhangi bir asset baytı değişmiş ama VERSION yükseltilmemişse **FAIL** eder.
-4. Tüm klasörü atomik yayınlayın.
+3. `npm run checksums` çalıştırın (`SHA256SUMS`'ı yeniden üretir; bir test dosyalarla uyumunu denetler).
+4. `npm test --prefix tests`: `validate.cjs`, ASSETS listesi, `sw.js` veya herhangi bir asset baytı değişmiş ama VERSION yükseltilmemişse **FAIL** eder.
+5. Tüm klasörü atomik yayınlayın.
 
 ### Güncelleme ve IndexedDB yaşam döngüsü
 
@@ -119,12 +128,15 @@ Service Worker IndexedDB'ye hiç dokunmaz ve diğer sekmeleri reload etmez; bu y
 
 ```
 cd tests && npm ci      # test araçları: playwright, fake-indexeddb (uygulamanın çalışma zamanı bağımlılığı yoktur)
-npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 27 doğrulama + 42 veri testi
-npm run test:browser    # Chrome regresyon paketi (84 senaryo, yaklaşık 2 dk)
+npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 33 doğrulama + 42 veri testi
+npm run test:browser    # Chrome regresyon paketi (92 senaryo, yaklaşık 3 dk)
 npm run test:all        # ikisi birden
+npm run checksums       # SHA256SUMS'ı yeniden üretir (kökten; sürüm yayınlama adımı)
 ```
 
-`npm test` kök dizinden de çalışır (`package.json` yalnızca `tests/`'e yönlendirir). Tarayıcı paketi sistemdeki Chrome'u `PWA_BROWSER_PATH=/yol/chrome` ile kullanır; verilmezse Playwright'ın Chromium'u gerekir (`npx playwright install chromium`). Testler sahte Gemini cevapları kullanır, gerçek anahtar/kota harcamaz. `tests/fixtures/spa-v1.html` dokunulmamış kaynak fixture'ıdır.
+`npm test` kök dizinden de çalışır (`package.json` yalnızca `tests/`'e yönlendirir). Tarayıcı paketi sistemdeki Chrome'u `PWA_BROWSER_PATH=/yol/chrome` ile kullanır; verilmezse Playwright'ın Chromium'u gerekir (`npx playwright install chromium`). Testler sahte Gemini cevapları kullanır, gerçek anahtar/kota harcamaz. `tests/fixtures/spa-v1.html` dokunulmamış kaynak fixture'ıdır. Tarayıcı paketi her koşu sonunda senaryo listesini `tests/browser-results.json`'a yazar; bu bir test çıktısıdır, git'te izlenmez ve `SHA256SUMS`'a girmez (CI aynı listeyi iş özetine koyar).
+
+`.gitattributes` metin dosyalarını her platformda LF olarak çıkarır (`eol=lf`). Windows'ta `core.autocrlf=true` olsa bile `sha256sum -c SHA256SUMS` ve fixture'ın SHA-256'sı tutar.
 
 **GitHub Actions** (`.github/workflows/ci.yml`): her push ve pull request'te iki iş paralel çalışır: *Validate* (`npm test`) ve *Browser tests* (`npm run test:browser`, runner'ın Chrome'u ile; yoksa Chromium indirir). `tests/package-lock.json` repoda olmalıdır (`npm ci` ve önbellek ona bağlıdır).
 
@@ -138,6 +150,9 @@ npm run test:all        # ikisi birden
 | Migration idempotency | *is idempotent: starting again with the same legacy data changes nothing…*, *an interrupted migration… is completed…*, *two tabs starting at once…*, *restarting never repeats the migration…* |
 | Arşiv / geri yükleme durumu | `data-layer.test.cjs` → *Archive and restore* grubu (Undo birebir, geri yüklenenler ezberde, silme kalıcı) |
 | İlk 100 kayıt (`slice`) regresyonu | *History is newest first: with 150 records the first 100 are exactly the 100 most recent*, *the prompt word cap keeps the NEWEST 100 words…* ve tarayıcıda *prompt word cap keeps the newest 100 of 150 records…* |
+| CSP (ağ hedefleri) | *Content Security Policy (static guards)* grubu (politika betiklerden önce gelir, `connect-src` yalnızca kendi origin'i ve Gemini; kod politikanın yasakladığı bir şeye ihtiyaç duymaz) ve tarayıcıda *CSP: requests to this origin and the Gemini API pass, a request to any other origin is blocked…*, *CSP: the whole suite … ran without a single policy violation* |
+| Çoklu sekme | tarayıcıda *two tabs: …* senaryoları (boştaki sekme alır, meşgul sekme korunur, bant kendiliğinden kapanır) ve *multi-tab stale writer rejected* |
+| SHA256SUMS | *SHA256SUMS lists real files, matches their bytes and leaves out generated output* |
 | API anahtarı export/cache'e girmez | *is absent from the exported backup, from the recovery copy and from the stored Schema v1 snapshot*, *a backup that carries a key is rejected…*, *the key travels only in the x-goog-api-key header…*, tarayıcıda *Gemini request/response and the API key never enter any cache* |
 
 Bir testin neden düştüğü adından okunur; tarayıcı paketi hata anında "son geçen senaryo"yu yazdırır (düşen, bir sonrakidir).

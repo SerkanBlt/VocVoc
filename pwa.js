@@ -65,10 +65,27 @@ async function retryStartup(){
   }catch(_){}
   reload();
 }
+// Another tab committed. While this tab is idle it simply adopts the new data. The "reload" banner is only for the cases where that
+// is not safe (something is open or in flight here, so swapping the data underneath could lose work) or where adopting failed.
+let externalSyncRunning=false,externalSyncAgain=false;
+async function syncExternalCommit(detail){
+  if(Number.isSafeInteger(detail?.revision)&&detail.revision<=VocVocStorage.adapter.revision)return;     // already known
+  if(externalSyncRunning){externalSyncAgain=true;return;}
+  externalSyncRunning=true;
+  try{
+    do{
+      externalSyncAgain=false;
+      if(operationBusy()){showPwaUpdate(true);return;}
+      await adoptExternalChange();
+      const host=document.getElementById('pwaUpdate');if(host?.dataset.kind==='external')host.remove();
+    }while(externalSyncAgain);
+  }catch(error){console.warn('VocVoc could not adopt the change made in another tab',error);showPwaUpdate(true);}
+  finally{externalSyncRunning=false;}
+}
 let pwaRegistration=null,pwaReloadRequested=false;
 function showPwaUpdate(external=false){
   let host=document.getElementById('pwaUpdate');if(!host){host=document.createElement('div');host.id='pwaUpdate';host.setAttribute('role','status');document.body.append(host);}
-  host.replaceChildren();const panel=document.createElement('div');panel.className='ui-panel';const label=document.createElement('span');label.textContent=pwaText(external?'conflict':'update');panel.append(label);
+  host.replaceChildren();host.dataset.kind=external?'external':'update';const panel=document.createElement('div');panel.className='ui-panel';const label=document.createElement('span');label.textContent=pwaText(external?'conflict':'update');panel.append(label);
   const reload=document.createElement('button');reload.className='ui-button ui-button-secondary';reload.textContent=pwaText('reload');reload.onclick=async()=>{
     if(operationBusy()){showError(pwaText('busy'));return;}
     document.querySelector('.container').inert=true;await VocVocData.flush();
@@ -102,7 +119,7 @@ function initPwaControls(){
   document.getElementById('backupControls')?.addEventListener('toggle',updatePersistNotice);
   // Persistence is requested on the first user gesture (some browsers prompt), not at load.
   window.addEventListener('click',requestPersistence);window.addEventListener('keydown',requestPersistence);
-  if('BroadcastChannel' in window){const channel=new BroadcastChannel('vocvoc-storage-v1');window.addEventListener('vocvoc-storage-committed',event=>channel.postMessage(event.detail));channel.onmessage=()=>showPwaUpdate(true);}
+  if('BroadcastChannel' in window){const channel=new BroadcastChannel('vocvoc-storage-v1');window.addEventListener('vocvoc-storage-committed',event=>channel.postMessage(event.detail));channel.onmessage=event=>syncExternalCommit(event.data);}
   window.addEventListener('vocvoc-storage-external',()=>showPwaUpdate(true));
   if(!('serviceWorker' in navigator)||!window.isSecureContext)return;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{if(pwaReloadRequested)location.reload();});

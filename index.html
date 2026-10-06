@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.0.8">
+  <meta name="vocvoc-shell" content="1.0.9">
   <meta name="theme-color" content="#111111">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3219,6 +3221,39 @@ async function syncSavedWordsToHistory(){
   if(await VocVocData.repairMissingProgress()>0){
     renderHistory();
     renderAllLocal();
+  }
+}
+// Another tab committed and this one is idle (pwa.js decides that): take over its data without a reload.
+// Only what changed is redrawn, so a card the reader has opened stays open when the other tab touched unrelated words.
+function interfaceSignature(){
+  return getHistory().map(word=>word+"\u0001"+(VocVocData.getWordProgress(word)?.status||"")).join("\u0002");
+}
+async function adoptExternalChange(){
+  const settingsBefore=JSON.stringify(VocVocData.getSettings()),listsBefore=interfaceSignature(),languagesBefore=[getAppLanguage(),getNativeLanguageCode(),getTargetLanguageCode()].join();
+  await VocVocData.refresh();
+  for(const key of Object.keys(localDictionary))if(!BUILTIN_DICTIONARY_KEYS.has(key))delete localDictionary[key];
+  loadSavedWords();
+  const settings=VocVocData.getSettings(),settingsChanged=JSON.stringify(settings)!==settingsBefore;
+  if(settingsChanged){                                   // the same assignments as start-up
+    document.getElementById("difficultySelect").value=settings.difficulty||"A1-A2";
+    document.getElementById("dailyLimitInput").value=(settings.dailyLimit==="unlimited"?t("unlimited"):(settings.dailyLimit||"10"));
+    document.getElementById("themeSelect").value=settings.theme||"system";
+    document.getElementById("fontSizeSelect").value=normalizeFontSizePreference(settings.fontSize);
+    document.getElementById("nativeLanguageSelect").value=settings.nativeLanguage||"tr";
+    document.getElementById("targetLanguageSelect").value=settings.targetLanguage||"fr";
+    document.getElementById("appLanguageSelect").value=getAppLanguage();
+    applyTheme(settings.theme||"system");
+    applyFontSize(normalizeFontSizePreference(settings.fontSize));
+    for(const [dropdown,value] of [["appLanguageDropdown",getAppLanguage()],["nativeLanguageDropdown",getNativeLanguageCode()],["targetLanguageDropdown",getTargetLanguageCode()],
+      ["difficultyDropdown",document.getElementById("difficultySelect").value],["themeDropdown",document.getElementById("themeSelect").value],["fontSizeDropdown",document.getElementById("fontSizeSelect").value]])syncUiDropdown(dropdown,value);
+    syncDailyLimitSelection();
+    applyAppLanguage();
+  }
+  // A theme or font change leaves the lists alone; a language change rewrites every label in them.
+  if(interfaceSignature()!==listsBefore||[getAppLanguage(),getNativeLanguageCode(),getTargetLanguageCode()].join()!==languagesBefore){
+    renderHistory();
+    if(!document.getElementById("searchInput").value.trim())renderAllLocal();   // a search result on screen is not replaced
+    refreshArchiveButtonState();
   }
 }
 
