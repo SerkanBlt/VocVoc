@@ -126,22 +126,24 @@ Service Worker IndexedDB'ye hiç dokunmaz ve diğer sekmeleri reload etmez; bu y
 - **Yeni shell + migration gerektiren DB:** IndexedDB yoksa ve legacy kaynak duruyorsa migration idempotent çalışır (aynı ID'ler, tekrar kopya yok, marker `complete`).
 - **Daha yeni şemadaki DB (geri alınan deploy / ileride şema artışı):** `schemaVersion` 1 dışındaki kayıt hiçbir shell tarafından değiştirilmez; uygulama güvenli hata ekranı gösterir. Bu sürümde yerinde şema migration'ı yoktur; ileride eklenirse tek transaction'da yazılmalı ve revision'ı artırmalıdır, aksi halde eski sekmeler çakışmayı fark edemez.
 
-## Yeni arayüz (prototip, 1.1.0)
+## Yeni arayüz (prototip, 1.1.1)
 
 Mağaza uygulaması için ekranların ilk iskeleti. **Varsayılan olarak kapalıdır**: `?ui=v2` ile açılır (seçim hatırlanır), Profil'deki *Eski arayüze dön* veya `?ui=v1` ile kapanır. Kapalıyken hiçbir şey değişmez ve mevcut testler aynen çalışır. Gerçek hesap, sunucu veya ödeme **yoktur**: giriş, plan ve Premium simülasyondur ve yalnızca bu tarayıcının `VOCVOC_UI`, `VOCVOC_SIM_PLAN`, `VOCVOC_SIM_PROFILE` anahtarlarında durur (yedeğe ve kelime verisine girmez).
 
 - **Dosyalar:** `screens.js`, `screens.css` (kabuğun parçasıdır, `ASSETS`'te). Satır içi işleyici ve veri içeren `innerHTML` kullanmaz.
-- **Ekranlar:** ilk açılışta simüle giriş (Google simülasyonu veya misafir; arkadaki sayfa kilitlenir). Alt sekme çubuğu: *Bugün* (mevcut ana ekran), *Çalış* (Test, Hatırla, Flip'i mevcut akışlarla başlatır), *İstatistik* (Ücretsiz planda kilitli), *Rozetler* (yer tutucu), *Profil* (Premium, Ayarlar, Yardım, Gizlilik Politikası, Kullanım Şartları, Hakkında, çıkış simülasyonu). Çıkış öğrenme verisini silmez.
+- **Ekranlar:** ilk açılışta simüle giriş (Google simülasyonu veya misafir; arkadaki sayfa kilitlenir). Alt sekme çubuğu: *Bugün* (üstte pano, altında mevcut ana ekran), *Çalış* (Test, Hatırla ve Flip sayfalarına götürür), *İstatistik* (Ücretsiz planda kilitli), *Rozetler* (yer tutucu), *Profil* (Premium, Ayarlar, Yardım, Gizlilik Politikası, Kullanım Şartları, Hakkında, çıkış simülasyonu). Çıkış öğrenme verisini silmez.
 - **Metinler:** Gizlilik Politikası ve Kullanım Şartları **taslaktır** (iletişim, veri sorumlusu, yaş sınırı ve hukuki gözden geçirme eksik); sayfada da "Taslak" yazar. Ekran metinleri Türkçe ve İngilizcedir, diğer arayüz dilleri İngilizce gösterir.
+- **Bugün panosu:** selam (profil adıyla), günlük hedef çubuğu (Ayarlar'daki günlük sınıra göre; sınırsızsa yalnızca sayı), *Günlük kelimeler ekle* (mevcut Günlük akışı, kendi API anahtarı gerekir), aktif / ezberlenen / bugün ezberlenen sayıları ve Test-Hatırla-Flip kısayolları. Her veri değişikliğinde (bu sekmede veya başka sekmede) güncellenir, bir kelime aranırken çekilir. Eski ana ekranın Test-Hatırla-Flip satırı yerine geçtiği için yeni arayüzde gizlenir.
+- **Test ve Flip sayfaları:** Test (`#/test`, Hatırla için `#/recall`) kendi sayfasında çalışır: kapat düğmeli üst çubuk, ilerleme çubuğu, sonuç kartı ve *yeni test*; çalışırken sekme çubuğu gizlenir. En az 10 kelime yoksa sayfa kaç kelime olduğunu söyler. Çıkınca (× veya geri tuşu) Test bırakılır. Flip (`#/flip`) uygulamanın kendi Flip penceresidir; sayfa gibi tam ekran görünür ve adrese bağlıdır: Android geri tuşu, × veya Esc onu kapatıp bir önceki sayfaya döner.
 - **Plan kuralları** (`VocVocPlan`): Ücretsiz = kartlar, ezber, arşiv, History, Test, Hatırla, Flip, kendi anahtarınla yeni kelime, yedek, rozetler. Premium = dahili yapay zekâ, History'den cümle kurma (kendi anahtarıyla çalışmaz), sesli okuma, istatistik ve geçmiş analizi. Premium aktifken kendi API anahtarı devre dışıdır (silinmez), abonelik bitince yeniden etkin olur. **Henüz uygulanmayan kısım:** bu kural şimdilik yalnızca ekranlarda ve `VocVocPlan`'da var; yapay zekâ istekleri hâlâ kullanıcının anahtarını kullanır.
-- **Henüz yok:** Bugün panosu, özel Test ekranı, istatistik ve rozet içeriği, hazır kelime paketleri, sesli okuma, cümle kurma, giriş ekranında politika bağlantıları. Sayfalar adres olarak (`#/profile` gibi) tarayıcı geçmişine girer, geri tuşu önceki sayfaya döner; açık pencerelerin (Flip, History, Ayarlar) geri tuşuyla kapanması henüz yok.
+- **Henüz yok:** istatistik ve rozet içeriği, hazır kelime paketleri, sesli okuma, cümle kurma, giriş ekranında politika bağlantıları. Sayfalar adres olarak (`#/profile` gibi) tarayıcı geçmişine girer, geri tuşu önceki sayfaya döner; Flip dışındaki pencerelerin (History, Ayarlar, arşiv) geri tuşuyla kapanması henüz yok.
 
 ## Testleri çalıştırma ve sürekli doğrulama (CI)
 
 ```
 cd tests && npm ci      # test araçları: playwright, fake-indexeddb (uygulamanın çalışma zamanı bağımlılığı yoktur)
-npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 45 doğrulama + 43 veri testi
-npm run test:browser    # Chrome regresyon paketi (105 senaryo, yaklaşık 3 dk)
+npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 46 doğrulama + 43 veri testi
+npm run test:browser    # Chrome regresyon paketi (107 senaryo, yaklaşık 3 dk)
 npm run test:all        # ikisi birden
 npm run checksums       # SHA256SUMS'ı yeniden üretir (kökten; sürüm yayınlama adımı)
 ```
@@ -164,7 +166,7 @@ npm run checksums       # SHA256SUMS'ı yeniden üretir (kökten; sürüm yayın
 | İlk 100 kayıt (`slice`) regresyonu | *History is newest first: with 150 records the first 100 are exactly the 100 most recent*, *the prompt word cap keeps the NEWEST 100 words…* ve tarayıcıda *prompt word cap keeps the newest 100 of 150 records…* |
 | CSP (ağ hedefleri) | *Content Security Policy (static guards)* grubu (politika betiklerden önce gelir, `connect-src` yalnızca kendi origin'i ve Gemini; kod politikanın yasakladığı bir şeye ihtiyaç duymaz) ve tarayıcıda *CSP: requests to this origin and the Gemini API pass, a request to any other origin is blocked…*, *CSP: the whole suite … ran without a single policy violation* |
 | Çoklu sekme | tarayıcıda *two tabs: …* senaryoları (boştaki sekme alır, meşgul sekme korunur, bant kendiliğinden kapanır) ve *multi-tab stale writer rejected* |
-| Yeni arayüz (prototip) | *New interface (prototype)* grubu (varsayılan kapalıyken yalnızca plan yardımcısını tanımlar, satır içi işleyici yok, plan kuralları, TR/EN metin eşliği, taslak işaretleri) ve tarayıcıda *new interface: …* senaryoları (kapalı varsayılan, giriş, sekmeler, Çalış, kilitli/Premium, geri tuşu, metin sayfaları, WCAG AA kontrastı) |
+| Yeni arayüz (prototip) | *New interface (prototype)* grubu (varsayılan kapalıyken yalnızca plan yardımcısını tanımlar, satır içi işleyici yok, plan kuralları, TR/EN metin eşliği, taslak işaretleri) ve tarayıcıda *new interface: …* senaryoları (kapalı varsayılan, giriş, sekmeler, pano, Test sayfası, Flip ve geri tuşu, kilitli/Premium, metin sayfaları, WCAG AA kontrastı) |
 | SHA256SUMS | *SHA256SUMS lists real files, matches their bytes and leaves out generated output* |
 | API anahtarı export/cache'e girmez | *is absent from the exported backup, from the recovery copy and from the stored Schema v1 snapshot*, *a backup that carries a key is rejected…*, *the key travels only in the x-goog-api-key header…*, tarayıcıda *Gemini request/response and the API key never enter any cache* |
 

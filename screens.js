@@ -51,6 +51,8 @@
       simulate:"Premium'u simüle et",backToFree:'Ücretsiz plana dön',simNote:'Simülasyon: gerçek ödeme alınmaz, hiçbir şey satın alınmaz.',
       free1:'Seçtiğin dil çifti için hazır başlangıç kelimeleri',free2:'Kartlar, ezberleme, arşiv ve History',free3:'Test, Hatırla ve Flip',free4:'Kendi API anahtarınla yeni kelime ekleme',free5:'Yedekleme, tema ve 6 arayüz dili',free6:'Rozetler',
       prem1:'Dahili yapay zekâ (anahtar gerekmez)',prem2:"History'den seçtiğin kelimelerle cümle kurma ve anlamını görme",prem3:'Sesli okuma',prem4:'İlerleme istatistikleri ve geçmiş analizi',
+      dashHello:'Merhaba, {name}',dashHelloGuest:'Merhaba',goalTitle:'Günlük hedef',goalValue:'{n} / {m} kelime',goalUnlimited:'Bugün {n} kelime eklendi',addDaily:'Günlük kelimeler ekle',statActive:'Aktif',statMemorized:'Ezberlenen',statToday:'Bugün ezberlenen',
+      quizClose:'Kapat',quizProgress:'Soru {n}/{total}',quizDone:'Tamamlandı',quizProgressLabel:'Test ilerlemesi',quizNeedActive:'Test için en az 10 aktif kelime gerekir. Şu an {n} var.',quizNeedRecall:'Hatırla için en az 10 ezberlenmiş kelime gerekir. Şu an {n} var.',backToToday:'Bugün ekranına dön',
       aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
     },
     en:{
@@ -70,6 +72,8 @@
       simulate:'Simulate Premium',backToFree:'Back to the free plan',simNote:'Simulation: no real payment is taken and nothing is purchased.',
       free1:'Ready-made beginner words for your language pair',free2:'Cards, memorizing, archive and History',free3:'Test, Recall and Flip',free4:'Adding new words with your own API key',free5:'Backup, themes and 6 interface languages',free6:'Badges',
       prem1:'Built-in AI (no key needed)',prem2:'Build sentences from words you pick in History and see their meaning',prem3:'Read-aloud',prem4:'Progress statistics and history analysis',
+      dashHello:'Hello, {name}',dashHelloGuest:'Hello',goalTitle:'Daily goal',goalValue:'{n} / {m} words',goalUnlimited:'{n} words added today',addDaily:'Add daily words',statActive:'Active',statMemorized:'Memorized',statToday:'Memorized today',
+      quizClose:'Close',quizProgress:'Question {n}/{total}',quizDone:'Finished',quizProgressLabel:'Test progress',quizNeedActive:'A Test needs at least 10 active words. You have {n}.',quizNeedRecall:'Recall needs at least 10 memorized words. You have {n}.',backToToday:'Back to Today',
       aboutTitle:'About',version:'Version',uiMode:'Interface',uiProto:'New interface (prototype)',aboutSim:'Sign-in, Premium and payment in this version are simulations: there is no real account, server or payment.'
     }
   };
@@ -161,8 +165,9 @@
 
   /* ---------- routing ---------- */
   const TABS=['today','study','stats','badges','profile'];
-  const ROUTES=[...TABS,'premium','help','privacy','terms','about'];
-  const TAB_OF={today:'today',study:'study',stats:'stats',badges:'badges',profile:'profile',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
+  const QUIZ_ROUTES=['test','recall'];
+  const ROUTES=[...TABS,'test','recall','flip','premium','help','privacy','terms','about'];
+  const TAB_OF={today:'today',study:'study',stats:'stats',badges:'badges',profile:'profile',test:'study',recall:'study',flip:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
   let shown=null,internalNavigations=0,tabButtons=null,screen=null,container=null,auth=null,root=null;
   const currentRoute=()=>{const route=location.hash.replace(/^#\/?/,'');return ROUTES.includes(route)?route:'today';};
   function navigate(route){
@@ -171,27 +176,92 @@
     if(location.hash!==target)location.hash=target;
     render(true);
   }
-  const goBack=()=>{if(internalNavigations>0)history.back();else navigate('profile');};
+  const goBack=(fallback='profile')=>{if(internalNavigations>0)history.back();else navigate(fallback);};
 
   /* ---------- screens ---------- */
   const page=(...kids)=>h('div',{class:'v2-page',lang:lang()},kids);
   const heading=text=>h('h1',{tabindex:'-1',text});
-  const backButton=()=>h('button',{type:'button',class:'v2-back',onclick:goBack},'‹ '+t('back'));
+  const backButton=()=>h('button',{type:'button',class:'v2-back',onclick:()=>goBack()},'‹ '+t('back'));
   function counts(){
-    let active=0,memorized=0;
-    try{for(const word of VocVocData.getWords()){const status=VocVocData.getWordProgress(word.word)?.status;if(status==='memorized')memorized++;else if(status==='active')active++;}}catch(_){}
-    return {active,memorized};
+    let active=0,memorized=0,memorizedToday=0;
+    const today=new Date().toLocaleDateString('en-CA');                       // the local day, like the daily usage of the app
+    try{
+      for(const word of VocVocData.getWords()){
+        const progress=VocVocData.getWordProgress(word.word);
+        if(progress?.status==='memorized'){memorized++;if(progress.memorizedAt&&new Date(progress.memorizedAt).toLocaleDateString('en-CA')===today)memorizedToday++;}
+        else if(progress?.status==='active')active++;
+      }
+    }catch(_){}
+    return {active,memorized,memorizedToday};
   }
   function studyScreen(){
     const {active,memorized}=counts();
     const card=(glyph,title,sub,run)=>h('button',{type:'button',class:'v2-study-card',onclick:run},
       h('span',{class:'v2-study-glyph','aria-hidden':'true',text:glyph}),
       h('span',{},h('span',{class:'v2-study-title',text:title}),h('span',{class:'v2-study-sub',text:sub})));
-    // the existing study flows run on the home screen
     return page(heading(t('studyTitle')),
-      card('◈',t('studyTest'),fill(t('studyTestSub'),{n:active}),()=>{navigate('today');startQuiz();}),
-      card('↺',t('studyRecall'),fill(t('studyRecallSub'),{n:memorized}),()=>{navigate('today');startRecallQuiz();}),
-      card('⇄',t('studyFlip'),t('studyFlipSub'),()=>{startFlip();}));
+      card('◈',t('studyTest'),fill(t('studyTestSub'),{n:active}),()=>navigate('test')),
+      card('↺',t('studyRecall'),fill(t('studyRecallSub'),{n:memorized}),()=>navigate('recall')),
+      card('⇄',t('studyFlip'),t('studyFlipSub'),()=>navigate('flip')));
+  }
+
+  /* ---------- dashboard: the top of the Today tab, above the existing home screen ---------- */
+  function dashboard(){
+    const name=readProfile()?.name||'';
+    const {active,memorized,memorizedToday}=counts();
+    const limit=getDailyLimit(),used=getDailyUsage().count,unlimited=limit===Infinity;
+    const bar=unlimited?null:h('div',{class:'v2-bar',role:'progressbar','aria-label':t('goalTitle'),'aria-valuemin':'0','aria-valuemax':String(limit),'aria-valuenow':String(Math.min(used,limit))},h('span'));
+    bar?.style.setProperty('--p',Math.min(100,Math.round(used/limit*100))+'%');
+    const stat=(value,label)=>h('li',{class:'v2-stat'},h('strong',{text:String(value)}),h('span',{text:label}));
+    const quick=(glyph,label,route)=>h('button',{type:'button',class:'v2-quick-btn',onclick:()=>navigate(route)},h('span',{'aria-hidden':'true',text:glyph}),h('span',{text:label}));
+    return h('section',{id:'v2Dashboard',class:'v2-dash','aria-labelledby':'v2DashTitle',lang:lang()},
+      h('h2',{id:'v2DashTitle',text:name?fill(t('dashHello'),{name}):t('dashHelloGuest')}),
+      h('div',{class:'v2-card v2-goal'},
+        h('p',{class:'v2-goal-label',text:t('goalTitle')}),
+        h('p',{class:'v2-goal-value',text:unlimited?fill(t('goalUnlimited'),{n:used}):fill(t('goalValue'),{n:used,m:limit})}),
+        bar,
+        h('button',{type:'button',class:'ui-button ui-button-success',onclick:()=>{addDailyWords();}},t('addDaily'))),
+      h('ul',{class:'v2-statline'},stat(active,t('statActive')),stat(memorized,t('statMemorized')),stat(memorizedToday,t('statToday'))),
+      h('div',{class:'v2-quick'},quick('◈',t('studyTest'),'test'),quick('↺',t('studyRecall'),'recall'),quick('⇄',t('studyFlip'),'flip')));
+  }
+  let dashboardTimer=0;
+  function refreshDashboard(){                                                   // after any change of the data, once per burst
+    clearTimeout(dashboardTimer);
+    dashboardTimer=setTimeout(()=>{
+      const current=document.getElementById('v2Dashboard');if(!current)return;
+      const fresh=dashboard();fresh.hidden=current.hidden;current.replaceWith(fresh);
+    },0);
+  }
+
+  /* ---------- the Test as a page of its own ---------- */
+  // The Test itself is the app's own (startQuiz, answerQuiz, the result card); this page only frames it and says how far it is.
+  function quizScreen(route){
+    const recall=route==='recall',poolSize=(recall?getRecallQuizPool():getQuizPool()).length;
+    const bar=h('div',{class:'v2-study-bar'},
+      h('button',{type:'button',class:'v2-close','aria-label':t('quizClose'),onclick:()=>goBack('study')},'×'),
+      h('h1',{tabindex:'-1',text:t(recall?'studyRecall':'studyTest')}),
+      h('span',{id:'v2QuizCount',class:'v2-muted'}));
+    if(poolSize<10)return page(bar,h('div',{class:'v2-card'},h('p',{text:fill(t(recall?'quizNeedRecall':'quizNeedActive'),{n:poolSize})}),
+      h('div',{class:'v2-actions'},h('button',{type:'button',class:'ui-button ui-button-secondary',onclick:()=>navigate('today')},t('backToToday')))));
+    return page(bar,
+      h('div',{id:'v2QuizProgress',class:'v2-bar',role:'progressbar','aria-label':t('quizProgressLabel'),'aria-valuemin':'0','aria-valuemax':'10','aria-valuenow':'0'},h('span')),
+      h('div',{id:'v2QuizHost'}));
+  }
+  function updateQuizProgress(){
+    const bar=document.getElementById('v2QuizProgress'),label=document.getElementById('v2QuizCount');
+    if(!bar||!label||!quizSession)return;
+    const total=quizSession.questions.length,done=Math.min(quizSession.index,total);
+    label.textContent=done>=total?t('quizDone'):fill(t('quizProgress'),{n:done+1,total});
+    bar.setAttribute('aria-valuemax',String(total));bar.setAttribute('aria-valuenow',String(done));bar.style.setProperty('--p',Math.round(done/total*100)+'%');
+  }
+  // After a page is drawn: start what it is for.
+  function afterRender(route){
+    if(QUIZ_ROUTES.includes(route)){
+      if((route==='recall'?getRecallQuizPool():getQuizPool()).length>=10){if(route==='recall')startRecallQuiz();else startQuiz();updateQuizProgress();}
+    }else if(route==='flip'){
+      startFlip();                                                                // the app's own Flip dialog, shown like a page
+      if(!flipSession)goBack('study');                                            // nothing to flip: startFlip said why
+    }
   }
   function lockedScreen(titleKey,textKey){
     return page(heading(t(titleKey)),h('div',{class:'v2-card v2-locked'},icon('lock'),h('h2',{text:t('lockedTitle')}),h('p',{text:t(textKey)}),
@@ -244,7 +314,8 @@
   }
   function build(route){
     switch(route){
-      case 'study':return studyScreen();
+      case 'study':case 'flip':return studyScreen();
+      case 'test':case 'recall':return quizScreen(route);
       case 'stats':return statsScreen();
       case 'badges':return badgesScreen();
       case 'profile':return profileScreen();
@@ -259,6 +330,10 @@
   function render(moveFocus){
     const route=currentRoute();shown=route;
     const tab=TAB_OF[route];
+    // Leaving the study pages ends what they started: a Test that was left is abandoned, an open Flip is closed.
+    if(!QUIZ_ROUTES.includes(route)&&quizSession)quizSession=null;
+    if(route!=='flip'&&flipSession)closeFlip();
+    document.body.classList.toggle('v2-immersive',QUIZ_ROUTES.includes(route));
     tabButtons.forEach(button=>{
       button.querySelector('.v2-tab-label').textContent=t(button.dataset.tab);
       if(button.dataset.tab===tab)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
@@ -266,11 +341,14 @@
     root.querySelector('.v2-tabs').setAttribute('aria-label',t('nav'));
     if(route==='today'){
       container.classList.remove('v2-away');screen.hidden=true;screen.replaceChildren();delete screen.dataset.route;
+      refreshDashboard();
       return;
     }
     container.classList.add('v2-away');screen.hidden=false;screen.dataset.route=route;
     screen.replaceChildren(build(route));screen.scrollTop=0;
-    if(moveFocus)screen.querySelector('h1')?.focus({preventScroll:true});
+    afterRender(route);
+    // The Test and Flip put focus on their own first control (the app's keyboard design); every other page takes it on its heading.
+    if(moveFocus&&!QUIZ_ROUTES.includes(route)&&route!=='flip')screen.querySelector('h1')?.focus({preventScroll:true});
   }
 
   /* ---------- simulated sign-in ---------- */
@@ -305,6 +383,17 @@
     auth=h('div',{id:'v2Auth',class:'v2-auth',role:'dialog','aria-modal':'true','aria-labelledby':'v2AuthTitle'});
     document.body.append(root,auth);
     tabButtons=[...nav.querySelectorAll('.v2-tab')];
+    // dashboard on the home screen; it follows every change of the data and steps aside while a word is being searched
+    const search=document.getElementById('searchInput');
+    container.insertBefore(dashboard(),document.getElementById('errorArea'));
+    search.addEventListener('input',()=>{const current=document.getElementById('v2Dashboard');if(current)current.hidden=!!search.value.trim();});
+    window.addEventListener('vocvoc-storage-committed',refreshDashboard);
+    window.addEventListener('vocvoc-data-adopted',refreshDashboard);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshDashboard();});
+    document.addEventListener('vocvoc-quiz-rendered',updateQuizProgress);
+    // Flip is the app's own dialog; when it is closed (its x, Escape, the back button) the address goes back with it
+    const flip=document.getElementById('flipOverlay');
+    if(flip)new MutationObserver(()=>{if(!flip.classList.contains('open')&&shown==='flip')goBack('study');}).observe(flip,{attributes:true,attributeFilter:['class']});
     window.addEventListener('hashchange',()=>{if(currentRoute()!==shown)render(true);});
     window.addEventListener('vocvoc-plan-changed',()=>{if(['stats','premium','profile'].includes(shown))render(false);});
     render(false);

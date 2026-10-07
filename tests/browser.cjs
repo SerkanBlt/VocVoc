@@ -748,7 +748,7 @@ async function main(){
   // off by default: nothing of it is on the page
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url);await ready();
-  assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),document.body.classList.contains('v2'),typeof VocVocPlan,VocVocPlan.get(),VocVocPlan.has('stats')]),[false,false,'object','free',false]);
+  assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),document.body.classList.contains('v2'),typeof VocVocPlan,VocVocPlan.get(),VocVocPlan.has('stats'),!!document.getElementById('v2Dashboard'),getComputedStyle(document.querySelector('.study-actions')).display!=='none']),[false,false,'object','free',false,false,true]);
   await context.close();
   record('new interface: off by default (no tab bar, no sign-in); the plan helper exists and says Free');
 
@@ -776,16 +776,58 @@ async function main(){
   await page.locator('.v2-tab',{hasText:'Bugün'}).click();assert.equal(await page.evaluate(()=>document.getElementById('v2Screen').hidden),true);
   record('new interface: five tabs, Today is the existing home screen, the others are full pages, the heading takes focus, one tab is current');
 
-  // the study hub starts the existing flows
+  // dashboard: the top of the Today tab (greeting, daily goal, counts, shortcuts); the old study row steps aside
+  const dash=()=>page.evaluate(()=>({hello:document.querySelector('#v2Dashboard h2')?.textContent,goal:document.querySelector('.v2-goal-value')?.textContent,bar:document.querySelector('#v2Dashboard .v2-bar')?.getAttribute('aria-valuenow'),stats:[...document.querySelectorAll('.v2-stat strong')].map(node=>node.textContent),hidden:document.getElementById('v2Dashboard').hidden,oldRow:getComputedStyle(document.querySelector('.study-actions')).display}));
+  assert.deepEqual(await dash(),{hello:'Merhaba, Ayşe',goal:'0 / 10 kelime',bar:'0',stats:['3','0','0'],hidden:false,oldRow:'none'});
+  await page.evaluate(()=>VocVocData.addDailyUsage(3));                                                 // the dashboard follows every change of the data
+  await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'hubword'+i,meaning:'anlam '+i}))));
+  await page.waitForFunction(()=>document.querySelector('.v2-goal-value')?.textContent==='3 / 10 kelime'&&document.querySelector('.v2-stat strong')?.textContent==='15');
+  await page.evaluate(()=>markMemorized('hubword0'));
+  await page.waitForFunction(()=>[...document.querySelectorAll('.v2-stat strong')].map(node=>node.textContent).join()==='14,1,1');
+  assert.equal((await dash()).bar,'3');
+  await page.fill('#searchInput','abc');assert.equal((await dash()).hidden,true);                      // it steps aside while a word is being searched
+  await page.fill('#searchInput','');await page.evaluate(()=>document.getElementById('searchInput').dispatchEvent(new Event('input')));assert.equal((await dash()).hidden,false);
+  record('new interface: the Today dashboard shows greeting, daily goal and counts, follows every data change, and hides while searching');
+
+  // Test page: its own page, immersive (no tab bar), with a progress bar; closing abandons it
   await page.locator('.v2-tab',{hasText:'Çalış'}).click();
-  assert.match(await page.locator('.v2-study-card',{hasText:'Test'}).textContent(),/3 aktif kelimeden 10 soru/);
-  await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'hubword'+i,meaning:'anlam '+i}))));   // a Test needs more than the 3 starter words
-  await page.locator('.v2-tab',{hasText:'Bugün'}).click();await page.locator('.v2-tab',{hasText:'Çalış'}).click();
-  assert.match(await page.locator('.v2-study-card',{hasText:'Test'}).textContent(),/15 aktif kelimeden 10 soru/);
-  await page.locator('.v2-study-card',{hasText:'Test'}).click();
-  assert.deepEqual(await page.evaluate(()=>[!!quizSession,location.hash,document.querySelector('.container').classList.contains('v2-away')]),[true,'#/today',false]);
-  await page.evaluate(()=>{quizSession=null;renderAllLocal();});
-  record('new interface: the study hub shows the counts and starts the existing Test on the home screen');
+  assert.match(await page.locator('.v2-study-card',{hasText:'Test'}).textContent(),/14 aktif kelimeden 10 soru/);
+  await page.locator('.v2-study-card',{hasText:'Test'}).click();await page.waitForSelector('#v2QuizHost .quiz-option');
+  const testState=()=>page.evaluate(()=>({hash:location.hash,running:!!quizSession,tabs:getComputedStyle(document.querySelector('.v2-tabs')).display,count:document.getElementById('v2QuizCount').textContent,now:document.getElementById('v2QuizProgress').getAttribute('aria-valuenow'),inHost:!!document.querySelector('#v2QuizHost .quiz-card'),inList:!!document.querySelector('#contentArea .quiz-card'),focus:document.activeElement.classList.contains('quiz-option')}));
+  assert.deepEqual(await testState(),{hash:'#/test',running:true,tabs:'none',count:'Soru 1/10',now:'0',inHost:true,inList:false,focus:true});
+  await page.locator('#v2QuizHost .quiz-option').first().click();await page.waitForFunction(()=>document.getElementById('v2QuizCount').textContent==='Soru 2/10');
+  assert.equal((await testState()).now,'1');
+  await page.getByRole('button',{name:'Kapat'}).click();
+  assert.deepEqual(await page.evaluate(()=>[location.hash,!!quizSession,getComputedStyle(document.querySelector('.v2-tabs')).display,document.getElementById('v2Screen').dataset.route]),['#/study',false,'flex','study']);
+  // finishing: the result is on the page, "new test" starts again on the same page
+  await page.locator('.v2-study-card',{hasText:'Test'}).click();await page.waitForSelector('#v2QuizHost .quiz-option');
+  for(let question=0;question<10;question++){await page.locator('#v2QuizHost .quiz-option:not([disabled])').first().click();await page.waitForFunction(count=>quizSession.index>count,question);}
+  await page.waitForSelector('#v2QuizHost .quiz-result-card');
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2QuizCount').textContent,document.getElementById('v2QuizProgress').getAttribute('aria-valuenow'),operationBusy()]),['Tamamlandı','10',false]);
+  await page.locator('#v2QuizHost .quiz-restart-btn').click();await page.waitForSelector('#v2QuizHost .quiz-option');
+  assert.deepEqual(await page.evaluate(()=>[!!quizSession,document.getElementById('v2QuizCount').textContent,!!document.querySelector('#contentArea .quiz-card')]),[true,'Soru 1/10',false]);
+  await page.goBack();                                                                                   // the Android back button leaves the Test
+  assert.deepEqual(await page.evaluate(()=>[!!quizSession,document.getElementById('v2Screen').dataset.route]),[false,'study']);
+  // Recall needs 10 memorized words: until then the page says how many there are
+  await page.locator('.v2-study-card',{hasText:'Hatırla'}).click();
+  assert.match(await page.locator('#v2Screen').textContent(),/en az 10 ezberlenmiş kelime gerekir. Şu an 1 var/);
+  assert.equal(await page.evaluate(()=>!!quizSession),false);await page.getByRole('button',{name:'Bugün ekranına dön'}).click();
+  assert.equal(await page.evaluate(()=>document.getElementById('v2Screen').hidden),true);
+  record('new interface: the Test is a page of its own (no tab bar, progress, result, new test), closing and the back button abandon it, Recall explains when there are too few words');
+
+  // Flip page: the app's own Flip dialog shown like a page and tied to the address; every way of closing it returns
+  await page.locator('.v2-tab',{hasText:'Çalış'}).click();await page.locator('.v2-study-card',{hasText:'Flip'}).click();
+  await page.waitForSelector('#flipOverlay.open [data-flip-face="front"]');
+  assert.deepEqual(await page.evaluate(()=>[location.hash,!!flipSession,document.getElementById('v2Screen').dataset.route,getComputedStyle(document.getElementById('flipOverlay')).backgroundColor!=='rgba(0, 0, 0, 0.48)']),['#/flip',true,'flip',true]);
+  await page.goBack();                                                                                   // Android back closes it
+  assert.deepEqual(await page.evaluate(()=>[location.hash,!!flipSession,document.getElementById('flipOverlay').classList.contains('open')]),['#/study',false,false]);
+  await page.locator('.v2-study-card',{hasText:'Flip'}).click();await page.waitForSelector('#flipOverlay.open [data-flip-face="front"]');
+  await page.locator('#flipOverlay [data-flip-face="front"] .word-popup-close').click();               // its own close button
+  await page.waitForFunction(()=>location.hash==='#/study');
+  assert.equal(await page.evaluate(()=>!!flipSession),false);
+  await page.locator('.v2-study-card',{hasText:'Flip'}).click();await page.waitForSelector('#flipOverlay.open [data-flip-face="front"]');
+  await page.keyboard.press('Escape');await page.waitForFunction(()=>location.hash==='#/study');         // Escape
+  record('new interface: Flip is tied to the address: Android back, its close button and Escape all close it and return to the study page');
 
   // Free: Statistics are locked and lead to Premium; simulating Premium unlocks them and switches the API key off
   await page.locator('.v2-tab',{hasText:'İstatistik'}).click();
@@ -839,6 +881,8 @@ async function main(){
    const style=getComputedStyle(el);return {ratio:Math.round(ratio*100)/100,size:parseFloat(style.fontSize),weight:style.fontWeight};
  };
   const checks=[['',[['#v2Auth h1'],['#v2Auth p'],['#v2Auth label'],['#v2Auth .ui-button-success'],['#v2Auth .ui-button-secondary'],['#v2Auth .v2-note']]],
+   ['#/today',[['#v2Dashboard h2'],['.v2-goal-label'],['.v2-goal-value'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['.v2-quick-btn']]],
+   ['#/test',[['.v2-study-bar h1'],['#v2QuizCount'],['.v2-close'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91']]],
    ['#/study',[['.v2-tab[aria-current="page"] .v2-tab-label'],['.v2-tab:not([aria-current="page"]) .v2-tab-label'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1']]],
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
    ['#/profile',[['.v2-profile-name'],['.v2-chip'],['.v2-profile-head .v2-muted'],['.v2-row'],['.v2-row-end'],['.v2-row[data-danger]'],['.v2-page > .v2-muted']]],
@@ -852,7 +896,8 @@ async function main(){
    const measureAll=async list=>{for(const [selector] of list){const result=await page.evaluate(MEASURE,[selector,null]);assert(result,`${selector} not found (${colorScheme})`);measured++;const need=(result.size>=24||(result.size>=18.66&&Number(result.weight)>=700))?3:4.5;if(result.ratio<need)failures.push(`${selector} ${result.ratio}:1 < ${need}`);}};
    await measureAll(checks[0][1]);
    await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
-   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(`#v2Screen[data-route="${hash.slice(2)}"] h1`);await measureAll(list);}
+   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i}))));
+   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'#v2Dashboard':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
    await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip.v2-premium');await measureAll([['.v2-chip'],['.v2-card .ui-button']]);
    assert.deepEqual(failures,[],`contrast below WCAG AA in the ${colorScheme} theme`);
    await context.close();

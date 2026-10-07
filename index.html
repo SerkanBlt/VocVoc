@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.1.0">
+  <meta name="vocvoc-shell" content="1.1.1">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -3259,6 +3259,7 @@ async function adoptExternalChange(){
     if(!document.getElementById("searchInput").value.trim()&&!quizSession)renderAllLocal();
     refreshArchiveButtonState();
   }
+  window.dispatchEvent(new CustomEvent("vocvoc-data-adopted"));
 }
 
 function normalizeGeneratedHeadword(value){
@@ -4686,14 +4687,16 @@ function renderQuizResult(){
 // After each question the options are replaced: keep keyboard users in the quiz instead of dropping focus to the page start.
 function focusQuizControl(){
   if(!quizSession)return;
-  const area=document.getElementById("contentArea"),active=document.activeElement;
+  const area=quizHost(),active=document.activeElement;
   if(active&&active!==document.body&&!area.contains(active)&&!active.closest(".study-actions"))return;
   area.querySelector(".quiz-option:not([disabled]),.quiz-restart-btn")?.focus({preventScroll:true});
 }
-function renderQuizQuestion(){renderQuizQuestionContent();focusQuizControl();}
+function renderQuizQuestion(){renderQuizQuestionContent();focusQuizControl();document.dispatchEvent(new CustomEvent("vocvoc-quiz-rendered"));}
+// The home screen draws a Test inline; the new interface gives it a page of its own (#v2QuizHost).
+function quizHost(){return document.getElementById("v2QuizHost")||document.getElementById("contentArea");}
 function renderQuizQuestionContent(){
   if(!quizSession)return;
-  const area=document.getElementById("contentArea");
+  const area=quizHost();
   if(quizSession.index>=quizSession.questions.length){
     area.innerHTML=`<div class="card quiz-card quiz-result-card">
       <div class="quiz-head-v91"><div class="quiz-word-v91">${t("testDone")}</div></div>

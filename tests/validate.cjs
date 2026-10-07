@@ -161,6 +161,13 @@ describe('New interface (prototype)',()=>{
     assert(!/\beval\(|new Function\(|fetch\(/.test(screensCode));
     assert(/body\.v2/.test(screensCss)&&!/^\s*(?:body|html|\.container)\s*\{/m.test(screensCss),'the stylesheet must not restyle the default interface');
   });
+  it('the hooks the new interface relies on are in the app: the Test draws into a named host, and it announces drawing and adopted data',()=>{
+    assert(html.includes('function quizHost(){return document.getElementById("v2QuizHost")||document.getElementById("contentArea");}'));
+    assert(/function renderQuizQuestionContent\(\)\{\s*if\(!quizSession\)return;\s*const area=quizHost\(\);/.test(html),'the Test must draw into quizHost()');
+    assert(/function focusQuizControl\(\)\{[^]*?const area=quizHost\(\)/.test(html));
+    assert(html.includes('document.dispatchEvent(new CustomEvent("vocvoc-quiz-rendered"))'));
+    assert(/async function adoptExternalChange\(\)\{[^]*?window\.dispatchEvent\(new CustomEvent\("vocvoc-data-adopted"\)\);\s*\}/.test(html));
+  });
   it('does nothing visible unless asked: without ?ui=v2 it only defines the plan helper',()=>{
     const {win}=load();
     assert.deepEqual(Object.keys(win).sort(),['VocVocPlan','VocVocScreens','dispatchEvent']);

@@ -78,3 +78,33 @@ body.v2 .archive-undo-toast{bottom:calc(var(--v2-tab-h) + env(safe-area-inset-bo
 .v2-field label{display:block;font-size:.85rem;font-weight:600;color:var(--text-muted);margin-bottom:6px}
 .v2-field input{width:100%}
 .v2-auth-buttons{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+
+/* Dashboard: the top of the Today tab. The Test / Recall / Flip row of the old home screen is replaced by the dashboard's own shortcuts. */
+body.v2 .study-actions{display:none}
+.v2-dash{margin:12px 0 16px}
+.v2-dash h2{font-size:1.3rem;line-height:1.3;margin:0 0 10px}
+.v2-goal-label{color:var(--text-muted);font-size:.85rem;font-weight:600;margin:0 0 2px}
+.v2-goal-value{font-size:1.35rem;font-weight:700;margin:0 0 10px}
+.v2-bar{height:10px;border-radius:999px;background:var(--accent-bg);border:1px solid var(--border);overflow:hidden;margin:0 0 14px}
+.v2-bar>span{display:block;height:100%;width:var(--p,0%);background:var(--primary);border-radius:999px;transition:width .3s}
+.v2-statline{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;list-style:none;margin:0 0 12px;padding:0}
+.v2-stat{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:12px 6px;text-align:center}
+.v2-stat strong{display:block;font-size:1.4rem;line-height:1.2}
+.v2-stat span{display:block;color:var(--text-muted);font-size:.78rem;margin-top:2px}
+.v2-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.v2-quick-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:14px;font:inherit;font-weight:600;cursor:pointer}
+.v2-quick-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.v2-quick-btn>span:first-child{font-size:1.3rem;color:var(--primary)}
+
+/* Test page: a bar with the close button and the progress, no tab bar while it runs */
+.v2-study-bar{display:flex;align-items:center;gap:8px;margin:0 0 12px}
+.v2-study-bar h1{flex:1;margin:0;font-size:1.25rem}
+.v2-close{flex:none;width:44px;height:44px;border:1px solid var(--border);border-radius:12px;background:var(--card-bg);color:var(--text);font:inherit;font-size:1.5rem;line-height:1;cursor:pointer}
+.v2-close:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+body.v2-immersive .v2-tabs{display:none}
+body.v2-immersive .v2-screen{bottom:0}
+body.v2-immersive .v2-page{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+
+/* Flip is the app's own dialog; in the new interface it fills the screen like a page instead of floating over a blurred one */
+body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}
+#v2QuizHost .quiz-count-v91{display:none}
