@@ -1,0 +1,80 @@
+/* New interface (prototype). Everything here applies only when screens.js adds body.v2 (opt-in with ?ui=v2); the default interface is untouched. */
+:root{--v2-tab-h:60px;--v2-danger:#b91c1c}
+:root[data-theme="dark"]{--v2-danger:#f87171}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--v2-danger:#f87171}}
+.v2-root,.v2-auth{display:none}
+body.v2 .v2-root{display:block}
+.v2-auth.v2-open{display:flex}
+
+/* The existing home screen is the "Today" tab: it only needs room for the tab bar, and it steps aside for the other tabs. */
+body.v2 .container{padding-bottom:calc(var(--v2-tab-h) + env(safe-area-inset-bottom,0px) + 12px)}
+body.v2 .container.v2-away{display:none}
+body.v2 #pwaUpdate{bottom:calc(var(--v2-tab-h) + env(safe-area-inset-bottom,0px) + 14px)}
+body.v2 .archive-undo-toast{bottom:calc(var(--v2-tab-h) + env(safe-area-inset-bottom,0px) + 14px)!important}
+
+/* Tab bar */
+.v2-tabs{position:fixed;left:0;right:0;bottom:0;z-index:90;display:flex;height:calc(var(--v2-tab-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card-bg);border-top:1px solid var(--border)}
+.v2-tab{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;color:var(--text-muted);font:inherit;font-size:.72rem;font-weight:600;line-height:1.1;cursor:pointer;padding:6px 2px}
+.v2-tab[aria-current="page"]{color:var(--primary)}
+.v2-tab:focus-visible{outline:2px solid var(--primary);outline-offset:-3px}
+.v2-icon{display:inline-flex}
+.v2-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Screens other than Today */
+.v2-screen{position:fixed;left:0;right:0;top:0;bottom:calc(var(--v2-tab-h) + env(safe-area-inset-bottom,0px));z-index:80;overflow-y:auto;background:var(--bg);color:var(--text);-webkit-overflow-scrolling:touch}
+.v2-screen[hidden]{display:none}
+.v2-page{max-width:620px;margin:0 auto;padding:max(18px,env(safe-area-inset-top,0px)) 16px 28px}
+.v2-page h1{font-size:1.5rem;line-height:1.25;margin:0 0 14px;outline:none}
+.v2-page h2{font-size:1.05rem;line-height:1.3;margin:18px 0 8px}
+.v2-page p{line-height:1.55;margin:0 0 10px}
+.v2-page ul{margin:0 0 10px;padding-left:20px}
+.v2-page li{line-height:1.5;margin-bottom:4px}
+.v2-muted{color:var(--text-muted)}
+.v2-back{display:inline-flex;align-items:center;gap:6px;margin:0 0 10px;padding:6px 10px 6px 4px;border:0;background:transparent;color:var(--primary);font:inherit;font-weight:600;cursor:pointer;border-radius:8px}
+.v2-back:focus-visible,.v2-row:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.v2-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--ui-panel-radius,16px);padding:16px;margin:0 0 14px}
+.v2-card>:last-child{margin-bottom:0}
+.v2-note{border:1px dashed var(--border);background:var(--accent-bg);border-radius:12px;padding:10px 12px;font-size:.92rem;line-height:1.45;margin:0 0 14px}
+.v2-chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--accent-bg);color:var(--text);border:1px solid var(--border)}
+.v2-chip.v2-premium{background:var(--primary);color:var(--bg);border-color:var(--primary)}
+.v2-actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.v2-locked .v2-actions{justify-content:center}
+
+/* Study hub */
+.v2-study-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px;margin:0 0 12px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:var(--ui-panel-radius,16px);font:inherit;cursor:pointer}
+.v2-study-card:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.v2-study-glyph{font-size:1.6rem;width:44px;text-align:center;color:var(--primary)}
+.v2-study-title{display:block;font-weight:700;font-size:1.05rem}
+.v2-study-sub{display:block;color:var(--text-muted);font-size:.9rem;margin-top:2px}
+
+/* Locked (Premium) state */
+.v2-locked{text-align:center;padding:26px 18px}
+.v2-locked .v2-icon svg{width:44px;height:44px;color:var(--primary)}
+.v2-locked h2{margin-top:10px}
+
+/* Profile */
+.v2-profile-head{display:flex;align-items:center;gap:14px}
+.v2-avatar{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--primary);color:var(--bg);font-size:1.4rem;font-weight:700}
+.v2-profile-name{font-size:1.15rem;font-weight:700;margin:0 0 4px}
+.v2-page .v2-rows{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--ui-panel-radius,16px);overflow:hidden;margin:0 0 14px;padding:0;list-style:none}
+.v2-page .v2-rows li{margin:0;padding:0;border-bottom:1px solid var(--border)}
+.v2-page .v2-rows li:last-child{border-bottom:0}
+.v2-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:52px;padding:0 16px;border:0;background:transparent;color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.v2-row[data-danger]{color:var(--v2-danger)}
+.v2-row-end{color:var(--text-muted)}
+
+/* Premium comparison */
+.v2-page .v2-feature-list{list-style:none;padding:0}
+.v2-feature-list li{display:flex;gap:10px;align-items:flex-start;padding-left:0}
+.v2-feature-list li::before{content:"✓";flex:none;color:var(--success);font-weight:700}
+.v2-feature-list.v2-premium-list li::before{color:var(--primary)}
+
+/* Sign-in */
+.v2-auth{position:fixed;inset:0;z-index:9000;background:var(--bg);color:var(--text);align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+.v2-auth-card{width:100%;max-width:420px;text-align:center}
+.v2-auth-card h1{font-size:2rem;margin:0 0 6px;color:var(--brand)}
+.v2-auth-card p{margin:0 0 16px;line-height:1.5}
+.v2-field{display:block;text-align:left;margin:0 0 14px}
+.v2-field label{display:block;font-size:.85rem;font-weight:600;color:var(--text-muted);margin-bottom:6px}
+.v2-field input{width:100%}
+.v2-auth-buttons{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}

@@ -132,7 +132,7 @@ describe('API key handling (static guards)',()=>{
     assert(!/[?&](?:key|api_key)=/i.test(html.match(/GEMINI_ENDPOINT=[^\n]*/)[0])&&!/\$\{apiKey\}|encodeURIComponent\(apiKey\)/.test(html));
   });
   it('no shipped file contains something that looks like an API key, and nothing logs it',()=>{
-    for(const file of ['index.html','a11y.js','pwa.js','sw.js','storage.js','manifest.webmanifest','README.md','tools/export-from-spa.js','tools/lock-shell.js','tools/shell-fingerprint.js'])
+    for(const file of ['index.html','a11y.js','pwa.js','screens.js','screens.css','sw.js','storage.js','manifest.webmanifest','README.md','tools/export-from-spa.js','tools/lock-shell.js','tools/shell-fingerprint.js'])
       assert(!/AIza[0-9A-Za-z_-]{35}/.test(read(file)),`${file} contains something that looks like an API key`);
     for(const [name,source] of [['index.html',html],['pwa.js',pwa]])assert(!/console\.\w+\([^)]*(apiKey|getApiKey|x-goog-api-key|SECRET_KEY)/i.test(source),`${name} logs the API key`);
   });
@@ -141,6 +141,66 @@ describe('API key handling (static guards)',()=>{
   });
   it('structured output and the Daily time budget are wired in',()=>{
     assert(html.includes('responseSchema')&&html.includes('GEMINI_SCHEMAS.words')&&html.includes('GEMINI_LIMITS.dailyBudgetMs')&&html.includes('geminiSchemaRefused'));
+  });
+});
+
+describe('New interface (prototype)',()=>{
+  const screensJs=read('screens.js'),screensCss=read('screens.css'),screensCode=screensJs.replace(/\/\*[^]*?\*\//g,'');   // code without the comments
+  // Run screens.js on its own, as a page that did not ask for the new interface would: it must only define the plan helper.
+  function load(storage={}){
+    const events=[],win={dispatchEvent:event=>events.push(event)};
+    const sandbox={window:win,location:{search:'',hash:''},URLSearchParams,CustomEvent:class{constructor(type,init){this.type=type;this.detail=init?.detail;}},
+      localStorage:{getItem:key=>key in storage?storage[key]:null,setItem:(key,value)=>{storage[key]=String(value);},removeItem:key=>{delete storage[key];}}};
+    vm.runInNewContext(screensJs,sandbox);
+    return {win,events,storage};
+  }
+  it('is loaded by index.html, has no inline handlers, and builds nodes without innerHTML except for its own icons',()=>{
+    assert(html.includes('<link rel="stylesheet" href="./screens.css">')&&html.includes('<script src="./screens.js"></script>'));
+    assert(!/\bon(?:click|input|change|keydown)\s*=/.test(screensCode),'screens.js must not use inline handlers');
+    assert.equal((screensCode.match(/innerHTML/g)||[]).length,1,'only the icon helper may use innerHTML');
+    assert(!/\beval\(|new Function\(|fetch\(/.test(screensCode));
+    assert(/body\.v2/.test(screensCss)&&!/^\s*(?:body|html|\.container)\s*\{/m.test(screensCss),'the stylesheet must not restyle the default interface');
+  });
+  it('does nothing visible unless asked: without ?ui=v2 it only defines the plan helper',()=>{
+    const {win}=load();
+    assert.deepEqual(Object.keys(win).sort(),['VocVocPlan','VocVocScreens','dispatchEvent']);
+  });
+  it('the plan rules match the agreed product: Free by default, stats/AI/sentences/speech are Premium, the own key is off while Premium is on',()=>{
+    const {win,events,storage}=load(),plan=win.VocVocPlan;
+    assert.deepEqual([plan.get(),plan.has('stats'),plan.has('badges'),plan.has('ownKeyAi'),plan.has('freeWords'),plan.ownKeyActive()],['free',false,true,true,true,true]);
+    assert.deepEqual(Object.entries(plan.features).filter(([,need])=>need==='premium').map(([name])=>name).sort(),['builtInAi','historyAnalysis','sentenceBuilder','speech','stats']);
+    assert.equal(plan.has('somethingUnknown'),false);
+    plan.set('premium');
+    assert.deepEqual([plan.get(),plan.has('stats'),plan.has('sentenceBuilder'),plan.has('speech'),plan.has('builtInAi'),plan.ownKeyActive(),storage.VOCVOC_SIM_PLAN,events.length],['premium',true,true,true,true,false,'premium',1]);
+    plan.set('premium');assert.equal(events.length,1,'setting the same plan again is not a change');
+    plan.set('free');assert.deepEqual([plan.get(),plan.ownKeyActive(),'VOCVOC_SIM_PLAN' in storage,events.length],['free',true,false,2]);
+    assert.throws(()=>{'use strict';plan.features.stats='free';},TypeError);
+    assert.equal(load({VOCVOC_SIM_PLAN:'garbage'}).win.VocVocPlan.get(),'free');
+  });
+  it('Turkish and English texts have exactly the same keys and every page has both languages with the same shape',()=>{
+    const {TEXT,PAGES}=load().win.VocVocScreens;
+    assert.deepEqual(Object.keys(TEXT.tr).sort(),Object.keys(TEXT.en).sort());
+    for(const [language,table] of Object.entries(TEXT))for(const [key,value] of Object.entries(table))assert(typeof value==='string'&&value.trim(),`${language}.${key} is empty`);
+    for(const [kind,page] of Object.entries(PAGES)){
+      assert.deepEqual(Object.keys(page).sort(),['en','tr'],kind);
+      assert.equal(page.tr.sections.length,page.en.sections.length,`${kind}: different number of sections`);
+      page.tr.sections.forEach((section,index)=>assert.equal(section.p.length,page.en.sections[index].p.length,`${kind}, section ${index}`));
+      assert.equal(Boolean(page.tr.banner),Boolean(page.en.banner),`${kind}: banner`);
+    }
+    for(const draft of ['privacy','terms'])assert(PAGES[draft].tr.banner.startsWith('Taslak')&&PAGES[draft].en.banner.startsWith('Draft'),`${draft} must be marked as a draft`);
+  });
+  it('every text key the screens ask for exists, and no text key is left unused',()=>{
+    const {TEXT}=load().win.VocVocScreens;
+    const code=screensJs.slice(screensJs.indexOf('/* ---------- helpers'));                        // after the text tables
+    const asked=new Set([
+      ...[...code.matchAll(/\bt\('(\w+)'\)/g)].map(match=>match[1]),                              // t('key')
+      ...[...code.matchAll(/list\(\[([^\]]*)\]/g)].flatMap(match=>[...match[1].matchAll(/'(\w+)'/g)].map(item=>item[1])),   // list(['free1',...])
+      ...[...code.matchAll(/lockedScreen\('(\w+)','(\w+)'\)/g)].flatMap(match=>[match[1],match[2]]),
+      ...[...code.matchAll(/\['(row\w+)','(\w+)'\]/g)].map(match=>match[1]),                       // ['rowHelp','help']
+      ...['today','study','stats','badges','profile']                                            // tab labels
+    ]);
+    for(const key of asked)assert(key in TEXT.en,`missing text key ${key}`);
+    for(const key of Object.keys(TEXT.en))assert(new RegExp(`'${key}'`).test(code),`text key ${key} is never used`);
   });
 });
 
@@ -160,7 +220,7 @@ describe('Card controls',()=>{
 });
 
 describe('Code hygiene',()=>{
-  const sources=['index.html','pwa.js','a11y.js','storage.js'].map(read),everything=sources.join('\n');
+  const sources=['index.html','pwa.js','a11y.js','storage.js','screens.js'].map(read),everything=sources.join('\n');
   it('no function is defined and then never used (dead code stays out)',()=>{
     const escape=name=>name.replace(/\$/g,'\\$');
     const dead=[];

@@ -8,7 +8,7 @@ const record=(name)=>{results.push(name);console.log('PASS',name)};
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 function seed(n=100){const words={},aliases={},progress={};for(let i=0;i<n;i++){const word='word'+i,id='fr:tr:'+word;words[id]={id,word,normalized:word,targetLanguage:'fr',nativeLanguage:'tr',meaning:'meaning '+i,type:'noun',synonyms:[],antonyms:[],examples:[],expressions:[],createdAt:'2026-01-01',updatedAt:'2026-01-01'};aliases[id]=id;progress[id]={wordId:id,status:i%3===0?'memorized':i%3===1?'active':'archived',firstSeenAt:'2026-01-01',lastSeenAt:'2026-01-01',statusChangedAt:'2026-01-01',memorizedAt:null,archivedAt:i%3===2?'2026-01-01':null,archiveSourceStatus:i%3===2?'memorized':null};}return {schemaVersion:1,meta:{starterWordsInitialized:true},settings:{nativeLanguage:'tr',targetLanguage:'fr',difficulty:'A1-A2',dailyLimit:'10',theme:'system',fontSize:'normal'},words,aliases,progress,dailyUsage:{date:'2026-10-05',count:7}};}
 async function main(){
- server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=url.pathname==='/baseline.html'?original:path.join(root,url.pathname.replace(/^\/VocVoc\//,''));if(url.pathname==='/VocVoc/')file=path.join(root,'index.html');try{if(serveNext&&skew==='icon'&&url.pathname.endsWith('/icons/maskable-512.png')){res.writeHead(404);res.end('missing');return;}let data=fs.readFileSync(file);if(serveNext&&file.endsWith('sw.js'))data=Buffer.from(data.toString().replace(`VERSION='${shellVersion}'`,`VERSION='${nextVersion}'`));if(serveNext&&file.endsWith('index.html')){let html=data.toString().replace('<title>VocVoc</title>','<title>VocVoc update test</title>');if(skew!=='meta')html=html.replace(`name="vocvoc-shell" content="${shellVersion}"`,`name="vocvoc-shell" content="${nextVersion}"`);data=Buffer.from(html);}res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.webmanifest')?'application/manifest+json':file.endsWith('.png')?'image/png':'text/html');res.end(data);}catch(_){res.writeHead(404);res.end('missing');}});
+ server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=url.pathname==='/baseline.html'?original:path.join(root,url.pathname.replace(/^\/VocVoc\//,''));if(url.pathname==='/VocVoc/')file=path.join(root,'index.html');try{if(serveNext&&skew==='icon'&&url.pathname.endsWith('/icons/maskable-512.png')){res.writeHead(404);res.end('missing');return;}let data=fs.readFileSync(file);if(serveNext&&file.endsWith('sw.js'))data=Buffer.from(data.toString().replace(`VERSION='${shellVersion}'`,`VERSION='${nextVersion}'`));if(serveNext&&file.endsWith('index.html')){let html=data.toString().replace('<title>VocVoc</title>','<title>VocVoc update test</title>');if(skew!=='meta')html=html.replace(`name="vocvoc-shell" content="${shellVersion}"`,`name="vocvoc-shell" content="${nextVersion}"`);data=Buffer.from(html);}res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.webmanifest')?'application/manifest+json':file.endsWith('.png')?'image/png':'text/html');res.end(data);}catch(_){res.writeHead(404);res.end('missing');}});
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`,url=base+'/VocVoc/';
  const launch={headless:true};if(process.env.PWA_BROWSER_PATH){launch.executablePath=process.env.PWA_BROWSER_PATH;launch.args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'];}
  browser=await chromium.launch(launch);
@@ -742,6 +742,122 @@ async function main(){
   assert.equal(await A.evaluate(()=>window.__sameDocument===undefined),true);assert.equal(await A.evaluate(()=>VocVocData.getWordProgress('mot00').status),'memorized');
   record('update button: a running Test blocks it with an explanation, a finished Test (result on screen) does not');
   await context.close();
+ }
+ // ===== New interface (prototype): off by default; opt-in tab bar, simulated sign-in, simulated Free/Premium =====
+ {
+  // off by default: nothing of it is on the page
+  context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(url);await ready();
+  assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),document.body.classList.contains('v2'),typeof VocVocPlan,VocVocPlan.get(),VocVocPlan.has('stats')]),[false,false,'object','free',false]);
+  await context.close();
+  record('new interface: off by default (no tab bar, no sign-in); the plan helper exists and says Free');
+
+  // opt-in with ?ui=v2: the simulated sign-in comes first
+  context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(url+'?ui=v2');await ready();await page.waitForSelector('#v2Auth.v2-open');
+  assert.deepEqual(await page.evaluate(()=>[document.activeElement.id,document.getElementById('v2Root').inert,document.querySelector('.container').inert,document.getElementById('v2Auth').getAttribute('role')]),['v2AuthTitle',true,true,'dialog']);
+  assert.match(await page.locator('#v2Auth').textContent(),/Simülasyon/);
+  await page.locator('#v2AuthName').fill('Ayşe');await page.getByRole('button',{name:/Google/}).click();
+  await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Root').inert,document.querySelector('.container').inert,JSON.parse(localStorage.getItem('VOCVOC_SIM_PROFILE')).name]),[false,false,'Ayşe']);
+  record('new interface: the simulated sign-in comes first, blocks what is behind it, and a profile is remembered');
+
+  // tab bar: five tabs, Today is the existing home screen, the others are pages
+  const tabs=()=>page.evaluate(()=>[...document.querySelectorAll('.v2-tab')].map(button=>button.textContent+(button.getAttribute('aria-current')==='page'?'*':'')));
+  assert.deepEqual(await tabs(),['Bugün*','Çalış','İstatistik','Rozetler','Profil']);
+  assert.equal(await page.evaluate(()=>document.querySelector('.container').classList.contains('v2-away')),false);   // the existing home screen
+  for(const [tab,heading] of [['Çalış','Çalış'],['İstatistik','İstatistikler'],['Rozetler','Rozetler'],['Profil','Profil']]){
+   await page.locator('.v2-tab',{hasText:tab}).click();
+   assert.equal(await page.locator('#v2Screen h1').textContent(),heading);
+   assert.equal(await page.evaluate(()=>document.activeElement.tagName),'H1');                                       // focus moves to the new page's heading
+   assert.equal((await tabs()).filter(label=>label.endsWith('*')).length,1);
+   assert.equal(await page.evaluate(()=>document.querySelector('.container').classList.contains('v2-away')),true);  // the home screen steps aside
+  }
+  await page.locator('.v2-tab',{hasText:'Bugün'}).click();assert.equal(await page.evaluate(()=>document.getElementById('v2Screen').hidden),true);
+  record('new interface: five tabs, Today is the existing home screen, the others are full pages, the heading takes focus, one tab is current');
+
+  // the study hub starts the existing flows
+  await page.locator('.v2-tab',{hasText:'Çalış'}).click();
+  assert.match(await page.locator('.v2-study-card',{hasText:'Test'}).textContent(),/3 aktif kelimeden 10 soru/);
+  await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'hubword'+i,meaning:'anlam '+i}))));   // a Test needs more than the 3 starter words
+  await page.locator('.v2-tab',{hasText:'Bugün'}).click();await page.locator('.v2-tab',{hasText:'Çalış'}).click();
+  assert.match(await page.locator('.v2-study-card',{hasText:'Test'}).textContent(),/15 aktif kelimeden 10 soru/);
+  await page.locator('.v2-study-card',{hasText:'Test'}).click();
+  assert.deepEqual(await page.evaluate(()=>[!!quizSession,location.hash,document.querySelector('.container').classList.contains('v2-away')]),[true,'#/today',false]);
+  await page.evaluate(()=>{quizSession=null;renderAllLocal();});
+  record('new interface: the study hub shows the counts and starts the existing Test on the home screen');
+
+  // Free: Statistics are locked and lead to Premium; simulating Premium unlocks them and switches the API key off
+  await page.locator('.v2-tab',{hasText:'İstatistik'}).click();
+  assert.equal(await page.locator('#v2Screen .v2-locked').count(),1);
+  await page.getByRole('button',{name:"Premium'a geç"}).click();assert.equal(await page.locator('#v2Screen h1').textContent(),'Premium');
+  assert.match(await page.locator('#v2Screen').textContent(),/API anahtarı: etkin/);
+  await page.getByRole('button',{name:"Premium'u simüle et"}).click();
+  assert.deepEqual(await page.evaluate(()=>[VocVocPlan.get(),VocVocPlan.has('stats'),VocVocPlan.has('sentenceBuilder'),VocVocPlan.ownKeyActive(),localStorage.getItem('VOCVOC_SIM_PLAN')]),['premium',true,true,false,'premium']);
+  assert.match(await page.locator('#v2Screen').textContent(),/API anahtarı: devre dışı/);
+  await page.locator('.v2-tab',{hasText:'İstatistik'}).click();assert.equal(await page.locator('#v2Screen .v2-locked').count(),0);
+  record('new interface: Statistics are locked on Free, "Premium" simulation unlocks them and switches the own API key off');
+
+  // the choices survive a reload and a normal page does not ask for sign-in again
+  await page.goto(url+'#/profile');await ready();
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Auth').classList.contains('v2-open'),VocVocPlan.get(),document.querySelector('#v2Screen h1')?.textContent]),[false,'premium','Profil']);
+  assert.match(await page.locator('#v2Screen').textContent(),/Ayşe/);
+  // Android back button: pages are history entries
+  await page.getByRole('button',{name:/Gizlilik Politikası/}).click();assert.equal(await page.locator('#v2Screen h1').textContent(),'Gizlilik Politikası');
+  await page.goBack();assert.equal(await page.locator('#v2Screen h1').textContent(),'Profil');
+  record('new interface: plan and profile survive a reload, the route comes from the address, and the back button returns to the previous page');
+
+  // the text pages say what the app really does, and are marked as drafts
+  for(const [row,heading,expected] of [['Gizlilik Politikası','Gizlilik Politikası',/Gemini API/],['Kullanım Şartları','Kullanım Şartları',/Google Play/],['Yardım','Yardım',/Ezberimde/],['Hakkında','Hakkında',/Sürüm: \d+\.\d+\.\d+/]]){
+   await page.locator('#v2Screen').getByRole('button',{name:new RegExp(row)}).click();
+   assert.equal(await page.locator('#v2Screen h1').textContent(),heading);assert.match(await page.locator('#v2Screen').textContent(),expected);
+   if(/Gizlilik|Kullanım/.test(row))assert.match(await page.locator('#v2Screen .v2-note').first().textContent(),/Taslak/);
+   await page.goBack();
+  }
+  // signing out only asks again; the learning data stays. "Back to the old interface" removes the new one.
+  const wordCount=await page.evaluate(()=>VocVocData.getWords().length);
+  await page.getByRole('button',{name:/Çıkış yap/}).click();await page.waitForSelector('#v2Auth.v2-open');
+  assert.equal(await page.evaluate(()=>VocVocData.getWords().length),wordCount);
+  await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  await page.evaluate(()=>{location.hash='#/profile';});await Promise.all([page.waitForNavigation(),page.getByRole('button',{name:/Eski arayüze dön/}).click()]);await ready();
+  assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),localStorage.getItem('VOCVOC_UI')]),[false,null]);
+  record('new interface: draft policy/terms/help/about pages, sign-out keeps the data, "old interface" turns the new one off');
+  await context.close();
+ }
+ // ===== New interface: WCAG AA contrast of its screens, light and dark =====
+ {
+ const MEASURE=([selector,pseudo])=>{
+   const el=document.querySelector(selector);if(!el)return null;
+   const parse=c=>{const m=c.match(/rgba?\(([^)]+)\)/);if(!m)return null;const p=m[1].split(/[ ,\/]+/).filter(Boolean).map(Number);return {r:p[0],g:p[1],b:p[2],a:p.length>3?p[3]:1};};
+   const blend=(top,bottom)=>({r:top.r*top.a+bottom.r*(1-top.a),g:top.g*top.a+bottom.g*(1-top.a),b:top.b*top.a+bottom.b*(1-top.a),a:1});
+   const fg=parse(getComputedStyle(el,pseudo).color)||{r:0,g:0,b:0,a:1};
+   const stack=[];for(let n=el;n;n=n.parentElement){const c=parse(getComputedStyle(n).backgroundColor);if(c&&c.a>0)stack.push(c);if(c&&c.a===1)break;}
+   let base=stack.length&&stack[stack.length-1].a===1?stack.pop():parse(getComputedStyle(document.documentElement).backgroundColor)||{r:255,g:255,b:255,a:1};if(base.a<1)base=blend(base,{r:255,g:255,b:255,a:1});
+   while(stack.length)base=blend(stack.pop(),base);
+   const lum=c=>{const f=v=>{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);};return .2126*f(c.r)+.7152*f(c.g)+.0722*f(c.b);};
+   const text=fg.a<1?blend(fg,base):fg,L1=lum(text),L2=lum(base),ratio=(Math.max(L1,L2)+.05)/(Math.min(L1,L2)+.05);
+   const style=getComputedStyle(el);return {ratio:Math.round(ratio*100)/100,size:parseFloat(style.fontSize),weight:style.fontWeight};
+ };
+  const checks=[['',[['#v2Auth h1'],['#v2Auth p'],['#v2Auth label'],['#v2Auth .ui-button-success'],['#v2Auth .ui-button-secondary'],['#v2Auth .v2-note']]],
+   ['#/study',[['.v2-tab[aria-current="page"] .v2-tab-label'],['.v2-tab:not([aria-current="page"]) .v2-tab-label'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1']]],
+   ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
+   ['#/profile',[['.v2-profile-name'],['.v2-chip'],['.v2-profile-head .v2-muted'],['.v2-row'],['.v2-row-end'],['.v2-row[data-danger]'],['.v2-page > .v2-muted']]],
+   ['#/premium',[['.v2-back'],['.v2-card .v2-muted'],['.v2-feature-list li'],['.v2-note'],['.v2-card .ui-button']]],
+   ['#/privacy',[['.v2-note'],['.v2-page h2'],['.v2-page p:not(.v2-note)']]]];
+  let measured=0;
+  for(const colorScheme of ['light','dark']){
+   context=await browser.newContext({viewport:{width:390,height:844},colorScheme});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+   await page.goto(url+'?ui=v2');await ready();await page.waitForSelector('#v2Auth.v2-open');
+   const failures=[];
+   const measureAll=async list=>{for(const [selector] of list){const result=await page.evaluate(MEASURE,[selector,null]);assert(result,`${selector} not found (${colorScheme})`);measured++;const need=(result.size>=24||(result.size>=18.66&&Number(result.weight)>=700))?3:4.5;if(result.ratio<need)failures.push(`${selector} ${result.ratio}:1 < ${need}`);}};
+   await measureAll(checks[0][1]);
+   await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(`#v2Screen[data-route="${hash.slice(2)}"] h1`);await measureAll(list);}
+   await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip.v2-premium');await measureAll([['.v2-chip'],['.v2-card .ui-button']]);
+   assert.deepEqual(failures,[],`contrast below WCAG AA in the ${colorScheme} theme`);
+   await context.close();
+  }
+  record(`new interface: every checked text of its screens meets WCAG AA contrast in both themes (${measured} measurements)`);
  }
  // ===== Two tabs: an idle tab follows the other one, a busy tab is protected =====
  {

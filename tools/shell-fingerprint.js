@@ -2,7 +2,7 @@
    tests/validate.cjs compares it with tests/shell-lock.json; `node tools/lock-shell.js` records it after a VERSION bump. */
 'use strict';
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
-const TEXT=/\.(?:html|js|webmanifest|json)$/;
+const TEXT=/\.(?:html|js|css|webmanifest|json)$/;
 function compute(root){
   const swText=fs.readFileSync(path.join(root,'sw.js'),'utf8');
   const version=swText.match(/const VERSION='([^']+)'/)[1];
