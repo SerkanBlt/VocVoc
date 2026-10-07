@@ -1,20 +1,22 @@
 /* New interface (prototype). Everything here applies only when screens.js adds body.v2 (opt-in with ?ui=v2); the default interface is untouched. */
-:root{--v2-tab-h:60px;--v2-danger:#b91c1c}
-:root[data-theme="dark"]{--v2-danger:#f87171}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--v2-danger:#f87171}}
+:root{--v2-tab-h:60px;--v2-danger:#b91c1c;--v2-orange:#c2410c;--v2-blue:#1d4ed8;--v2-green:#15803d}
+:root[data-theme="dark"]{--v2-danger:#f87171;--v2-orange:#fb923c;--v2-blue:#60a5fa;--v2-green:#4ade80}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--v2-danger:#f87171;--v2-orange:#fb923c;--v2-blue:#60a5fa;--v2-green:#4ade80}}
 .v2-root,.v2-auth{display:none}
 body.v2 .v2-root{display:block}
 .v2-auth.v2-open{display:flex}
 
-/* The existing home screen is the "Today" tab: it only needs room for the tab bar, and it steps aside for the other tabs. */
-body.v2 .container{padding-bottom:calc(var(--v2-tab-h) + env(safe-area-inset-bottom,0px) + 12px)}
+/* The existing home screen is the "Words" tab: it needs room for the tab bar (the app's own padding is !important, so this one is too), and it steps aside for the other tabs. */
+body.v2 .container{padding-bottom:calc(var(--v2-tab-h) + env(safe-area-inset-bottom,0px) + 16px)!important}
 body.v2 .container.v2-away{display:none}
 body.v2 #pwaUpdate{bottom:calc(var(--v2-tab-h) + env(safe-area-inset-bottom,0px) + 14px)}
 body.v2 .archive-undo-toast{bottom:calc(var(--v2-tab-h) + env(safe-area-inset-bottom,0px) + 14px)!important}
 
 /* Tab bar */
 .v2-tabs{position:fixed;left:0;right:0;bottom:0;z-index:90;display:flex;height:calc(var(--v2-tab-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card-bg);border-top:1px solid var(--border)}
-.v2-tab{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;color:var(--text-muted);font:inherit;font-size:.72rem;font-weight:600;line-height:1.1;cursor:pointer;padding:6px 2px}
+.v2-tab{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;color:var(--text-muted);font:inherit;font-size:.72rem;font-weight:600;line-height:1.1;cursor:pointer;padding:6px 1px}
+.v2-tab-label{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:359px){.v2-tab{font-size:.66rem}}
 .v2-tab[aria-current="page"]{color:var(--primary)}
 .v2-tab:focus-visible{outline:2px solid var(--primary);outline-offset:-3px}
 .v2-icon{display:inline-flex}
@@ -79,10 +81,8 @@ body.v2 .archive-undo-toast{bottom:calc(var(--v2-tab-h) + env(safe-area-inset-bo
 .v2-field input{width:100%}
 .v2-auth-buttons{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
 
-/* Dashboard: the top of the Today tab. The Test / Recall / Flip row of the old home screen is replaced by the dashboard's own shortcuts. */
+/* Today. The Test / Recall / Flip row of the old home screen (the Words tab) is not needed: those live in the Study tab. */
 body.v2 .study-actions{display:none}
-.v2-dash{margin:12px 0 16px}
-.v2-dash h2{font-size:1.3rem;line-height:1.3;margin:0 0 10px}
 .v2-goal-label{color:var(--text-muted);font-size:.85rem;font-weight:600;margin:0 0 2px}
 .v2-goal-value{font-size:1.35rem;font-weight:700;margin:0 0 10px}
 .v2-bar{height:10px;border-radius:999px;background:var(--accent-bg);border:1px solid var(--border);overflow:hidden;margin:0 0 14px}
@@ -91,10 +91,6 @@ body.v2 .study-actions{display:none}
 .v2-stat{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:12px 6px;text-align:center}
 .v2-stat strong{display:block;font-size:1.4rem;line-height:1.2}
 .v2-stat span{display:block;color:var(--text-muted);font-size:.78rem;margin-top:2px}
-.v2-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.v2-quick-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:14px;font:inherit;font-weight:600;cursor:pointer}
-.v2-quick-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
-.v2-quick-btn>span:first-child{font-size:1.3rem;color:var(--primary)}
 
 /* Test page: a bar with the close button and the progress, no tab bar while it runs */
 .v2-study-bar{display:flex;align-items:center;gap:8px;margin:0 0 12px}
@@ -112,7 +108,6 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
 /* Statistics and badges */
 .v2-page .v2-statline,.v2-page .v2-days,.v2-page .v2-testlist,.v2-page .v2-chips,.v2-page .v2-badges{padding:0;list-style:none}
 .v2-page .v2-stat{margin:0}
-.v2-streak{margin:-4px 0 10px;color:var(--text-muted);font-weight:600}
 .v2-statline-4{grid-template-columns:repeat(4,1fr)}
 .v2-statline-4 .v2-stat span{font-size:.72rem}
 .v2-page .v2-card h2{margin-top:0}
@@ -133,7 +128,14 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
 .v2-curve polyline{fill:none;stroke:var(--primary);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .v2-curve-range{text-align:right;margin:4px 0 0}
 .v2-testlist,.v2-chips{list-style:none;margin:0;padding:0}
-.v2-page .v2-testlist li{display:flex;justify-content:space-between;gap:10px;margin:0;padding:8px 0;border-bottom:1px solid var(--border)}
+.v2-page .v2-testlist li{display:flex;align-items:center;gap:10px;margin:0;padding:8px 0;border-bottom:1px solid var(--border)}
+.v2-test-day{flex:1;min-width:0}
+.v2-bullet{flex:none;width:12px;height:12px;color:var(--v2-bullet,var(--text-muted))}
+.v2-bullet::before{content:"";display:block;width:100%;height:100%;border-radius:50%;background:currentColor}
+.v2-bullet-great{--v2-bullet:var(--v2-green)}
+.v2-bullet-good{--v2-bullet:var(--v2-blue)}
+.v2-bullet-fair{--v2-bullet:var(--v2-orange)}
+.v2-bullet-low{--v2-bullet:var(--v2-danger)}
 .v2-page .v2-testlist li:last-child{border-bottom:0}
 .v2-chips{display:flex;flex-wrap:wrap;gap:8px}
 .v2-page .v2-chips li{margin:0}
@@ -164,3 +166,35 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
 .v2-speak-free .v2-speak-lock svg{width:10px;height:10px}
 .v2-speak-row{margin:0 0 6px}
 .flip-panel>.v2-speak{position:absolute;top:var(--ui-panel-y);left:var(--ui-panel-x);z-index:2;margin:0}
+
+/* A new badge: appears in the middle with a small burst, stays a few seconds, fades away by itself and never blocks a tap */
+.v2-celebrate{position:fixed;inset:0;z-index:12600;display:none;align-items:center;justify-content:center;padding:24px;pointer-events:none}
+.v2-celebrate.v2-on{display:flex}
+.v2-celebrate::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.4);animation:v2-dim-in .35s ease-out both}
+.v2-celebrate.v2-leaving::before{animation:v2-dim-out .45s ease-in both}
+.v2-celebrate-card{position:relative;box-sizing:border-box;width:min(300px,100%);padding:22px 20px 20px;text-align:center;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:24px;box-shadow:0 24px 60px rgba(0,0,0,.35);animation:v2-card-in .6s cubic-bezier(.2,1.35,.4,1) both}
+.v2-celebrate.v2-leaving .v2-celebrate-card{animation:v2-card-out .45s ease-in both}
+.v2-celebrate-art{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;height:96px;margin:0 0 6px}
+.v2-medal{position:relative;flex:none;display:grid;place-items:center;width:76px;height:76px;border-radius:50%;background:var(--primary);color:var(--bg);font-size:2.2rem;box-shadow:0 6px 18px rgba(0,0,0,.25);animation:v2-medal-in .8s cubic-bezier(.2,1.4,.4,1) .12s both}
+.v2-medal::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:3px solid var(--primary);opacity:0;animation:v2-ring 1.1s ease-out .35s both}
+.v2-spark{position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--primary);opacity:0;animation:v2-spark .95s ease-out .3s both}
+.v2-spark:nth-child(3n+2){background:var(--v2-green)}
+.v2-spark:nth-child(3n){width:6px;height:6px;margin:-3px 0 0 -3px;background:var(--v2-orange)}
+.v2-celebrate-kicker{margin:6px 0 2px;color:var(--text-muted);font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.v2-celebrate-name{margin:0 0 4px;font-size:1.3rem;font-weight:800;line-height:1.25}
+.v2-celebrate-desc{margin:0;color:var(--text-muted);font-size:.92rem;line-height:1.4}
+@keyframes v2-dim-in{from{opacity:0}to{opacity:1}}
+@keyframes v2-dim-out{from{opacity:1}to{opacity:0}}
+@keyframes v2-card-in{0%{opacity:0;transform:translateY(22px) scale(.7)}55%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes v2-card-out{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-14px) scale(.92)}}
+@keyframes v2-medal-in{0%{transform:scale(.2) rotate(-35deg)}60%{transform:scale(1.18) rotate(8deg)}100%{transform:none}}
+@keyframes v2-ring{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(1.9)}}
+@keyframes v2-spark{0%{opacity:1;transform:rotate(var(--a)) translateY(-30px) scale(1)}100%{opacity:0;transform:rotate(var(--a)) translateY(-90px) scale(.3)}}
+@keyframes v2-fade-in{from{opacity:0}to{opacity:1}}
+@keyframes v2-fade-out{from{opacity:1}to{opacity:0}}
+@media(prefers-reduced-motion:reduce){
+  .v2-spark,.v2-medal::after{display:none}
+  .v2-medal{animation:none}
+  .v2-celebrate-card{animation:v2-fade-in .3s ease-out both}
+  .v2-celebrate.v2-leaving .v2-celebrate-card{animation:v2-fade-out .3s ease-in both}
+}

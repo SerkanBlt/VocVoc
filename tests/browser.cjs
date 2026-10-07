@@ -764,32 +764,36 @@ async function main(){
   assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Root').inert,document.querySelector('.container').inert,JSON.parse(localStorage.getItem('VOCVOC_SIM_PROFILE')).name]),[false,false,'Ayşe']);
   record('new interface: the simulated sign-in comes first, blocks what is behind it, and a profile is remembered');
 
-  // tab bar: five tabs, Today is the existing home screen, the others are pages
+  // tab bar: six tabs; Words is the existing home screen (search, word cards, the list), Today and the others are pages
   const tabs=()=>page.evaluate(()=>[...document.querySelectorAll('.v2-tab')].map(button=>button.textContent+(button.getAttribute('aria-current')==='page'?'*':'')));
-  assert.deepEqual(await tabs(),['Bugün*','Çalış','İstatistik','Rozetler','Profil']);
-  assert.equal(await page.evaluate(()=>document.querySelector('.container').classList.contains('v2-away')),false);   // the existing home screen
-  for(const [tab,heading] of [['Çalış','Çalış'],['İstatistik','İstatistikler'],['Rozetler','Rozetler'],['Profil','Profil']]){
+  assert.deepEqual(await tabs(),['Bugün*','Kelimeler','Çalış','İstatistik','Rozetler','Profil']);
+  assert.deepEqual(await page.evaluate(()=>[document.querySelector('.container').classList.contains('v2-away'),document.getElementById('v2Screen').dataset.route,document.querySelector('#v2Screen h1').textContent]),[true,'today','Bugün']);   // Today is a page
+  for(const [tab,heading] of [['Çalış','Çalış'],['İstatistik','İstatistikler'],['Rozetler','Rozetler'],['Profil','Profil'],['Bugün','Bugün']]){
    await page.locator('.v2-tab',{hasText:tab}).click();
    assert.equal(await page.locator('#v2Screen h1').textContent(),heading);
    assert.equal(await page.evaluate(()=>document.activeElement.tagName),'H1');                                       // focus moves to the new page's heading
    assert.equal((await tabs()).filter(label=>label.endsWith('*')).length,1);
    assert.equal(await page.evaluate(()=>document.querySelector('.container').classList.contains('v2-away')),true);  // the home screen steps aside
   }
-  await page.locator('.v2-tab',{hasText:'Bugün'}).click();assert.equal(await page.evaluate(()=>document.getElementById('v2Screen').hidden),true);
-  record('new interface: five tabs, Today is the existing home screen, the others are full pages, the heading takes focus, one tab is current');
+  await page.locator('.v2-tab',{hasText:'Kelimeler'}).click();                                          // the existing home screen takes over
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Screen').hidden,document.querySelector('.container').classList.contains('v2-away'),!!document.getElementById('searchInput').offsetParent,!!document.getElementById('contentArea').offsetParent||document.getElementById('contentArea').children.length===0,!!document.getElementById('historyPanel').offsetParent,document.querySelector('.v2-tab[aria-current="page"]').textContent]),[true,false,true,true,true,'Kelimeler']);
+  await page.locator('.v2-tab',{hasText:'Bugün'}).click();
+  record('new interface: six tabs, Words is the existing home screen, Today and the others are full pages, the heading takes focus, one tab is current');
 
-  // dashboard: the top of the Today tab (greeting, daily goal, counts, shortcuts); the old study row steps aside
-  const dash=()=>page.evaluate(()=>({hello:document.querySelector('#v2Dashboard h2')?.textContent,goal:document.querySelector('.v2-goal-value')?.textContent,bar:document.querySelector('#v2Dashboard .v2-bar')?.getAttribute('aria-valuenow'),stats:[...document.querySelectorAll('.v2-stat strong')].map(node=>node.textContent),hidden:document.getElementById('v2Dashboard').hidden,oldRow:getComputedStyle(document.querySelector('.study-actions')).display}));
-  assert.deepEqual(await dash(),{hello:'Merhaba, Ayşe',goal:'0 / 10 kelime',bar:'0',stats:['3','0','0'],hidden:false,oldRow:'none'});
+  // Today: daily goal, ready-made words, the three counts and the last seven days under them; no greeting, streak label, shortcut row, word cards or list; the old study row steps aside
+  const dash=()=>page.evaluate(()=>({goal:document.querySelector('.v2-goal-value')?.textContent,bar:document.querySelector('#v2Dashboard .v2-bar')?.getAttribute('aria-valuenow'),stats:[...document.querySelectorAll('.v2-stat strong')].map(node=>node.textContent),oldRow:getComputedStyle(document.querySelector('.study-actions')).display,
+   crowd:document.querySelectorAll('#v2Screen .v2-quick-btn,#v2Screen .v2-streak,#v2Screen #contentArea,#v2Screen #historyPanel,#v2Screen #searchInput').length,title:document.querySelector('#v2Screen h1').textContent,days:document.querySelectorAll('#v2Dashboard .v2-day').length,
+   chartUnderCounts:document.querySelector('#v2Dashboard .v2-statline').nextElementSibling?.querySelector('.v2-days')!==null}));
+  assert.deepEqual(await dash(),{goal:'0 / 10 kelime',bar:'0',stats:['3','0','0'],oldRow:'none',crowd:0,title:'Bugün',days:7,chartUnderCounts:true});
+  assert(!/Merhaba|Seri:/.test(await page.locator('#v2Screen').textContent()));
   await page.evaluate(()=>VocVocData.addDailyUsage(3));                                                 // the dashboard follows every change of the data
   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'hubword'+i,meaning:'anlam '+i}))));
   await page.waitForFunction(()=>document.querySelector('.v2-goal-value')?.textContent==='3 / 10 kelime'&&document.querySelector('.v2-stat strong')?.textContent==='15');
   await page.evaluate(()=>markMemorized('hubword0'));
   await page.waitForFunction(()=>[...document.querySelectorAll('.v2-stat strong')].map(node=>node.textContent).join()==='14,1,1');
   assert.equal((await dash()).bar,'3');
-  await page.fill('#searchInput','abc');assert.equal((await dash()).hidden,true);                      // it steps aside while a word is being searched
-  await page.fill('#searchInput','');await page.evaluate(()=>document.getElementById('searchInput').dispatchEvent(new Event('input')));assert.equal((await dash()).hidden,false);
-  record('new interface: the Today dashboard shows greeting, daily goal and counts, follows every data change, and hides while searching');
+  assert.match(await page.locator('#v2Dashboard .v2-day').last().locator('.sr-only').textContent(),/: 12 eklendi, 1 ezberlendi, 0 test$/);   // the chart follows the data too (the starters are not counted)
+  record('new interface: Today shows the daily goal, the counts and the last seven days (no greeting, streak label, shortcuts or word list) and follows every data change');
 
   // Test page: its own page, immersive (no tab bar), with a progress bar; closing abandons it
   await page.locator('.v2-tab',{hasText:'Çalış'}).click();
@@ -814,7 +818,7 @@ async function main(){
   await page.locator('.v2-study-card',{hasText:'Hatırla'}).click();
   assert.match(await page.locator('#v2Screen').textContent(),/en az 10 ezberlenmiş kelime gerekir. Şu an 1 var/);
   assert.equal(await page.evaluate(()=>!!quizSession),false);await page.getByRole('button',{name:'Bugün ekranına dön'}).click();
-  assert.equal(await page.evaluate(()=>document.getElementById('v2Screen').hidden),true);
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Screen').hidden,document.getElementById('v2Screen').dataset.route]),[false,'today']);
   record('new interface: the Test is a page of its own (no tab bar, progress, result, new test), closing and the back button abandon it, Recall explains when there are too few words');
 
   // Flip page: the app's own Flip dialog shown like a page and tied to the address; every way of closing it returns
@@ -875,7 +879,7 @@ async function main(){
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url+'?ui=v2');await ready();await page.waitForSelector('#v2Auth.v2-open');await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
   const activity=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')));
-  assert.deepEqual(await page.evaluate(()=>[JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded,document.getElementById('v2Toast')?.classList.contains('v2-show')||false]),[true,false]);   // the very first look is silent
+  assert.deepEqual(await page.evaluate(()=>[JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded,document.getElementById('v2Celebrate')?.classList.contains('v2-on')||false]),[true,false]);   // the very first look is silent
   await page.evaluate(words=>VocVocData.addWordBatch(words),quizWords(12));
   await page.evaluate(()=>{location.hash='#/test';});await page.waitForSelector('#v2QuizHost .quiz-option');
   for(let question=0;question<10;question++){
@@ -888,12 +892,12 @@ async function main(){
   const saved=await activity();
   assert.deepEqual([saved.testsTaken,saved.quizzes.length,saved.quizzes[0].mode,saved.quizzes[0].score,saved.quizzes[0].total,saved.quizzes[0].wrong],[1,1,'active',10,10,[]]);
   assert.deepEqual([saved.badges.test1,saved.badges.perfect,saved.badges.words50],[todayDay,todayDay,undefined]);
-  await page.waitForFunction(()=>/^Yeni rozet: /.test(document.getElementById('v2Toast')?.textContent||'')&&document.getElementById('v2Toast').classList.contains('v2-show'));
-  assert.match(await page.locator('#v2Toast').textContent(),/İlk test|Kusursuz/);
+  await page.waitForSelector('#v2Celebrate.v2-on');
+  assert.deepEqual([await page.locator('.v2-celebrate-kicker').textContent(),await page.locator('.v2-celebrate-name').textContent()],['2 yeni rozet!','İlk test, Kusursuz']);
   // the same finished Test is not recorded twice (the result screen is drawn again, for example on a language change)
   await page.evaluate(()=>{renderQuizQuestion();renderQuizQuestion();});assert.equal((await activity()).testsTaken,1);
   await page.reload();await ready();
-  assert.deepEqual(await page.evaluate(()=>[JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).testsTaken,document.getElementById('v2Toast')?.classList.contains('v2-show')||false]),[1,false]);   // remembered, not announced again
+  assert.deepEqual(await page.evaluate(()=>[JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).testsTaken,document.getElementById('v2Celebrate')?.classList.contains('v2-on')||false]),[1,false]);   // remembered, not announced again
   await context.close();
   record('new interface: a finished Test is recorded once, a perfect one earns badges that are announced once, the first look is silent');
  }
@@ -927,11 +931,19 @@ async function main(){
    assert.match(await p.locator('.v2-day').last().locator('.sr-only').textContent(),/: 3 eklendi, 2 ezberlendi, 2 test$/);
    assert.equal(await p.locator('.v2-curve').getAttribute('aria-label'),'30 gün önce 0, şimdi 12 ezberlenmiş kelime.');
    assert.deepEqual(await p.locator('#v2Screen .v2-statline:not(.v2-statline-4) .v2-stat strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['3','83%','10/10']);
-   assert.deepEqual(await p.locator('.v2-testlist li strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['10/10','9/10','6/10']);   // newest first
+   assert.equal(await p.locator('.v2-testlist').count(),0);                                          // the latest tests are listed at the bottom of the Study page, not here
    assert.deepEqual(await p.locator('.v2-chips .v2-chip').evaluateAll(nodes=>nodes.map(node=>node.textContent.replace(/\s+/g,' ').trim())),['s20 ×2','s21 ×1','s22 ×1','s23 ×1']);
    assert.match(await p.locator('#v2Screen').textContent(),/2 gün \(12 kelimeye göre\)/);
-   // the dashboard shows the streak
-   await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('.v2-streak');assert.equal(await p.locator('.v2-streak').textContent(),'Seri: 12 gün');
+   // the Study page: the same Tests panel on top, the latest tests at the very bottom, newest first, a bullet by score (10 and 9 green, 6 orange)
+   await route(p,'study');
+   assert.deepEqual(await p.locator('#v2Screen .v2-statline .v2-stat strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['3','83%','10/10']);
+   assert.equal(await p.locator('#v2Screen .v2-page').evaluate(node=>[...node.children].map(child=>child.tagName+(child.querySelector('.v2-testlist')?'-list':'')).join()),'H1,SECTION,BUTTON,BUTTON,BUTTON,SECTION-list');
+   assert.deepEqual(await p.locator('.v2-testlist li strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['10/10','9/10','6/10']);
+   assert.deepEqual(await p.locator('.v2-testlist .v2-bullet').evaluateAll(nodes=>nodes.map(node=>node.className.replace('v2-bullet ',''))),['v2-bullet-great','v2-bullet-great','v2-bullet-fair']);
+   // Today shows the last seven days of the same history (the streak is on the Statistics page)
+   await route(p,'today');assert.equal(await p.locator('#v2Dashboard .v2-day').count(),7);
+   assert.match(await p.locator('#v2Dashboard .v2-day').last().locator('.sr-only').textContent(),/: 3 eklendi, 2 ezberlendi, 2 test$/);
+   assert.equal(await p.locator('.v2-streak').count(),0);
    await c.close();
   }
   // badges (free): earned ones with their real dates first, the others with their progress
@@ -949,7 +961,6 @@ async function main(){
    assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Toast')?.classList.contains('v2-show')||false,Object.keys(JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges).length,JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded]),[false,7,true]);
    // a badge once earned stays earned when the words behind it are gone
    await p.evaluate(async()=>{for(let i=0;i<12;i++)await VocVocData.setStatus('s'+i,'active');});
-   await p.waitForFunction(()=>document.querySelector('.v2-streak')===null||true);
    await route(p,'study');await route(p,'badges');
    assert.equal(await p.locator('.v2-badge.v2-earned',{hasText:'On kelime'}).count(),1);
    await c.close();
@@ -957,11 +968,110 @@ async function main(){
   // a profile that already has history and badges is announced when it is a later look (new badges), by two names and a count
   {
    const {c,p}=await open(true);
-   await p.waitForFunction(()=>document.getElementById('v2Toast')?.classList.contains('v2-show'));
-   assert.match(await p.locator('#v2Toast').textContent(),/^Yeni rozet: .+, .+ \+5$/);
+   await p.waitForSelector('#v2Celebrate.v2-on');
+   assert.equal(await p.locator('.v2-celebrate-kicker').textContent(),'7 yeni rozet!');
+   assert.match(await p.locator('.v2-celebrate-name').textContent(),/^.+, .+ \+5$/);
    await c.close();
   }
   record('new interface: Statistics (Premium) and Badges (free) are computed from the history: numbers, charts, dates, progress, kept badges, silent first look');
+ }
+ // ===== New interface: bullets of the latest tests, the new-badge card, the bottom edge of every page =====
+ {
+  const words=n=>Array.from({length:n},(_,index)=>({word:'cw'+index,meaning:'anlam '+index}));
+  const openGuest=async({scores,width=360,height=640,context:options={}}={})=>{
+   const c=await browser.newContext({viewport:{width,height},...options}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+   if(scores)await c.addInitScript(list=>{if(!localStorage.getItem('VOCVOC_ACTIVITY_V1'))localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify({v:1,seeded:false,testsTaken:list.length,badges:{},quizzes:list.map((score,index)=>({t:new Date(Date.now()-(list.length-index)*864e5).toISOString(),mode:'active',score,total:10,wrong:[]}))}));},scores);
+   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Auth.v2-open');await p.getByRole('button',{name:/Misafir/}).click();await p.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+   return {c,p};
+  };
+  const openStudy=async p=>{await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] h1');};
+
+  // the latest tests are on the Study page (free): a bullet by score, 9-10 green, 7-8 blue, 5-6 orange, below that red; every edge of every band
+  for(const [scores,shown,classes] of [
+   [[4,5,7,9,10],[10,9,7,5,4],['great','great','good','fair','low']],
+   [[6,8,2,10,9],[9,10,2,8,6],['great','great','low','good','fair']]]){
+   const {c,p}=await openGuest({scores});await openStudy(p);
+   assert.equal(await p.evaluate(()=>VocVocPlan.get()),'free');                                       // not a Premium page
+   assert.deepEqual(await p.locator('.v2-testlist li strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),shown.map(score=>score+'/10'));
+   assert.deepEqual(await p.locator('.v2-testlist .v2-bullet').evaluateAll(nodes=>nodes.map(node=>node.className.replace('v2-bullet v2-bullet-',''))),classes);
+   assert.equal(await p.locator('.v2-testlist li').first().evaluate(node=>node.firstElementChild.classList.contains('v2-bullet')),true);   // the bullet starts the line
+   if(scores[0]===4){
+    const colours=await p.locator('.v2-testlist .v2-bullet').evaluateAll(nodes=>nodes.map(node=>getComputedStyle(node,'::before').backgroundColor));
+    assert.equal(new Set(colours).size,4,'four bands, four colours: '+colours);
+   }
+   await c.close();
+  }
+  {
+   const {c,p}=await openGuest();await openStudy(p);                                                   // no test yet
+   assert.deepEqual(await p.locator('#v2Screen .v2-statline .v2-stat strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['0','–','–']);
+   assert.equal(await p.locator('.v2-testlist').count(),0);
+   assert.match(await p.locator('#v2Screen').textContent(),/Henüz tamamlanmış test yok/);
+   await c.close();
+  }
+  record('Study page: the Tests panel on top and the latest tests at the bottom for a free user, a coloured bullet by score at every band edge, an empty state');
+
+  // a new badge: in the middle, with a burst, away by itself, never in the way; several in a row wait their turn
+  {
+   const {c,p}=await openGuest({height:700});
+   await p.evaluate(list=>VocVocData.addWordBatch(list),words(12));
+   await p.evaluate(()=>{window.__seen=[];new MutationObserver(()=>{for(const node of document.querySelectorAll('.v2-celebrate-name'))if(!window.__seen.some(item=>item.name===node.textContent))window.__seen.push({name:node.textContent,at:performance.now()});}).observe(document.body,{childList:true,subtree:true});});
+   await p.evaluate(()=>markMemorized('cw0'));
+   await p.waitForSelector('#v2Celebrate.v2-on');await p.waitForTimeout(900);                          // the entrance is over
+   const card=await p.evaluate(()=>{
+    const box=document.querySelector('.v2-celebrate-card').getBoundingClientRect(),host=document.getElementById('v2Celebrate');
+    return {dx:Math.round(Math.abs(box.left+box.width/2-innerWidth/2)),dy:Math.round(Math.abs(box.top+box.height/2-innerHeight/2)),role:host.getAttribute('role'),events:getComputedStyle(host).pointerEvents,
+     sparks:document.querySelectorAll('.v2-spark').length,motion:[getComputedStyle(document.querySelector('.v2-medal')).animationName,getComputedStyle(document.querySelector('.v2-spark')).animationName],
+     text:[...document.querySelectorAll('.v2-celebrate-kicker,.v2-celebrate-name,.v2-celebrate-desc')].map(node=>node.textContent),hiddenArt:document.querySelector('.v2-celebrate-art').getAttribute('aria-hidden')};
+   });
+   assert.deepEqual(card,{dx:0,dy:card.dy,role:'status',events:'none',sparks:12,motion:['v2-medal-in','v2-spark'],text:['Yeni rozet!','İlk adım','Bir kelimeyi ezberle.'],hiddenArt:'true'});
+   assert(card.dy<=2,'centred vertically: '+card.dy);
+   await p.locator('.v2-tab',{hasText:'Rozetler'}).click();                                            // it never blocks a tap
+   assert.equal(await p.evaluate(()=>document.getElementById('v2Screen').dataset.route),'badges');
+   for(let index=1;index<10;index++)await p.evaluate(number=>markMemorized('cw'+number),index);       // the tenth memorized word earns the next badge while the first card is still up
+   await p.waitForFunction(()=>window.__seen.length===2,null,{timeout:12000});
+   const seen=await p.evaluate(()=>window.__seen);
+   assert.deepEqual(seen.map(item=>item.name),['İlk adım','On kelime']);                                // one after the other, in order ...
+   assert(seen[1].at-seen[0].at>=3000,'... the second card waits until the first is gone: '+(seen[1].at-seen[0].at)+' ms');
+   await p.waitForFunction(()=>!document.getElementById('v2Celebrate').classList.contains('v2-on'),null,{timeout:8000});
+   assert.equal(await p.evaluate(()=>document.getElementById('v2Celebrate').children.length),0);        // gone by itself
+   await c.close();
+  }
+  {
+   const {c,p}=await openGuest({height:700,context:{reducedMotion:'reduce'}});                          // reduced motion: a plain fade, no burst
+   await p.evaluate(list=>VocVocData.addWordBatch(list),words(12));
+   await p.evaluate(()=>markMemorized('cw0'));await p.waitForSelector('#v2Celebrate.v2-on');
+   assert.deepEqual(await p.evaluate(()=>[getComputedStyle(document.querySelector('.v2-spark')).display,getComputedStyle(document.querySelector('.v2-medal')).animationName,getComputedStyle(document.querySelector('.v2-celebrate-card')).animationName]),['none','none','v2-fade-in']);
+   await p.waitForFunction(()=>!document.getElementById('v2Celebrate').classList.contains('v2-on'),null,{timeout:8000});
+   await c.close();
+  }
+  record('new badge: a card in the middle with a burst, never blocks a tap, away by itself, badges earned in a row come one after the other, reduced motion is a plain fade');
+
+  // the bottom edge of the last panel is visible above the tab bar on every page, on a short phone screen (the old home screen's own padding is !important)
+  {
+   const {c,p}=await openGuest();
+   await p.evaluate(list=>VocVocData.addWordBatch(list),words(30));await p.evaluate(()=>VocVocPlan.set('premium'));
+   await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();await p.waitForFunction(()=>document.querySelector('.v2-goal-value')?.textContent==='10 / 10 kelime');
+   const ends={};
+   for(const route of ['today','words','study','stats','badges','profile','premium']){
+    await p.evaluate(name=>{location.hash='#/'+name;},route);
+    await (route==='words'?p.waitForSelector('#contentArea .main-word-card'):p.waitForSelector('#v2Screen[data-route="'+route+'"] h1'));
+    ends[route]=await p.evaluate(()=>{
+     const tabs=document.querySelector('.v2-tabs').getBoundingClientRect(),container=document.querySelector('.container'),away=container.classList.contains('v2-away'),screen=document.getElementById('v2Screen');
+     const scroller=away?screen:container;scroller.scrollTop=scroller.scrollHeight;
+     const last=away?screen.querySelector('.v2-page').lastElementChild:document.getElementById('historyPanel');
+     return {gap:Math.round(tabs.top-last.getBoundingClientRect().bottom),scrolls:scroller.scrollHeight>scroller.clientHeight};
+    });
+   }
+   for(const route of ['words','stats','badges'])assert.equal(ends[route].scrolls,true,route+' must really scroll for this check to mean anything');
+   for(const [route,end] of Object.entries(ends))assert(end.gap>=8,route+': the last panel ends '+end.gap+'px from the tab bar (hidden when negative)');
+   await c.close();
+  }
+  {
+   const {c,p}=await openGuest({width:320,height:600});                                                 // six tab labels fit on the narrowest phone
+   assert.deepEqual(await p.evaluate(()=>[...document.querySelectorAll('.v2-tab-label')].filter(label=>label.scrollWidth>label.clientWidth).map(label=>label.textContent)),[]);
+   await c.close();
+  }
+  record('new interface: the bottom edge of the last panel is visible on every page, also under the Words list, and six tab labels fit on a 320 px phone');
  }
  // ===== New interface: ready-made word packs and read-aloud =====
  {
@@ -992,10 +1102,12 @@ async function main(){
    assert.equal(await p.evaluate(()=>VocVocData.getWordByText('maison').meaning),'ev');
    assert.equal(await p.evaluate(()=>VocVocData.getWordByText('maison').examples[0].phonetic),'la mezon e grand');
    await waitPack(p,'12 / 40 kelime eklendi');
+   await p.locator('.v2-tab',{hasText:'Kelimeler'}).click();                                          // the cards are on the Words tab
    const titles=await p.locator('#contentArea .main-word-card .word-title').evaluateAll(nodes=>nodes.map(node=>node.textContent));
    assert.deepEqual(titles.slice(0,10).sort(),['au revoir',"s'il vous plaît",'oui','non','pardon','eau','pain','café','maison','ami'].sort());   // the new words are on top
    assert.equal(titles.length,13);                                                                  // and the three starters are still there
    assert.equal(seen.gemini,0);                                                                      // no AI, no key needed
+   await p.locator('.v2-tab',{hasText:'Bugün'}).click();
    // the daily limit applies to the pack as it does to the AI
    await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();
    await p.waitForFunction(()=>!!document.querySelector('.app-alert .app-alert-text'));
@@ -1064,6 +1176,7 @@ async function main(){
    assert.deepEqual(await calls(),[{cancel:true},{text:sentence,lang:'fr-FR'},{cancel:true}]);
    await p.evaluate(()=>closeHistoryDetail());
    // the main card (its title is a button, so the speaker sits at the top of the opened details) and Flip
+   await p.locator('.v2-tab',{hasText:'Kelimeler'}).click();
    await p.locator('#contentArea .main-word-toggle').first().click();await p.waitForSelector('#contentArea .main-word-card.open .v2-speak-row .v2-speak');
    const cardWord=await p.locator('#contentArea .main-word-card.open .word-title').textContent();
    await p.evaluate(()=>{window.__speech.length=0;});
@@ -1115,9 +1228,10 @@ async function main(){
    const style=getComputedStyle(el);return {ratio:Math.round(ratio*100)/100,size:parseFloat(style.fontSize),weight:style.fontWeight};
  };
   const checks=[['',[['#v2Auth h1'],['#v2Auth p'],['#v2Auth label'],['#v2Auth .ui-button-success'],['#v2Auth .ui-button-secondary'],['#v2Auth .v2-note']]],
-   ['#/today',[['#v2Dashboard h2'],['.v2-goal-label'],['.v2-goal-value'],['.v2-streak'],['.v2-pack .v2-goal-label'],['.v2-pack-text'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['.v2-quick-btn']]],
+   ['#/today',[['#v2Screen h1'],['.v2-goal-label'],['.v2-goal-value'],['.v2-pack .v2-goal-label'],['.v2-pack-text'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['#v2Dashboard .v2-day-label'],['#v2Dashboard .v2-day-num'],['#v2Dashboard .v2-legend'],['#v2Dashboard .v2-card h2']]],
    ['#/test',[['.v2-study-bar h1'],['#v2QuizCount'],['.v2-close'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91']]],
-   ['#/study',[['.v2-tab[aria-current="page"] .v2-tab-label'],['.v2-tab:not([aria-current="page"]) .v2-tab-label'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1']]],
+   ['#/study',[['.v2-tab[aria-current="page"] .v2-tab-label'],['.v2-tab:not([aria-current="page"]) .v2-tab-label'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1'],['.v2-card h2'],['.v2-statline .v2-stat strong'],['.v2-statline .v2-stat span'],
+    ['.v2-testlist .v2-bullet-great'],['.v2-testlist .v2-bullet-good'],['.v2-testlist .v2-bullet-fair'],['.v2-testlist .v2-bullet-low'],['.v2-test-day'],['.v2-testlist .v2-muted'],['.v2-testlist strong']]],
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
    ['#/profile',[['.v2-profile-name'],['.v2-chip'],['.v2-profile-head .v2-muted'],['.v2-row'],['.v2-row-end'],['.v2-row[data-danger]'],['.v2-page > .v2-muted']]],
    ['#/premium',[['.v2-back'],['.v2-card .v2-muted'],['.v2-feature-list li'],['.v2-note'],['.v2-card .ui-button']]],
@@ -1125,15 +1239,17 @@ async function main(){
   let measured=0;
   for(const colorScheme of ['light','dark']){
    context=await browser.newContext({viewport:{width:390,height:844},colorScheme});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+   await context.addInitScript(()=>{const day=back=>new Date(Date.now()-back*864e5).toISOString();if(!localStorage.getItem('VOCVOC_ACTIVITY_V1'))localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify({v:1,seeded:false,testsTaken:5,badges:{},quizzes:[3,5,7,9,10].map((score,index)=>({t:day(5-index),mode:'active',score,total:10,wrong:[]}))}));});
    await page.goto(url+'?ui=v2');await ready();await page.waitForSelector('#v2Auth.v2-open');
    const failures=[];
    const measureAll=async list=>{for(const [selector] of list){const result=await page.evaluate(MEASURE,[selector,null]);assert(result,`${selector} not found (${colorScheme})`);measured++;const need=(result.size>=24||(result.size>=18.66&&Number(result.weight)>=700))?3:4.5;if(result.ratio<need)failures.push(`${selector} ${result.ratio}:1 < ${need}`);}};
    await measureAll(checks[0][1]);
    await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
    await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i}))));
-   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'.v2-streak,.v2-pack-text':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
+   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'#v2Screen[data-route="today"] .v2-pack-text':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
    await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip.v2-premium');await measureAll([['.v2-chip'],['.v2-card .ui-button']]);
    await page.evaluate(()=>markMemorized('contrast0'));await page.waitForFunction(()=>VocVocData.getWordProgress('contrast0').status==='memorized');
+   await page.waitForSelector('#v2Celebrate.v2-on');await measureAll([['.v2-celebrate-kicker'],['.v2-celebrate-name'],['.v2-celebrate-desc'],['.v2-medal']]);   // the new-badge card
    await page.evaluate(()=>toggleHistoryDetail('contrast0'));await page.waitForSelector('#historyDetails.open .v2-speak');await measureAll([['#historyDetails .v2-speak']]);await page.evaluate(()=>closeHistoryDetail());
    for(const [hash,list] of [['#/stats',[['.v2-statline-4 .v2-stat strong'],['.v2-statline-4 .v2-stat span'],['.v2-day-label'],['.v2-day-num'],['.v2-legend'],['.v2-curve-range'],['.v2-card h2'],['.v2-card h3'],['.v2-card .v2-muted'],['.v2-page > .v2-muted']]],['#/badges',[['.v2-badge-body h3'],['.v2-badge-body p.v2-muted'],['.v2-badge-date'],['.v2-badge-icon'],['.v2-page > .v2-muted']]]]){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(`#v2Screen[data-route="${hash.slice(2)}"] h1`);await measureAll(list);}
    assert.deepEqual(failures,[],`contrast below WCAG AA in the ${colorScheme} theme`);

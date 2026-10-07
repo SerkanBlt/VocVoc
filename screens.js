@@ -2,7 +2,7 @@
 /* New interface (prototype): tab bar, screens, simulated sign-in and simulated Free/Premium plan.
    Opt-in: open the app with ?ui=v2 (remembered; ?ui=v1 or "Eski arayüze dön" turns it off). Without it this file only defines VocVocPlan
    and does nothing else, so the default interface and its tests are unaffected. Nothing here is real: there is no account, server or payment.
-   The home screen is the existing one (the "Today" tab); the other tabs are full-screen pages drawn over it. No inline handlers, no innerHTML with data. */
+   The existing home screen (search, word cards, the list) is the "Words" tab; the other tabs, Today included, are full-screen pages drawn over it. No inline handlers, no innerHTML with data. */
 (function(){
   const UI_KEY='VOCVOC_UI',PLAN_KEY='VOCVOC_SIM_PLAN',PROFILE_KEY='VOCVOC_SIM_PROFILE';
   const store={
@@ -35,7 +35,7 @@
   /* ---------- texts (Turkish and English; the other interface languages show English) ---------- */
   const TEXT={
     tr:{
-      nav:'Ana gezinme',today:'Bugün',study:'Çalış',stats:'İstatistik',badges:'Rozetler',profile:'Profil',back:'Geri',
+      nav:'Ana gezinme',today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistik',badges:'Rozetler',profile:'Profil',back:'Geri',
       authTitle:'VocVoc',authSub:'Kelimelerini cihazında öğren ve tekrar et.',authName:'Görünen ad (isteğe bağlı)',authGoogle:'Google ile devam et (simülasyon)',authGuest:'Misafir olarak devam et',
       authNote:'Simülasyon: gerçek hesap ve sunucu yok. Bilgilerin yalnızca bu cihazda kalır.',demoName:'Demo Kullanıcı',
       studyTitle:'Çalış',studyTest:'Test',studyTestSub:'{n} aktif kelimeden 10 soru',studyRecall:'Hatırla',studyRecallSub:'{n} ezberlediğin kelimeyi sına',studyFlip:'Flip',studyFlipSub:'Kartları çevirerek tekrar et',
@@ -51,7 +51,7 @@
       simulate:"Premium'u simüle et",backToFree:'Ücretsiz plana dön',simNote:'Simülasyon: gerçek ödeme alınmaz, hiçbir şey satın alınmaz.',
       free1:'Seçtiğin dil çifti için hazır başlangıç kelimeleri',free2:'Kartlar, ezberleme, arşiv ve History',free3:'Test, Hatırla ve Flip',free4:'Kendi API anahtarınla yeni kelime ekleme',free5:'Yedekleme, tema ve 6 arayüz dili',free6:'Rozetler',
       prem1:'Dahili yapay zekâ (anahtar gerekmez)',prem2:"History'den seçtiğin kelimelerle cümle kurma ve anlamını görme",prem3:'Sesli okuma',prem4:'İlerleme istatistikleri ve geçmiş analizi',
-      dashHello:'Merhaba, {name}',dashHelloGuest:'Merhaba',goalTitle:'Günlük hedef',goalValue:'{n} / {m} kelime',goalUnlimited:'Bugün {n} kelime eklendi',addDaily:'Günlük kelimeler ekle',statActive:'Aktif',statMemorized:'Ezberlenen',statToday:'Bugün ezberlenen',
+      goalTitle:'Günlük hedef',goalValue:'{n} / {m} kelime',goalUnlimited:'Bugün {n} kelime eklendi',addDaily:'Günlük kelimeler ekle',statActive:'Aktif',statMemorized:'Ezberlenen',statToday:'Bugün ezberlenen',
       quizClose:'Kapat',quizProgress:'Soru {n}/{total}',quizDone:'Tamamlandı',quizProgressLabel:'Test ilerlemesi',quizNeedActive:'Test için en az 10 aktif kelime gerekir. Şu an {n} var.',quizNeedRecall:'Hatırla için en az 10 ezberlenmiş kelime gerekir. Şu an {n} var.',backToToday:'Bugün ekranına dön',
       statsSummaryTotal:'Toplam kelime',statsMemorized:'Ezberlenen',statsStreak:'Seri (gün)',statsLongest:'En uzun seri',
       statsWeek:'Son 7 gün',legendAdded:'Eklenen',legendMemorized:'Ezberlenen',dayLabel:'{day}: {added} eklendi, {memorized} ezberlendi, {tests} test',
@@ -59,7 +59,7 @@
       statsTests:'Testler',testsCount:'Test',testsAccuracy:'Ortalama başarı',testsBest:'En iyi',testsNone:'Henüz tamamlanmış test yok. Bir test bitirince sonuçların burada görünür.',lastTests:'Son testler',modeActive:'Test',modeRecall:'Hatırla',
       statsAnalysis:'Geçmiş analizi',hardestTitle:'En çok yanıldığın kelimeler',hardestNone:'Henüz yanlış yaptığın kelime yok.',speedTitle:'Ortalama ezberleme süresi',speedValue:'{n} gün ({m} kelimeye göre)',speedNone:'Henüz ezberlenmiş kelime yok.',
       statsFootnote:'Rakamlar kelimelerin eklenme ve ezberlenme zamanlarından ve tamamladığın testlerden hesaplanır. Arşive aldığın kelimeler ezberlenen sayısına girmez. Test geçmişi ve rozetler bu cihazda tutulur, yedeğe girmez.',
-      badgesSummary:'{n} / {m} rozet kazanıldı',badgeEarned:'Kazanıldı: {date}',badgeProgress:'{n} / {m}',newBadge:'Yeni rozet: {name}',dashStreak:'Seri: {n} gün',
+      badgesSummary:'{n} / {m} rozet kazanıldı',badgeEarned:'Kazanıldı: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'Yeni rozet!',newBadgesTitle:'{n} yeni rozet!',
       b_memo1:'İlk adım',bd_memo1:'Bir kelimeyi ezberle.',b_memo10:'On kelime',bd_memo10:'10 kelime ezberle.',b_memo50:'Elli kelime',bd_memo50:'50 kelime ezberle.',b_memo100:'Yüz kelime',bd_memo100:'100 kelime ezberle.',b_memo500:'Kelime ustası',bd_memo500:'500 kelime ezberle.',
       b_words50:'Koleksiyoncu',bd_words50:'Listene 50 kelime ekle.',b_test1:'İlk test',bd_test1:'Bir test tamamla.',b_test10:'Düzenli çalışan',bd_test10:'10 test tamamla.',b_perfect:'Kusursuz',bd_perfect:'Bir testi 10/10 bitir.',b_recall8:'Güçlü hafıza',bd_recall8:'Hatırla testinde en az 8/10 yap.',
       b_streak3:'Isınma',bd_streak3:'3 gün üst üste çalış.',b_streak7:'Bir hafta',bd_streak7:'7 gün üst üste çalış.',b_streak30:'Bir ay',bd_streak30:'30 gün üst üste çalış.',b_goal1:'Hedef tamam',bd_goal1:'Günlük kelime hedefine ulaş.',
@@ -69,7 +69,7 @@
       aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
     },
     en:{
-      nav:'Main navigation',today:'Today',study:'Study',stats:'Stats',badges:'Badges',profile:'Profile',back:'Back',
+      nav:'Main navigation',today:'Today',words:'Words',study:'Study',stats:'Stats',badges:'Badges',profile:'Profile',back:'Back',
       authTitle:'VocVoc',authSub:'Learn and review your words on your device.',authName:'Display name (optional)',authGoogle:'Continue with Google (simulation)',authGuest:'Continue as guest',
       authNote:'Simulation: there is no real account or server. Your information stays on this device.',demoName:'Demo user',
       studyTitle:'Study',studyTest:'Test',studyTestSub:'10 questions from {n} active words',studyRecall:'Recall',studyRecallSub:'Quiz yourself on {n} memorized words',studyFlip:'Flip',studyFlipSub:'Review by flipping cards',
@@ -85,7 +85,7 @@
       simulate:'Simulate Premium',backToFree:'Back to the free plan',simNote:'Simulation: no real payment is taken and nothing is purchased.',
       free1:'Ready-made beginner words for your language pair',free2:'Cards, memorizing, archive and History',free3:'Test, Recall and Flip',free4:'Adding new words with your own API key',free5:'Backup, themes and 6 interface languages',free6:'Badges',
       prem1:'Built-in AI (no key needed)',prem2:'Build sentences from words you pick in History and see their meaning',prem3:'Read-aloud',prem4:'Progress statistics and history analysis',
-      dashHello:'Hello, {name}',dashHelloGuest:'Hello',goalTitle:'Daily goal',goalValue:'{n} / {m} words',goalUnlimited:'{n} words added today',addDaily:'Add daily words',statActive:'Active',statMemorized:'Memorized',statToday:'Memorized today',
+      goalTitle:'Daily goal',goalValue:'{n} / {m} words',goalUnlimited:'{n} words added today',addDaily:'Add daily words',statActive:'Active',statMemorized:'Memorized',statToday:'Memorized today',
       quizClose:'Close',quizProgress:'Question {n}/{total}',quizDone:'Finished',quizProgressLabel:'Test progress',quizNeedActive:'A Test needs at least 10 active words. You have {n}.',quizNeedRecall:'Recall needs at least 10 memorized words. You have {n}.',backToToday:'Back to Today',
       statsSummaryTotal:'Total words',statsMemorized:'Memorized',statsStreak:'Streak (days)',statsLongest:'Longest streak',
       statsWeek:'Last 7 days',legendAdded:'Added',legendMemorized:'Memorized',dayLabel:'{day}: {added} added, {memorized} memorized, {tests} tests',
@@ -93,7 +93,7 @@
       statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Average score',testsBest:'Best',testsNone:'No finished test yet. Your results appear here once you finish one.',lastTests:'Latest tests',modeActive:'Test',modeRecall:'Recall',
       statsAnalysis:'History analysis',hardestTitle:'Words you miss most',hardestNone:'No missed words yet.',speedTitle:'Average time to memorize',speedValue:'{n} days (from {m} words)',speedNone:'No memorized words yet.',
       statsFootnote:'The numbers come from when words were added and memorized and from the tests you finished. Archived words are not counted as memorized. Test history and badges are kept on this device and are not part of a backup.',
-      badgesSummary:'{n} / {m} badges earned',badgeEarned:'Earned: {date}',badgeProgress:'{n} / {m}',newBadge:'New badge: {name}',dashStreak:'Streak: {n} days',
+      badgesSummary:'{n} / {m} badges earned',badgeEarned:'Earned: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'New badge!',newBadgesTitle:'{n} new badges!',
       b_memo1:'First step',bd_memo1:'Memorize a word.',b_memo10:'Ten words',bd_memo10:'Memorize 10 words.',b_memo50:'Fifty words',bd_memo50:'Memorize 50 words.',b_memo100:'Hundred words',bd_memo100:'Memorize 100 words.',b_memo500:'Word master',bd_memo500:'Memorize 500 words.',
       b_words50:'Collector',bd_words50:'Add 50 words to your list.',b_test1:'First test',bd_test1:'Complete a test.',b_test10:'Regular',bd_test10:'Complete 10 tests.',b_perfect:'Flawless',bd_perfect:'Finish a test 10/10.',b_recall8:'Strong memory',bd_recall8:'Score at least 8/10 in a Recall test.',
       b_streak3:'Warm-up',bd_streak3:'Study 3 days in a row.',b_streak7:'One week',bd_streak7:'Study 7 days in a row.',b_streak30:'One month',bd_streak30:'Study 30 days in a row.',b_goal1:'Goal reached',bd_goal1:'Reach your daily word goal.',
@@ -182,6 +182,7 @@
     stats:'<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>',
     badges:'<circle cx="12" cy="9" r="6"/><path d="M8.5 14.5L7 22l5-3 5 3-1.5-7.5"/>',
     profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+    words:'<path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="M4 6h.01"/><path d="M4 12h.01"/><path d="M4 18h.01"/>',
     lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
     speaker:'<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M18.5 5.5a9 9 0 010 13"/>'
   };
@@ -223,7 +224,33 @@
     if(record.seeded&&!fresh.length)return;
     const earned=Object.fromEntries(stats.badges.filter(badge=>fresh.includes(badge.id)).map(badge=>[badge.id,badge.earnedOn]));
     writeActivity(VocVocStats.withBadges({...record,seeded:true},earned));
-    if(record.seeded&&fresh.length)toast(fill(t('newBadge'),{name:fresh.slice(0,2).map(id=>t('b_'+id)).join(', ')+(fresh.length>2?' +'+(fresh.length-2):'')}));
+    if(record.seeded&&fresh.length)celebrate(fresh);
+  }
+  // Appears with a small burst, stays a few seconds and fades away by itself; it never blocks a tap. Badges earned together share one card.
+  const CELEBRATE_SHOW=2900,CELEBRATE_LEAVE=450,SPARKS=12;
+  let celebrating=false;const celebrationWaiting=[];
+  function celebrate(ids){
+    celebrationWaiting.push(...ids.filter(id=>!celebrationWaiting.includes(id)));
+    if(!celebrating)showCelebration();
+  }
+  function showCelebration(){
+    const known=currentStats().badges,badges=celebrationWaiting.splice(0).map(id=>known.find(badge=>badge.id===id)).filter(Boolean);
+    if(!badges.length){celebrating=false;return;}
+    celebrating=true;
+    let host=document.getElementById('v2Celebrate');
+    if(!host){host=h('div',{id:'v2Celebrate',class:'v2-celebrate',role:'status'});document.body.append(host);}
+    const sparks=Array.from({length:SPARKS},(_,index)=>{const spark=h('span',{class:'v2-spark'});spark.style.setProperty('--a',Math.round(index*360/SPARKS)+'deg');return spark;});
+    const names=badges.slice(0,2).map(badge=>t('b_'+badge.id)).join(', ')+(badges.length>2?' +'+(badges.length-2):'');
+    host.replaceChildren(h('div',{class:'v2-celebrate-card'},
+      h('div',{class:'v2-celebrate-art','aria-hidden':'true'},sparks,badges.slice(0,3).map(badge=>h('span',{class:'v2-medal',text:GLYPH[badge.kind]||'★'}))),
+      h('p',{class:'v2-celebrate-kicker',text:badges.length>1?fill(t('newBadgesTitle'),{n:badges.length}):t('newBadgeTitle')}),
+      h('p',{class:'v2-celebrate-name',text:names}),
+      badges.length===1?h('p',{class:'v2-celebrate-desc',text:t('bd_'+badges[0].id)}):null));
+    host.classList.remove('v2-leaving');host.classList.add('v2-on');
+    setTimeout(()=>{
+      host.classList.add('v2-leaving');
+      setTimeout(()=>{host.classList.remove('v2-on','v2-leaving');host.replaceChildren();showCelebration();},CELEBRATE_LEAVE);
+    },CELEBRATE_SHOW);
   }
   const recordedTests=new WeakSet();
   function recordFinishedTest(){                                                   // told after every drawing of a Test; acts once, when it is finished
@@ -375,10 +402,10 @@
   }
 
   /* ---------- routing ---------- */
-  const TABS=['today','study','stats','badges','profile'];
+  const TABS=['today','words','study','stats','badges','profile'];
   const QUIZ_ROUTES=['test','recall'];
   const ROUTES=[...TABS,'test','recall','flip','premium','help','privacy','terms','about'];
-  const TAB_OF={today:'today',study:'study',stats:'stats',badges:'badges',profile:'profile',test:'study',recall:'study',flip:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
+  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',badges:'badges',profile:'profile',test:'study',recall:'study',flip:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
   let shown=null,internalNavigations=0,tabButtons=null,screen=null,container=null,auth=null,root=null;
   const currentRoute=()=>{const route=location.hash.replace(/^#\/?/,'');return ROUTES.includes(route)?route:'today';};
   function navigate(route){
@@ -398,45 +425,42 @@
     catch(_){return {active:0,memorized:0,memorizedToday:0};}
   }
   function studyScreen(){
-    const {active,memorized}=counts();
+    const {active,memorized}=counts(),tests=currentStats().tests;
     const card=(glyph,title,sub,run)=>h('button',{type:'button',class:'v2-study-card',onclick:run},
       h('span',{class:'v2-study-glyph','aria-hidden':'true',text:glyph}),
       h('span',{},h('span',{class:'v2-study-title',text:title}),h('span',{class:'v2-study-sub',text:sub})));
-    return page(heading(t('studyTitle')),
+    return page(heading(t('studyTitle')),testsPanel(tests),
       card('◈',t('studyTest'),fill(t('studyTestSub'),{n:active}),()=>navigate('test')),
       card('↺',t('studyRecall'),fill(t('studyRecallSub'),{n:memorized}),()=>navigate('recall')),
-      card('⇄',t('studyFlip'),t('studyFlipSub'),()=>navigate('flip')));
+      card('⇄',t('studyFlip'),t('studyFlipSub'),()=>navigate('flip')),
+      recentTests(tests));
   }
 
-  /* ---------- dashboard: the top of the Today tab, above the existing home screen ---------- */
-  function dashboard(){
-    const name=readProfile()?.name||'';
+  /* ---------- Today: daily goal, ready-made words, counts and the last seven days ---------- */
+  function todayScreen(){
     const {active,memorized,memorizedToday}=counts();
-    const streak=currentStats().summary.streak.current;
     const limit=getDailyLimit(),used=getDailyUsage().count,unlimited=limit===Infinity;
     const bar=unlimited?null:h('div',{class:'v2-bar',role:'progressbar','aria-label':t('goalTitle'),'aria-valuemin':'0','aria-valuemax':String(limit),'aria-valuenow':String(Math.min(used,limit))},h('span'));
     bar?.style.setProperty('--p',Math.min(100,Math.round(used/limit*100))+'%');
-    const stat=(value,label)=>h('li',{class:'v2-stat'},h('strong',{text:String(value)}),h('span',{text:label}));
-    const quick=(glyph,label,route)=>h('button',{type:'button',class:'v2-quick-btn',onclick:()=>navigate(route)},h('span',{'aria-hidden':'true',text:glyph}),h('span',{text:label}));
-    return h('section',{id:'v2Dashboard',class:'v2-dash','aria-labelledby':'v2DashTitle',lang:lang()},
-      h('h2',{id:'v2DashTitle',text:name?fill(t('dashHello'),{name}):t('dashHelloGuest')}),
-      streak>0?h('p',{class:'v2-streak',text:fill(t('dashStreak'),{n:streak})}):null,
+    return page(heading(t('today')),h('div',{id:'v2Dashboard'},
       h('div',{class:'v2-card v2-goal'},
         h('p',{class:'v2-goal-label',text:t('goalTitle')}),
         h('p',{class:'v2-goal-value',text:unlimited?fill(t('goalUnlimited'),{n:used}):fill(t('goalValue'),{n:used,m:limit})}),
         bar,
-        h('button',{type:'button',class:'ui-button ui-button-success',onclick:()=>{addDailyFromPackOrAi();}},t('addDaily'))),
+        h('button',{type:'button',class:'ui-button ui-button-success','data-v2-focus':'daily',onclick:()=>{addDailyFromPackOrAi();}},t('addDaily'))),
       packCard(),
-      h('ul',{class:'v2-statline'},stat(active,t('statActive')),stat(memorized,t('statMemorized')),stat(memorizedToday,t('statToday'))),
-      h('div',{class:'v2-quick'},quick('◈',t('studyTest'),'test'),quick('↺',t('studyRecall'),'recall'),quick('⇄',t('studyFlip'),'flip')));
+      h('ul',{class:'v2-statline'},tile(active,t('statActive')),tile(memorized,t('statMemorized')),tile(memorizedToday,t('statToday'))),
+      weekSection(currentStats().last7)));
   }
   let dashboardTimer=0;
   function refreshDashboard(){                                                   // after any change of the data, once per burst
     clearTimeout(dashboardTimer);
     dashboardTimer=setTimeout(()=>{
       evaluateBadges();syncPack();
-      const current=document.getElementById('v2Dashboard');if(!current)return;
-      const fresh=dashboard();fresh.hidden=current.hidden;current.replaceWith(fresh);
+      if(shown!=='today'||!screen)return;
+      const top=screen.scrollTop,active=document.activeElement,keep=screen.contains(active)?(active.dataset.v2Focus||active.tagName):'';
+      screen.replaceChildren(todayScreen());screen.scrollTop=top;
+      if(keep)(screen.querySelector('[data-v2-focus="'+keep+'"]')||(keep==='H1'?screen.querySelector('h1'):null))?.focus({preventScroll:true});   // the page is redrawn; the user keeps their place
     },0);
   }
 
@@ -503,13 +527,19 @@
     return h('section',{class:'v2-card'},h('h2',{text:t('statsCurve')}),svg,
       h('p',{class:'v2-muted v2-curve-range','aria-hidden':'true',text:series[0].total+' → '+series[series.length-1].total}));
   }
-  function testsSection(tests){
+  function testsPanel(tests){
     const accuracy=tests.accuracy===null?'–':Math.round(tests.accuracy*100)+'%',best=tests.best?tests.best.score+'/'+tests.best.total:'–';
     return h('section',{class:'v2-card'},h('h2',{text:t('statsTests')}),
-      h('ul',{class:'v2-statline'},tile(tests.count,t('testsCount')),tile(accuracy,t('testsAccuracy')),tile(best,t('testsBest'))),
+      h('ul',{class:'v2-statline'},tile(tests.count,t('testsCount')),tile(accuracy,t('testsAccuracy')),tile(best,t('testsBest'))));
+  }
+  // The colour of the bullet in front of a finished test (out of ten): 9-10 green, 7-8 blue, 5-6 orange, below that red.
+  const scoreBand=(score,total)=>{const outOfTen=Math.round(score/Math.max(1,total)*10);return outOfTen>=9?'great':outOfTen>=7?'good':outOfTen>=5?'fair':'low';};
+  function recentTests(tests){
+    return h('section',{class:'v2-card'},h('h2',{text:t('lastTests')}),
       tests.last.length
-        ?[h('h3',{text:t('lastTests')}),h('ul',{class:'v2-testlist'},tests.last.map(test=>h('li',{},
-            h('span',{text:formatDay(VocVocStats.localDay(test.t))}),h('span',{class:'v2-muted',text:t(test.mode==='recall'?'modeRecall':'modeActive')}),h('strong',{text:test.score+'/'+test.total}))))]
+        ?h('ul',{class:'v2-testlist'},tests.last.map(test=>h('li',{},
+            h('span',{class:'v2-bullet v2-bullet-'+scoreBand(test.score,test.total),'aria-hidden':'true'}),
+            h('span',{class:'v2-test-day',text:formatDay(VocVocStats.localDay(test.t))}),h('span',{class:'v2-muted',text:t(test.mode==='recall'?'modeRecall':'modeActive')}),h('strong',{text:test.score+'/'+test.total}))))
         :h('p',{class:'v2-muted',text:t('testsNone')}));
   }
   function analysisSection(stats){
@@ -528,7 +558,7 @@
     const stats=currentStats(),summary=stats.summary;
     return page(heading(t('statsTitle')),
       h('ul',{class:'v2-statline v2-statline-4'},tile(summary.total,t('statsSummaryTotal')),tile(summary.memorized,t('statsMemorized')),tile(summary.streak.current,t('statsStreak')),tile(summary.streak.longest,t('statsLongest'))),
-      weekSection(stats.last7),curveSection(stats.memorizedSeries),testsSection(stats.tests),
+      weekSection(stats.last7),curveSection(stats.memorizedSeries),testsPanel(stats.tests),
       VocVocPlan.has('historyAnalysis')?analysisSection(stats):null,
       h('p',{class:'v2-muted',text:t('statsFootnote')}));
   }
@@ -595,6 +625,7 @@
   }
   function build(route){
     switch(route){
+      case 'today':return todayScreen();
       case 'study':case 'flip':return studyScreen();
       case 'test':case 'recall':return quizScreen(route);
       case 'stats':return statsScreen();
@@ -621,9 +652,8 @@
       if(button.dataset.tab===tab)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
     });
     root.querySelector('.v2-tabs').setAttribute('aria-label',t('nav'));
-    if(route==='today'){
+    if(route==='words'){                                                           // the existing home screen: search, word cards, the list
       container.classList.remove('v2-away');screen.hidden=true;screen.replaceChildren();delete screen.dataset.route;
-      refreshDashboard();
       return;
     }
     container.classList.add('v2-away');screen.hidden=false;screen.dataset.route=route;
@@ -665,12 +695,9 @@
     auth=h('div',{id:'v2Auth',class:'v2-auth',role:'dialog','aria-modal':'true','aria-labelledby':'v2AuthTitle'});
     document.body.append(root,auth);
     tabButtons=[...nav.querySelectorAll('.v2-tab')];
-    // dashboard on the home screen; it follows every change of the data and steps aside while a word is being searched
-    const search=document.getElementById('searchInput');
+    // Today follows every change of the data
     evaluateBadges();
-    container.insertBefore(dashboard(),document.getElementById('errorArea'));
     refreshPack();
-    search.addEventListener('input',()=>{const current=document.getElementById('v2Dashboard');if(current)current.hidden=!!search.value.trim();});
     window.addEventListener('vocvoc-storage-committed',refreshDashboard);
     window.addEventListener('vocvoc-data-adopted',refreshDashboard);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshDashboard();});
