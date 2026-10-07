@@ -39,7 +39,7 @@
       authTitle:'VocVoc',authSub:'Kelimelerini cihazında öğren ve tekrar et.',authName:'Görünen ad (isteğe bağlı)',authGoogle:'Google ile devam et (simülasyon)',authGuest:'Misafir olarak devam et',
       authNote:'Simülasyon: gerçek hesap ve sunucu yok. Bilgilerin yalnızca bu cihazda kalır.',demoName:'Demo Kullanıcı',
       studyTitle:'Çalış',studyTest:'Test',studyTestSub:'{n} aktif kelimeden 10 soru',studyRecall:'Hatırla',studyRecallSub:'{n} ezberlediğin kelimeyi sına',studyFlip:'Flip',studyFlipSub:'Kartları çevirerek tekrar et',
-      statsTitle:'İstatistikler',badgesTitle:'Rozetler',soon:'Bu ekran bir sonraki adımda doldurulacak.',
+      statsTitle:'İstatistikler',badgesTitle:'Rozetler',
       lockedTitle:'Premium özelliği',lockedStats:'Günlük etkinlik, test başarısı, öğrenme eğrisi ve seri gibi istatistikler Premium ile açılır.',goPremium:"Premium'a geç",
       profileTitle:'Profil',guest:'Misafir',modeGoogle:'Google (simülasyon)',modeGuest:'Bu cihazda',planFree:'Ücretsiz',planPremium:'Premium (simülasyon)',
       rowPremium:'Premium',rowSettings:'Ayarlar',rowHelp:'Yardım',rowPrivacy:'Gizlilik Politikası',rowTerms:'Kullanım Şartları',rowAbout:'Hakkında',
@@ -53,6 +53,16 @@
       prem1:'Dahili yapay zekâ (anahtar gerekmez)',prem2:"History'den seçtiğin kelimelerle cümle kurma ve anlamını görme",prem3:'Sesli okuma',prem4:'İlerleme istatistikleri ve geçmiş analizi',
       dashHello:'Merhaba, {name}',dashHelloGuest:'Merhaba',goalTitle:'Günlük hedef',goalValue:'{n} / {m} kelime',goalUnlimited:'Bugün {n} kelime eklendi',addDaily:'Günlük kelimeler ekle',statActive:'Aktif',statMemorized:'Ezberlenen',statToday:'Bugün ezberlenen',
       quizClose:'Kapat',quizProgress:'Soru {n}/{total}',quizDone:'Tamamlandı',quizProgressLabel:'Test ilerlemesi',quizNeedActive:'Test için en az 10 aktif kelime gerekir. Şu an {n} var.',quizNeedRecall:'Hatırla için en az 10 ezberlenmiş kelime gerekir. Şu an {n} var.',backToToday:'Bugün ekranına dön',
+      statsSummaryTotal:'Toplam kelime',statsMemorized:'Ezberlenen',statsStreak:'Seri (gün)',statsLongest:'En uzun seri',
+      statsWeek:'Son 7 gün',legendAdded:'Eklenen',legendMemorized:'Ezberlenen',dayLabel:'{day}: {added} eklendi, {memorized} ezberlendi, {tests} test',
+      statsCurve:'Ezberlenen kelime (son 30 gün)',curveSummary:'30 gün önce {from}, şimdi {to} ezberlenmiş kelime.',
+      statsTests:'Testler',testsCount:'Test',testsAccuracy:'Ortalama başarı',testsBest:'En iyi',testsNone:'Henüz tamamlanmış test yok. Bir test bitirince sonuçların burada görünür.',lastTests:'Son testler',modeActive:'Test',modeRecall:'Hatırla',
+      statsAnalysis:'Geçmiş analizi',hardestTitle:'En çok yanıldığın kelimeler',hardestNone:'Henüz yanlış yaptığın kelime yok.',speedTitle:'Ortalama ezberleme süresi',speedValue:'{n} gün ({m} kelimeye göre)',speedNone:'Henüz ezberlenmiş kelime yok.',
+      statsFootnote:'Rakamlar kelimelerin eklenme ve ezberlenme zamanlarından ve tamamladığın testlerden hesaplanır. Arşive aldığın kelimeler ezberlenen sayısına girmez. Test geçmişi ve rozetler bu cihazda tutulur, yedeğe girmez.',
+      badgesSummary:'{n} / {m} rozet kazanıldı',badgeEarned:'Kazanıldı: {date}',badgeProgress:'{n} / {m}',newBadge:'Yeni rozet: {name}',dashStreak:'Seri: {n} gün',
+      b_memo1:'İlk adım',bd_memo1:'Bir kelimeyi ezberle.',b_memo10:'On kelime',bd_memo10:'10 kelime ezberle.',b_memo50:'Elli kelime',bd_memo50:'50 kelime ezberle.',b_memo100:'Yüz kelime',bd_memo100:'100 kelime ezberle.',b_memo500:'Kelime ustası',bd_memo500:'500 kelime ezberle.',
+      b_words50:'Koleksiyoncu',bd_words50:'Listene 50 kelime ekle.',b_test1:'İlk test',bd_test1:'Bir test tamamla.',b_test10:'Düzenli çalışan',bd_test10:'10 test tamamla.',b_perfect:'Kusursuz',bd_perfect:'Bir testi 10/10 bitir.',b_recall8:'Güçlü hafıza',bd_recall8:'Hatırla testinde en az 8/10 yap.',
+      b_streak3:'Isınma',bd_streak3:'3 gün üst üste çalış.',b_streak7:'Bir hafta',bd_streak7:'7 gün üst üste çalış.',b_streak30:'Bir ay',bd_streak30:'30 gün üst üste çalış.',b_goal1:'Hedef tamam',bd_goal1:'Günlük kelime hedefine ulaş.',
       aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
     },
     en:{
@@ -60,7 +70,7 @@
       authTitle:'VocVoc',authSub:'Learn and review your words on your device.',authName:'Display name (optional)',authGoogle:'Continue with Google (simulation)',authGuest:'Continue as guest',
       authNote:'Simulation: there is no real account or server. Your information stays on this device.',demoName:'Demo user',
       studyTitle:'Study',studyTest:'Test',studyTestSub:'10 questions from {n} active words',studyRecall:'Recall',studyRecallSub:'Quiz yourself on {n} memorized words',studyFlip:'Flip',studyFlipSub:'Review by flipping cards',
-      statsTitle:'Statistics',badgesTitle:'Badges',soon:'This screen will be filled in the next step.',
+      statsTitle:'Statistics',badgesTitle:'Badges',
       lockedTitle:'Premium feature',lockedStats:'Statistics such as daily activity, test accuracy, the learning curve and streaks come with Premium.',goPremium:'Go Premium',
       profileTitle:'Profile',guest:'Guest',modeGoogle:'Google (simulation)',modeGuest:'On this device',planFree:'Free',planPremium:'Premium (simulation)',
       rowPremium:'Premium',rowSettings:'Settings',rowHelp:'Help',rowPrivacy:'Privacy Policy',rowTerms:'Terms of Use',rowAbout:'About',
@@ -74,6 +84,16 @@
       prem1:'Built-in AI (no key needed)',prem2:'Build sentences from words you pick in History and see their meaning',prem3:'Read-aloud',prem4:'Progress statistics and history analysis',
       dashHello:'Hello, {name}',dashHelloGuest:'Hello',goalTitle:'Daily goal',goalValue:'{n} / {m} words',goalUnlimited:'{n} words added today',addDaily:'Add daily words',statActive:'Active',statMemorized:'Memorized',statToday:'Memorized today',
       quizClose:'Close',quizProgress:'Question {n}/{total}',quizDone:'Finished',quizProgressLabel:'Test progress',quizNeedActive:'A Test needs at least 10 active words. You have {n}.',quizNeedRecall:'Recall needs at least 10 memorized words. You have {n}.',backToToday:'Back to Today',
+      statsSummaryTotal:'Total words',statsMemorized:'Memorized',statsStreak:'Streak (days)',statsLongest:'Longest streak',
+      statsWeek:'Last 7 days',legendAdded:'Added',legendMemorized:'Memorized',dayLabel:'{day}: {added} added, {memorized} memorized, {tests} tests',
+      statsCurve:'Memorized words (last 30 days)',curveSummary:'30 days ago {from}, now {to} memorized words.',
+      statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Average score',testsBest:'Best',testsNone:'No finished test yet. Your results appear here once you finish one.',lastTests:'Latest tests',modeActive:'Test',modeRecall:'Recall',
+      statsAnalysis:'History analysis',hardestTitle:'Words you miss most',hardestNone:'No missed words yet.',speedTitle:'Average time to memorize',speedValue:'{n} days (from {m} words)',speedNone:'No memorized words yet.',
+      statsFootnote:'The numbers come from when words were added and memorized and from the tests you finished. Archived words are not counted as memorized. Test history and badges are kept on this device and are not part of a backup.',
+      badgesSummary:'{n} / {m} badges earned',badgeEarned:'Earned: {date}',badgeProgress:'{n} / {m}',newBadge:'New badge: {name}',dashStreak:'Streak: {n} days',
+      b_memo1:'First step',bd_memo1:'Memorize a word.',b_memo10:'Ten words',bd_memo10:'Memorize 10 words.',b_memo50:'Fifty words',bd_memo50:'Memorize 50 words.',b_memo100:'Hundred words',bd_memo100:'Memorize 100 words.',b_memo500:'Word master',bd_memo500:'Memorize 500 words.',
+      b_words50:'Collector',bd_words50:'Add 50 words to your list.',b_test1:'First test',bd_test1:'Complete a test.',b_test10:'Regular',bd_test10:'Complete 10 tests.',b_perfect:'Flawless',bd_perfect:'Finish a test 10/10.',b_recall8:'Strong memory',bd_recall8:'Score at least 8/10 in a Recall test.',
+      b_streak3:'Warm-up',bd_streak3:'Study 3 days in a row.',b_streak7:'One week',bd_streak7:'Study 7 days in a row.',b_streak30:'One month',bd_streak30:'Study 30 days in a row.',b_goal1:'Goal reached',bd_goal1:'Reach your daily word goal.',
       aboutTitle:'About',version:'Version',uiMode:'Interface',uiProto:'New interface (prototype)',aboutSim:'Sign-in, Premium and payment in this version are simulations: there is no real account, server or payment.'
     }
   };
@@ -163,6 +183,49 @@
   /* ---------- profile (simulated) ---------- */
   function readProfile(){try{const value=JSON.parse(store.get(PROFILE_KEY)||'null');return value&&(value.mode==='guest'||value.mode==='google-sim')?value:null;}catch(_){return null;}}
 
+
+  /* ---------- activity record and statistics (the numbers come from stats.js) ---------- */
+  // The record keeps what the app's data cannot say: finished tests and the day each badge was earned. It is small, bounded and lives only
+  // in this browser (not in the backup). The rest of the statistics is worked out from when words were added and memorized.
+  const ACTIVITY_KEY='VOCVOC_ACTIVITY_V1';
+  const parseJson=text=>{try{return JSON.parse(text);}catch(_){return null;}};
+  const readActivity=()=>VocVocStats.normalizeRecord(parseJson(store.get(ACTIVITY_KEY)));
+  const writeActivity=record=>store.set(ACTIVITY_KEY,JSON.stringify(record));
+  const today=()=>VocVocStats.localDay(new Date().toISOString());
+  let statsCache=null;
+  function currentStats(){
+    const db=VocVocData.getDb(),raw=store.get(ACTIVITY_KEY)||'',day=today(),limit=getDailyLimit(),goal=Number.isFinite(limit)&&getDailyUsage().count>=limit;
+    if(statsCache&&statsCache.db===db&&statsCache.raw===raw&&statsCache.day===day&&statsCache.goal===goal)return statsCache.value;   // nothing changed since last time
+    const record=VocVocStats.normalizeRecord(parseJson(raw));
+    const words=Object.values(db.progress).map(progress=>({word:db.words[progress.wordId]?.word||'',status:progress.status,addedAt:progress.firstSeenAt||null,memorizedAt:progress.memorizedAt||null}));
+    const value=VocVocStats.compute({words,quizzes:record.quizzes,testsTaken:record.testsTaken,earned:record.badges,builtin:[...BUILTIN_DICTIONARY_KEYS],today:day,goalReachedToday:goal});
+    statsCache={db,raw,day,goal,value};
+    return value;
+  }
+  let toastTimer=0;
+  function toast(text){
+    let node=document.getElementById('v2Toast');
+    if(!node){node=h('div',{id:'v2Toast',class:'v2-toast',role:'status'});document.body.append(node);}
+    node.textContent=text;node.classList.add('v2-show');
+    clearTimeout(toastTimer);toastTimer=setTimeout(()=>node.classList.remove('v2-show'),4500);
+  }
+  // Badges earned since last time are saved with the day they were really earned. The very first look only records what the data already
+  // shows (no fanfare for things done long ago); after that every new badge is announced.
+  function evaluateBadges(){
+    const record=readActivity(),stats=currentStats(),fresh=stats.newlyEarned;
+    if(record.seeded&&!fresh.length)return;
+    const earned=Object.fromEntries(stats.badges.filter(badge=>fresh.includes(badge.id)).map(badge=>[badge.id,badge.earnedOn]));
+    writeActivity(VocVocStats.withBadges({...record,seeded:true},earned));
+    if(record.seeded&&fresh.length)toast(fill(t('newBadge'),{name:fresh.slice(0,2).map(id=>t('b_'+id)).join(', ')+(fresh.length>2?' +'+(fresh.length-2):'')}));
+  }
+  const recordedTests=new WeakSet();
+  function recordFinishedTest(){                                                   // told after every drawing of a Test; acts once, when it is finished
+    if(!quizSession||quizSession.index<quizSession.questions.length||recordedTests.has(quizSession))return;
+    recordedTests.add(quizSession);
+    writeActivity(VocVocStats.appendQuiz(readActivity(),{t:new Date().toISOString(),mode:quizSession.mode==='recall'?'recall':'active',score:quizSession.score,total:quizSession.questions.length,wrong:quizSession.wrongWords||[]}));
+    evaluateBadges();
+  }
+
   /* ---------- routing ---------- */
   const TABS=['today','study','stats','badges','profile'];
   const QUIZ_ROUTES=['test','recall'];
@@ -183,16 +246,8 @@
   const heading=text=>h('h1',{tabindex:'-1',text});
   const backButton=()=>h('button',{type:'button',class:'v2-back',onclick:()=>goBack()},'‹ '+t('back'));
   function counts(){
-    let active=0,memorized=0,memorizedToday=0;
-    const today=new Date().toLocaleDateString('en-CA');                       // the local day, like the daily usage of the app
-    try{
-      for(const word of VocVocData.getWords()){
-        const progress=VocVocData.getWordProgress(word.word);
-        if(progress?.status==='memorized'){memorized++;if(progress.memorizedAt&&new Date(progress.memorizedAt).toLocaleDateString('en-CA')===today)memorizedToday++;}
-        else if(progress?.status==='active')active++;
-      }
-    }catch(_){}
-    return {active,memorized,memorizedToday};
+    try{const {active,memorized,memorizedToday}=currentStats().summary;return {active,memorized,memorizedToday};}
+    catch(_){return {active:0,memorized:0,memorizedToday:0};}
   }
   function studyScreen(){
     const {active,memorized}=counts();
@@ -209,6 +264,7 @@
   function dashboard(){
     const name=readProfile()?.name||'';
     const {active,memorized,memorizedToday}=counts();
+    const streak=currentStats().summary.streak.current;
     const limit=getDailyLimit(),used=getDailyUsage().count,unlimited=limit===Infinity;
     const bar=unlimited?null:h('div',{class:'v2-bar',role:'progressbar','aria-label':t('goalTitle'),'aria-valuemin':'0','aria-valuemax':String(limit),'aria-valuenow':String(Math.min(used,limit))},h('span'));
     bar?.style.setProperty('--p',Math.min(100,Math.round(used/limit*100))+'%');
@@ -216,6 +272,7 @@
     const quick=(glyph,label,route)=>h('button',{type:'button',class:'v2-quick-btn',onclick:()=>navigate(route)},h('span',{'aria-hidden':'true',text:glyph}),h('span',{text:label}));
     return h('section',{id:'v2Dashboard',class:'v2-dash','aria-labelledby':'v2DashTitle',lang:lang()},
       h('h2',{id:'v2DashTitle',text:name?fill(t('dashHello'),{name}):t('dashHelloGuest')}),
+      streak>0?h('p',{class:'v2-streak',text:fill(t('dashStreak'),{n:streak})}):null,
       h('div',{class:'v2-card v2-goal'},
         h('p',{class:'v2-goal-label',text:t('goalTitle')}),
         h('p',{class:'v2-goal-value',text:unlimited?fill(t('goalUnlimited'),{n:used}):fill(t('goalValue'),{n:used,m:limit})}),
@@ -228,6 +285,7 @@
   function refreshDashboard(){                                                   // after any change of the data, once per burst
     clearTimeout(dashboardTimer);
     dashboardTimer=setTimeout(()=>{
+      evaluateBadges();
       const current=document.getElementById('v2Dashboard');if(!current)return;
       const fresh=dashboard();fresh.hidden=current.hidden;current.replaceWith(fresh);
     },0);
@@ -267,8 +325,82 @@
     return page(heading(t(titleKey)),h('div',{class:'v2-card v2-locked'},icon('lock'),h('h2',{text:t('lockedTitle')}),h('p',{text:t(textKey)}),
       h('div',{class:'v2-actions'},h('button',{type:'button',class:'ui-button ui-button-success',onclick:()=>navigate('premium')},t('goPremium')))));
   }
-  const statsScreen=()=>VocVocPlan.has('stats')?page(heading(t('statsTitle')),h('p',{class:'v2-note',text:t('soon')})):lockedScreen('statsTitle','lockedStats');
-  const badgesScreen=()=>page(heading(t('badgesTitle')),h('p',{class:'v2-note',text:t('soon')}));
+  /* ---------- statistics (Premium) ---------- */
+  const locale=()=>lang()==='tr'?'tr-TR':'en-GB';
+  const formatDay=(day,options)=>new Date(day+'T12:00:00').toLocaleDateString(locale(),options||{day:'numeric',month:'short',year:'numeric'});
+  const tile=(value,label)=>h('li',{class:'v2-stat'},h('strong',{text:String(value)}),h('span',{text:label}));
+  function weekSection(days){
+    const peak=Math.max(1,...days.map(day=>Math.max(day.added,day.memorized)));
+    const weekday=day=>formatDay(day,{weekday:'short'});
+    const column=(value,kind)=>{const bar=h('span',{class:'v2-col v2-col-'+kind});bar.style.setProperty('--h',Math.round(value/peak*100)+'%');return bar;};
+    return h('section',{class:'v2-card'},h('h2',{text:t('statsWeek')}),
+      h('ol',{class:'v2-days'},days.map(day=>h('li',{class:'v2-day'},
+        h('span',{class:'sr-only',text:fill(t('dayLabel'),{day:weekday(day.day),added:day.added,memorized:day.memorized,tests:day.tests})}),
+        h('span',{class:'v2-bars','aria-hidden':'true'},column(day.added,'added'),column(day.memorized,'memorized')),
+        h('span',{class:'v2-day-label','aria-hidden':'true',text:weekday(day.day)}),
+        h('span',{class:'v2-day-num','aria-hidden':'true',text:day.added+'/'+day.memorized})))),
+      h('p',{class:'v2-legend'},h('span',{class:'v2-key v2-key-added','aria-hidden':'true'}),' '+t('legendAdded')+'   ',h('span',{class:'v2-key v2-key-memorized','aria-hidden':'true'}),' '+t('legendMemorized')));
+  }
+  function curveSection(series){
+    const NS='http://www.w3.org/2000/svg',width=300,height=80,pad=4;
+    const low=Math.min(...series.map(point=>point.total)),high=Math.max(...series.map(point=>point.total));
+    const x=index=>pad+(width-2*pad)*index/(series.length-1),y=value=>height-pad-(height-2*pad)*((value-low)/Math.max(1,high-low));
+    const svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox','0 0 '+width+' '+height);svg.setAttribute('class','v2-curve');svg.setAttribute('role','img');
+    svg.setAttribute('aria-label',fill(t('curveSummary'),{from:series[0].total,to:series[series.length-1].total}));
+    const line=document.createElementNS(NS,'polyline');
+    line.setAttribute('points',series.map((point,index)=>x(index).toFixed(1)+','+y(point.total).toFixed(1)).join(' '));
+    svg.append(line);
+    return h('section',{class:'v2-card'},h('h2',{text:t('statsCurve')}),svg,
+      h('p',{class:'v2-muted v2-curve-range','aria-hidden':'true',text:series[0].total+' → '+series[series.length-1].total}));
+  }
+  function testsSection(tests){
+    const accuracy=tests.accuracy===null?'–':Math.round(tests.accuracy*100)+'%',best=tests.best?tests.best.score+'/'+tests.best.total:'–';
+    return h('section',{class:'v2-card'},h('h2',{text:t('statsTests')}),
+      h('ul',{class:'v2-statline'},tile(tests.count,t('testsCount')),tile(accuracy,t('testsAccuracy')),tile(best,t('testsBest'))),
+      tests.last.length
+        ?[h('h3',{text:t('lastTests')}),h('ul',{class:'v2-testlist'},tests.last.map(test=>h('li',{},
+            h('span',{text:formatDay(VocVocStats.localDay(test.t))}),h('span',{class:'v2-muted',text:t(test.mode==='recall'?'modeRecall':'modeActive')}),h('strong',{text:test.score+'/'+test.total}))))]
+        :h('p',{class:'v2-muted',text:t('testsNone')}));
+  }
+  function analysisSection(stats){
+    return h('section',{class:'v2-card'},h('h2',{text:t('statsAnalysis')}),
+      h('h3',{text:t('hardestTitle')}),
+      stats.tests.hardest.length
+        ?h('ul',{class:'v2-chips'},stats.tests.hardest.map(item=>h('li',{class:'v2-chip',lang:getTargetLanguageCode()},item.word,' ',h('span',{class:'v2-muted',text:'×'+item.count}))))
+        :h('p',{class:'v2-muted',text:t('hardestNone')}),
+      h('h3',{text:t('speedTitle')}),
+      stats.speed.medianDays===null
+        ?h('p',{class:'v2-muted',text:t('speedNone')})
+        :h('p',{},h('strong',{text:fill(t('speedValue'),{n:stats.speed.medianDays,m:stats.speed.samples})})));
+  }
+  function statsScreen(){
+    if(!VocVocPlan.has('stats'))return lockedScreen('statsTitle','lockedStats');
+    const stats=currentStats(),summary=stats.summary;
+    return page(heading(t('statsTitle')),
+      h('ul',{class:'v2-statline v2-statline-4'},tile(summary.total,t('statsSummaryTotal')),tile(summary.memorized,t('statsMemorized')),tile(summary.streak.current,t('statsStreak')),tile(summary.streak.longest,t('statsLongest'))),
+      weekSection(stats.last7),curveSection(stats.memorizedSeries),testsSection(stats.tests),
+      VocVocPlan.has('historyAnalysis')?analysisSection(stats):null,
+      h('p',{class:'v2-muted',text:t('statsFootnote')}));
+  }
+
+  /* ---------- badges (free) ---------- */
+  const GLYPH={memorized:'✓',collected:'☰',tests:'◈',perfect:'★',recall:'↺',streak:'✦',goal:'◎'};
+  function badgeCard(badge){
+    const done=!!badge.earnedOn;
+    const bar=done?null:h('div',{class:'v2-bar v2-bar-thin',role:'progressbar','aria-label':t('b_'+badge.id),'aria-valuemin':'0','aria-valuemax':String(badge.target),'aria-valuenow':String(badge.progress)},h('span'));
+    bar?.style.setProperty('--p',Math.round(badge.progress/badge.target*100)+'%');
+    return h('li',{class:'v2-badge'+(done?' v2-earned':'')},
+      h('span',{class:'v2-badge-icon','aria-hidden':'true'},done?GLYPH[badge.kind]:icon('lock')),
+      h('div',{class:'v2-badge-body'},h('h3',{text:t('b_'+badge.id)}),h('p',{class:'v2-muted',text:t('bd_'+badge.id)}),
+        done?h('p',{class:'v2-badge-date',text:fill(t('badgeEarned'),{date:formatDay(badge.earnedOn)})}):h('p',{class:'v2-muted',text:fill(t('badgeProgress'),{n:badge.progress,m:badge.target})}),
+        bar));
+  }
+  function badgesScreen(){
+    const badges=currentStats().badges,earned=badges.filter(badge=>badge.earnedOn).length;
+    const ordered=[...badges].sort((a,b)=>(a.earnedOn?0:1)-(b.earnedOn?0:1)||(a.earnedOn?b.earnedOn.localeCompare(a.earnedOn):b.progress/b.target-a.progress/a.target));
+    return page(heading(t('badgesTitle')),h('p',{class:'v2-muted',text:fill(t('badgesSummary'),{n:earned,m:badges.length})}),h('ul',{class:'v2-badges'},ordered.map(badgeCard)));
+  }
   function chipFor(plan){return h('span',{class:'v2-chip'+(plan==='premium'?' v2-premium':''),text:t(plan==='premium'?'planPremium':'planFree')});}
   function profileScreen(){
     const profile=readProfile()||{mode:'guest',name:''};
@@ -385,12 +517,14 @@
     tabButtons=[...nav.querySelectorAll('.v2-tab')];
     // dashboard on the home screen; it follows every change of the data and steps aside while a word is being searched
     const search=document.getElementById('searchInput');
+    evaluateBadges();
     container.insertBefore(dashboard(),document.getElementById('errorArea'));
     search.addEventListener('input',()=>{const current=document.getElementById('v2Dashboard');if(current)current.hidden=!!search.value.trim();});
     window.addEventListener('vocvoc-storage-committed',refreshDashboard);
     window.addEventListener('vocvoc-data-adopted',refreshDashboard);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshDashboard();});
     document.addEventListener('vocvoc-quiz-rendered',updateQuizProgress);
+    document.addEventListener('vocvoc-quiz-rendered',recordFinishedTest);
     // Flip is the app's own dialog; when it is closed (its x, Escape, the back button) the address goes back with it
     const flip=document.getElementById('flipOverlay');
     if(flip)new MutationObserver(()=>{if(!flip.classList.contains('open')&&shown==='flip')goBack('study');}).observe(flip,{attributes:true,attributeFilter:['class']});

@@ -1,6 +1,6 @@
 {
-  "version": "1.1.1",
-  "fingerprint": "823d30b106cfb454f23a212b3e4f3a6fd93e382482bbb7ca80a39c781b7d8f47",
+  "version": "1.2.0",
+  "fingerprint": "97b0a81e4fba44f16e43c54cdf92502c2782b319e75bf09c6c239cc630c8fcb6",
   "files": [
     "a11y.js",
     "icons/apple-touch-icon.png",
@@ -12,6 +12,7 @@
     "pwa.js",
     "screens.css",
     "screens.js",
+    "stats.js",
     "storage.js",
     "sw.js"
   ]

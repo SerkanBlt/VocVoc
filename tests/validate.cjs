@@ -132,7 +132,7 @@ describe('API key handling (static guards)',()=>{
     assert(!/[?&](?:key|api_key)=/i.test(html.match(/GEMINI_ENDPOINT=[^\n]*/)[0])&&!/\$\{apiKey\}|encodeURIComponent\(apiKey\)/.test(html));
   });
   it('no shipped file contains something that looks like an API key, and nothing logs it',()=>{
-    for(const file of ['index.html','a11y.js','pwa.js','screens.js','screens.css','sw.js','storage.js','manifest.webmanifest','README.md','tools/export-from-spa.js','tools/lock-shell.js','tools/shell-fingerprint.js'])
+    for(const file of ['index.html','a11y.js','pwa.js','screens.js','screens.css','stats.js','sw.js','storage.js','manifest.webmanifest','README.md','tools/export-from-spa.js','tools/lock-shell.js','tools/shell-fingerprint.js'])
       assert(!/AIza[0-9A-Za-z_-]{35}/.test(read(file)),`${file} contains something that looks like an API key`);
     for(const [name,source] of [['index.html',html],['pwa.js',pwa]])assert(!/console\.\w+\([^)]*(apiKey|getApiKey|x-goog-api-key|SECRET_KEY)/i.test(source),`${name} logs the API key`);
   });
@@ -207,7 +207,19 @@ describe('New interface (prototype)',()=>{
       ...['today','study','stats','badges','profile']                                            // tab labels
     ]);
     for(const key of asked)assert(key in TEXT.en,`missing text key ${key}`);
-    for(const key of Object.keys(TEXT.en))assert(new RegExp(`'${key}'`).test(code),`text key ${key} is never used`);
+    const badgeIds=require('../stats.js').BADGES.map(badge=>badge.id);
+    for(const key of Object.keys(TEXT.en)){
+      if(/^bd?_(\w+)$/.test(key)&&badgeIds.includes(key.replace(/^bd?_/,'')))continue;                // badge texts are looked up as t('b_'+id) / t('bd_'+id)
+      assert(new RegExp(`'${key}'`).test(code),`text key ${key} is never used`);
+    }
+    for(const id of badgeIds)for(const language of ['tr','en'])assert(TEXT[language]['b_'+id]&&TEXT[language]['bd_'+id],`badge ${id} has no ${language} name or description`);
+    assert(code.includes("t('b_'+")&&code.includes("t('bd_'+"));
+  });
+  it('statistics and badges are pure logic (no page, no storage, no network), loaded before the screens that use them',()=>{
+    const statsCode=read('stats.js').replace(/\/\*[^]*?\*\//g,'').replace(/\/\/.*$/gm,'');
+    assert(!/\bdocument\b|\blocalStorage\b|\bsessionStorage\b|\bfetch\(|\bXMLHttpRequest\b|\bindexedDB\b/.test(statsCode),'stats.js must not touch the page, storage or the network');
+    assert(html.indexOf('<script src="./stats.js"></script>')>0&&html.indexOf('./stats.js')<html.indexOf('./screens.js'));
+    assert(/const ACTIVITY_KEY='VOCVOC_ACTIVITY_V1'/.test(screensJs)&&!/ACTIVITY_KEY/.test(storage+pwa),'the activity record is the new interface\'s own, not part of the app data or the backup');
   });
 });
 
@@ -227,7 +239,7 @@ describe('Card controls',()=>{
 });
 
 describe('Code hygiene',()=>{
-  const sources=['index.html','pwa.js','a11y.js','storage.js','screens.js'].map(read),everything=sources.join('\n');
+  const sources=['index.html','pwa.js','a11y.js','storage.js','screens.js','stats.js'].map(read),everything=sources.join('\n');
   it('no function is defined and then never used (dead code stays out)',()=>{
     const escape=name=>name.replace(/\$/g,'\\$');
     const dead=[];

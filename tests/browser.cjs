@@ -748,7 +748,7 @@ async function main(){
   // off by default: nothing of it is on the page
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url);await ready();
-  assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),document.body.classList.contains('v2'),typeof VocVocPlan,VocVocPlan.get(),VocVocPlan.has('stats'),!!document.getElementById('v2Dashboard'),getComputedStyle(document.querySelector('.study-actions')).display!=='none']),[false,false,'object','free',false,false,true]);
+  assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),document.body.classList.contains('v2'),typeof VocVocPlan,VocVocPlan.get(),VocVocPlan.has('stats'),!!document.getElementById('v2Dashboard'),getComputedStyle(document.querySelector('.study-actions')).display!=='none',localStorage.getItem('VOCVOC_ACTIVITY_V1')]),[false,false,'object','free',false,false,true,null]);
   await context.close();
   record('new interface: off by default (no tab bar, no sign-in); the plan helper exists and says Free');
 
@@ -866,6 +866,101 @@ async function main(){
   record('new interface: draft policy/terms/help/about pages, sign-out keeps the data, "old interface" turns the new one off');
   await context.close();
  }
+ // ===== New interface: finished tests are recorded, badges are earned, statistics and badges screens =====
+ {
+  const quizWords=n=>Array.from({length:n},(_,index)=>({word:'qa'+index,meaning:'anlam '+index}));
+  // a finished Test is recorded; a perfect one earns badges, announced once
+  context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(url+'?ui=v2');await ready();await page.waitForSelector('#v2Auth.v2-open');await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  const activity=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')));
+  assert.deepEqual(await page.evaluate(()=>[JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded,document.getElementById('v2Toast')?.classList.contains('v2-show')||false]),[true,false]);   // the very first look is silent
+  await page.evaluate(words=>VocVocData.addWordBatch(words),quizWords(12));
+  await page.evaluate(()=>{location.hash='#/test';});await page.waitForSelector('#v2QuizHost .quiz-option');
+  for(let question=0;question<10;question++){
+   const answer=await page.evaluate(()=>quizSession.questions[quizSession.index].word);
+   await page.locator('#v2QuizHost .quiz-option:not([disabled])',{hasText:new RegExp('^'+answer.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'$')}).click();
+   await page.waitForFunction(count=>quizSession.index>count,question);
+  }
+  await page.waitForSelector('#v2QuizHost .quiz-result-card');
+  const todayDay=await page.evaluate(()=>VocVocStats.localDay(new Date().toISOString()));
+  const saved=await activity();
+  assert.deepEqual([saved.testsTaken,saved.quizzes.length,saved.quizzes[0].mode,saved.quizzes[0].score,saved.quizzes[0].total,saved.quizzes[0].wrong],[1,1,'active',10,10,[]]);
+  assert.deepEqual([saved.badges.test1,saved.badges.perfect,saved.badges.words50],[todayDay,todayDay,undefined]);
+  await page.waitForFunction(()=>/^Yeni rozet: /.test(document.getElementById('v2Toast')?.textContent||'')&&document.getElementById('v2Toast').classList.contains('v2-show'));
+  assert.match(await page.locator('#v2Toast').textContent(),/İlk test|Kusursuz/);
+  // the same finished Test is not recorded twice (the result screen is drawn again, for example on a language change)
+  await page.evaluate(()=>{renderQuizQuestion();renderQuizQuestion();});assert.equal((await activity()).testsTaken,1);
+  await page.reload();await ready();
+  assert.deepEqual(await page.evaluate(()=>[JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).testsTaken,document.getElementById('v2Toast')?.classList.contains('v2-show')||false]),[1,false]);   // remembered, not announced again
+  await context.close();
+  record('new interface: a finished Test is recorded once, a perfect one earns badges that are announced once, the first look is silent');
+ }
+ {
+  // seeded history: 30 words (12 memorized on days 0..9, two days after being added), 3 finished tests, a signed-in profile, Premium
+  const noon=back=>{const date=new Date();date.setHours(12,0,0,0);date.setDate(date.getDate()-back);return date.toISOString();};
+  const seedHistory=([stamps,quizDays,seeded])=>{
+   if(sessionStorage.getItem('seededHistory'))return;sessionStorage.setItem('seededHistory','1');
+   const words={},aliases={},progress={};
+   for(let i=0;i<30;i++){const word='s'+i,id='fr:tr:'+word,memorizedWord=i<12,added=memorizedWord?stamps[(i%10)+2]:stamps[i%7],memorized=memorizedWord?stamps[i%10]:null;
+    words[id]={id,word,normalized:word,targetLanguage:'fr',nativeLanguage:'tr',type:'isim',meaning:'anlam '+i,synonyms:[],antonyms:[],examples:[],expressions:[],createdAt:added,updatedAt:added};aliases[id]=id;
+    progress[id]={wordId:id,status:memorizedWord?'memorized':'active',firstSeenAt:added,lastSeenAt:added,statusChangedAt:memorized||added,memorizedAt:memorized,archivedAt:null,archiveSourceStatus:null};}
+   localStorage.setItem('VOCVOC_DB_V1',JSON.stringify({schemaVersion:1,meta:{starterWordsInitialized:true},settings:{nativeLanguage:'tr',targetLanguage:'fr',difficulty:'A1-A2',dailyLimit:'10',theme:'system',fontSize:'normal'},words,aliases,progress,dailyUsage:{date:null,count:0}}));
+   localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'}));localStorage.setItem('VOCVOC_SIM_PLAN','premium');
+   localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify({v:1,seeded,testsTaken:3,badges:{},quizzes:[
+    {t:quizDays[0],mode:'active',score:6,total:10,wrong:['s20','s21','s22','s23']},{t:quizDays[1],mode:'recall',score:9,total:10,wrong:['s20']},{t:quizDays[2],mode:'active',score:10,total:10,wrong:[]}]}));
+  };
+  const open=async seeded=>{
+   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+   await c.addInitScript(seedHistory,[Array.from({length:14},(_,back)=>noon(back)),[noon(1),noon(0),noon(0)],seeded]);
+   await p.goto(url+'?ui=v2');await ready(p);await p.waitForFunction(()=>!!document.getElementById('v2Root'));
+   return {c,p};
+  };
+  const route=async(p,name)=>{await p.evaluate(r=>{location.hash='#/'+r;},name);await p.waitForSelector(`#v2Screen[data-route="${name}"] h1`);};
+
+  // statistics (Premium): every number worked out from the seeded history
+  {
+   const {c,p}=await open(true);await route(p,'stats');
+   assert.deepEqual(await p.locator('.v2-statline-4 .v2-stat').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['30Toplam kelime','12Ezberlenen','12Seri (gün)','12En uzun seri']);
+   assert.equal(await p.locator('.v2-day').count(),7);
+   assert.match(await p.locator('.v2-day').last().locator('.sr-only').textContent(),/: 3 eklendi, 2 ezberlendi, 2 test$/);
+   assert.equal(await p.locator('.v2-curve').getAttribute('aria-label'),'30 gün önce 0, şimdi 12 ezberlenmiş kelime.');
+   assert.deepEqual(await p.locator('#v2Screen .v2-statline:not(.v2-statline-4) .v2-stat strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['3','83%','10/10']);
+   assert.deepEqual(await p.locator('.v2-testlist li strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['10/10','9/10','6/10']);   // newest first
+   assert.deepEqual(await p.locator('.v2-chips .v2-chip').evaluateAll(nodes=>nodes.map(node=>node.textContent.replace(/\s+/g,' ').trim())),['s20 ×2','s21 ×1','s22 ×1','s23 ×1']);
+   assert.match(await p.locator('#v2Screen').textContent(),/2 gün \(12 kelimeye göre\)/);
+   // the dashboard shows the streak
+   await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('.v2-streak');assert.equal(await p.locator('.v2-streak').textContent(),'Seri: 12 gün');
+   await c.close();
+  }
+  // badges (free): earned ones with their real dates first, the others with their progress
+  {
+   const {c,p}=await open(false);await route(p,'badges');
+   assert.equal(await p.locator('#v2Screen .v2-muted').first().textContent(),'7 / 14 rozet kazanıldı');
+   const names=selector=>p.locator(selector).evaluateAll(nodes=>nodes.map(node=>node.querySelector('h3').textContent));
+   assert.deepEqual((await names('.v2-badge.v2-earned')).sort(),['Bir hafta','Güçlü hafıza','Isınma','Kusursuz','On kelime','İlk adım','İlk test'].sort());
+   assert.equal(await p.locator('.v2-badge').nth(6).evaluate(node=>node.classList.contains('v2-earned')),true);          // earned first ...
+   assert.equal(await p.locator('.v2-badge').nth(7).evaluate(node=>node.classList.contains('v2-earned')),false);         // ... then the rest
+   assert.match(await p.locator('.v2-earned .v2-badge-date').first().textContent(),/^Kazanıldı: \d{1,2} \p{L}+ \d{4}$/u);
+   const fifty=p.locator('.v2-badge',{hasText:'Elli kelime'});
+   assert.match(await fifty.textContent(),/12 \/ 50/);assert.equal(await fifty.locator('[role="progressbar"]').getAttribute('aria-valuenow'),'12');
+   // the first look recorded them silently (no announcement), with the days they were really earned
+   assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Toast')?.classList.contains('v2-show')||false,Object.keys(JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges).length,JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded]),[false,7,true]);
+   // a badge once earned stays earned when the words behind it are gone
+   await p.evaluate(async()=>{for(let i=0;i<12;i++)await VocVocData.setStatus('s'+i,'active');});
+   await p.waitForFunction(()=>document.querySelector('.v2-streak')===null||true);
+   await route(p,'study');await route(p,'badges');
+   assert.equal(await p.locator('.v2-badge.v2-earned',{hasText:'On kelime'}).count(),1);
+   await c.close();
+  }
+  // a profile that already has history and badges is announced when it is a later look (new badges), by two names and a count
+  {
+   const {c,p}=await open(true);
+   await p.waitForFunction(()=>document.getElementById('v2Toast')?.classList.contains('v2-show'));
+   assert.match(await p.locator('#v2Toast').textContent(),/^Yeni rozet: .+, .+ \+5$/);
+   await c.close();
+  }
+  record('new interface: Statistics (Premium) and Badges (free) are computed from the history: numbers, charts, dates, progress, kept badges, silent first look');
+ }
  // ===== New interface: WCAG AA contrast of its screens, light and dark =====
  {
  const MEASURE=([selector,pseudo])=>{
@@ -881,7 +976,7 @@ async function main(){
    const style=getComputedStyle(el);return {ratio:Math.round(ratio*100)/100,size:parseFloat(style.fontSize),weight:style.fontWeight};
  };
   const checks=[['',[['#v2Auth h1'],['#v2Auth p'],['#v2Auth label'],['#v2Auth .ui-button-success'],['#v2Auth .ui-button-secondary'],['#v2Auth .v2-note']]],
-   ['#/today',[['#v2Dashboard h2'],['.v2-goal-label'],['.v2-goal-value'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['.v2-quick-btn']]],
+   ['#/today',[['#v2Dashboard h2'],['.v2-goal-label'],['.v2-goal-value'],['.v2-streak'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['.v2-quick-btn']]],
    ['#/test',[['.v2-study-bar h1'],['#v2QuizCount'],['.v2-close'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91']]],
    ['#/study',[['.v2-tab[aria-current="page"] .v2-tab-label'],['.v2-tab:not([aria-current="page"]) .v2-tab-label'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1']]],
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
@@ -897,8 +992,10 @@ async function main(){
    await measureAll(checks[0][1]);
    await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
    await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i}))));
-   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'#v2Dashboard':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
+   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'.v2-streak':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
    await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip.v2-premium');await measureAll([['.v2-chip'],['.v2-card .ui-button']]);
+   await page.evaluate(()=>markMemorized('contrast0'));await page.waitForFunction(()=>VocVocData.getWordProgress('contrast0').status==='memorized');
+   for(const [hash,list] of [['#/stats',[['.v2-statline-4 .v2-stat strong'],['.v2-statline-4 .v2-stat span'],['.v2-day-label'],['.v2-day-num'],['.v2-legend'],['.v2-curve-range'],['.v2-card h2'],['.v2-card h3'],['.v2-card .v2-muted'],['.v2-page > .v2-muted']]],['#/badges',[['.v2-badge-body h3'],['.v2-badge-body p.v2-muted'],['.v2-badge-date'],['.v2-badge-icon'],['.v2-page > .v2-muted']]]]){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(`#v2Screen[data-route="${hash.slice(2)}"] h1`);await measureAll(list);}
    assert.deepEqual(failures,[],`contrast below WCAG AA in the ${colorScheme} theme`);
    await context.close();
   }

@@ -1,10 +1,10 @@
 /* Bump VERSION whenever any app-shell byte (or this file) changes; deploy the entire folder atomically.
    The same number lives in index.html (<meta name="vocvoc-shell">) and tests/shell-lock.json: `node tools/lock-shell.js` records it. */
 'use strict';
-const VERSION='1.1.1';
+const VERSION='1.2.0';
 const PREFIX='vocvoc-shell-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
 const CACHE=PREFIX+VERSION;
-const ASSETS=['./','./index.html','./storage.js','./a11y.js','./pwa.js','./screens.js','./screens.css','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/maskable-512.png','./icons/apple-touch-icon.png'];
+const ASSETS=['./','./index.html','./storage.js','./a11y.js','./pwa.js','./stats.js','./screens.js','./screens.css','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/maskable-512.png','./icons/apple-touch-icon.png'];
 const scopeUrl=new URL(self.registration.scope).href;
 const shellUrl=new URL('./index.html',self.registration.scope).href;
 const SHELL_META=/<meta\s+name="vocvoc-shell"\s+content="([^"]+)"/;
