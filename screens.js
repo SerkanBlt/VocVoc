@@ -63,6 +63,9 @@
       b_memo1:'İlk adım',bd_memo1:'Bir kelimeyi ezberle.',b_memo10:'On kelime',bd_memo10:'10 kelime ezberle.',b_memo50:'Elli kelime',bd_memo50:'50 kelime ezberle.',b_memo100:'Yüz kelime',bd_memo100:'100 kelime ezberle.',b_memo500:'Kelime ustası',bd_memo500:'500 kelime ezberle.',
       b_words50:'Koleksiyoncu',bd_words50:'Listene 50 kelime ekle.',b_test1:'İlk test',bd_test1:'Bir test tamamla.',b_test10:'Düzenli çalışan',bd_test10:'10 test tamamla.',b_perfect:'Kusursuz',bd_perfect:'Bir testi 10/10 bitir.',b_recall8:'Güçlü hafıza',bd_recall8:'Hatırla testinde en az 8/10 yap.',
       b_streak3:'Isınma',bd_streak3:'3 gün üst üste çalış.',b_streak7:'Bir hafta',bd_streak7:'7 gün üst üste çalış.',b_streak30:'Bir ay',bd_streak30:'30 gün üst üste çalış.',b_goal1:'Hedef tamam',bd_goal1:'Günlük kelime hedefine ulaş.',
+      packTitle:'Hazır kelimeler',packLevel:'Başlangıç (A1-A2)',packProgress:'{n} / {m} kelime eklendi',packLoading:'Paket indiriliyor…',packOffline:'Paket indirilemedi. İnternete bağlanınca yeniden denenir.',
+      packNone:'Bu dil çifti için hazır paket henüz yok. Kendi API anahtarınla yeni kelime ekleyebilirsin.',packDone:'Paketteki tüm kelimeleri ekledin. Yeni kelime için kendi API anahtarını kullanabilirsin.',packAdded:'{n} kelime eklendi.',
+      speakLabel:'Sesli oku: {text}',speakLocked:'Sesli okuma Premium ile açılır.',speakLockedLabel:'Sesli oku (Premium)',speakNoVoice:'Bu cihazda {language} sesi yok.',speakNone:'Bu tarayıcı sesli okumayı desteklemiyor.',
       aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
     },
     en:{
@@ -94,6 +97,9 @@
       b_memo1:'First step',bd_memo1:'Memorize a word.',b_memo10:'Ten words',bd_memo10:'Memorize 10 words.',b_memo50:'Fifty words',bd_memo50:'Memorize 50 words.',b_memo100:'Hundred words',bd_memo100:'Memorize 100 words.',b_memo500:'Word master',bd_memo500:'Memorize 500 words.',
       b_words50:'Collector',bd_words50:'Add 50 words to your list.',b_test1:'First test',bd_test1:'Complete a test.',b_test10:'Regular',bd_test10:'Complete 10 tests.',b_perfect:'Flawless',bd_perfect:'Finish a test 10/10.',b_recall8:'Strong memory',bd_recall8:'Score at least 8/10 in a Recall test.',
       b_streak3:'Warm-up',bd_streak3:'Study 3 days in a row.',b_streak7:'One week',bd_streak7:'Study 7 days in a row.',b_streak30:'One month',bd_streak30:'Study 30 days in a row.',b_goal1:'Goal reached',bd_goal1:'Reach your daily word goal.',
+      packTitle:'Ready-made words',packLevel:'Beginner (A1-A2)',packProgress:'{n} / {m} words added',packLoading:'Downloading the pack…',packOffline:'The pack could not be downloaded. It is tried again when you are online.',
+      packNone:'There is no ready-made pack for this language pair yet. You can add new words with your own API key.',packDone:'You have added every word of the pack. You can use your own API key for new words.',packAdded:'{n} words added.',
+      speakLabel:'Read aloud: {text}',speakLocked:'Read-aloud comes with Premium.',speakLockedLabel:'Read aloud (Premium)',speakNoVoice:'There is no {language} voice on this device.',speakNone:'This browser does not support read-aloud.',
       aboutTitle:'About',version:'Version',uiMode:'Interface',uiProto:'New interface (prototype)',aboutSim:'Sign-in, Premium and payment in this version are simulations: there is no real account, server or payment.'
     }
   };
@@ -176,7 +182,8 @@
     stats:'<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>',
     badges:'<circle cx="12" cy="9" r="6"/><path d="M8.5 14.5L7 22l5-3 5 3-1.5-7.5"/>',
     profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
-    lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>'
+    lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+    speaker:'<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M18.5 5.5a9 9 0 010 13"/>'
   };
   function icon(name){const span=h('span',{class:'v2-icon','aria-hidden':'true'});span.innerHTML='<svg viewBox="0 0 24 24" focusable="false">'+ICONS[name]+'</svg>';return span;}
 
@@ -224,6 +231,147 @@
     recordedTests.add(quizSession);
     writeActivity(VocVocStats.appendQuiz(readActivity(),{t:new Date().toISOString(),mode:quizSession.mode==='recall'?'recall':'active',score:quizSession.score,total:quizSession.questions.length,wrong:quizSession.wrongWords||[]}));
     evaluateBadges();
+  }
+
+
+  /* ---------- ready-made word packs (free) ---------- */
+  // The pack of the user's language pair (packs/<target>-<native>.json) is fetched once, kept in the browser's cache for offline use and checked before use.
+  // The Daily button takes its next words from the pack: no API key needed. The service worker does not touch packs (they are not part of the shell).
+  const PACK_CACHE='vocvoc-packs-v1';
+  const legacyText=key=>window.t(key);                                   // the app's own translations (the t of this file is a different table)
+  const packState={pair:'',status:'idle',entry:null,pack:null};            // status: idle | loading | ready | none | offline
+  let packLoad=null,packBusy=false;
+  async function packJson(url,{network=false}={}){
+    const cache='caches' in window?await caches.open(PACK_CACHE):null;
+    if(cache&&!network){const hit=await cache.match(url);if(hit)return hit.json();}
+    try{
+      const response=await fetch(url,{cache:'no-cache'});
+      if(response.ok){if(cache)await cache.put(url,response.clone());return await response.json();}
+    }catch(_){}
+    if(cache){const hit=await cache.match(url);if(hit)return hit.json();}
+    throw new Error('offline');
+  }
+  const currentPair=()=>{const settings=VocVocData.getSettings();return VocVocPacks.pairId(settings.targetLanguage,settings.nativeLanguage);};
+  function refreshPack(){
+    const pair=currentPair();
+    packLoad=(async()=>{
+      Object.assign(packState,{pair,status:'loading',entry:null,pack:null});refreshDashboard();
+      try{
+        let index=null;try{index=await packJson('./packs/index.json',{network:true});}catch(_){}
+        const entry=index?.packs?.find(item=>item.id===pair)||null;
+        if(packState.pair!==pair)return;
+        if(index&&!entry){packState.status='none';return;}
+        let pack=null;try{pack=await packJson('./packs/'+pair+'.json');}catch(_){}                     // the copy kept on this device, if it is usable
+        if(entry&&(!pack||pack.version<entry.version||VocVocPacks.validatePack(pack).length))pack=await packJson('./packs/'+pair+'.json',{network:true});
+        if(!pack||pack.id!==pair||VocVocPacks.validatePack(pack).length)throw new Error('unusable pack');
+        if(packState.pair===pair)Object.assign(packState,{status:'ready',entry:entry||{id:pair,words:pack.words.length},pack});
+      }catch(_){if(packState.pair===pair)packState.status='offline';}
+      finally{if(packState.pair===pair)refreshDashboard();}
+    })();
+    return packLoad;
+  }
+  function syncPack(){try{if(currentPair()!==packState.pair)refreshPack();}catch(_){}}               // the language pair changed
+  const knownWord=word=>!!VocVocData.getWordProgress(word);
+  // The next words of the pack, added the way the Daily words are (they count towards the daily goal). Returns false when the AI Daily should go on.
+  async function addFromPack(){
+    const remaining=getDailyLimit()-getDailyUsage().count;
+    if(remaining<=0){showError(legacyText('dailyLimitReached'));return true;}
+    const words=VocVocPacks.nextWords(packState.pack,knownWord,Math.min(10,remaining));
+    if(!words.length){
+      if(VocVocPlan.ownKeyActive()&&VocVocSecrets.getApiKey())return false;                           // the pack is used up: carry on with the user's own key
+      toast(t('packDone'));return true;
+    }
+    try{await VocVocData.addWordBatch(words,{dailyCount:words.length});}catch(error){reportStorageError(error);return true;}
+    quizSession=null;loadSavedWords();renderHistory();renderAllLocal();
+    toast(fill(t('packAdded'),{n:words.length}));
+    return true;
+  }
+  async function addDailyFromPackOrAi(){
+    if(packBusy)return;packBusy=true;
+    try{
+      if(packState.status==='idle'||packState.status==='offline')await refreshPack();                  // first use, or back online
+      else if(packLoad)await packLoad;
+      if(packState.status==='ready'&&await addFromPack())return;
+    }finally{packBusy=false;}
+    addDailyWords();                                                                                   // no pack for this pair: the app's own Daily (needs the user's API key)
+  }
+  function packCard(){
+    if(packState.status==='idle')return null;
+    let text,bar=null;
+    if(packState.status==='ready'){
+      const {total,used}=VocVocPacks.progress(packState.pack,knownWord);
+      text=used>=total?t('packDone'):fill(t('packProgress'),{n:used,m:total});
+      bar=h('div',{class:'v2-bar v2-bar-thin',role:'progressbar','aria-label':t('packTitle'),'aria-valuemin':'0','aria-valuemax':String(total),'aria-valuenow':String(used)},h('span'));
+      bar.style.setProperty('--p',Math.round(used/total*100)+'%');
+    }else text=t({loading:'packLoading',none:'packNone',offline:'packOffline'}[packState.status]);
+    return h('div',{class:'v2-card v2-pack'},h('p',{class:'v2-goal-label',text:t('packTitle')+' · '+t('packLevel')}),h('p',{class:'v2-pack-text',text}),bar);
+  }
+
+  /* ---------- read-aloud (Premium) ---------- */
+  // The device's own voices (speechSynthesis): free to run, works offline, and sounds as good as the voices installed on the device.
+  // Buttons are added next to the words and example sentences of the cards, the word windows and Flip; the app's own markup is not touched.
+  const SPEECH_TAGS={tr:'tr-TR',en:'en-US',fr:'fr-FR',de:'de-DE',es:'es-ES',it:'it-IT'};
+  const LANGUAGE_NAMES={tr:{tr:'Türkçe',en:'İngilizce',fr:'Fransızca',de:'Almanca',es:'İspanyolca',it:'İtalyanca'},en:{tr:'Turkish',en:'English',fr:'French',de:'German',es:'Spanish',it:'Italian'}};
+  let speakingButton=null;
+  const speakText=button=>String(typeof button.speakText==='function'?button.speakText():'').trim();
+  function syncSpeakButton(button){
+    const locked=!VocVocPlan.has('speech');
+    button.classList.toggle('v2-speak-free',locked);
+    button.setAttribute('aria-label',locked?t('speakLockedLabel'):fill(t('speakLabel'),{text:speakText(button)}));
+  }
+  function speakButton(getText){
+    const lock=icon('lock');lock.classList.add('v2-speak-lock');
+    const button=h('button',{type:'button',class:'v2-speak','aria-pressed':'false'},icon('speaker'),lock);
+    button.speakText=getText;syncSpeakButton(button);
+    return button;
+  }
+  function setSpeaking(button){
+    if(speakingButton){speakingButton.setAttribute('aria-pressed','false');speakingButton.classList.remove('v2-speaking');}
+    speakingButton=button;
+    if(button){button.setAttribute('aria-pressed','true');button.classList.add('v2-speaking');}
+  }
+  function stopSpeaking(){if(speakingButton){try{window.speechSynthesis?.cancel();}catch(_){}setSpeaking(null);}}
+  function speak(button,text){
+    const synth=window.speechSynthesis;
+    if(!synth||typeof SpeechSynthesisUtterance==='undefined'){toast(t('speakNone'));return;}
+    if(speakingButton===button){stopSpeaking();return;}                                               // a second press stops it
+    synth.cancel();
+    const code=getTargetLanguageCode(),tag=SPEECH_TAGS[code]||code;
+    const voices=(synth.getVoices&&synth.getVoices())||[];
+    const matching=voices.filter(voice=>String(voice.lang||'').replace('_','-').toLowerCase().startsWith(code));
+    if(voices.length&&!matching.length){toast(fill(t('speakNoVoice'),{language:(LANGUAGE_NAMES[lang()]||LANGUAGE_NAMES.en)[code]||code}));return;}
+    const utterance=new SpeechSynthesisUtterance(text);
+    utterance.lang=tag;utterance.rate=0.9;
+    const voice=matching.find(item=>item.localService&&String(item.lang).replace('_','-').toLowerCase()===tag.toLowerCase())||matching.find(item=>item.localService)||matching[0];
+    if(voice)utterance.voice=voice;
+    utterance.onend=utterance.onerror=()=>{if(speakingButton===button)setSpeaking(null);};
+    setSpeaking(button);synth.speak(utterance);
+  }
+  function onSpeak(button){
+    if(!VocVocPlan.has('speech')){toast(t('speakLocked'));return;}
+    const text=speakText(button);
+    if(text)speak(button,text);
+  }
+  // [where to put a button, how to find its text]
+  const SPEECH_TARGETS=[
+    ['.main-word-body .shared-detail-content',host=>{const word=decodeDomText(host.closest('.main-word-card')?.dataset.word||'');if(!word)return;host.prepend(h('div',{class:'v2-speak-row'},speakButton(()=>word)));}],
+    ['.word-panel-fixed-header .word-title',host=>{const word=host.textContent.trim();if(word)host.after(speakButton(()=>word));}],
+    ['.example-item .fr-text,.expression-item .fr-text',host=>{const text=host.textContent.trim();if(text)host.append(speakButton(()=>text));}],
+    ['#flipOverlay .flip-panel',host=>host.append(speakButton(()=>document.querySelector('#flipOverlay [data-flip-face="front"] .flip-word-text')?.textContent||''))]
+  ];
+  function decorateSpeech(node){
+    for(const [selector,decorate] of SPEECH_TARGETS){
+      const hosts=[...(node.matches?.(selector)?[node]:[]),...node.querySelectorAll(selector)];
+      for(const host of hosts){if(host.dataset.v2Speak)continue;host.dataset.v2Speak='1';decorate(host);}
+    }
+  }
+  function startSpeech(){
+    decorateSpeech(document.body);
+    new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)if(node.nodeType===1)decorateSpeech(node);}).observe(document.body,{childList:true,subtree:true});
+    document.addEventListener('click',event=>{
+      const button=event.target.closest?.('.v2-speak');if(!button)return;
+      event.preventDefault();event.stopPropagation();onSpeak(button);
+    },true);
   }
 
   /* ---------- routing ---------- */
@@ -277,7 +425,8 @@
         h('p',{class:'v2-goal-label',text:t('goalTitle')}),
         h('p',{class:'v2-goal-value',text:unlimited?fill(t('goalUnlimited'),{n:used}):fill(t('goalValue'),{n:used,m:limit})}),
         bar,
-        h('button',{type:'button',class:'ui-button ui-button-success',onclick:()=>{addDailyWords();}},t('addDaily'))),
+        h('button',{type:'button',class:'ui-button ui-button-success',onclick:()=>{addDailyFromPackOrAi();}},t('addDaily'))),
+      packCard(),
       h('ul',{class:'v2-statline'},stat(active,t('statActive')),stat(memorized,t('statMemorized')),stat(memorizedToday,t('statToday'))),
       h('div',{class:'v2-quick'},quick('◈',t('studyTest'),'test'),quick('↺',t('studyRecall'),'recall'),quick('⇄',t('studyFlip'),'flip')));
   }
@@ -285,7 +434,7 @@
   function refreshDashboard(){                                                   // after any change of the data, once per burst
     clearTimeout(dashboardTimer);
     dashboardTimer=setTimeout(()=>{
-      evaluateBadges();
+      evaluateBadges();syncPack();
       const current=document.getElementById('v2Dashboard');if(!current)return;
       const fresh=dashboard();fresh.hidden=current.hidden;current.replaceWith(fresh);
     },0);
@@ -461,6 +610,7 @@
   /* ---------- render ---------- */
   function render(moveFocus){
     const route=currentRoute();shown=route;
+    stopSpeaking();
     const tab=TAB_OF[route];
     // Leaving the study pages ends what they started: a Test that was left is abandoned, an open Flip is closed.
     if(!QUIZ_ROUTES.includes(route)&&quizSession)quizSession=null;
@@ -519,6 +669,7 @@
     const search=document.getElementById('searchInput');
     evaluateBadges();
     container.insertBefore(dashboard(),document.getElementById('errorArea'));
+    refreshPack();
     search.addEventListener('input',()=>{const current=document.getElementById('v2Dashboard');if(current)current.hidden=!!search.value.trim();});
     window.addEventListener('vocvoc-storage-committed',refreshDashboard);
     window.addEventListener('vocvoc-data-adopted',refreshDashboard);
@@ -529,7 +680,9 @@
     const flip=document.getElementById('flipOverlay');
     if(flip)new MutationObserver(()=>{if(!flip.classList.contains('open')&&shown==='flip')goBack('study');}).observe(flip,{attributes:true,attributeFilter:['class']});
     window.addEventListener('hashchange',()=>{if(currentRoute()!==shown)render(true);});
-    window.addEventListener('vocvoc-plan-changed',()=>{if(['stats','premium','profile'].includes(shown))render(false);});
+    window.addEventListener('vocvoc-plan-changed',()=>{document.querySelectorAll('.v2-speak').forEach(syncSpeakButton);if(['stats','premium','profile'].includes(shown))render(false);});
+    window.addEventListener('online',()=>{if(packState.status==='offline')refreshPack();});
+    startSpeech();
     render(false);
     if(!readProfile())openAuth();
   }

@@ -1,0 +1,490 @@
+{
+  "format": 1,
+  "id": "en-tr",
+  "target": "en",
+  "native": "tr",
+  "level": "A1-A2",
+  "version": 1,
+  "words": [
+    {
+      "word": "hello",
+      "type": "ünlem",
+      "meaning": "merhaba",
+      "examples": [
+        {
+          "text": "Hello, how are you?",
+          "phonetic": "helo, hau ar yu",
+          "translation": "Merhaba, nasılsın?"
+        }
+      ]
+    },
+    {
+      "word": "goodbye",
+      "type": "ünlem",
+      "meaning": "hoşça kal; elveda",
+      "examples": [
+        {
+          "text": "Goodbye, see you tomorrow.",
+          "phonetic": "gudbay, si yu tumoro",
+          "translation": "Hoşça kal, yarın görüşürüz."
+        }
+      ]
+    },
+    {
+      "word": "please",
+      "type": "ünlem",
+      "meaning": "lütfen",
+      "examples": [
+        {
+          "text": "A coffee, please.",
+          "phonetic": "ı kofi, pliz",
+          "translation": "Bir kahve, lütfen."
+        }
+      ]
+    },
+    {
+      "word": "thank you",
+      "type": "ünlem",
+      "meaning": "teşekkür ederim",
+      "examples": [
+        {
+          "text": "Thank you very much.",
+          "phonetic": "tenk yu veri maç",
+          "translation": "Çok teşekkür ederim."
+        }
+      ]
+    },
+    {
+      "word": "yes",
+      "type": "zarf",
+      "meaning": "evet",
+      "examples": [
+        {
+          "text": "Yes, I like it.",
+          "phonetic": "yes, ay layk it",
+          "translation": "Evet, hoşuma gidiyor."
+        }
+      ]
+    },
+    {
+      "word": "no",
+      "type": "zarf",
+      "meaning": "hayır",
+      "examples": [
+        {
+          "text": "No, thank you.",
+          "phonetic": "nou, tenk yu",
+          "translation": "Hayır, teşekkürler."
+        }
+      ]
+    },
+    {
+      "word": "sorry",
+      "type": "ünlem",
+      "meaning": "özür dilerim; üzgün",
+      "examples": [
+        {
+          "text": "I am sorry.",
+          "phonetic": "ay em sori",
+          "translation": "Özür dilerim."
+        }
+      ]
+    },
+    {
+      "word": "water",
+      "type": "isim",
+      "meaning": "su",
+      "examples": [
+        {
+          "text": "I drink water.",
+          "phonetic": "ay drink wotır",
+          "translation": "Su içiyorum."
+        }
+      ]
+    },
+    {
+      "word": "bread",
+      "type": "isim",
+      "meaning": "ekmek",
+      "examples": [
+        {
+          "text": "We eat bread.",
+          "phonetic": "wi it bred",
+          "translation": "Ekmek yiyoruz."
+        }
+      ]
+    },
+    {
+      "word": "coffee",
+      "type": "isim",
+      "meaning": "kahve",
+      "examples": [
+        {
+          "text": "I want a coffee.",
+          "phonetic": "ay wont ı kofi",
+          "translation": "Bir kahve istiyorum."
+        }
+      ]
+    },
+    {
+      "word": "house",
+      "type": "isim",
+      "meaning": "ev",
+      "examples": [
+        {
+          "text": "The house is big.",
+          "phonetic": "dı haus iz big",
+          "translation": "Ev büyük."
+        }
+      ]
+    },
+    {
+      "word": "friend",
+      "type": "isim",
+      "meaning": "arkadaş",
+      "examples": [
+        {
+          "text": "He is my friend.",
+          "phonetic": "hi iz may frend",
+          "translation": "O benim arkadaşım."
+        }
+      ]
+    },
+    {
+      "word": "family",
+      "type": "isim",
+      "meaning": "aile",
+      "examples": [
+        {
+          "text": "I love my family.",
+          "phonetic": "ay lav may femili",
+          "translation": "Ailemi seviyorum."
+        }
+      ]
+    },
+    {
+      "word": "man",
+      "type": "isim",
+      "meaning": "adam; erkek",
+      "examples": [
+        {
+          "text": "The man is tall.",
+          "phonetic": "dı men iz tol",
+          "translation": "Adam uzun boylu."
+        }
+      ]
+    },
+    {
+      "word": "woman",
+      "type": "isim",
+      "meaning": "kadın",
+      "examples": [
+        {
+          "text": "The woman reads a book.",
+          "phonetic": "dı wumın ridz ı buk",
+          "translation": "Kadın bir kitap okuyor."
+        }
+      ]
+    },
+    {
+      "word": "child",
+      "type": "isim",
+      "meaning": "çocuk",
+      "examples": [
+        {
+          "text": "The child is playing.",
+          "phonetic": "dı çayld iz pleying",
+          "translation": "Çocuk oynuyor."
+        }
+      ]
+    },
+    {
+      "word": "day",
+      "type": "isim",
+      "meaning": "gün",
+      "examples": [
+        {
+          "text": "What a nice day!",
+          "phonetic": "wot ı nays dey",
+          "translation": "Ne güzel bir gün!"
+        }
+      ]
+    },
+    {
+      "word": "night",
+      "type": "isim",
+      "meaning": "gece",
+      "examples": [
+        {
+          "text": "Good night!",
+          "phonetic": "gud nayt",
+          "translation": "İyi geceler!"
+        }
+      ]
+    },
+    {
+      "word": "today",
+      "type": "zarf",
+      "meaning": "bugün",
+      "examples": [
+        {
+          "text": "Today is Monday.",
+          "phonetic": "tıdey iz mandey",
+          "translation": "Bugün pazartesi."
+        }
+      ]
+    },
+    {
+      "word": "tomorrow",
+      "type": "zarf",
+      "meaning": "yarın",
+      "examples": [
+        {
+          "text": "See you tomorrow.",
+          "phonetic": "si yu tumoro",
+          "translation": "Yarın görüşürüz."
+        }
+      ]
+    },
+    {
+      "word": "good",
+      "type": "sıfat",
+      "meaning": "iyi",
+      "examples": [
+        {
+          "text": "This is good.",
+          "phonetic": "dis iz gud",
+          "translation": "Bu iyi."
+        }
+      ]
+    },
+    {
+      "word": "big",
+      "type": "sıfat",
+      "meaning": "büyük",
+      "examples": [
+        {
+          "text": "A big city.",
+          "phonetic": "ı big siti",
+          "translation": "Büyük bir şehir."
+        }
+      ]
+    },
+    {
+      "word": "small",
+      "type": "sıfat",
+      "meaning": "küçük",
+      "examples": [
+        {
+          "text": "A small cat.",
+          "phonetic": "ı smol ket",
+          "translation": "Küçük bir kedi."
+        }
+      ]
+    },
+    {
+      "word": "new",
+      "type": "sıfat",
+      "meaning": "yeni",
+      "examples": [
+        {
+          "text": "A new book.",
+          "phonetic": "ı nyu buk",
+          "translation": "Yeni bir kitap."
+        }
+      ]
+    },
+    {
+      "word": "beautiful",
+      "type": "sıfat",
+      "meaning": "güzel",
+      "examples": [
+        {
+          "text": "A beautiful day.",
+          "phonetic": "ı byutifıl dey",
+          "translation": "Güzel bir gün."
+        }
+      ]
+    },
+    {
+      "word": "be",
+      "type": "fiil",
+      "meaning": "olmak",
+      "examples": [
+        {
+          "text": "I am a student.",
+          "phonetic": "ay em ı styudınt",
+          "translation": "Ben bir öğrenciyim."
+        }
+      ]
+    },
+    {
+      "word": "have",
+      "type": "fiil",
+      "meaning": "sahip olmak",
+      "examples": [
+        {
+          "text": "I have a brother.",
+          "phonetic": "ay hev ı bradır",
+          "translation": "Bir erkek kardeşim var."
+        }
+      ]
+    },
+    {
+      "word": "go",
+      "type": "fiil",
+      "meaning": "gitmek",
+      "examples": [
+        {
+          "text": "I go to school.",
+          "phonetic": "ay gou tu skul",
+          "translation": "Okula gidiyorum."
+        }
+      ]
+    },
+    {
+      "word": "eat",
+      "type": "fiil",
+      "meaning": "yemek yemek",
+      "examples": [
+        {
+          "text": "They eat lunch.",
+          "phonetic": "dey it lanç",
+          "translation": "Öğle yemeği yiyorlar."
+        }
+      ]
+    },
+    {
+      "word": "drink",
+      "type": "fiil",
+      "meaning": "içmek",
+      "examples": [
+        {
+          "text": "He drinks coffee.",
+          "phonetic": "hi drinks kofi",
+          "translation": "O kahve içiyor."
+        }
+      ]
+    },
+    {
+      "word": "want",
+      "type": "fiil",
+      "meaning": "istemek",
+      "examples": [
+        {
+          "text": "I want water.",
+          "phonetic": "ay wont wotır",
+          "translation": "Su istiyorum."
+        }
+      ]
+    },
+    {
+      "word": "speak",
+      "type": "fiil",
+      "meaning": "konuşmak",
+      "examples": [
+        {
+          "text": "Do you speak English?",
+          "phonetic": "du yu spik ingliş",
+          "translation": "İngilizce konuşuyor musun?"
+        }
+      ]
+    },
+    {
+      "word": "name",
+      "type": "isim",
+      "meaning": "isim; ad",
+      "examples": [
+        {
+          "text": "What is your name?",
+          "phonetic": "wot iz yor neym",
+          "translation": "Adın ne?"
+        }
+      ]
+    },
+    {
+      "word": "city",
+      "type": "isim",
+      "meaning": "şehir",
+      "examples": [
+        {
+          "text": "I live in a city.",
+          "phonetic": "ay liv in ı siti",
+          "translation": "Bir şehirde yaşıyorum."
+        }
+      ]
+    },
+    {
+      "word": "book",
+      "type": "isim",
+      "meaning": "kitap",
+      "examples": [
+        {
+          "text": "An interesting book.",
+          "phonetic": "ın intristing buk",
+          "translation": "İlginç bir kitap."
+        }
+      ]
+    },
+    {
+      "word": "school",
+      "type": "isim",
+      "meaning": "okul",
+      "examples": [
+        {
+          "text": "The school is closed.",
+          "phonetic": "dı skul iz klouzd",
+          "translation": "Okul kapalı."
+        }
+      ]
+    },
+    {
+      "word": "work",
+      "type": "isim",
+      "meaning": "iş; çalışma",
+      "examples": [
+        {
+          "text": "I go to work.",
+          "phonetic": "ay gou tu wörk",
+          "translation": "İşe gidiyorum."
+        }
+      ]
+    },
+    {
+      "word": "one",
+      "type": "sayı",
+      "meaning": "bir",
+      "examples": [
+        {
+          "text": "One, two, three.",
+          "phonetic": "wan, tu, tri",
+          "translation": "Bir, iki, üç."
+        }
+      ]
+    },
+    {
+      "word": "two",
+      "type": "sayı",
+      "meaning": "iki",
+      "examples": [
+        {
+          "text": "I have two sisters.",
+          "phonetic": "ay hev tu sistırz",
+          "translation": "İki kız kardeşim var."
+        }
+      ]
+    },
+    {
+      "word": "three",
+      "type": "sayı",
+      "meaning": "üç",
+      "examples": [
+        {
+          "text": "There are three cats.",
+          "phonetic": "der ar tri kets",
+          "translation": "Üç kedi var."
+        }
+      ]
+    }
+  ]
+}

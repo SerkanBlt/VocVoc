@@ -1,0 +1,490 @@
+{
+  "format": 1,
+  "id": "it-tr",
+  "target": "it",
+  "native": "tr",
+  "level": "A1-A2",
+  "version": 1,
+  "words": [
+    {
+      "word": "ciao",
+      "type": "ünlem",
+      "meaning": "merhaba; hoşça kal",
+      "examples": [
+        {
+          "text": "Ciao, come stai?",
+          "phonetic": "çao, kome stay",
+          "translation": "Merhaba, nasılsın?"
+        }
+      ]
+    },
+    {
+      "word": "arrivederci",
+      "type": "ünlem",
+      "meaning": "hoşça kal; görüşürüz",
+      "examples": [
+        {
+          "text": "Arrivederci, a domani!",
+          "phonetic": "arrivederçi, a domani",
+          "translation": "Hoşça kalın, yarın görüşürüz!"
+        }
+      ]
+    },
+    {
+      "word": "per favore",
+      "type": "ünlem",
+      "meaning": "lütfen",
+      "examples": [
+        {
+          "text": "Un caffè, per favore.",
+          "phonetic": "un kafe, per favore",
+          "translation": "Bir kahve, lütfen."
+        }
+      ]
+    },
+    {
+      "word": "grazie",
+      "type": "ünlem",
+      "meaning": "teşekkürler",
+      "examples": [
+        {
+          "text": "Grazie mille!",
+          "phonetic": "gratsiye mille",
+          "translation": "Çok teşekkürler!"
+        }
+      ]
+    },
+    {
+      "word": "sì",
+      "type": "zarf",
+      "meaning": "evet",
+      "examples": [
+        {
+          "text": "Sì, volentieri.",
+          "phonetic": "si, volentyeri",
+          "translation": "Evet, memnuniyetle."
+        }
+      ]
+    },
+    {
+      "word": "no",
+      "type": "zarf",
+      "meaning": "hayır",
+      "examples": [
+        {
+          "text": "No, grazie.",
+          "phonetic": "no, gratsiye",
+          "translation": "Hayır, teşekkürler."
+        }
+      ]
+    },
+    {
+      "word": "scusi",
+      "type": "ünlem",
+      "meaning": "pardon; affedersiniz",
+      "examples": [
+        {
+          "text": "Scusi, dov'è la stazione?",
+          "phonetic": "skuzi, dove la statsyone",
+          "translation": "Pardon, istasyon nerede?"
+        }
+      ]
+    },
+    {
+      "word": "acqua",
+      "type": "isim (dişil)",
+      "meaning": "su",
+      "examples": [
+        {
+          "text": "Bevo acqua.",
+          "phonetic": "bevo akkua",
+          "translation": "Su içiyorum."
+        }
+      ]
+    },
+    {
+      "word": "pane",
+      "type": "isim (eril)",
+      "meaning": "ekmek",
+      "examples": [
+        {
+          "text": "Mangiamo il pane.",
+          "phonetic": "mançamo il pane",
+          "translation": "Ekmek yiyoruz."
+        }
+      ]
+    },
+    {
+      "word": "caffè",
+      "type": "isim (eril)",
+      "meaning": "kahve",
+      "examples": [
+        {
+          "text": "Vorrei un caffè.",
+          "phonetic": "vorrey un kafe",
+          "translation": "Bir kahve istiyorum."
+        }
+      ]
+    },
+    {
+      "word": "casa",
+      "type": "isim (dişil)",
+      "meaning": "ev",
+      "examples": [
+        {
+          "text": "La casa è grande.",
+          "phonetic": "la kaza e grande",
+          "translation": "Ev büyük."
+        }
+      ]
+    },
+    {
+      "word": "amico",
+      "type": "isim (eril)",
+      "meaning": "arkadaş",
+      "examples": [
+        {
+          "text": "È il mio amico.",
+          "phonetic": "e il mio amiko",
+          "translation": "O benim arkadaşım."
+        }
+      ]
+    },
+    {
+      "word": "famiglia",
+      "type": "isim (dişil)",
+      "meaning": "aile",
+      "examples": [
+        {
+          "text": "Amo la mia famiglia.",
+          "phonetic": "amo la mia familya",
+          "translation": "Ailemi seviyorum."
+        }
+      ]
+    },
+    {
+      "word": "uomo",
+      "type": "isim (eril)",
+      "meaning": "adam; erkek",
+      "examples": [
+        {
+          "text": "L'uomo parla.",
+          "phonetic": "luomo parla",
+          "translation": "Adam konuşuyor."
+        }
+      ]
+    },
+    {
+      "word": "donna",
+      "type": "isim (dişil)",
+      "meaning": "kadın",
+      "examples": [
+        {
+          "text": "La donna legge un libro.",
+          "phonetic": "la donna ledje un libro",
+          "translation": "Kadın bir kitap okuyor."
+        }
+      ]
+    },
+    {
+      "word": "bambino",
+      "type": "isim (eril)",
+      "meaning": "çocuk",
+      "examples": [
+        {
+          "text": "Il bambino gioca.",
+          "phonetic": "il bambino çoka",
+          "translation": "Çocuk oynuyor."
+        }
+      ]
+    },
+    {
+      "word": "giorno",
+      "type": "isim (eril)",
+      "meaning": "gün",
+      "examples": [
+        {
+          "text": "Che bel giorno!",
+          "phonetic": "ke bel çorno",
+          "translation": "Ne güzel bir gün!"
+        }
+      ]
+    },
+    {
+      "word": "notte",
+      "type": "isim (dişil)",
+      "meaning": "gece",
+      "examples": [
+        {
+          "text": "Buona notte!",
+          "phonetic": "buona notte",
+          "translation": "İyi geceler!"
+        }
+      ]
+    },
+    {
+      "word": "oggi",
+      "type": "zarf",
+      "meaning": "bugün",
+      "examples": [
+        {
+          "text": "Oggi fa caldo.",
+          "phonetic": "oçi fa kaldo",
+          "translation": "Bugün hava sıcak."
+        }
+      ]
+    },
+    {
+      "word": "domani",
+      "type": "zarf",
+      "meaning": "yarın",
+      "examples": [
+        {
+          "text": "A domani!",
+          "phonetic": "a domani",
+          "translation": "Yarın görüşürüz!"
+        }
+      ]
+    },
+    {
+      "word": "buono",
+      "type": "sıfat",
+      "meaning": "iyi",
+      "examples": [
+        {
+          "text": "Questo è buono.",
+          "phonetic": "kuesto e buono",
+          "translation": "Bu iyi."
+        }
+      ]
+    },
+    {
+      "word": "grande",
+      "type": "sıfat",
+      "meaning": "büyük",
+      "examples": [
+        {
+          "text": "Una grande città.",
+          "phonetic": "una grande çitta",
+          "translation": "Büyük bir şehir."
+        }
+      ]
+    },
+    {
+      "word": "piccolo",
+      "type": "sıfat",
+      "meaning": "küçük",
+      "examples": [
+        {
+          "text": "Un gatto piccolo.",
+          "phonetic": "un gatto pikkolo",
+          "translation": "Küçük bir kedi."
+        }
+      ]
+    },
+    {
+      "word": "nuovo",
+      "type": "sıfat",
+      "meaning": "yeni",
+      "examples": [
+        {
+          "text": "Un libro nuovo.",
+          "phonetic": "un libro nuovo",
+          "translation": "Yeni bir kitap."
+        }
+      ]
+    },
+    {
+      "word": "bello",
+      "type": "sıfat",
+      "meaning": "güzel",
+      "examples": [
+        {
+          "text": "Una bella giornata.",
+          "phonetic": "una bella çornata",
+          "translation": "Güzel bir gün."
+        }
+      ]
+    },
+    {
+      "word": "essere",
+      "type": "fiil",
+      "meaning": "olmak",
+      "examples": [
+        {
+          "text": "Sono studente.",
+          "phonetic": "sono studente",
+          "translation": "Ben öğrenciyim."
+        }
+      ]
+    },
+    {
+      "word": "avere",
+      "type": "fiil",
+      "meaning": "sahip olmak",
+      "examples": [
+        {
+          "text": "Ho un fratello.",
+          "phonetic": "o un fratello",
+          "translation": "Bir erkek kardeşim var."
+        }
+      ]
+    },
+    {
+      "word": "andare",
+      "type": "fiil",
+      "meaning": "gitmek",
+      "examples": [
+        {
+          "text": "Vado a scuola.",
+          "phonetic": "vado a skuola",
+          "translation": "Okula gidiyorum."
+        }
+      ]
+    },
+    {
+      "word": "mangiare",
+      "type": "fiil",
+      "meaning": "yemek yemek",
+      "examples": [
+        {
+          "text": "Loro mangiano a pranzo.",
+          "phonetic": "loro mançano a prandzo",
+          "translation": "Öğle yemeği yiyorlar."
+        }
+      ]
+    },
+    {
+      "word": "bere",
+      "type": "fiil",
+      "meaning": "içmek",
+      "examples": [
+        {
+          "text": "Lui beve il caffè.",
+          "phonetic": "lui beve il kafe",
+          "translation": "O kahve içiyor."
+        }
+      ]
+    },
+    {
+      "word": "volere",
+      "type": "fiil",
+      "meaning": "istemek",
+      "examples": [
+        {
+          "text": "Voglio dell'acqua.",
+          "phonetic": "volyo dellakkua",
+          "translation": "Su istiyorum."
+        }
+      ]
+    },
+    {
+      "word": "parlare",
+      "type": "fiil",
+      "meaning": "konuşmak",
+      "examples": [
+        {
+          "text": "Parli italiano?",
+          "phonetic": "parli italyano",
+          "translation": "İtalyanca konuşuyor musun?"
+        }
+      ]
+    },
+    {
+      "word": "nome",
+      "type": "isim (eril)",
+      "meaning": "isim; ad",
+      "examples": [
+        {
+          "text": "Qual è il tuo nome?",
+          "phonetic": "kual e il tuo nome",
+          "translation": "Adın ne?"
+        }
+      ]
+    },
+    {
+      "word": "città",
+      "type": "isim (dişil)",
+      "meaning": "şehir",
+      "examples": [
+        {
+          "text": "Vivo in una città.",
+          "phonetic": "vivo in una çitta",
+          "translation": "Bir şehirde yaşıyorum."
+        }
+      ]
+    },
+    {
+      "word": "libro",
+      "type": "isim (eril)",
+      "meaning": "kitap",
+      "examples": [
+        {
+          "text": "Un libro interessante.",
+          "phonetic": "un libro interessante",
+          "translation": "İlginç bir kitap."
+        }
+      ]
+    },
+    {
+      "word": "scuola",
+      "type": "isim (dişil)",
+      "meaning": "okul",
+      "examples": [
+        {
+          "text": "La scuola è chiusa.",
+          "phonetic": "la skuola e kyuza",
+          "translation": "Okul kapalı."
+        }
+      ]
+    },
+    {
+      "word": "lavoro",
+      "type": "isim (eril)",
+      "meaning": "iş; çalışma",
+      "examples": [
+        {
+          "text": "Vado al lavoro.",
+          "phonetic": "vado al lavoro",
+          "translation": "İşe gidiyorum."
+        }
+      ]
+    },
+    {
+      "word": "uno",
+      "type": "sayı",
+      "meaning": "bir",
+      "examples": [
+        {
+          "text": "Uno, due, tre.",
+          "phonetic": "uno, due, tre",
+          "translation": "Bir, iki, üç."
+        }
+      ]
+    },
+    {
+      "word": "due",
+      "type": "sayı",
+      "meaning": "iki",
+      "examples": [
+        {
+          "text": "Ho due figli.",
+          "phonetic": "o due filyi",
+          "translation": "İki çocuğum var."
+        }
+      ]
+    },
+    {
+      "word": "tre",
+      "type": "sayı",
+      "meaning": "üç",
+      "examples": [
+        {
+          "text": "Ci sono tre gatti.",
+          "phonetic": "çi sono tre gatti",
+          "translation": "Üç kedi var."
+        }
+      ]
+    }
+  ]
+}

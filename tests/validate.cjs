@@ -132,7 +132,7 @@ describe('API key handling (static guards)',()=>{
     assert(!/[?&](?:key|api_key)=/i.test(html.match(/GEMINI_ENDPOINT=[^\n]*/)[0])&&!/\$\{apiKey\}|encodeURIComponent\(apiKey\)/.test(html));
   });
   it('no shipped file contains something that looks like an API key, and nothing logs it',()=>{
-    for(const file of ['index.html','a11y.js','pwa.js','screens.js','screens.css','stats.js','sw.js','storage.js','manifest.webmanifest','README.md','tools/export-from-spa.js','tools/lock-shell.js','tools/shell-fingerprint.js'])
+    for(const file of ['index.html','a11y.js','pwa.js','screens.js','screens.css','stats.js','packs.js','sw.js','storage.js','manifest.webmanifest','README.md','tools/export-from-spa.js','tools/lock-shell.js','tools/shell-fingerprint.js'])
       assert(!/AIza[0-9A-Za-z_-]{35}/.test(read(file)),`${file} contains something that looks like an API key`);
     for(const [name,source] of [['index.html',html],['pwa.js',pwa]])assert(!/console\.\w+\([^)]*(apiKey|getApiKey|x-goog-api-key|SECRET_KEY)/i.test(source),`${name} logs the API key`);
   });
@@ -158,7 +158,12 @@ describe('New interface (prototype)',()=>{
     assert(html.includes('<link rel="stylesheet" href="./screens.css">')&&html.includes('<script src="./screens.js"></script>'));
     assert(!/\bon(?:click|input|change|keydown)\s*=/.test(screensCode),'screens.js must not use inline handlers');
     assert.equal((screensCode.match(/innerHTML/g)||[]).length,1,'only the icon helper may use innerHTML');
-    assert(!/\beval\(|new Function\(|fetch\(/.test(screensCode));
+    assert(!/\beval\(|new Function\(/.test(screensCode));
+    // the only network call of the new interface is the pack download, and it only goes to this site's packs/ folder
+    assert.equal((screensCode.match(/\bfetch\(/g)||[]).length,1,'the only network call is the pack download');
+    assert(/async function packJson\(url,\{network=false\}=\{\}\)\{[^]*?await fetch\(url,\{cache:'no-cache'\}\)/.test(screensCode));
+    const packCalls=[...screensCode.matchAll(/packJson\(([^)]*)\)/g)].map(match=>match[1]).filter(argument=>!argument.startsWith('url'));
+    assert(packCalls.length>=3&&packCalls.every(argument=>/^'\.\/packs\//.test(argument)),`packs are fetched only from ./packs/: ${packCalls}`);
     assert(/body\.v2/.test(screensCss)&&!/^\s*(?:body|html|\.container)\s*\{/m.test(screensCss),'the stylesheet must not restyle the default interface');
   });
   it('the hooks the new interface relies on are in the app: the Test draws into a named host, and it announces drawing and adopted data',()=>{
@@ -215,6 +220,18 @@ describe('New interface (prototype)',()=>{
     for(const id of badgeIds)for(const language of ['tr','en'])assert(TEXT[language]['b_'+id]&&TEXT[language]['bd_'+id],`badge ${id} has no ${language} name or description`);
     assert(code.includes("t('b_'+")&&code.includes("t('bd_'+"));
   });
+  it('word packs are pure logic, load before the screens, and stay out of the offline shell (they are downloaded for the chosen pair only)',()=>{
+    const packsCode=read('packs.js').replace(/\/\*[^]*?\*\//g,'').replace(/\/\/.*$/gm,'');
+    assert(!/\bdocument\b|\blocalStorage\b|\bfetch\(|\bXMLHttpRequest\b|\bindexedDB\b|\bcaches\b/.test(packsCode),'packs.js must not touch the page, storage or the network');
+    assert(html.indexOf('<script src="./packs.js"></script>')>0&&html.indexOf('./packs.js')<html.indexOf('./screens.js'));
+    assert(precacheList().includes('./packs.js')&&!precacheList().some(asset=>/(^|\/)packs\//.test(asset)),'only the code is precached, never the pack files');
+    assert(/const PACK_CACHE='vocvoc-packs-v1'/.test(screensJs)&&!/vocvoc-packs/.test(sw),'packs live in their own cache that the worker never touches');
+  });
+  it('the words of a pack are added the way the Daily words are, and read-aloud is a Premium feature',()=>{
+    assert(/VocVocData\.addWordBatch\(words,\{dailyCount:words\.length\}\)/.test(screensJs),'pack words must count towards the daily goal');
+    assert(/FEATURES=Object\.freeze\(\{[^}]*speech:'premium'/.test(screensJs));
+    assert(/if\(!VocVocPlan\.has\('speech'\)\)\{toast\(t\('speakLocked'\)\);return;\}/.test(screensJs),'a free user must not be able to start speech');
+  });
   it('statistics and badges are pure logic (no page, no storage, no network), loaded before the screens that use them',()=>{
     const statsCode=read('stats.js').replace(/\/\*[^]*?\*\//g,'').replace(/\/\/.*$/gm,'');
     assert(!/\bdocument\b|\blocalStorage\b|\bsessionStorage\b|\bfetch\(|\bXMLHttpRequest\b|\bindexedDB\b/.test(statsCode),'stats.js must not touch the page, storage or the network');
@@ -239,7 +256,7 @@ describe('Card controls',()=>{
 });
 
 describe('Code hygiene',()=>{
-  const sources=['index.html','pwa.js','a11y.js','storage.js','screens.js','stats.js'].map(read),everything=sources.join('\n');
+  const sources=['index.html','pwa.js','a11y.js','storage.js','screens.js','stats.js','packs.js'].map(read),everything=sources.join('\n');
   it('no function is defined and then never used (dead code stays out)',()=>{
     const escape=name=>name.replace(/\$/g,'\\$');
     const dead=[];

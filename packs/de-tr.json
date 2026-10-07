@@ -1,0 +1,490 @@
+{
+  "format": 1,
+  "id": "de-tr",
+  "target": "de",
+  "native": "tr",
+  "level": "A1-A2",
+  "version": 1,
+  "words": [
+    {
+      "word": "hallo",
+      "type": "ünlem",
+      "meaning": "merhaba",
+      "examples": [
+        {
+          "text": "Hallo, wie geht's?",
+          "phonetic": "halo, vi gets",
+          "translation": "Merhaba, nasılsın?"
+        }
+      ]
+    },
+    {
+      "word": "tschüss",
+      "type": "ünlem",
+      "meaning": "hoşça kal; görüşürüz",
+      "examples": [
+        {
+          "text": "Tschüss, bis morgen!",
+          "phonetic": "çüs, bis morgın",
+          "translation": "Hoşça kal, yarın görüşürüz!"
+        }
+      ]
+    },
+    {
+      "word": "bitte",
+      "type": "ünlem",
+      "meaning": "lütfen; rica ederim",
+      "examples": [
+        {
+          "text": "Einen Kaffee, bitte.",
+          "phonetic": "aynın kafe, bite",
+          "translation": "Bir kahve, lütfen."
+        }
+      ]
+    },
+    {
+      "word": "danke",
+      "type": "ünlem",
+      "meaning": "teşekkürler",
+      "examples": [
+        {
+          "text": "Danke schön!",
+          "phonetic": "danke şön",
+          "translation": "Çok teşekkürler!"
+        }
+      ]
+    },
+    {
+      "word": "ja",
+      "type": "zarf",
+      "meaning": "evet",
+      "examples": [
+        {
+          "text": "Ja, gern.",
+          "phonetic": "ya, gern",
+          "translation": "Evet, memnuniyetle."
+        }
+      ]
+    },
+    {
+      "word": "nein",
+      "type": "zarf",
+      "meaning": "hayır",
+      "examples": [
+        {
+          "text": "Nein, danke.",
+          "phonetic": "nayn, danke",
+          "translation": "Hayır, teşekkürler."
+        }
+      ]
+    },
+    {
+      "word": "Entschuldigung",
+      "type": "ünlem",
+      "meaning": "pardon; özür",
+      "examples": [
+        {
+          "text": "Entschuldigung, wo ist der Bahnhof?",
+          "phonetic": "entşuldigung, vo ist der banhof",
+          "translation": "Pardon, istasyon nerede?"
+        }
+      ]
+    },
+    {
+      "word": "Wasser",
+      "type": "isim (das)",
+      "meaning": "su",
+      "examples": [
+        {
+          "text": "Ich trinke Wasser.",
+          "phonetic": "iç trinke vasır",
+          "translation": "Su içiyorum."
+        }
+      ]
+    },
+    {
+      "word": "Brot",
+      "type": "isim (das)",
+      "meaning": "ekmek",
+      "examples": [
+        {
+          "text": "Wir essen Brot.",
+          "phonetic": "vir esın brot",
+          "translation": "Ekmek yiyoruz."
+        }
+      ]
+    },
+    {
+      "word": "Kaffee",
+      "type": "isim (der)",
+      "meaning": "kahve",
+      "examples": [
+        {
+          "text": "Ich möchte einen Kaffee.",
+          "phonetic": "iç möçte aynın kafe",
+          "translation": "Bir kahve istiyorum."
+        }
+      ]
+    },
+    {
+      "word": "Haus",
+      "type": "isim (das)",
+      "meaning": "ev",
+      "examples": [
+        {
+          "text": "Das Haus ist groß.",
+          "phonetic": "das haus ist gros",
+          "translation": "Ev büyük."
+        }
+      ]
+    },
+    {
+      "word": "Freund",
+      "type": "isim (der)",
+      "meaning": "arkadaş; erkek arkadaş",
+      "examples": [
+        {
+          "text": "Das ist mein Freund.",
+          "phonetic": "das ist mayn froynd",
+          "translation": "Bu benim arkadaşım."
+        }
+      ]
+    },
+    {
+      "word": "Familie",
+      "type": "isim (die)",
+      "meaning": "aile",
+      "examples": [
+        {
+          "text": "Ich liebe meine Familie.",
+          "phonetic": "iç libe mayne familye",
+          "translation": "Ailemi seviyorum."
+        }
+      ]
+    },
+    {
+      "word": "Mann",
+      "type": "isim (der)",
+      "meaning": "adam; erkek",
+      "examples": [
+        {
+          "text": "Der Mann spricht.",
+          "phonetic": "der man şpriçt",
+          "translation": "Adam konuşuyor."
+        }
+      ]
+    },
+    {
+      "word": "Frau",
+      "type": "isim (die)",
+      "meaning": "kadın; eş",
+      "examples": [
+        {
+          "text": "Die Frau liest ein Buch.",
+          "phonetic": "di frau list ayn buh",
+          "translation": "Kadın bir kitap okuyor."
+        }
+      ]
+    },
+    {
+      "word": "Kind",
+      "type": "isim (das)",
+      "meaning": "çocuk",
+      "examples": [
+        {
+          "text": "Das Kind spielt.",
+          "phonetic": "das kint şpilt",
+          "translation": "Çocuk oynuyor."
+        }
+      ]
+    },
+    {
+      "word": "Tag",
+      "type": "isim (der)",
+      "meaning": "gün",
+      "examples": [
+        {
+          "text": "Was für ein schöner Tag!",
+          "phonetic": "vas für ayn şöner tag",
+          "translation": "Ne güzel bir gün!"
+        }
+      ]
+    },
+    {
+      "word": "Nacht",
+      "type": "isim (die)",
+      "meaning": "gece",
+      "examples": [
+        {
+          "text": "Gute Nacht!",
+          "phonetic": "gute naht",
+          "translation": "İyi geceler!"
+        }
+      ]
+    },
+    {
+      "word": "heute",
+      "type": "zarf",
+      "meaning": "bugün",
+      "examples": [
+        {
+          "text": "Heute ist es warm.",
+          "phonetic": "hoyte ist es varm",
+          "translation": "Bugün hava sıcak."
+        }
+      ]
+    },
+    {
+      "word": "morgen",
+      "type": "zarf",
+      "meaning": "yarın",
+      "examples": [
+        {
+          "text": "Bis morgen!",
+          "phonetic": "bis morgın",
+          "translation": "Yarın görüşürüz!"
+        }
+      ]
+    },
+    {
+      "word": "gut",
+      "type": "sıfat",
+      "meaning": "iyi",
+      "examples": [
+        {
+          "text": "Das ist gut.",
+          "phonetic": "das ist gut",
+          "translation": "Bu iyi."
+        }
+      ]
+    },
+    {
+      "word": "groß",
+      "type": "sıfat",
+      "meaning": "büyük; uzun",
+      "examples": [
+        {
+          "text": "Eine große Stadt.",
+          "phonetic": "ayne grose ştat",
+          "translation": "Büyük bir şehir."
+        }
+      ]
+    },
+    {
+      "word": "klein",
+      "type": "sıfat",
+      "meaning": "küçük",
+      "examples": [
+        {
+          "text": "Eine kleine Katze.",
+          "phonetic": "ayne klayne katse",
+          "translation": "Küçük bir kedi."
+        }
+      ]
+    },
+    {
+      "word": "neu",
+      "type": "sıfat",
+      "meaning": "yeni",
+      "examples": [
+        {
+          "text": "Ein neues Buch.",
+          "phonetic": "ayn noyes buh",
+          "translation": "Yeni bir kitap."
+        }
+      ]
+    },
+    {
+      "word": "schön",
+      "type": "sıfat",
+      "meaning": "güzel",
+      "examples": [
+        {
+          "text": "Das Wetter ist schön.",
+          "phonetic": "das vetır ist şön",
+          "translation": "Hava güzel."
+        }
+      ]
+    },
+    {
+      "word": "sein",
+      "type": "fiil",
+      "meaning": "olmak",
+      "examples": [
+        {
+          "text": "Ich bin Student.",
+          "phonetic": "iç bin ştudent",
+          "translation": "Ben öğrenciyim."
+        }
+      ]
+    },
+    {
+      "word": "haben",
+      "type": "fiil",
+      "meaning": "sahip olmak",
+      "examples": [
+        {
+          "text": "Ich habe einen Bruder.",
+          "phonetic": "iç habe aynın bruder",
+          "translation": "Bir erkek kardeşim var."
+        }
+      ]
+    },
+    {
+      "word": "gehen",
+      "type": "fiil",
+      "meaning": "gitmek; yürümek",
+      "examples": [
+        {
+          "text": "Ich gehe zur Schule.",
+          "phonetic": "iç gehe tsur şule",
+          "translation": "Okula gidiyorum."
+        }
+      ]
+    },
+    {
+      "word": "essen",
+      "type": "fiil",
+      "meaning": "yemek yemek",
+      "examples": [
+        {
+          "text": "Sie essen zu Mittag.",
+          "phonetic": "zi esın tsu mitag",
+          "translation": "Öğle yemeği yiyorlar."
+        }
+      ]
+    },
+    {
+      "word": "trinken",
+      "type": "fiil",
+      "meaning": "içmek",
+      "examples": [
+        {
+          "text": "Er trinkt Kaffee.",
+          "phonetic": "er trinkt kafe",
+          "translation": "O kahve içiyor."
+        }
+      ]
+    },
+    {
+      "word": "wollen",
+      "type": "fiil",
+      "meaning": "istemek",
+      "examples": [
+        {
+          "text": "Ich will Wasser.",
+          "phonetic": "iç vil vasır",
+          "translation": "Su istiyorum."
+        }
+      ]
+    },
+    {
+      "word": "sprechen",
+      "type": "fiil",
+      "meaning": "konuşmak",
+      "examples": [
+        {
+          "text": "Sprechen Sie Deutsch?",
+          "phonetic": "şpreçın zi doyç",
+          "translation": "Almanca konuşuyor musunuz?"
+        }
+      ]
+    },
+    {
+      "word": "Name",
+      "type": "isim (der)",
+      "meaning": "isim; ad",
+      "examples": [
+        {
+          "text": "Wie ist dein Name?",
+          "phonetic": "vi ist dayn name",
+          "translation": "Adın ne?"
+        }
+      ]
+    },
+    {
+      "word": "Stadt",
+      "type": "isim (die)",
+      "meaning": "şehir",
+      "examples": [
+        {
+          "text": "Ich wohne in einer Stadt.",
+          "phonetic": "iç vone in ayner ştat",
+          "translation": "Bir şehirde yaşıyorum."
+        }
+      ]
+    },
+    {
+      "word": "Buch",
+      "type": "isim (das)",
+      "meaning": "kitap",
+      "examples": [
+        {
+          "text": "Ein interessantes Buch.",
+          "phonetic": "ayn interesantes buh",
+          "translation": "İlginç bir kitap."
+        }
+      ]
+    },
+    {
+      "word": "Schule",
+      "type": "isim (die)",
+      "meaning": "okul",
+      "examples": [
+        {
+          "text": "Die Schule ist geschlossen.",
+          "phonetic": "di şule ist geşlosın",
+          "translation": "Okul kapalı."
+        }
+      ]
+    },
+    {
+      "word": "Arbeit",
+      "type": "isim (die)",
+      "meaning": "iş; çalışma",
+      "examples": [
+        {
+          "text": "Ich gehe zur Arbeit.",
+          "phonetic": "iç gehe tsur arbayt",
+          "translation": "İşe gidiyorum."
+        }
+      ]
+    },
+    {
+      "word": "eins",
+      "type": "sayı",
+      "meaning": "bir",
+      "examples": [
+        {
+          "text": "Eins, zwei, drei.",
+          "phonetic": "ayns, tsvay, dray",
+          "translation": "Bir, iki, üç."
+        }
+      ]
+    },
+    {
+      "word": "zwei",
+      "type": "sayı",
+      "meaning": "iki",
+      "examples": [
+        {
+          "text": "Ich habe zwei Kinder.",
+          "phonetic": "iç habe tsvay kindır",
+          "translation": "İki çocuğum var."
+        }
+      ]
+    },
+    {
+      "word": "drei",
+      "type": "sayı",
+      "meaning": "üç",
+      "examples": [
+        {
+          "text": "Es gibt drei Katzen.",
+          "phonetic": "es gipt dray katsın",
+          "translation": "Üç kedi var."
+        }
+      ]
+    }
+  ]
+}

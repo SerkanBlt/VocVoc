@@ -8,7 +8,7 @@ const record=(name)=>{results.push(name);console.log('PASS',name)};
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 function seed(n=100){const words={},aliases={},progress={};for(let i=0;i<n;i++){const word='word'+i,id='fr:tr:'+word;words[id]={id,word,normalized:word,targetLanguage:'fr',nativeLanguage:'tr',meaning:'meaning '+i,type:'noun',synonyms:[],antonyms:[],examples:[],expressions:[],createdAt:'2026-01-01',updatedAt:'2026-01-01'};aliases[id]=id;progress[id]={wordId:id,status:i%3===0?'memorized':i%3===1?'active':'archived',firstSeenAt:'2026-01-01',lastSeenAt:'2026-01-01',statusChangedAt:'2026-01-01',memorizedAt:null,archivedAt:i%3===2?'2026-01-01':null,archiveSourceStatus:i%3===2?'memorized':null};}return {schemaVersion:1,meta:{starterWordsInitialized:true},settings:{nativeLanguage:'tr',targetLanguage:'fr',difficulty:'A1-A2',dailyLimit:'10',theme:'system',fontSize:'normal'},words,aliases,progress,dailyUsage:{date:'2026-10-05',count:7}};}
 async function main(){
- server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=url.pathname==='/baseline.html'?original:path.join(root,url.pathname.replace(/^\/VocVoc\//,''));if(url.pathname==='/VocVoc/')file=path.join(root,'index.html');try{if(serveNext&&skew==='icon'&&url.pathname.endsWith('/icons/maskable-512.png')){res.writeHead(404);res.end('missing');return;}let data=fs.readFileSync(file);if(serveNext&&file.endsWith('sw.js'))data=Buffer.from(data.toString().replace(`VERSION='${shellVersion}'`,`VERSION='${nextVersion}'`));if(serveNext&&file.endsWith('index.html')){let html=data.toString().replace('<title>VocVoc</title>','<title>VocVoc update test</title>');if(skew!=='meta')html=html.replace(`name="vocvoc-shell" content="${shellVersion}"`,`name="vocvoc-shell" content="${nextVersion}"`);data=Buffer.from(html);}res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.webmanifest')?'application/manifest+json':file.endsWith('.png')?'image/png':'text/html');res.end(data);}catch(_){res.writeHead(404);res.end('missing');}});
+ server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=url.pathname==='/baseline.html'?original:path.join(root,url.pathname.replace(/^\/VocVoc\//,''));if(url.pathname==='/VocVoc/')file=path.join(root,'index.html');try{if(serveNext&&skew==='icon'&&url.pathname.endsWith('/icons/maskable-512.png')){res.writeHead(404);res.end('missing');return;}let data=fs.readFileSync(file);if(serveNext&&file.endsWith('sw.js'))data=Buffer.from(data.toString().replace(`VERSION='${shellVersion}'`,`VERSION='${nextVersion}'`));if(serveNext&&file.endsWith('index.html')){let html=data.toString().replace('<title>VocVoc</title>','<title>VocVoc update test</title>');if(skew!=='meta')html=html.replace(`name="vocvoc-shell" content="${shellVersion}"`,`name="vocvoc-shell" content="${nextVersion}"`);data=Buffer.from(html);}res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.json')?'application/json':file.endsWith('.webmanifest')?'application/manifest+json':file.endsWith('.png')?'image/png':'text/html');res.end(data);}catch(_){res.writeHead(404);res.end('missing');}});
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`,url=base+'/VocVoc/';
  const launch={headless:true};if(process.env.PWA_BROWSER_PATH){launch.executablePath=process.env.PWA_BROWSER_PATH;launch.args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'];}
  browser=await chromium.launch(launch);
@@ -747,7 +747,9 @@ async function main(){
  {
   // off by default: nothing of it is on the page
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(url);await ready();
+  const packRequests=[];page.on('request',r=>{if(r.url().includes('/packs/'))packRequests.push(r.url());});
+  await page.goto(url);await ready();await pause(500);
+  assert.deepEqual([packRequests,await page.evaluate(()=>document.querySelectorAll('.v2-speak,.v2-pack').length)],[[],0]);   // no download, no buttons
   assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),document.body.classList.contains('v2'),typeof VocVocPlan,VocVocPlan.get(),VocVocPlan.has('stats'),!!document.getElementById('v2Dashboard'),getComputedStyle(document.querySelector('.study-actions')).display!=='none',localStorage.getItem('VOCVOC_ACTIVITY_V1')]),[false,false,'object','free',false,false,true,null]);
   await context.close();
   record('new interface: off by default (no tab bar, no sign-in); the plan helper exists and says Free');
@@ -961,6 +963,143 @@ async function main(){
   }
   record('new interface: Statistics (Premium) and Badges (free) are computed from the history: numbers, charts, dates, progress, kept badges, silent first look');
  }
+ // ===== New interface: ready-made word packs and read-aloud =====
+ {
+  const signedIn=()=>{localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'}));};
+  const openPage=async(options={})=>{
+   const c=await browser.newContext({viewport:{width:390,height:844},...options.context}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+   const seen={gemini:0,pack:0,index:0};
+   await p.route('https://generativelanguage.googleapis.com/**',r=>{seen.gemini++;r.abort();});
+   p.on('request',r=>{if(r.url().endsWith('/packs/fr-tr.json'))seen.pack++;if(r.url().endsWith('/packs/index.json'))seen.index++;});
+   await c.addInitScript(signedIn);if(options.init)await c.addInitScript(options.init,options.initArg);
+   await p.goto(url+'?ui=v2');await ready(p);
+   return {c,p,seen};
+  };
+  const packText=p=>p.evaluate(()=>document.querySelector('.v2-pack .v2-pack-text')?.textContent||'');
+  const waitPack=(p,text)=>p.waitForFunction(expected=>document.querySelector('.v2-pack .v2-pack-text')?.textContent===expected,text);
+
+  // the pack of the pair is downloaded once; the Daily button takes its next words from it: no key, no AI, counted towards the goal
+  {
+   const {c,p,seen}=await openPage();
+   await waitPack(p,'2 / 40 kelime eklendi');                                                        // Bonjour and Merci are the starters
+   assert.equal(seen.pack,1);
+   const before=await p.evaluate(()=>getHistory().length);
+   await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();
+   await p.waitForFunction(()=>document.querySelector('.v2-goal-value')?.textContent==='10 / 10 kelime');
+   const history=await p.evaluate(()=>getHistory());
+   assert.equal(history.length,before+10);
+   for(const word of ['au revoir',"s'il vous plaît",'oui','non','pardon','eau','pain','café','maison','ami'])assert(history.includes(word),word+' was not added');
+   assert.equal(await p.evaluate(()=>VocVocData.getWordByText('maison').meaning),'ev');
+   assert.equal(await p.evaluate(()=>VocVocData.getWordByText('maison').examples[0].phonetic),'la mezon e grand');
+   await waitPack(p,'12 / 40 kelime eklendi');
+   const titles=await p.locator('#contentArea .main-word-card .word-title').evaluateAll(nodes=>nodes.map(node=>node.textContent));
+   assert.deepEqual(titles.slice(0,10).sort(),['au revoir',"s'il vous plaît",'oui','non','pardon','eau','pain','café','maison','ami'].sort());   // the new words are on top
+   assert.equal(titles.length,13);                                                                  // and the three starters are still there
+   assert.equal(seen.gemini,0);                                                                      // no AI, no key needed
+   // the daily limit applies to the pack as it does to the AI
+   await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();
+   await p.waitForFunction(()=>!!document.querySelector('.app-alert .app-alert-text'));
+   assert.equal(await p.evaluate(()=>getHistory().length),before+10);
+   // offline: the pack comes from the device and keeps working; it was fetched from the network only once
+   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+   await c.setOffline(true);await p.reload();await ready(p);
+   await waitPack(p,'12 / 40 kelime eklendi');
+   await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();
+   await waitPack(p,'22 / 40 kelime eklendi');
+   assert.deepEqual([seen.pack,seen.gemini],[1,0]);
+   await c.close();
+  }
+  record('word packs: the pack of the language pair is downloaded once and kept; the Daily button adds its next words in order, without a key, within the daily limit, also offline');
+
+  // a pair without a pack says so and falls back to the user's own key; a damaged copy on the device is replaced
+  {
+   const {c,p,seen}=await openPage();
+   await waitPack(p,'2 / 40 kelime eklendi');
+   await p.evaluate(()=>VocVocData.changeLanguage({nativeLanguage:'en'}));                            // French for an English speaker: no pack
+   await p.waitForFunction(()=>/no ready-made pack/.test(document.querySelector('.v2-pack .v2-pack-text')?.textContent||''));
+   const words=await p.evaluate(()=>getHistory().length);
+   await p.getByRole('button',{name:'Add daily words'}).click();
+   await p.waitForFunction(()=>!!document.querySelector('.app-alert .app-alert-text'));
+   assert.deepEqual([await p.evaluate(()=>getHistory().length),seen.gemini],[words,0]);              // no key: nothing is added and nothing is sent
+   await c.close();
+  }
+  {
+   const {c,p}=await openPage();
+   await waitPack(p,'2 / 40 kelime eklendi');
+   await p.evaluate(async()=>{const cache=await caches.open('vocvoc-packs-v1');await cache.put(new URL('./packs/fr-tr.json',location.href).href,new Response('{ this is not json'));});
+   await p.reload();await ready(p);await waitPack(p,'2 / 40 kelime eklendi');                         // replaced by a fresh download
+   assert.equal(await p.evaluate(async()=>{const cache=await caches.open('vocvoc-packs-v1');return (await (await cache.match(new URL('./packs/fr-tr.json',location.href).href)).json()).words.length;}),40);
+   await c.close();
+  }
+  record('word packs: a pair without a pack says so and sends nothing without a key; a damaged copy on the device is replaced');
+
+  // read-aloud: the device's voice, Premium only; the app's own markup stays as it is
+  const speechMock=([voices])=>{
+   const calls=[];window.__speech=calls;
+   window.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
+   Object.defineProperty(window,'speechSynthesis',{configurable:true,value:voices===null?undefined:{getVoices:()=>voices,speak(utterance){calls.push({text:utterance.text,lang:utterance.lang,voice:utterance.voice&&utterance.voice.name,rate:utterance.rate});setTimeout(()=>utterance.onend&&utterance.onend(),40);},cancel(){calls.push({cancel:true});}}});
+  };
+  const FRENCH=[{lang:'fr-FR',name:'Fake French',localService:true},{lang:'tr-TR',name:'Fake Turkish',localService:true}];
+  {
+   const {c,p}=await openPage({init:speechMock,initArg:[FRENCH]});
+   const calls=()=>p.evaluate(()=>window.__speech);
+   await p.evaluate(()=>toggleHistoryDetail('Bonjour'));await p.waitForSelector('#historyDetails.open .v2-speak');
+   const labels=await p.locator('#historyDetails .v2-speak').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('aria-label')));
+   assert(labels.length>=3&&labels.every(label=>label==='Sesli oku (Premium)'),JSON.stringify(labels));      // title, an example, an expression: locked on Free
+   await p.locator('#historyDetails .v2-speak').first().click();
+   await p.waitForFunction(()=>/Premium/.test(document.getElementById('v2Toast')?.textContent||'')&&document.getElementById('v2Toast').classList.contains('v2-show'));
+   assert.deepEqual(await calls(),[]);                                                                // a free user does not start speech
+   await p.evaluate(()=>VocVocPlan.set('premium'));
+   assert.equal(await p.locator('#historyDetails .v2-speak').first().getAttribute('aria-label'),'Sesli oku: Bonjour');
+   await p.locator('#historyDetails .v2-speak').first().click();
+   assert.deepEqual((await calls()).filter(call=>!call.cancel),[{text:'Bonjour',lang:'fr-FR',voice:'Fake French',rate:0.9}]);
+   await p.waitForFunction(()=>document.querySelector('#historyDetails .v2-speak').getAttribute('aria-pressed')==='false');   // ended
+   // an example sentence is read as written; pressing while it speaks stops it
+   await p.evaluate(()=>{for(const details of document.querySelectorAll('#historyDetails details.fold'))details.open=true;});
+   const sentence=await p.locator('#historyDetails .example-item .fr-text').first().evaluate(node=>node.firstChild.textContent.trim());
+   await p.evaluate(()=>{window.__speech.length=0;window.speechSynthesis.speak=function(utterance){window.__speech.push({text:utterance.text,lang:utterance.lang});};});   // it never ends by itself now
+   const example=p.locator('#historyDetails .example-item .v2-speak').first();
+   await example.click();assert.equal(await example.getAttribute('aria-pressed'),'true');
+   await example.click();assert.equal(await example.getAttribute('aria-pressed'),'false');
+   assert.deepEqual(await calls(),[{cancel:true},{text:sentence,lang:'fr-FR'},{cancel:true}]);
+   await p.evaluate(()=>closeHistoryDetail());
+   // the main card (its title is a button, so the speaker sits at the top of the opened details) and Flip
+   await p.locator('#contentArea .main-word-toggle').first().click();await p.waitForSelector('#contentArea .main-word-card.open .v2-speak-row .v2-speak');
+   const cardWord=await p.locator('#contentArea .main-word-card.open .word-title').textContent();
+   await p.evaluate(()=>{window.__speech.length=0;});
+   await p.locator('#contentArea .main-word-card.open .v2-speak-row .v2-speak').click();
+   assert.equal((await calls()).find(call=>call.text).text,cardWord);
+   await p.evaluate(()=>{location.hash='#/flip';});await p.waitForSelector('#flipOverlay.open [data-flip-face="front"] .flip-word-text');
+   assert.equal(await p.locator('#flipOverlay .flip-panel > .v2-speak').count(),2);
+   const flipWord=await p.locator('#flipOverlay [data-flip-face="front"] .flip-word-text').textContent();
+   await p.evaluate(()=>{window.__speech.length=0;});
+   await p.locator('#flipOverlay [data-flip-face="front"] > .v2-speak').click();
+   assert.equal((await calls()).find(call=>call.text).text,flipWord);
+   // leaving the page stops the voice
+   await p.evaluate(()=>{window.speechSynthesis.speak=function(utterance){window.__speech.push({text:utterance.text});};});
+   await p.evaluate(()=>{window.__speech.length=0;});
+   await p.locator('#flipOverlay [data-flip-face="front"] > .v2-speak').click();
+   await p.goBack();await p.waitForFunction(()=>window.__speech.some(call=>call.cancel));
+   await c.close();
+  }
+  {
+   // no voice for the language, and no speech at all: told in words, nothing breaks
+   const noFrench=await openPage({init:speechMock,initArg:[[{lang:'tr-TR',name:'Fake Turkish',localService:true}]],context:{}});
+   await noFrench.p.evaluate(()=>{localStorage.setItem('VOCVOC_SIM_PLAN','premium');});await noFrench.p.reload();await ready(noFrench.p);
+   await noFrench.p.evaluate(()=>toggleHistoryDetail('Bonjour'));await noFrench.p.waitForSelector('#historyDetails.open .v2-speak');
+   await noFrench.p.locator('#historyDetails .v2-speak').first().click();
+   await noFrench.p.waitForFunction(()=>document.getElementById('v2Toast')?.textContent==='Bu cihazda Fransızca sesi yok.');
+   assert.deepEqual((await noFrench.p.evaluate(()=>window.__speech)).filter(call=>call.text),[]);
+   await noFrench.c.close();
+   const none=await openPage({init:speechMock,initArg:[null]});
+   await none.p.evaluate(()=>{localStorage.setItem('VOCVOC_SIM_PLAN','premium');});await none.p.reload();await ready(none.p);
+   await none.p.evaluate(()=>toggleHistoryDetail('Bonjour'));await none.p.waitForSelector('#historyDetails.open .v2-speak');
+   await none.p.locator('#historyDetails .v2-speak').first().click();
+   await none.p.waitForFunction(()=>document.getElementById('v2Toast')?.textContent==='Bu tarayıcı sesli okumayı desteklemiyor.');
+   await none.c.close();
+  }
+  record('read-aloud: locked on Free, the device voice for the word, example, main card and Flip on Premium, stop on a second press and on leaving, clear messages without a voice');
+ }
  // ===== New interface: WCAG AA contrast of its screens, light and dark =====
  {
  const MEASURE=([selector,pseudo])=>{
@@ -976,7 +1115,7 @@ async function main(){
    const style=getComputedStyle(el);return {ratio:Math.round(ratio*100)/100,size:parseFloat(style.fontSize),weight:style.fontWeight};
  };
   const checks=[['',[['#v2Auth h1'],['#v2Auth p'],['#v2Auth label'],['#v2Auth .ui-button-success'],['#v2Auth .ui-button-secondary'],['#v2Auth .v2-note']]],
-   ['#/today',[['#v2Dashboard h2'],['.v2-goal-label'],['.v2-goal-value'],['.v2-streak'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['.v2-quick-btn']]],
+   ['#/today',[['#v2Dashboard h2'],['.v2-goal-label'],['.v2-goal-value'],['.v2-streak'],['.v2-pack .v2-goal-label'],['.v2-pack-text'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['.v2-quick-btn']]],
    ['#/test',[['.v2-study-bar h1'],['#v2QuizCount'],['.v2-close'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91']]],
    ['#/study',[['.v2-tab[aria-current="page"] .v2-tab-label'],['.v2-tab:not([aria-current="page"]) .v2-tab-label'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1']]],
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
@@ -992,9 +1131,10 @@ async function main(){
    await measureAll(checks[0][1]);
    await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
    await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i}))));
-   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'.v2-streak':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
+   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'.v2-streak,.v2-pack-text':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
    await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip.v2-premium');await measureAll([['.v2-chip'],['.v2-card .ui-button']]);
    await page.evaluate(()=>markMemorized('contrast0'));await page.waitForFunction(()=>VocVocData.getWordProgress('contrast0').status==='memorized');
+   await page.evaluate(()=>toggleHistoryDetail('contrast0'));await page.waitForSelector('#historyDetails.open .v2-speak');await measureAll([['#historyDetails .v2-speak']]);await page.evaluate(()=>closeHistoryDetail());
    for(const [hash,list] of [['#/stats',[['.v2-statline-4 .v2-stat strong'],['.v2-statline-4 .v2-stat span'],['.v2-day-label'],['.v2-day-num'],['.v2-legend'],['.v2-curve-range'],['.v2-card h2'],['.v2-card h3'],['.v2-card .v2-muted'],['.v2-page > .v2-muted']]],['#/badges',[['.v2-badge-body h3'],['.v2-badge-body p.v2-muted'],['.v2-badge-date'],['.v2-badge-icon'],['.v2-page > .v2-muted']]]]){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(`#v2Screen[data-route="${hash.slice(2)}"] h1`);await measureAll(list);}
    assert.deepEqual(failures,[],`contrast below WCAG AA in the ${colorScheme} theme`);
    await context.close();

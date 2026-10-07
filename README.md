@@ -4,7 +4,7 @@ Bu paket frozen `vocvoc_spa_v1_0_candidate.html` kaynağından oluşturuldu. Ori
 
 ## Yayınlama / kurulum
 
-`VocVoc/` içeriğini aynı HTTPS adresindeki bir klasöre yayınlayın. `index.html`, `storage.js`, `a11y.js`, `pwa.js`, `screens.js`, `screens.css`, `sw.js`, manifest, `icons/` ve `screenshots/` birlikte yayınlanmalıdır (ekran görüntüleri yalnızca tarayıcının kurulum penceresinde görünür, çevrimdışı kabuğa girmez; UI değişince `node tools/make-screenshots.js` ile yeniden üretilir). Framework, build veya uygulama backend'i gerekmez. Service Worker için `sw.js` dosyasını `text/javascript` olarak sunun; güncelleme kontrolünü engelleyen uzun HTTP cache süresi vermeyin. Manifest için `application/manifest+json` önerilir. Site başka route'lara ait istekleri index.html'e yönlendiriyorsa gerçek `sw.js`/manifest/icon dosyalarını istisna tutun.
+`VocVoc/` içeriğini aynı HTTPS adresindeki bir klasöre yayınlayın. `index.html`, `storage.js`, `a11y.js`, `pwa.js`, `stats.js`, `packs.js`, `screens.js`, `screens.css`, `sw.js`, manifest, `icons/`, `screenshots/` ve `packs/` birlikte yayınlanmalıdır (ekran görüntüleri yalnızca tarayıcının kurulum penceresinde görünür, çevrimdışı kabuğa girmez; UI değişince `node tools/make-screenshots.js` ile yeniden üretilir). Framework, build veya uygulama backend'i gerekmez. Service Worker için `sw.js` dosyasını `text/javascript` olarak sunun; güncelleme kontrolünü engelleyen uzun HTTP cache süresi vermeyin. Manifest için `application/manifest+json` önerilir. Site başka route'lara ait istekleri index.html'e yönlendiriyorsa gerçek `sw.js`/manifest/icon dosyalarını istisna tutun.
 
 Yerel test: `python3 -m http.server 8000 --directory VocVoc`, ardından `http://localhost:8000/`. ZIP'i açıp `index.html` dosyasına çift tıklamak PWA kurmaz; `file://` Service Worker çalıştırmaz. İlk online açılışta Service Worker'ın kurulmasını bekleyin. Chrome/Chromium menüsünden uygulamayı yükleyin; iOS'ta Safari → Paylaş → Ana Ekrana Ekle. Gerçek cihazın kurulum ve safe-area kontrolünü yayınlanan HTTPS adresinde yapın.
 
@@ -126,7 +126,7 @@ Service Worker IndexedDB'ye hiç dokunmaz ve diğer sekmeleri reload etmez; bu y
 - **Yeni shell + migration gerektiren DB:** IndexedDB yoksa ve legacy kaynak duruyorsa migration idempotent çalışır (aynı ID'ler, tekrar kopya yok, marker `complete`).
 - **Daha yeni şemadaki DB (geri alınan deploy / ileride şema artışı):** `schemaVersion` 1 dışındaki kayıt hiçbir shell tarafından değiştirilmez; uygulama güvenli hata ekranı gösterir. Bu sürümde yerinde şema migration'ı yoktur; ileride eklenirse tek transaction'da yazılmalı ve revision'ı artırmalıdır, aksi halde eski sekmeler çakışmayı fark edemez.
 
-## Yeni arayüz (prototip, 1.2.0)
+## Yeni arayüz (prototip, 1.3.0)
 
 Mağaza uygulaması için ekranların ilk iskeleti. **Varsayılan olarak kapalıdır**: `?ui=v2` ile açılır (seçim hatırlanır), Profil'deki *Eski arayüze dön* veya `?ui=v1` ile kapanır. Kapalıyken hiçbir şey değişmez ve mevcut testler aynen çalışır. Gerçek hesap, sunucu veya ödeme **yoktur**: giriş, plan ve Premium simülasyondur ve yalnızca bu tarayıcının `VOCVOC_UI`, `VOCVOC_SIM_PLAN`, `VOCVOC_SIM_PROFILE` anahtarlarında durur (yedeğe ve kelime verisine girmez).
 
@@ -139,15 +139,17 @@ Mağaza uygulaması için ekranların ilk iskeleti. **Varsayılan olarak kapalı
   - *İstatistik:* toplam/ezberlenen/seri/en uzun seri, son 7 gün (eklenen ve ezberlenen), 30 günlük ezberlenen eğrisi, testler (sayı, ortalama başarı, en iyi, son beş), *Geçmiş analizi* (en çok yanılan kelimeler, ortalama ezberleme süresi). Seri; kelime ekleme, ezberleme veya test yapılan ardışık günlerdir, bugün henüz boşsa dün sayılır. Arşive alınan kelimeler ezberlenen sayısına girmez; yerleşik başlangıç kelimeleri "eklenen" sayılmaz.
   - *Rozetler (14):* ezberleme (1/10/50/100/500), 50 kelime ekleme, ilk test, 10 test, 10/10 test, Hatırla'da 8/10, 3/7/30 günlük seri, günlük hedef. Kazanılan rozet kalıcıdır (veri sonradan değişse de kalır) ve gerçek kazanıldığı günü taşır; ilk bakışta eski verilerden türeyenler duyurulmadan kaydedilir, sonrakiler kısa bir bildirimle (en çok iki ad ve sayı) duyurulur. *Sıfırla* şimdilik test geçmişini ve rozetleri silmez.
   - Bugün panosunda güncel seri görünür.
+- **Hazır kelime paketleri (ücretsiz):** `packs/<hedef>-<ana dil>.json`, her dil çifti için bir dosya; kelimeler öğrenme sırasıyla, ana dilde anlamı, örnek cümlesi ve okunuşuyla gelir. Paketler çevrimdışı kabuğun parçası değildir: uygulama yalnızca kullanıcının seçtiği çiftin paketini indirir (küçük `packs/index.json` hangilerinin var olduğunu söyler), tarayıcının `vocvoc-packs-v1` önbelleğinde tutar (ilk indirmeden sonra internetsiz çalışır, kabuk güncellemesi bunu silmez), kullanmadan önce doğrular ve bozuksa yeniden indirir. *Günlük kelimeler ekle* önce paketten, kullanıcının henüz sahip olmadığı sıradaki 10 kelimeyi ekler (günlük hedefe sayılarak; anahtar gerekmez); paket bitince veya o çift için paket yoksa kullanıcının kendi anahtarıyla Günlük'e geçer. Bugün panosundaki *Hazır kelimeler* kartı ilerlemeyi gösterir. Biçim, doğrulayıcı ve indeks aracı: `packs.js`, `tools/build-packs.js` (`npm run packs`). **İçerik durumu:** şimdilik 5 paket (Fransızca, İngilizce, Almanca, İspanyolca, İtalyanca → Türkçe), her biri 40 kelime; elle yazılmış örnek içeriktir ve ana dilini konuşanlar gözden geçirmedi. Diğer 25 çift ve her paketin yaklaşık 300 kelimeye çıkarılması içerik işidir.
+- **Sesli okuma (Premium):** kelimenin, örnek cümlelerin ve deyimlerin yanında, ana kartta (açılan ayrıntının başında) ve Flip'te hoparlör düğmesi. Cihazın kendi sesini (`speechSynthesis`) kullanır: çevrimdışı çalışır, ek maliyeti yoktur, kalitesi cihaza yüklü seslere bağlıdır. Düğmeler yalnızca yeni arayüzde eklenir, uygulamanın kendi işaretlemesine dokunulmaz. Ücretsiz planda düğme kilitlidir ve basınca Premium'u hatırlatır. Dil için cihazda ses yoksa veya tarayıcı desteklemiyorsa açık bir ileti çıkar; ikinci basış okumayı durdurur, sayfa değişince ses kesilir. Bulut sesi (daha kaliteli) sonraki aşamadır.
 - **Plan kuralları** (`VocVocPlan`): Ücretsiz = kartlar, ezber, arşiv, History, Test, Hatırla, Flip, kendi anahtarınla yeni kelime, yedek, rozetler. Premium = dahili yapay zekâ, History'den cümle kurma (kendi anahtarıyla çalışmaz), sesli okuma, istatistik ve geçmiş analizi. Premium aktifken kendi API anahtarı devre dışıdır (silinmez), abonelik bitince yeniden etkin olur. **Henüz uygulanmayan kısım:** bu kural şimdilik yalnızca ekranlarda ve `VocVocPlan`'da var; yapay zekâ istekleri hâlâ kullanıcının anahtarını kullanır.
-- **Henüz yok:** hazır kelime paketleri, sesli okuma, cümle kurma, giriş ekranında politika bağlantıları. Sayfalar adres olarak (`#/profile` gibi) tarayıcı geçmişine girer, geri tuşu önceki sayfaya döner; Flip dışındaki pencerelerin (History, Ayarlar, arşiv) geri tuşuyla kapanması henüz yok.
+- **Henüz yok:** cümle kurma, giriş ekranında politika bağlantıları. Sayfalar adres olarak (`#/profile` gibi) tarayıcı geçmişine girer, geri tuşu önceki sayfaya döner; Flip dışındaki pencerelerin (History, Ayarlar, arşiv) geri tuşuyla kapanması henüz yok.
 
 ## Testleri çalıştırma ve sürekli doğrulama (CI)
 
 ```
 cd tests && npm ci      # test araçları: playwright, fake-indexeddb (uygulamanın çalışma zamanı bağımlılığı yoktur)
-npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 47 doğrulama + 72 veri testi
-npm run test:browser    # Chrome regresyon paketi (109 senaryo, yaklaşık 3 dk)
+npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 49 doğrulama + 90 veri testi
+npm run test:browser    # Chrome regresyon paketi (112 senaryo, yaklaşık 3 dk)
 npm run test:all        # ikisi birden
 npm run checksums       # SHA256SUMS'ı yeniden üretir (kökten; sürüm yayınlama adımı)
 ```
@@ -172,6 +174,7 @@ npm run checksums       # SHA256SUMS'ı yeniden üretir (kökten; sürüm yayın
 | Çoklu sekme | tarayıcıda *two tabs: …* senaryoları (boştaki sekme alır, meşgul sekme korunur, bant kendiliğinden kapanır) ve *multi-tab stale writer rejected* |
 | Yeni arayüz (prototip) | *New interface (prototype)* grubu (varsayılan kapalıyken yalnızca plan yardımcısını tanımlar, satır içi işleyici yok, plan kuralları, TR/EN metin eşliği, taslak işaretleri) ve tarayıcıda *new interface: …* senaryoları (kapalı varsayılan, giriş, sekmeler, pano, Test sayfası, Flip ve geri tuşu, kilitli/Premium, test kaydı ve rozetler, istatistik ve rozet ekranları, metin sayfaları, WCAG AA kontrastı) |
 | İstatistik ve rozet mantığı | `tests/stats.test.cjs` (29 test: özet, son 7 gün, seri, eğri, testler, ezberleme süresi, rozet tarihleri ve kalıcılığı, kayıt sınırı ve doğrulaması, tarih işlemleri, 5.000 kelime) ve *New interface (prototype)* grubunda *statistics and badges are pure logic…* |
+| Hazır kelime paketleri ve sesli okuma | `tests/packs.test.cjs` (18 test: biçim doğrulaması, sıradaki kelimeler, gönderilen paketler ve indeksi) ve *New interface (prototype)* grubunda paket/sesli okuma korumaları; tarayıcıda *word packs: …* (bir kez indirme, sıralı ekleme, anahtarsız, günlük sınır, çevrimdışı, paketsiz çift, bozuk kopya) ve *read-aloud: …* (Premium kapısı, kelime/örnek/ana kart/Flip, durdurma, ses yok) senaryoları |
 | SHA256SUMS | *SHA256SUMS lists real files, matches their bytes and leaves out generated output* |
 | API anahtarı export/cache'e girmez | *is absent from the exported backup, from the recovery copy and from the stored Schema v1 snapshot*, *a backup that carries a key is rejected…*, *the key travels only in the x-goog-api-key header…*, tarayıcıda *Gemini request/response and the API key never enter any cache* |
 
@@ -179,7 +182,7 @@ Bir testin neden düştüğü adından okunur; tarayıcı paketi hata anında "s
 
 ### Sürüm yükseltme (Service Worker cache)
 
-Uygulama kabuğundaki (`index.html`, `storage.js`, `a11y.js`, `pwa.js`, `screens.js`, `screens.css`, manifest, ikonlar, `sw.js` ve `ASSETS` listesi) herhangi bir değişiklikte: `sw.js` `VERSION`, `index.html` içindeki `<meta name="vocvoc-shell">` ve `BUILD_INFO.json` `version` aynı sayıya yükseltilir, sonra `node tools/lock-shell.js` (veya `npm run lock-shell`) çalıştırılır. Yükseltmeden CI kırmızı olur; aksi halde kullanıcılar eski cache'te kalırdı.
+Uygulama kabuğundaki (`index.html`, `storage.js`, `a11y.js`, `pwa.js`, `stats.js`, `packs.js`, `screens.js`, `screens.css`, manifest, ikonlar, `sw.js` ve `ASSETS` listesi) herhangi bir değişiklikte: `sw.js` `VERSION`, `index.html` içindeki `<meta name="vocvoc-shell">` ve `BUILD_INFO.json` `version` aynı sayıya yükseltilir, sonra `node tools/lock-shell.js` (veya `npm run lock-shell`) çalıştırılır. Yükseltmeden CI kırmızı olur; aksi halde kullanıcılar eski cache'te kalırdı.
 
 ## Sınırlar
 

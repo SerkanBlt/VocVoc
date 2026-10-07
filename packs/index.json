@@ -1,0 +1,50 @@
+{
+  "format": 1,
+  "packs": [
+    {
+      "id": "de-tr",
+      "target": "de",
+      "native": "tr",
+      "level": "A1-A2",
+      "version": 1,
+      "words": 40,
+      "bytes": 10872
+    },
+    {
+      "id": "en-tr",
+      "target": "en",
+      "native": "tr",
+      "level": "A1-A2",
+      "version": 1,
+      "words": 40,
+      "bytes": 10511
+    },
+    {
+      "id": "es-tr",
+      "target": "es",
+      "native": "tr",
+      "level": "A1-A2",
+      "version": 1,
+      "words": 40,
+      "bytes": 10691
+    },
+    {
+      "id": "fr-tr",
+      "target": "fr",
+      "native": "tr",
+      "level": "A1-A2",
+      "version": 1,
+      "words": 40,
+      "bytes": 10741
+    },
+    {
+      "id": "it-tr",
+      "target": "it",
+      "native": "tr",
+      "level": "A1-A2",
+      "version": 1,
+      "words": 40,
+      "bytes": 10725
+    }
+  ]
+}

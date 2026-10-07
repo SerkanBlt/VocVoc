@@ -7,6 +7,7 @@
     "test:browser": "npm run test:browser --prefix tests",
     "test:all": "npm run test:all --prefix tests",
     "lock-shell": "node tools/lock-shell.js",
-    "checksums": "node tools/update-checksums.js"
+    "checksums": "node tools/update-checksums.js",
+    "packs": "node tools/build-packs.js"
   }
 }
