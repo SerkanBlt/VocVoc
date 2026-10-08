@@ -240,6 +240,19 @@ describe('New interface (prototype)',()=>{
   });
 });
 
+describe('Word card content (examples and idioms)',()=>{
+  it('the search, the Daily words and the card detail all ask for exactly two examples and idioms with their own sentence, and the schema holds the model to it',()=>{
+    assert.equal((html.match(/\$\{examplesRule\((?:native|nativeLanguage)\)\}/g)||[]).length,3,'every prompt that makes a word card must use the shared rule');
+    assert(/examples:\{type:"ARRAY",minItems:2,maxItems:2,/.test(html)&&/expressions:\{type:"ARRAY",maxItems:2,items:\{type:"OBJECT",required:\["text","exampleText","exampleTranslation"\]/.test(html));
+  });
+  it('an idiom is shown as a pill with the sentence that uses it underneath, not with its own pronunciation and meaning (those only when it has no sentence)',()=>{
+    const render=html.slice(html.indexOf('function renderWordDetailBody'),html.indexOf('async function removeMemorized'));
+    assert(render.includes('<span class=\\"expression-pill\\">${esc(exp.text)}</span>')||render.includes('<span class="expression-pill">${esc(exp.text)}</span>'));
+    const idioms=render.slice(render.indexOf('expressions.map(exp=>'));
+    assert(/exp\.exampleText\s*\?`<div class="expression-example">[^]*?:`\$\{exp\.phonetic/.test(idioms),'the idiom\'s own pronunciation and meaning are only the fallback of a missing sentence');
+  });
+});
+
 describe('Card controls',()=>{
   it('memorizing and closing are swipes: no status buttons under cards, popups or Flip (the Flip M shortcut stays)',()=>{
     for(const leftover of ['data-card-memorize','data-card-dismiss','data-word-status','data-flip-status','word-status-actions','flip-actions','renderCardActions','renderStatusActions'])

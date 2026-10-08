@@ -4,7 +4,7 @@
   "target": "en",
   "native": "tr",
   "level": "A1-A2",
-  "version": 1,
+  "version": 2,
   "words": [
     {
       "word": "hello",
@@ -15,6 +15,11 @@
           "text": "Hello, how are you?",
           "phonetic": "helo, hau ar yu",
           "translation": "Merhaba, nasılsın?"
+        },
+        {
+          "text": "Hello, my name is Anna.",
+          "phonetic": "helo, may neym iz ena",
+          "translation": "Merhaba, benim adım Anna."
         }
       ]
     },
@@ -27,6 +32,11 @@
           "text": "Goodbye, see you tomorrow.",
           "phonetic": "gudbay, si yu tumoro",
           "translation": "Hoşça kal, yarın görüşürüz."
+        },
+        {
+          "text": "Goodbye and thank you!",
+          "phonetic": "gudbay end tenk yu",
+          "translation": "Hoşça kalın ve teşekkürler!"
         }
       ]
     },
@@ -39,6 +49,11 @@
           "text": "A coffee, please.",
           "phonetic": "ı kofi, pliz",
           "translation": "Bir kahve, lütfen."
+        },
+        {
+          "text": "Please sit down.",
+          "phonetic": "pliz sit daun",
+          "translation": "Lütfen oturun."
         }
       ]
     },
@@ -51,6 +66,21 @@
           "text": "Thank you very much.",
           "phonetic": "tenk yu veri maç",
           "translation": "Çok teşekkür ederim."
+        },
+        {
+          "text": "Thank you for your help.",
+          "phonetic": "tenk yu for yor help",
+          "translation": "Yardımın için teşekkür ederim."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "no, thank you",
+          "phonetic": "nou, tenk yu",
+          "translation": "hayır, teşekkürler",
+          "exampleText": "More tea? No, thank you.",
+          "examplePhonetic": "mor ti? nou, tenk yu",
+          "exampleTranslation": "Biraz daha çay? Hayır, teşekkürler."
         }
       ]
     },
@@ -63,6 +93,11 @@
           "text": "Yes, I like it.",
           "phonetic": "yes, ay layk it",
           "translation": "Evet, hoşuma gidiyor."
+        },
+        {
+          "text": "Yes, I understand.",
+          "phonetic": "yes, ay andırstend",
+          "translation": "Evet, anlıyorum."
         }
       ]
     },
@@ -75,6 +110,11 @@
           "text": "No, thank you.",
           "phonetic": "nou, tenk yu",
           "translation": "Hayır, teşekkürler."
+        },
+        {
+          "text": "No, I don't know.",
+          "phonetic": "nou, ay dount nou",
+          "translation": "Hayır, bilmiyorum."
         }
       ]
     },
@@ -87,6 +127,11 @@
           "text": "I am sorry.",
           "phonetic": "ay em sori",
           "translation": "Özür dilerim."
+        },
+        {
+          "text": "Sorry, I am late.",
+          "phonetic": "sori, ay em leyt",
+          "translation": "Üzgünüm, geç kaldım."
         }
       ]
     },
@@ -99,6 +144,21 @@
           "text": "I drink water.",
           "phonetic": "ay drink wotır",
           "translation": "Su içiyorum."
+        },
+        {
+          "text": "The water is cold.",
+          "phonetic": "dı wotır iz kould",
+          "translation": "Su soğuk."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "a glass of water",
+          "phonetic": "ı glas ov wotır",
+          "translation": "bir bardak su",
+          "exampleText": "Can I have a glass of water?",
+          "examplePhonetic": "ken ay hev ı glas ov wotır",
+          "exampleTranslation": "Bir bardak su alabilir miyim?"
         }
       ]
     },
@@ -111,6 +171,21 @@
           "text": "We eat bread.",
           "phonetic": "wi it bred",
           "translation": "Ekmek yiyoruz."
+        },
+        {
+          "text": "I buy bread every day.",
+          "phonetic": "ay bay bred evri dey",
+          "translation": "Her gün ekmek alıyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "bread and butter",
+          "phonetic": "bred ınd batır",
+          "translation": "geçim kaynağı",
+          "exampleText": "Teaching is her bread and butter.",
+          "examplePhonetic": "tiçin iz hır bred ınd batır",
+          "exampleTranslation": "Öğretmenlik onun geçim kaynağı."
         }
       ]
     },
@@ -123,6 +198,21 @@
           "text": "I want a coffee.",
           "phonetic": "ay wont ı kofi",
           "translation": "Bir kahve istiyorum."
+        },
+        {
+          "text": "The coffee is hot.",
+          "phonetic": "dı kofi iz hot",
+          "translation": "Kahve sıcak."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "a cup of coffee",
+          "phonetic": "ı kap ov kofi",
+          "translation": "bir fincan kahve",
+          "exampleText": "I'd like a cup of coffee.",
+          "examplePhonetic": "ayd layk ı kap ov kofi",
+          "exampleTranslation": "Bir fincan kahve isterim."
         }
       ]
     },
@@ -135,6 +225,29 @@
           "text": "The house is big.",
           "phonetic": "dı haus iz big",
           "translation": "Ev büyük."
+        },
+        {
+          "text": "My house is near the station.",
+          "phonetic": "may haus iz nir dı steyşın",
+          "translation": "Evim istasyonun yakınında."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "make yourself at home",
+          "phonetic": "meyk yorself et houm",
+          "translation": "kendi evinizdeymiş gibi rahat edin",
+          "exampleText": "Come in and make yourself at home.",
+          "examplePhonetic": "kam in ınd meyk yorself et houm",
+          "exampleTranslation": "İçeri gel ve rahatına bak."
+        },
+        {
+          "text": "on the house",
+          "phonetic": "on dı haus",
+          "translation": "ikram; bedava",
+          "exampleText": "The dessert is on the house.",
+          "examplePhonetic": "dı dizört iz on dı haus",
+          "exampleTranslation": "Tatlı bizden."
         }
       ]
     },
@@ -147,6 +260,29 @@
           "text": "He is my friend.",
           "phonetic": "hi iz may frend",
           "translation": "O benim arkadaşım."
+        },
+        {
+          "text": "My friend lives in London.",
+          "phonetic": "may frend livz in landın",
+          "translation": "Arkadaşım Londra'da yaşıyor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "best friend",
+          "phonetic": "best frend",
+          "translation": "en iyi arkadaş",
+          "exampleText": "She is my best friend.",
+          "examplePhonetic": "şi iz may best frend",
+          "exampleTranslation": "O benim en iyi arkadaşım."
+        },
+        {
+          "text": "a friend in need is a friend indeed",
+          "phonetic": "ı frend in nid iz ı frend indid",
+          "translation": "dost kara günde belli olur",
+          "exampleText": "He helped me: a friend in need is a friend indeed.",
+          "examplePhonetic": "hi helpt mi: ı frend in nid iz ı frend indid",
+          "exampleTranslation": "Bana yardım etti: dost kara günde belli olur."
         }
       ]
     },
@@ -159,6 +295,11 @@
           "text": "I love my family.",
           "phonetic": "ay lav may femili",
           "translation": "Ailemi seviyorum."
+        },
+        {
+          "text": "My family is big.",
+          "phonetic": "may femili iz big",
+          "translation": "Ailem büyük."
         }
       ]
     },
@@ -171,6 +312,11 @@
           "text": "The man is tall.",
           "phonetic": "dı men iz tol",
           "translation": "Adam uzun boylu."
+        },
+        {
+          "text": "That man is my neighbour.",
+          "phonetic": "det men iz may neybır",
+          "translation": "O adam benim komşum."
         }
       ]
     },
@@ -183,6 +329,11 @@
           "text": "The woman reads a book.",
           "phonetic": "dı wumın ridz ı buk",
           "translation": "Kadın bir kitap okuyor."
+        },
+        {
+          "text": "The woman is a doctor.",
+          "phonetic": "dı wumın iz ı doktır",
+          "translation": "Kadın bir doktor."
         }
       ]
     },
@@ -195,6 +346,11 @@
           "text": "The child is playing.",
           "phonetic": "dı çayld iz pleying",
           "translation": "Çocuk oynuyor."
+        },
+        {
+          "text": "The child is sleeping.",
+          "phonetic": "dı çayld iz slipin",
+          "translation": "Çocuk uyuyor."
         }
       ]
     },
@@ -207,6 +363,21 @@
           "text": "What a nice day!",
           "phonetic": "wot ı nays dey",
           "translation": "Ne güzel bir gün!"
+        },
+        {
+          "text": "I work every day.",
+          "phonetic": "ay wörk evri dey",
+          "translation": "Her gün çalışırım."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "have a nice day",
+          "phonetic": "hev ı nays dey",
+          "translation": "iyi günler",
+          "exampleText": "Thank you, have a nice day!",
+          "examplePhonetic": "tenk yu, hev ı nays dey",
+          "exampleTranslation": "Teşekkürler, iyi günler!"
         }
       ]
     },
@@ -219,6 +390,21 @@
           "text": "Good night!",
           "phonetic": "gud nayt",
           "translation": "İyi geceler!"
+        },
+        {
+          "text": "It is dark at night.",
+          "phonetic": "it iz dark et nayt",
+          "translation": "Geceleyin hava karanlıktır."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "good night",
+          "phonetic": "gud nayt",
+          "translation": "iyi geceler",
+          "exampleText": "Good night, sleep well.",
+          "examplePhonetic": "gud nayt, slip wel",
+          "exampleTranslation": "İyi geceler, iyi uykular."
         }
       ]
     },
@@ -231,6 +417,11 @@
           "text": "Today is Monday.",
           "phonetic": "tıdey iz mandey",
           "translation": "Bugün pazartesi."
+        },
+        {
+          "text": "What are you doing today?",
+          "phonetic": "wot ar yu duin tıdey",
+          "translation": "Bugün ne yapıyorsun?"
         }
       ]
     },
@@ -243,6 +434,21 @@
           "text": "See you tomorrow.",
           "phonetic": "si yu tumoro",
           "translation": "Yarın görüşürüz."
+        },
+        {
+          "text": "Tomorrow I go to the market.",
+          "phonetic": "tumoro ay gou tu dı markit",
+          "translation": "Yarın pazara gidiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "tomorrow morning",
+          "phonetic": "tumoro mornin",
+          "translation": "yarın sabah",
+          "exampleText": "I leave tomorrow morning.",
+          "examplePhonetic": "ay liv tumoro mornin",
+          "exampleTranslation": "Yarın sabah yola çıkıyorum."
         }
       ]
     },
@@ -255,6 +461,29 @@
           "text": "This is good.",
           "phonetic": "dis iz gud",
           "translation": "Bu iyi."
+        },
+        {
+          "text": "He is a good teacher.",
+          "phonetic": "hi iz ı gud tiçır",
+          "translation": "O iyi bir öğretmen."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "good morning",
+          "phonetic": "gud mornin",
+          "translation": "günaydın",
+          "exampleText": "Good morning, everyone!",
+          "examplePhonetic": "gud mornin, evriwan",
+          "exampleTranslation": "Herkese günaydın!"
+        },
+        {
+          "text": "good luck",
+          "phonetic": "gud lak",
+          "translation": "bol şans",
+          "exampleText": "Good luck with your exam!",
+          "examplePhonetic": "gud lak wid yor igzem",
+          "exampleTranslation": "Sınavında bol şans!"
         }
       ]
     },
@@ -267,6 +496,11 @@
           "text": "A big city.",
           "phonetic": "ı big siti",
           "translation": "Büyük bir şehir."
+        },
+        {
+          "text": "My brother is very big.",
+          "phonetic": "may bradır iz veri big",
+          "translation": "Kardeşim çok iri."
         }
       ]
     },
@@ -279,6 +513,21 @@
           "text": "A small cat.",
           "phonetic": "ı smol ket",
           "translation": "Küçük bir kedi."
+        },
+        {
+          "text": "She has a small dog.",
+          "phonetic": "şi hez ı smol dog",
+          "translation": "Onun küçük bir köpeği var."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "small talk",
+          "phonetic": "smol tok",
+          "translation": "havadan sudan sohbet",
+          "exampleText": "We made small talk about the weather.",
+          "examplePhonetic": "wi meyd smol tok ıbaut dı wedır",
+          "exampleTranslation": "Hava durumu hakkında havadan sudan konuştuk."
         }
       ]
     },
@@ -291,6 +540,21 @@
           "text": "A new book.",
           "phonetic": "ı nyu buk",
           "translation": "Yeni bir kitap."
+        },
+        {
+          "text": "I have a new friend.",
+          "phonetic": "ay hev ı nyu frend",
+          "translation": "Yeni bir arkadaşım var."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "brand new",
+          "phonetic": "brend nyu",
+          "translation": "sıfır; yepyeni",
+          "exampleText": "I have a brand new phone.",
+          "examplePhonetic": "ay hev ı brend nyu foun",
+          "exampleTranslation": "Sıfır bir telefonum var."
         }
       ]
     },
@@ -303,6 +567,11 @@
           "text": "A beautiful day.",
           "phonetic": "ı byutifıl dey",
           "translation": "Güzel bir gün."
+        },
+        {
+          "text": "What a beautiful garden!",
+          "phonetic": "wot ı byutifıl gardın",
+          "translation": "Ne güzel bir bahçe!"
         }
       ]
     },
@@ -315,6 +584,21 @@
           "text": "I am a student.",
           "phonetic": "ay em ı styudınt",
           "translation": "Ben bir öğrenciyim."
+        },
+        {
+          "text": "We are at home.",
+          "phonetic": "wi ar et houm",
+          "translation": "Evdeyiz."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "be careful",
+          "phonetic": "bi kerfıl",
+          "translation": "dikkatli ol",
+          "exampleText": "Be careful on the road.",
+          "examplePhonetic": "bi kerfıl on dı roud",
+          "exampleTranslation": "Yolda dikkatli ol."
         }
       ]
     },
@@ -327,6 +611,29 @@
           "text": "I have a brother.",
           "phonetic": "ay hev ı bradır",
           "translation": "Bir erkek kardeşim var."
+        },
+        {
+          "text": "She has a car.",
+          "phonetic": "şi hez ı kar",
+          "translation": "Onun bir arabası var."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "have lunch",
+          "phonetic": "hev lanç",
+          "translation": "öğle yemeği yemek",
+          "exampleText": "We have lunch at one.",
+          "examplePhonetic": "wi hev lanç et wan",
+          "exampleTranslation": "Saat birde öğle yemeği yeriz."
+        },
+        {
+          "text": "have fun",
+          "phonetic": "hev fan",
+          "translation": "iyi eğlenceler",
+          "exampleText": "Have fun at the party!",
+          "examplePhonetic": "hev fan et dı parti",
+          "exampleTranslation": "Partide iyi eğlenceler!"
         }
       ]
     },
@@ -339,6 +646,29 @@
           "text": "I go to school.",
           "phonetic": "ay gou tu skul",
           "translation": "Okula gidiyorum."
+        },
+        {
+          "text": "We go to the cinema.",
+          "phonetic": "wi gou tu dı sinımı",
+          "translation": "Sinemaya gidiyoruz."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "go ahead",
+          "phonetic": "gou ıhed",
+          "translation": "buyurun; devam et",
+          "exampleText": "May I sit here? Go ahead.",
+          "examplePhonetic": "mey ay sit hir? gou ıhed",
+          "exampleTranslation": "Buraya oturabilir miyim? Buyurun."
+        },
+        {
+          "text": "go for a walk",
+          "phonetic": "gou for ı wok",
+          "translation": "yürüyüşe çıkmak",
+          "exampleText": "Let's go for a walk.",
+          "examplePhonetic": "lets gou for ı wok",
+          "exampleTranslation": "Yürüyüşe çıkalım."
         }
       ]
     },
@@ -351,6 +681,21 @@
           "text": "They eat lunch.",
           "phonetic": "dey it lanç",
           "translation": "Öğle yemeği yiyorlar."
+        },
+        {
+          "text": "I eat an apple.",
+          "phonetic": "ay it ın epıl",
+          "translation": "Bir elma yiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "eat out",
+          "phonetic": "it aut",
+          "translation": "dışarıda yemek yemek",
+          "exampleText": "We eat out on Fridays.",
+          "examplePhonetic": "wi it aut on fraydeyz",
+          "exampleTranslation": "Cuma günleri dışarıda yeriz."
         }
       ]
     },
@@ -363,6 +708,21 @@
           "text": "He drinks coffee.",
           "phonetic": "hi drinks kofi",
           "translation": "O kahve içiyor."
+        },
+        {
+          "text": "I drink tea.",
+          "phonetic": "ay drink ti",
+          "translation": "Çay içiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "have a drink",
+          "phonetic": "hev ı drink",
+          "translation": "bir şeyler içmek",
+          "exampleText": "Shall we have a drink?",
+          "examplePhonetic": "şel wi hev ı drink",
+          "exampleTranslation": "Bir şeyler içelim mi?"
         }
       ]
     },
@@ -375,6 +735,11 @@
           "text": "I want water.",
           "phonetic": "ay wont wotır",
           "translation": "Su istiyorum."
+        },
+        {
+          "text": "She wants a coffee.",
+          "phonetic": "şi wonts ı kofi",
+          "translation": "O bir kahve istiyor."
         }
       ]
     },
@@ -387,6 +752,21 @@
           "text": "Do you speak English?",
           "phonetic": "du yu spik ingliş",
           "translation": "İngilizce konuşuyor musun?"
+        },
+        {
+          "text": "He speaks very fast.",
+          "phonetic": "hi spiks veri fest",
+          "translation": "Çok hızlı konuşuyor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "speak up",
+          "phonetic": "spik ap",
+          "translation": "yüksek sesle konuşmak",
+          "exampleText": "Please speak up, I can't hear you.",
+          "examplePhonetic": "pliz spik ap, ay kent hir yu",
+          "exampleTranslation": "Lütfen yüksek sesle konuş, seni duyamıyorum."
         }
       ]
     },
@@ -399,6 +779,11 @@
           "text": "What is your name?",
           "phonetic": "wot iz yor neym",
           "translation": "Adın ne?"
+        },
+        {
+          "text": "My name is Tom.",
+          "phonetic": "may neym iz tom",
+          "translation": "Adım Tom."
         }
       ]
     },
@@ -411,6 +796,11 @@
           "text": "I live in a city.",
           "phonetic": "ay liv in ı siti",
           "translation": "Bir şehirde yaşıyorum."
+        },
+        {
+          "text": "London is a big city.",
+          "phonetic": "landın iz ı big siti",
+          "translation": "Londra büyük bir şehir."
         }
       ]
     },
@@ -423,6 +813,21 @@
           "text": "An interesting book.",
           "phonetic": "ın intristing buk",
           "translation": "İlginç bir kitap."
+        },
+        {
+          "text": "I read a book.",
+          "phonetic": "ay rid ı buk",
+          "translation": "Bir kitap okuyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "by the book",
+          "phonetic": "bay dı buk",
+          "translation": "kurallara göre",
+          "exampleText": "He does everything by the book.",
+          "examplePhonetic": "hi daz evrithing bay dı buk",
+          "exampleTranslation": "Her şeyi kurallara uygun yapar."
         }
       ]
     },
@@ -435,6 +840,21 @@
           "text": "The school is closed.",
           "phonetic": "dı skul iz klouzd",
           "translation": "Okul kapalı."
+        },
+        {
+          "text": "The children go to school.",
+          "phonetic": "dı çildrın gou tu skul",
+          "translation": "Çocuklar okula gidiyor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "after school",
+          "phonetic": "efter skul",
+          "translation": "okuldan sonra",
+          "exampleText": "I play football after school.",
+          "examplePhonetic": "ay pley futbol efter skul",
+          "exampleTranslation": "Okuldan sonra futbol oynarım."
         }
       ]
     },
@@ -447,6 +867,29 @@
           "text": "I go to work.",
           "phonetic": "ay gou tu wörk",
           "translation": "İşe gidiyorum."
+        },
+        {
+          "text": "My work is difficult.",
+          "phonetic": "may wörk iz difikılt",
+          "translation": "İşim zor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "at work",
+          "phonetic": "et wörk",
+          "translation": "işte",
+          "exampleText": "I am at work now.",
+          "examplePhonetic": "ay em et wörk nau",
+          "exampleTranslation": "Şu an işteyim."
+        },
+        {
+          "text": "work out",
+          "phonetic": "wörk aut",
+          "translation": "spor yapmak; çözmek",
+          "exampleText": "I work out three times a week.",
+          "examplePhonetic": "ay wörk aut tri taymz ı wik",
+          "exampleTranslation": "Haftada üç kez spor yaparım."
         }
       ]
     },
@@ -459,6 +902,21 @@
           "text": "One, two, three.",
           "phonetic": "wan, tu, tri",
           "translation": "Bir, iki, üç."
+        },
+        {
+          "text": "I have one cat.",
+          "phonetic": "ay hev wan ket",
+          "translation": "Bir kedim var."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "one by one",
+          "phonetic": "wan bay wan",
+          "translation": "teker teker",
+          "exampleText": "Please come in one by one.",
+          "examplePhonetic": "pliz kam in wan bay wan",
+          "exampleTranslation": "Lütfen teker teker girin."
         }
       ]
     },
@@ -471,6 +929,11 @@
           "text": "I have two sisters.",
           "phonetic": "ay hev tu sistırz",
           "translation": "İki kız kardeşim var."
+        },
+        {
+          "text": "Two coffees, please.",
+          "phonetic": "tu kofiz, pliz",
+          "translation": "İki kahve, lütfen."
         }
       ]
     },
@@ -483,6 +946,11 @@
           "text": "There are three cats.",
           "phonetic": "der ar tri kets",
           "translation": "Üç kedi var."
+        },
+        {
+          "text": "It is three o'clock.",
+          "phonetic": "it iz tri ıklok",
+          "translation": "Saat üç."
         }
       ]
     }

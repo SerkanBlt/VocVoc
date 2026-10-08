@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.5.0">
+  <meta name="vocvoc-shell" content="1.6.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -50,6 +50,8 @@
     .example-item,.expression-item { background:var(--bg); border-left:3px solid var(--primary); padding:10px 14px; border-radius:0 6px 6px 0; margin-bottom:10px; }
     .fr-text { font-weight:600; }
     .phonetic-text { color:var(--phonetic); margin:2px 0 4px; font-weight:500; }
+    .expression-head { margin:0 0 8px; }
+    .expression-pill { display:inline-block; max-width:100%; padding:5px 14px; border:1px solid var(--border); border-radius:999px; background:var(--card-bg); color:var(--text); font-weight:700; line-height:1.35; overflow-wrap:anywhere; }
     .tr-text { color:var(--text-muted); font-size:.95rem; }
     .modal-overlay { position:fixed; inset:0; display:none; justify-content:center; align-items:center; z-index:1000; }
     .modal { background:white; padding:24px; border-radius:12px; width:90%; max-width:450px; }
@@ -4048,9 +4050,10 @@ async function fetchFromGeminiREST(word,apiKey,requestId=++mainRequestId){
   const native=languageNameForPrompt(getNativeLanguageCode());
   const promptText=`You are a ${target} language teacher. Analyze the ${target} word "${word}" for a ${difficulty} learner.
 Write meanings, explanations and translations in ${native}. The headword must be in dictionary form without an article/determiner. Put grammatical gender, part of speech and other grammar in "type".
+${examplesRule(native)}
 For "phonetic" fields, give a practical pronunciation guide useful to a native ${native} speaker.
 Return ONLY valid JSON:
-{"word":"dictionary headword","type":"part of speech and grammatical properties","meaning":"detailed meaning in ${native}","synonyms":["${target} synonym"],"antonyms":["${target} antonym"],"examples":[{"text":"${target} sentence","phonetic":"pronunciation guide for a ${native} speaker","translation":"${native} translation"}],"expressions":[{"text":"${target} idiom or phrase","phonetic":"pronunciation guide","translation":"meaning in ${native}","exampleText":"${target} example sentence","examplePhonetic":"pronunciation guide","exampleTranslation":"${native} translation"}]}`;
+{"word":"dictionary headword","type":"part of speech and grammatical properties","meaning":"detailed meaning in ${native}","synonyms":["${target} synonym"],"antonyms":["${target} antonym"],"examples":[{"text":"${target} sentence","phonetic":"pronunciation guide for a ${native} speaker","translation":"${native} translation"},{"text":"another ${target} sentence","phonetic":"pronunciation guide","translation":"${native} translation"}],"expressions":[{"text":"${target} idiom or phrase","phonetic":"pronunciation guide","translation":"meaning in ${native}","exampleText":"${target} sentence that uses it","examplePhonetic":"pronunciation guide","exampleTranslation":"${native} translation"}]}`;
 
   try{
     const parsedData=await callGeminiJSON(promptText,{apiKey,epoch,validate:validateWordPayload,schema:GEMINI_SCHEMAS.word});
@@ -4095,6 +4098,8 @@ function validateWordPayload(data,{meaning=true}={}){
     examples:(data.examples||[]).filter(x=>x&&typeof x==="object"),
     expressions:(data.expressions||[]).filter(x=>x&&typeof x==="object")};
 }
+// What a card must contain, said the same way in every prompt.
+const examplesRule=native=>`Give EXACTLY two example sentences in "examples", each with its own pronunciation guide and translation. In "expressions" give up to two common idioms or fixed phrases that use the word (an empty array when there is no natural one): "text" is the idiom or phrase itself, and each one needs an example sentence that uses it (exampleText, examplePhonetic and exampleTranslation in ${native}).`;
 const GEMINI_ENDPOINT="https://generativelanguage.googleapis.com/v1beta/models/";
 // Printable ASCII without spaces: anything else can never be a valid key, and would make fetch throw while reading the header.
 const GEMINI_KEY_SHAPE=/^[\x21-\x7e]+$/;
@@ -4103,8 +4108,8 @@ const geminiSchemaRefused=new Set(); // models that rejected a structured-output
 const GEMINI_TEXT={type:"STRING"},GEMINI_TEXTS={type:"ARRAY",items:GEMINI_TEXT};
 const GEMINI_WORD_SCHEMA={type:"OBJECT",required:["word","meaning"],properties:{
   word:GEMINI_TEXT,type:GEMINI_TEXT,meaning:GEMINI_TEXT,synonyms:GEMINI_TEXTS,antonyms:GEMINI_TEXTS,
-  examples:{type:"ARRAY",items:{type:"OBJECT",required:["text","translation"],properties:{text:GEMINI_TEXT,phonetic:GEMINI_TEXT,translation:GEMINI_TEXT}}},
-  expressions:{type:"ARRAY",items:{type:"OBJECT",required:["text","translation"],properties:{text:GEMINI_TEXT,phonetic:GEMINI_TEXT,translation:GEMINI_TEXT,exampleText:GEMINI_TEXT,examplePhonetic:GEMINI_TEXT,exampleTranslation:GEMINI_TEXT}}}}};
+  examples:{type:"ARRAY",minItems:2,maxItems:2,items:{type:"OBJECT",required:["text","translation"],properties:{text:GEMINI_TEXT,phonetic:GEMINI_TEXT,translation:GEMINI_TEXT}}},
+  expressions:{type:"ARRAY",maxItems:2,items:{type:"OBJECT",required:["text","exampleText","exampleTranslation"],properties:{text:GEMINI_TEXT,phonetic:GEMINI_TEXT,translation:GEMINI_TEXT,exampleText:GEMINI_TEXT,examplePhonetic:GEMINI_TEXT,exampleTranslation:GEMINI_TEXT}}}}};
 const GEMINI_SCHEMAS={
   word:GEMINI_WORD_SCHEMA,
   words:{type:"OBJECT",required:["words"],properties:{words:{type:"ARRAY",items:GEMINI_WORD_SCHEMA}}},
@@ -4252,10 +4257,10 @@ async function addDailyWords(){
         `You are a ${targetLanguage} language teacher. Generate EXACTLY ${missing} different NEW useful ${targetLanguage} words for a ${level} learner. `+
         `NEVER use any word in this blocked list: ${forbidden || "(none)"}. Do not repeat equivalent headwords. `+
         `The "word" field must contain only the dictionary headword, without articles/determiners. Put part of speech, grammatical gender and other grammar in "type". `+
-        `All meanings and translations must be in ${nativeLanguage}. Pronunciation guides must be practical for a native ${nativeLanguage} speaker. Return ONLY JSON: `+
+        `All meanings and translations must be in ${nativeLanguage}. Pronunciation guides must be practical for a native ${nativeLanguage} speaker. ${examplesRule(nativeLanguage)} Return ONLY JSON: `+
         `{"words":[{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${nativeLanguage}","synonyms":["${targetLanguage} synonym"],"antonyms":["${targetLanguage} antonym"],`+
-        `"examples":[{"text":"${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"}],`+
-        `"expressions":[{"text":"${targetLanguage} phrase","phonetic":"pronunciation","translation":"meaning in ${nativeLanguage}","exampleText":"${targetLanguage} example","examplePhonetic":"pronunciation","exampleTranslation":"${nativeLanguage} translation"}]}]}`,
+        `"examples":[{"text":"${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"},{"text":"another ${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"}],`+
+        `"expressions":[{"text":"${targetLanguage} phrase","phonetic":"pronunciation","translation":"meaning in ${nativeLanguage}","exampleText":"${targetLanguage} sentence that uses it","examplePhonetic":"pronunciation","exampleTranslation":"${nativeLanguage} translation"}]}]}`,
         {epoch,deadline,schema:GEMINI_SCHEMAS.words,validate:value=>{if(!Array.isArray(value.words))throw new Error(t("invalidGeminiResponse"));
           return {words:value.words.map(data=>validateWordPayload(data))};}}
       );
@@ -4959,8 +4964,8 @@ async function getWordDataForPopup(word,epoch=appDataEpoch){
   const difficulty=VocVocData.getSettings().difficulty||'A1-A2';
   const target=languageNameForPrompt(getTargetLanguageCode());
   const native=languageNameForPrompt(getNativeLanguageCode());
-  const r=await callGeminiJSON(`You are a ${target} language teacher. Create a complete ${difficulty} vocabulary card for "${word}". Explanations and translations must be in ${native}. The "word" must be the dictionary headword without an article/determiner. Grammar and gender belong in "type". Pronunciation guidance should be useful to a native ${native} speaker. Return only JSON:
-{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${native}","synonyms":["${target} synonym"],"antonyms":["${target} antonym"],"examples":[{"text":"${target} sentence","phonetic":"pronunciation","translation":"${native} translation"}],"expressions":[{"text":"${target} phrase","phonetic":"pronunciation","translation":"meaning in ${native}","exampleText":"${target} example","examplePhonetic":"pronunciation","exampleTranslation":"${native} translation"}]}`,{epoch,schema:GEMINI_SCHEMAS.word,validate:validateWordPayload});
+  const r=await callGeminiJSON(`You are a ${target} language teacher. Create a complete ${difficulty} vocabulary card for "${word}". Explanations and translations must be in ${native}. The "word" must be the dictionary headword without an article/determiner. Grammar and gender belong in "type". Pronunciation guidance should be useful to a native ${native} speaker. ${examplesRule(native)} Return only JSON:
+{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${native}","synonyms":["${target} synonym"],"antonyms":["${target} antonym"],"examples":[{"text":"${target} sentence","phonetic":"pronunciation","translation":"${native} translation"},{"text":"another ${target} sentence","phonetic":"pronunciation","translation":"${native} translation"}],"expressions":[{"text":"${target} phrase","phonetic":"pronunciation","translation":"meaning in ${native}","exampleText":"${target} sentence that uses it","examplePhonetic":"pronunciation","exampleTranslation":"${native} translation"}]}`,{epoch,schema:GEMINI_SCHEMAS.word,validate:validateWordPayload});
   assertRequestContext(epoch);
   if(!r?.word)throw new Error(t("detailsLoadError"));
   r.word=normalizeGeneratedHeadword(r.word);
@@ -5124,7 +5129,9 @@ function renderWordDetailBody(data,{showHeader=true}={}){
     ${data.synonyms?.length?`<details class="fold"><summary>${t("synonyms")}</summary><div class="fold-body badge-list">${badgeButtons(data.synonyms)}</div></details>`:""}
     ${data.antonyms?.length?`<details class="fold"><summary>${t("antonyms")}</summary><div class="fold-body badge-list">${badgeButtons(data.antonyms)}</div></details>`:""}
     ${examples.length?`<details class="fold"><summary>${t("examples")}</summary><div class="fold-body">${examples.map(ex=>`<div class="example-item"><div class="fr-text"${langAttr()}>${esc(ex.text)}</div>${ex.phonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(ex.phonetic)}</div>`:""}<div class="tr-text">${esc(ex.translation)}</div></div>`).join("")}</div></details>`:""}
-    ${expressions.length?`<details class="fold"><summary>${t("expressions")}</summary><div class="fold-body">${expressions.map(exp=>`<div class="expression-item"><div class="fr-text"${langAttr()}>${esc(exp.text)}</div>${exp.phonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(exp.phonetic)}</div>`:""}<div class="tr-text">${esc(exp.translation)}</div>${exp.exampleText?`<div class="expression-example"><div class="fr-text"${langAttr()}>${esc(exp.exampleText)}</div>${exp.examplePhonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(exp.examplePhonetic)}</div>`:""}<div class="tr-text">${esc(exp.exampleTranslation)}</div></div>`:""}</div>`).join("")}</div></details>`:""}
+    ${expressions.length?`<details class="fold"><summary>${t("expressions")}</summary><div class="fold-body">${expressions.map(exp=>`<div class="expression-item"><div class="fr-text expression-head"${langAttr()}><span class="expression-pill">${esc(exp.text)}</span></div>${exp.exampleText
+      ?`<div class="expression-example"><div class="fr-text"${langAttr()}>${esc(exp.exampleText)}</div>${exp.examplePhonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(exp.examplePhonetic)}</div>`:""}<div class="tr-text">${esc(exp.exampleTranslation)}</div></div>`
+      :`${exp.phonetic?`<div class="phonetic-text">${t("pronunciation")}: ${esc(exp.phonetic)}</div>`:""}<div class="tr-text">${esc(exp.translation)}</div>`}</div>`).join("")}</div></details>`:""}
   `;
 }
 

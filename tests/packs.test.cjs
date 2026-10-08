@@ -92,12 +92,30 @@ describe('The packs that ship with the app',()=>{
       assert.equal(name,`${pack.id}.json`);assert.equal(pack.native,'tr');assert.equal(pack.level,'A1-A2');assert.equal(pack.words.length,40);
     }
   });
-  it('every word has a Turkish meaning, a type, and an example with its respelling and translation',()=>{
+  it('every word has a Turkish meaning, a type and EXACTLY two examples, each with its respelling and translation',()=>{
     for(const name of files)for(const entry of load(name).words){
       assert(entry.type&&entry.meaning,`${name}: ${entry.word}`);
-      assert.equal(entry.examples.length,1);
-      const [example]=entry.examples;assert(example.text&&example.phonetic&&example.translation,`${name}: ${entry.word}`);
+      assert.equal(entry.examples.length,2,`${name}: ${entry.word}`);
+      for(const example of entry.examples)assert(example.text&&example.phonetic&&example.translation,`${name}: ${entry.word}`);
+      assert.notEqual(entry.examples[0].text,entry.examples[1].text,`${name}: ${entry.word} repeats its example`);
     }
+  });
+  it('idioms and phrases (at most two a word, where a natural one exists) each come with the sentence that uses them; the word itself is part of neither list twice',()=>{
+    let count=0;
+    for(const name of files)for(const entry of load(name).words){
+      const list=entry.expressions||[];assert(list.length<=2,`${name}: ${entry.word}`);
+      for(const item of list){
+        count++;
+        assert(item.text&&item.translation&&item.exampleText&&item.examplePhonetic&&item.exampleTranslation,`${name}: ${entry.word} / ${item.text}`);
+        const words=item.text.toLowerCase().replace(/[?!.,¿¡]/g,'').split(/\s+/).filter(word=>word.length>=2);     // verbs are inflected in the sentence: one word of the idiom is enough
+        assert(words.some(word=>item.exampleText.toLowerCase().includes(word)),`${name}: the sentence of "${item.text}" does not use it`);
+      }
+    }
+    assert(count>=100,'a good share of the words has idioms: '+count);
+  });
+  it('a pack word with expressions still validates when an expression lacks its sentence translation (the checker names it)',()=>{
+    const bad=sample({words:[{word:'x',meaning:'y',expressions:[{text:'t',translation:'m',exampleText:'e'}]}]});
+    assert(Packs.validatePack(bad).some(message=>/exampleTranslation/.test(message)));
   });
   it('the same 40 ideas come in the same order in every language (so progress means the same everywhere)',()=>{
     const meanings=files.map(name=>load(name).words.map(entry=>entry.meaning));

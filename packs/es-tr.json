@@ -4,7 +4,7 @@
   "target": "es",
   "native": "tr",
   "level": "A1-A2",
-  "version": 1,
+  "version": 2,
   "words": [
     {
       "word": "hola",
@@ -15,6 +15,11 @@
           "text": "Hola, ¿cómo estás?",
           "phonetic": "ola, komo estas",
           "translation": "Merhaba, nasılsın?"
+        },
+        {
+          "text": "Hola, me llamo Ana.",
+          "phonetic": "ola, me yamo ana",
+          "translation": "Merhaba, adım Ana."
         }
       ]
     },
@@ -27,6 +32,21 @@
           "text": "Adiós, hasta mañana.",
           "phonetic": "adyos, asta manyana",
           "translation": "Hoşça kal, yarın görüşürüz."
+        },
+        {
+          "text": "Adiós y gracias.",
+          "phonetic": "adyos i grasyas",
+          "translation": "Hoşça kal ve teşekkürler."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "hasta luego",
+          "phonetic": "asta luego",
+          "translation": "sonra görüşürüz",
+          "exampleText": "Tengo que irme. ¡Hasta luego!",
+          "examplePhonetic": "tengo ke irme. asta luego",
+          "exampleTranslation": "Gitmem lazım. Sonra görüşürüz!"
         }
       ]
     },
@@ -39,6 +59,11 @@
           "text": "Un café, por favor.",
           "phonetic": "un kafe, por fabor",
           "translation": "Bir kahve, lütfen."
+        },
+        {
+          "text": "Siéntese, por favor.",
+          "phonetic": "syentese, por fabor",
+          "translation": "Lütfen oturun."
         }
       ]
     },
@@ -51,6 +76,21 @@
           "text": "Muchas gracias.",
           "phonetic": "muçaz grasyas",
           "translation": "Çok teşekkürler."
+        },
+        {
+          "text": "Gracias por tu ayuda.",
+          "phonetic": "grasyas por tu ayuda",
+          "translation": "Yardımın için teşekkürler."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "no, gracias",
+          "phonetic": "no, grasyas",
+          "translation": "hayır, teşekkürler",
+          "exampleText": "¿Más té? No, gracias.",
+          "examplePhonetic": "mas te? no, grasyas",
+          "exampleTranslation": "Biraz daha çay? Hayır, teşekkürler."
         }
       ]
     },
@@ -63,6 +103,11 @@
           "text": "Sí, claro.",
           "phonetic": "si, klaro",
           "translation": "Evet, tabii."
+        },
+        {
+          "text": "Sí, lo entiendo.",
+          "phonetic": "si, lo entyendo",
+          "translation": "Evet, anlıyorum."
         }
       ]
     },
@@ -75,6 +120,11 @@
           "text": "No, gracias.",
           "phonetic": "no, grasyas",
           "translation": "Hayır, teşekkürler."
+        },
+        {
+          "text": "No, no lo sé.",
+          "phonetic": "no, no lo se",
+          "translation": "Hayır, bilmiyorum."
         }
       ]
     },
@@ -87,6 +137,21 @@
           "text": "Perdón, ¿dónde está la estación?",
           "phonetic": "perdon, donde esta la estasyon",
           "translation": "Pardon, istasyon nerede?"
+        },
+        {
+          "text": "Perdón, llego tarde.",
+          "phonetic": "perdon, yego tarde",
+          "translation": "Özür dilerim, geç kaldım."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "con permiso",
+          "phonetic": "kon permiso",
+          "translation": "izin verir misiniz",
+          "exampleText": "Con permiso, ¿puedo pasar?",
+          "examplePhonetic": "kon permiso, puedo pasar",
+          "exampleTranslation": "İzin verir misiniz, geçebilir miyim?"
         }
       ]
     },
@@ -99,6 +164,21 @@
           "text": "Bebo agua.",
           "phonetic": "bebo agua",
           "translation": "Su içiyorum."
+        },
+        {
+          "text": "El agua está fría.",
+          "phonetic": "el agua esta fria",
+          "translation": "Su soğuk."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "un vaso de agua",
+          "phonetic": "un baso de agua",
+          "translation": "bir bardak su",
+          "exampleText": "Un vaso de agua, por favor.",
+          "examplePhonetic": "un baso de agua, por fabor",
+          "exampleTranslation": "Bir bardak su, lütfen."
         }
       ]
     },
@@ -111,6 +191,29 @@
           "text": "Comemos pan.",
           "phonetic": "komemos pan",
           "translation": "Ekmek yiyoruz."
+        },
+        {
+          "text": "El pan está fresco.",
+          "phonetic": "el pan esta fresko",
+          "translation": "Ekmek taze."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "ganarse el pan",
+          "phonetic": "ganarse el pan",
+          "translation": "geçimini sağlamak",
+          "exampleText": "Se gana el pan como cocinero.",
+          "examplePhonetic": "se gana el pan komo koçinero",
+          "exampleTranslation": "Aşçı olarak geçimini sağlıyor."
+        },
+        {
+          "text": "pan comido",
+          "phonetic": "pan komido",
+          "translation": "çocuk oyuncağı",
+          "exampleText": "El examen fue pan comido.",
+          "examplePhonetic": "el eksamen fue pan komido",
+          "exampleTranslation": "Sınav çocuk oyuncağıydı."
         }
       ]
     },
@@ -123,6 +226,21 @@
           "text": "Quiero un café.",
           "phonetic": "kyero un kafe",
           "translation": "Bir kahve istiyorum."
+        },
+        {
+          "text": "El café está caliente.",
+          "phonetic": "el kafe esta kalyente",
+          "translation": "Kahve sıcak."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "tomar un café",
+          "phonetic": "tomar un kafe",
+          "translation": "bir kahve içmek",
+          "exampleText": "¿Tomamos un café?",
+          "examplePhonetic": "tomamos un kafe",
+          "exampleTranslation": "Bir kahve içelim mi?"
         }
       ]
     },
@@ -135,6 +253,29 @@
           "text": "La casa es grande.",
           "phonetic": "la kasa es grande",
           "translation": "Ev büyük."
+        },
+        {
+          "text": "Mi casa está cerca de la estación.",
+          "phonetic": "mi kasa esta serka de la estasyon",
+          "translation": "Evim istasyonun yakınında."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "en casa",
+          "phonetic": "en kasa",
+          "translation": "evde",
+          "exampleText": "Hoy me quedo en casa.",
+          "examplePhonetic": "oy me kedo en kasa",
+          "exampleTranslation": "Bugün evde kalıyorum."
+        },
+        {
+          "text": "como en casa",
+          "phonetic": "komo en kasa",
+          "translation": "evindeymiş gibi",
+          "exampleText": "Aquí me siento como en casa.",
+          "examplePhonetic": "aki me syento komo en kasa",
+          "exampleTranslation": "Burada kendimi evimde gibi hissediyorum."
         }
       ]
     },
@@ -147,6 +288,21 @@
           "text": "Es mi amigo.",
           "phonetic": "es mi amigo",
           "translation": "O benim arkadaşım."
+        },
+        {
+          "text": "Mi amigo vive en Madrid.",
+          "phonetic": "mi amigo bibe en madrid",
+          "translation": "Arkadaşım Madrid'de yaşıyor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "mejor amigo",
+          "phonetic": "meor amigo",
+          "translation": "en iyi arkadaş",
+          "exampleText": "Pablo es mi mejor amigo.",
+          "examplePhonetic": "pablo es mi meor amigo",
+          "exampleTranslation": "Pablo benim en iyi arkadaşım."
         }
       ]
     },
@@ -159,6 +315,11 @@
           "text": "Quiero a mi familia.",
           "phonetic": "kyero a mi familya",
           "translation": "Ailemi seviyorum."
+        },
+        {
+          "text": "Mi familia es grande.",
+          "phonetic": "mi familya es grande",
+          "translation": "Ailem büyük."
         }
       ]
     },
@@ -171,6 +332,11 @@
           "text": "El hombre habla.",
           "phonetic": "el ombre abla",
           "translation": "Adam konuşuyor."
+        },
+        {
+          "text": "El hombre es mi vecino.",
+          "phonetic": "el ombre es mi besino",
+          "translation": "Adam benim komşum."
         }
       ]
     },
@@ -183,6 +349,11 @@
           "text": "La mujer lee un libro.",
           "phonetic": "la muher lee un libro",
           "translation": "Kadın bir kitap okuyor."
+        },
+        {
+          "text": "La mujer es médica.",
+          "phonetic": "la muher es medika",
+          "translation": "Kadın doktor."
         }
       ]
     },
@@ -195,6 +366,11 @@
           "text": "El niño juega.",
           "phonetic": "el ninyo huega",
           "translation": "Çocuk oynuyor."
+        },
+        {
+          "text": "El niño duerme.",
+          "phonetic": "el ninyo duerme",
+          "translation": "Çocuk uyuyor."
         }
       ]
     },
@@ -207,6 +383,29 @@
           "text": "¡Qué buen día!",
           "phonetic": "ke buen dia",
           "translation": "Ne güzel bir gün!"
+        },
+        {
+          "text": "Trabajo todos los días.",
+          "phonetic": "trabaho todos los dias",
+          "translation": "Her gün çalışıyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "buenos días",
+          "phonetic": "buenos dias",
+          "translation": "günaydın",
+          "exampleText": "Buenos días, ¿cómo estás?",
+          "examplePhonetic": "buenos dias, komo estas",
+          "exampleTranslation": "Günaydın, nasılsın?"
+        },
+        {
+          "text": "hoy en día",
+          "phonetic": "oy en dia",
+          "translation": "günümüzde",
+          "exampleText": "Hoy en día todo es rápido.",
+          "examplePhonetic": "oy en dia todo es rapido",
+          "exampleTranslation": "Günümüzde her şey hızlı."
         }
       ]
     },
@@ -219,6 +418,11 @@
           "text": "¡Buenas noches!",
           "phonetic": "buenas noçes",
           "translation": "İyi geceler!"
+        },
+        {
+          "text": "De noche está oscuro.",
+          "phonetic": "de noçe esta oskuro",
+          "translation": "Geceleyin karanlıktır."
         }
       ]
     },
@@ -231,6 +435,11 @@
           "text": "Hoy hace calor.",
           "phonetic": "oy ase kalor",
           "translation": "Bugün hava sıcak."
+        },
+        {
+          "text": "¿Qué haces hoy?",
+          "phonetic": "ke ases oy",
+          "translation": "Bugün ne yapıyorsun?"
         }
       ]
     },
@@ -243,6 +452,21 @@
           "text": "Hasta mañana.",
           "phonetic": "asta manyana",
           "translation": "Yarın görüşürüz."
+        },
+        {
+          "text": "Mañana voy al mercado.",
+          "phonetic": "manyana boy al merkado",
+          "translation": "Yarın pazara gidiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "por la mañana",
+          "phonetic": "por la manyana",
+          "translation": "sabahleyin",
+          "exampleText": "Estudio por la mañana.",
+          "examplePhonetic": "estudio por la manyana",
+          "exampleTranslation": "Sabahları ders çalışırım."
         }
       ]
     },
@@ -255,6 +479,21 @@
           "text": "Esto es bueno.",
           "phonetic": "esto es bueno",
           "translation": "Bu iyi."
+        },
+        {
+          "text": "Es un buen profesor.",
+          "phonetic": "es un buen profesor",
+          "translation": "O iyi bir öğretmen."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "buen provecho",
+          "phonetic": "buen probeço",
+          "translation": "afiyet olsun",
+          "exampleText": "¡Buen provecho a todos!",
+          "examplePhonetic": "buen probeço a todos",
+          "exampleTranslation": "Herkese afiyet olsun!"
         }
       ]
     },
@@ -267,6 +506,11 @@
           "text": "Una ciudad grande.",
           "phonetic": "una siudad grande",
           "translation": "Büyük bir şehir."
+        },
+        {
+          "text": "Mi hermano es muy grande.",
+          "phonetic": "mi ermano es muy grande",
+          "translation": "Kardeşim çok iri."
         }
       ]
     },
@@ -279,6 +523,11 @@
           "text": "Un gato pequeño.",
           "phonetic": "un gato pekenyo",
           "translation": "Küçük bir kedi."
+        },
+        {
+          "text": "Ella tiene un perro pequeño.",
+          "phonetic": "eya tyene un pero pekenyo",
+          "translation": "Onun küçük bir köpeği var."
         }
       ]
     },
@@ -291,6 +540,21 @@
           "text": "Un libro nuevo.",
           "phonetic": "un libro nuevo",
           "translation": "Yeni bir kitap."
+        },
+        {
+          "text": "Tengo un amigo nuevo.",
+          "phonetic": "tengo un amigo nuevo",
+          "translation": "Yeni bir arkadaşım var."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "¿Qué hay de nuevo?",
+          "phonetic": "ke ay de nuebo",
+          "translation": "Ne var ne yok?",
+          "exampleText": "Hola, ¿qué hay de nuevo?",
+          "examplePhonetic": "ola, ke ay de nuebo",
+          "exampleTranslation": "Merhaba, ne var ne yok?"
         }
       ]
     },
@@ -303,6 +567,11 @@
           "text": "Un día bonito.",
           "phonetic": "un dia bonito",
           "translation": "Güzel bir gün."
+        },
+        {
+          "text": "¡Qué jardín tan bonito!",
+          "phonetic": "ke hardin tan bonito",
+          "translation": "Ne güzel bir bahçe!"
         }
       ]
     },
@@ -315,6 +584,11 @@
           "text": "Soy estudiante.",
           "phonetic": "soy estudyante",
           "translation": "Ben öğrenciyim."
+        },
+        {
+          "text": "Somos de Turquía.",
+          "phonetic": "somos de turkia",
+          "translation": "Türkiye'liyiz."
         }
       ]
     },
@@ -327,6 +601,29 @@
           "text": "Tengo un hermano.",
           "phonetic": "tengo un ermano",
           "translation": "Bir erkek kardeşim var."
+        },
+        {
+          "text": "Ella tiene un coche.",
+          "phonetic": "eya tyene un koçe",
+          "translation": "Onun bir arabası var."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "tener hambre",
+          "phonetic": "tener ambre",
+          "translation": "acıkmak",
+          "exampleText": "Tengo hambre, ¿y tú?",
+          "examplePhonetic": "tengo ambre, i tu",
+          "exampleTranslation": "Acıktım, ya sen?"
+        },
+        {
+          "text": "tener razón",
+          "phonetic": "tener rason",
+          "translation": "haklı olmak",
+          "exampleText": "Tienes razón.",
+          "examplePhonetic": "tyenes rason",
+          "exampleTranslation": "Haklısın."
         }
       ]
     },
@@ -339,6 +636,21 @@
           "text": "Voy a la escuela.",
           "phonetic": "boy a la eskuela",
           "translation": "Okula gidiyorum."
+        },
+        {
+          "text": "Vamos al cine.",
+          "phonetic": "bamos al sine",
+          "translation": "Sinemaya gidiyoruz."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "ir de compras",
+          "phonetic": "ir de kompras",
+          "translation": "alışverişe gitmek",
+          "exampleText": "Vamos de compras el sábado.",
+          "examplePhonetic": "bamos de kompras el sabado",
+          "exampleTranslation": "Cumartesi alışverişe gidiyoruz."
         }
       ]
     },
@@ -351,6 +663,21 @@
           "text": "Ellos comen al mediodía.",
           "phonetic": "eyos komen al medyodia",
           "translation": "Öğle yemeği yiyorlar."
+        },
+        {
+          "text": "Yo como una manzana.",
+          "phonetic": "yo komo una mansana",
+          "translation": "Bir elma yiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "comer fuera",
+          "phonetic": "komer fuera",
+          "translation": "dışarıda yemek",
+          "exampleText": "Los viernes comemos fuera.",
+          "examplePhonetic": "los byernes komemos fuera",
+          "exampleTranslation": "Cuma günleri dışarıda yeriz."
         }
       ]
     },
@@ -363,6 +690,11 @@
           "text": "Él bebe café.",
           "phonetic": "el bebe kafe",
           "translation": "O kahve içiyor."
+        },
+        {
+          "text": "Yo bebo té.",
+          "phonetic": "yo bebo te",
+          "translation": "Çay içiyorum."
         }
       ]
     },
@@ -375,6 +707,21 @@
           "text": "Quiero agua.",
           "phonetic": "kyero agua",
           "translation": "Su istiyorum."
+        },
+        {
+          "text": "Ella quiere un café.",
+          "phonetic": "eya kyere un kafe",
+          "translation": "O bir kahve istiyor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "querer decir",
+          "phonetic": "kerer desir",
+          "translation": "demek istemek",
+          "exampleText": "¿Qué quiere decir esta palabra?",
+          "examplePhonetic": "ke kyere desir esta palabra",
+          "exampleTranslation": "Bu kelime ne demek?"
         }
       ]
     },
@@ -387,6 +734,21 @@
           "text": "¿Hablas español?",
           "phonetic": "ablas espanyol",
           "translation": "İspanyolca konuşuyor musun?"
+        },
+        {
+          "text": "Él habla muy rápido.",
+          "phonetic": "el abla muy rapido",
+          "translation": "Çok hızlı konuşuyor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "hablar por los codos",
+          "phonetic": "ablar por los kodos",
+          "translation": "çok konuşmak",
+          "exampleText": "Mi hermana habla por los codos.",
+          "examplePhonetic": "mi ermana abla por los kodos",
+          "exampleTranslation": "Kız kardeşim çok konuşur."
         }
       ]
     },
@@ -399,6 +761,11 @@
           "text": "¿Cuál es tu nombre?",
           "phonetic": "kual es tu nombre",
           "translation": "Adın ne?"
+        },
+        {
+          "text": "Mi nombre es Tomás.",
+          "phonetic": "mi nombre es tomas",
+          "translation": "Adım Tomás."
         }
       ]
     },
@@ -411,6 +778,11 @@
           "text": "Vivo en una ciudad.",
           "phonetic": "bibo en una siudad",
           "translation": "Bir şehirde yaşıyorum."
+        },
+        {
+          "text": "Madrid es una ciudad grande.",
+          "phonetic": "madrid es una siudad grande",
+          "translation": "Madrid büyük bir şehir."
         }
       ]
     },
@@ -423,6 +795,11 @@
           "text": "Un libro interesante.",
           "phonetic": "un libro interesante",
           "translation": "İlginç bir kitap."
+        },
+        {
+          "text": "Leo un libro.",
+          "phonetic": "leo un libro",
+          "translation": "Bir kitap okuyorum."
         }
       ]
     },
@@ -435,6 +812,11 @@
           "text": "La escuela está cerrada.",
           "phonetic": "la eskuela esta serrada",
           "translation": "Okul kapalı."
+        },
+        {
+          "text": "Los niños van a la escuela.",
+          "phonetic": "los ninyos ban a la eskuela",
+          "translation": "Çocuklar okula gidiyor."
         }
       ]
     },
@@ -447,6 +829,21 @@
           "text": "Voy al trabajo.",
           "phonetic": "boy al trabaho",
           "translation": "İşe gidiyorum."
+        },
+        {
+          "text": "Mi trabajo es difícil.",
+          "phonetic": "mi trabaho es difisil",
+          "translation": "İşim zor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "buen trabajo",
+          "phonetic": "buen trabaho",
+          "translation": "aferin",
+          "exampleText": "¡Buen trabajo, chicos!",
+          "examplePhonetic": "buen trabaho, çikos",
+          "exampleTranslation": "Aferin çocuklar!"
         }
       ]
     },
@@ -459,6 +856,11 @@
           "text": "Uno, dos, tres.",
           "phonetic": "uno, dos, tres",
           "translation": "Bir, iki, üç."
+        },
+        {
+          "text": "Dame uno, por favor.",
+          "phonetic": "dame uno, por fabor",
+          "translation": "Bana bir tane ver, lütfen."
         }
       ]
     },
@@ -471,6 +873,11 @@
           "text": "Tengo dos hijos.",
           "phonetic": "tengo dos ihos",
           "translation": "İki çocuğum var."
+        },
+        {
+          "text": "Dos cafés, por favor.",
+          "phonetic": "dos kafes, por fabor",
+          "translation": "İki kahve, lütfen."
         }
       ]
     },
@@ -483,6 +890,11 @@
           "text": "Hay tres gatos.",
           "phonetic": "ay tres gatos",
           "translation": "Üç kedi var."
+        },
+        {
+          "text": "Son las tres.",
+          "phonetic": "son las tres",
+          "translation": "Saat üç."
         }
       ]
     }

@@ -4,7 +4,7 @@
   "target": "fr",
   "native": "tr",
   "level": "A1-A2",
-  "version": 1,
+  "version": 2,
   "words": [
     {
       "word": "bonjour",
@@ -15,6 +15,11 @@
           "text": "Bonjour, madame.",
           "phonetic": "bonjur, madam",
           "translation": "Günaydın, hanımefendi."
+        },
+        {
+          "text": "Bonjour, comment allez-vous ?",
+          "phonetic": "bonjur, koman tale vu",
+          "translation": "Günaydın, nasılsınız?"
         }
       ]
     },
@@ -27,6 +32,11 @@
           "text": "Au revoir, à demain !",
           "phonetic": "o rövuar, a dömen",
           "translation": "Hoşça kal, yarın görüşürüz!"
+        },
+        {
+          "text": "Au revoir et bonne journée !",
+          "phonetic": "o rövuar e bon jurne",
+          "translation": "Hoşça kalın, iyi günler!"
         }
       ]
     },
@@ -39,6 +49,11 @@
           "text": "Un café, s'il vous plaît.",
           "phonetic": "en kafe, sil vu ple",
           "translation": "Bir kahve, lütfen."
+        },
+        {
+          "text": "L'addition, s'il vous plaît.",
+          "phonetic": "ladisyon, sil vu ple",
+          "translation": "Hesap, lütfen."
         }
       ]
     },
@@ -51,6 +66,21 @@
           "text": "Merci beaucoup !",
           "phonetic": "mersi boku",
           "translation": "Çok teşekkürler!"
+        },
+        {
+          "text": "Merci pour votre aide.",
+          "phonetic": "mersi pur votr ed",
+          "translation": "Yardımınız için teşekkürler."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "non, merci",
+          "phonetic": "non, mersi",
+          "translation": "hayır, teşekkürler",
+          "exampleText": "Un dessert ? Non, merci.",
+          "examplePhonetic": "en deser? non, mersi",
+          "exampleTranslation": "Tatlı? Hayır, teşekkürler."
         }
       ]
     },
@@ -63,6 +93,11 @@
           "text": "Oui, je veux bien.",
           "phonetic": "ui, jö vö bien",
           "translation": "Evet, çok isterim."
+        },
+        {
+          "text": "Oui, c'est possible.",
+          "phonetic": "ui, se posibl",
+          "translation": "Evet, mümkün."
         }
       ]
     },
@@ -75,6 +110,11 @@
           "text": "Non, merci.",
           "phonetic": "non, mersi",
           "translation": "Hayır, teşekkürler."
+        },
+        {
+          "text": "Non, je ne sais pas.",
+          "phonetic": "non, jö nö se pa",
+          "translation": "Hayır, bilmiyorum."
         }
       ]
     },
@@ -87,6 +127,11 @@
           "text": "Pardon, où est la gare ?",
           "phonetic": "pardon, u e la gar",
           "translation": "Pardon, istasyon nerede?"
+        },
+        {
+          "text": "Pardon, je suis en retard.",
+          "phonetic": "pardon, jö süi zan rötar",
+          "translation": "Özür dilerim, geç kaldım."
         }
       ]
     },
@@ -99,6 +144,29 @@
           "text": "Je bois de l'eau.",
           "phonetic": "jö bua dö lo",
           "translation": "Su içiyorum."
+        },
+        {
+          "text": "Un verre d'eau, s'il vous plaît.",
+          "phonetic": "en ver do, sil vu ple",
+          "translation": "Bir bardak su, lütfen."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "mettre de l'eau dans son vin",
+          "phonetic": "metr dö lo dan son ven",
+          "translation": "iddiasından taviz vermek",
+          "exampleText": "Il faut mettre de l'eau dans son vin.",
+          "examplePhonetic": "il fo metr dö lo dan son ven",
+          "exampleTranslation": "Biraz taviz vermek gerek."
+        },
+        {
+          "text": "l'eau à la bouche",
+          "phonetic": "lo a la buş",
+          "translation": "ağzının suyu akmak",
+          "exampleText": "Ce gâteau me met l'eau à la bouche.",
+          "examplePhonetic": "sö gato mö me lo a la buş",
+          "exampleTranslation": "Bu pasta ağzımın suyunu akıtıyor."
         }
       ]
     },
@@ -111,6 +179,29 @@
           "text": "Je mange du pain.",
           "phonetic": "jö manj dü pen",
           "translation": "Ekmek yiyorum."
+        },
+        {
+          "text": "Le pain est frais.",
+          "phonetic": "lö pen e fre",
+          "translation": "Ekmek taze."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "avoir du pain sur la planche",
+          "phonetic": "avuar dü pen sür la planş",
+          "translation": "önünde yapılacak çok iş olmak",
+          "exampleText": "J'ai du pain sur la planche cette semaine.",
+          "examplePhonetic": "je dü pen sür la planş set smen",
+          "exampleTranslation": "Bu hafta yapacak çok işim var."
+        },
+        {
+          "text": "long comme un jour sans pain",
+          "phonetic": "lon kom en jur san pen",
+          "translation": "bitmek bilmeyen, çok uzun",
+          "exampleText": "Cette réunion est longue comme un jour sans pain.",
+          "examplePhonetic": "set reünyon e lon kom en jur san pen",
+          "exampleTranslation": "Bu toplantı bitmek bilmiyor."
         }
       ]
     },
@@ -123,6 +214,21 @@
           "text": "Je voudrais un café.",
           "phonetic": "jö vudre en kafe",
           "translation": "Bir kahve istiyorum."
+        },
+        {
+          "text": "Le café est chaud.",
+          "phonetic": "lö kafe e şo",
+          "translation": "Kahve sıcak."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "prendre un café",
+          "phonetic": "prandr en kafe",
+          "translation": "bir kahve içmek",
+          "exampleText": "On prend un café ensemble ?",
+          "examplePhonetic": "on pran en kafe ansanbl",
+          "exampleTranslation": "Birlikte bir kahve içelim mi?"
         }
       ]
     },
@@ -135,6 +241,29 @@
           "text": "La maison est grande.",
           "phonetic": "la mezon e grand",
           "translation": "Ev büyük."
+        },
+        {
+          "text": "Ma maison est près de la gare.",
+          "phonetic": "ma mezon e pre dö la gar",
+          "translation": "Evim istasyonun yakınında."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "faire comme chez soi",
+          "phonetic": "fer kom şe sua",
+          "translation": "kendi evindeymiş gibi rahat etmek",
+          "exampleText": "Faites comme chez vous !",
+          "examplePhonetic": "fet kom şe vu",
+          "exampleTranslation": "Kendi evinizdeymiş gibi davranın!"
+        },
+        {
+          "text": "à la maison",
+          "phonetic": "a la mezon",
+          "translation": "evde",
+          "exampleText": "Je reste à la maison ce soir.",
+          "examplePhonetic": "jö rest a la mezon sö suar",
+          "exampleTranslation": "Bu akşam evde kalıyorum."
         }
       ]
     },
@@ -147,6 +276,21 @@
           "text": "C'est mon ami.",
           "phonetic": "se mon ami",
           "translation": "O benim arkadaşım."
+        },
+        {
+          "text": "Mon ami habite à Paris.",
+          "phonetic": "mon ami abit a pari",
+          "translation": "Arkadaşım Paris'te yaşıyor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "meilleur ami",
+          "phonetic": "meyör ami",
+          "translation": "en iyi arkadaş",
+          "exampleText": "Paul est mon meilleur ami.",
+          "examplePhonetic": "pol e mon meyör ami",
+          "exampleTranslation": "Paul benim en iyi arkadaşım."
         }
       ]
     },
@@ -159,6 +303,11 @@
           "text": "J'aime ma famille.",
           "phonetic": "jem ma famiy",
           "translation": "Ailemi seviyorum."
+        },
+        {
+          "text": "Ma famille est grande.",
+          "phonetic": "ma famiy e grand",
+          "translation": "Ailem büyük."
         }
       ]
     },
@@ -171,6 +320,11 @@
           "text": "L'homme parle.",
           "phonetic": "lom parl",
           "translation": "Adam konuşuyor."
+        },
+        {
+          "text": "Cet homme est mon voisin.",
+          "phonetic": "set om e mon vuazen",
+          "translation": "Bu adam benim komşum."
         }
       ]
     },
@@ -183,6 +337,11 @@
           "text": "La femme lit un livre.",
           "phonetic": "la fam li en livr",
           "translation": "Kadın bir kitap okuyor."
+        },
+        {
+          "text": "Cette femme est médecin.",
+          "phonetic": "set fam e medsen",
+          "translation": "Bu kadın doktor."
         }
       ]
     },
@@ -195,6 +354,11 @@
           "text": "L'enfant joue.",
           "phonetic": "lanfan ju",
           "translation": "Çocuk oynuyor."
+        },
+        {
+          "text": "Les enfants dorment.",
+          "phonetic": "le zanfan dorm",
+          "translation": "Çocuklar uyuyor."
         }
       ]
     },
@@ -207,6 +371,29 @@
           "text": "Quel beau jour !",
           "phonetic": "kel bo jur",
           "translation": "Ne güzel bir gün!"
+        },
+        {
+          "text": "Je travaille tous les jours.",
+          "phonetic": "jö travay tu le jur",
+          "translation": "Her gün çalışıyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "tous les jours",
+          "phonetic": "tu le jur",
+          "translation": "her gün",
+          "exampleText": "Je marche tous les jours.",
+          "examplePhonetic": "jö marş tu le jur",
+          "exampleTranslation": "Her gün yürüyorum."
+        },
+        {
+          "text": "de nos jours",
+          "phonetic": "dö no jur",
+          "translation": "günümüzde",
+          "exampleText": "De nos jours, tout va vite.",
+          "examplePhonetic": "dö no jur, tu va vit",
+          "exampleTranslation": "Günümüzde her şey hızlı."
         }
       ]
     },
@@ -219,6 +406,21 @@
           "text": "Bonne nuit !",
           "phonetic": "bon nüi",
           "translation": "İyi geceler!"
+        },
+        {
+          "text": "Il fait nuit.",
+          "phonetic": "il fe nüi",
+          "translation": "Hava karardı."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "nuit blanche",
+          "phonetic": "nüi blanş",
+          "translation": "uykusuz gece",
+          "exampleText": "J'ai passé une nuit blanche.",
+          "examplePhonetic": "je pase ün nüi blanş",
+          "exampleTranslation": "Uykusuz bir gece geçirdim."
         }
       ]
     },
@@ -231,6 +433,11 @@
           "text": "Aujourd'hui, il fait beau.",
           "phonetic": "ojurdüi, il fe bo",
           "translation": "Bugün hava güzel."
+        },
+        {
+          "text": "Qu'est-ce que tu fais aujourd'hui ?",
+          "phonetic": "kes kö tü fe ojurdüi",
+          "translation": "Bugün ne yapıyorsun?"
         }
       ]
     },
@@ -243,6 +450,21 @@
           "text": "À demain !",
           "phonetic": "a dömen",
           "translation": "Yarın görüşürüz!"
+        },
+        {
+          "text": "Demain, je vais au marché.",
+          "phonetic": "dömen, jö ve o marşe",
+          "translation": "Yarın pazara gidiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "demain matin",
+          "phonetic": "dömen maten",
+          "translation": "yarın sabah",
+          "exampleText": "Demain matin, je pars.",
+          "examplePhonetic": "dömen maten, jö par",
+          "exampleTranslation": "Yarın sabah yola çıkıyorum."
         }
       ]
     },
@@ -255,6 +477,21 @@
           "text": "C'est très bon.",
           "phonetic": "se tre bon",
           "translation": "Bu çok iyi."
+        },
+        {
+          "text": "Bon appétit !",
+          "phonetic": "bon apeti",
+          "translation": "Afiyet olsun!"
+        }
+      ],
+      "expressions": [
+        {
+          "text": "bon marché",
+          "phonetic": "bon marşe",
+          "translation": "ucuz",
+          "exampleText": "Ce sac est bon marché.",
+          "examplePhonetic": "sö sak e bon marşe",
+          "exampleTranslation": "Bu çanta ucuz."
         }
       ]
     },
@@ -267,6 +504,11 @@
           "text": "Une grande ville.",
           "phonetic": "ün grand vil",
           "translation": "Büyük bir şehir."
+        },
+        {
+          "text": "Mon frère est très grand.",
+          "phonetic": "mon frer e tre gran",
+          "translation": "Kardeşim çok uzun boylu."
         }
       ]
     },
@@ -279,6 +521,21 @@
           "text": "Un petit chat.",
           "phonetic": "en peti şa",
           "translation": "Küçük bir kedi."
+        },
+        {
+          "text": "Elle a un petit chien.",
+          "phonetic": "el a en peti şien",
+          "translation": "Onun küçük bir köpeği var."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "petit à petit",
+          "phonetic": "peti ta peti",
+          "translation": "azar azar; yavaş yavaş",
+          "exampleText": "Petit à petit, j'apprends le français.",
+          "examplePhonetic": "peti ta peti, japran lö fransé",
+          "exampleTranslation": "Yavaş yavaş Fransızca öğreniyorum."
         }
       ]
     },
@@ -291,6 +548,11 @@
           "text": "Un nouveau livre.",
           "phonetic": "en nuvo livr",
           "translation": "Yeni bir kitap."
+        },
+        {
+          "text": "J'ai un nouvel ami.",
+          "phonetic": "je en nuvel ami",
+          "translation": "Yeni bir arkadaşım var."
         }
       ]
     },
@@ -303,6 +565,21 @@
           "text": "Il fait beau.",
           "phonetic": "il fe bo",
           "translation": "Hava güzel."
+        },
+        {
+          "text": "Quel beau jardin !",
+          "phonetic": "kel bo jarden",
+          "translation": "Ne güzel bir bahçe!"
+        }
+      ],
+      "expressions": [
+        {
+          "text": "il fait beau",
+          "phonetic": "il fe bo",
+          "translation": "hava güzel",
+          "exampleText": "Demain, il fera beau.",
+          "examplePhonetic": "dömen, il fö ra bo",
+          "exampleTranslation": "Yarın hava güzel olacak."
         }
       ]
     },
@@ -315,6 +592,21 @@
           "text": "Je suis étudiant.",
           "phonetic": "jö süi zetüdyan",
           "translation": "Ben öğrenciyim."
+        },
+        {
+          "text": "Nous sommes à la maison.",
+          "phonetic": "nu som za la mezon",
+          "translation": "Evdeyiz."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "être en retard",
+          "phonetic": "etr an rötar",
+          "translation": "geç kalmak",
+          "exampleText": "Je suis en retard, désolé.",
+          "examplePhonetic": "jö süi zan rötar, dezole",
+          "exampleTranslation": "Geç kaldım, üzgünüm."
         }
       ]
     },
@@ -327,6 +619,29 @@
           "text": "J'ai un frère.",
           "phonetic": "je en frer",
           "translation": "Bir erkek kardeşim var."
+        },
+        {
+          "text": "Elle a une voiture.",
+          "phonetic": "el a ün vuatür",
+          "translation": "Onun bir arabası var."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "avoir faim",
+          "phonetic": "avuar fen",
+          "translation": "acıkmak",
+          "exampleText": "J'ai faim, pas toi ?",
+          "examplePhonetic": "je fen, pa tua",
+          "exampleTranslation": "Acıktım, sen acıkmadın mı?"
+        },
+        {
+          "text": "avoir raison",
+          "phonetic": "avuar rezon",
+          "translation": "haklı olmak",
+          "exampleText": "Tu as raison.",
+          "examplePhonetic": "tü a rezon",
+          "exampleTranslation": "Haklısın."
         }
       ]
     },
@@ -339,6 +654,21 @@
           "text": "Je vais à l'école.",
           "phonetic": "jö ve a lekol",
           "translation": "Okula gidiyorum."
+        },
+        {
+          "text": "Nous allons au cinéma.",
+          "phonetic": "nu zalon o sinema",
+          "translation": "Sinemaya gidiyoruz."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "Ça va ?",
+          "phonetic": "sa va",
+          "translation": "Nasılsın?",
+          "exampleText": "Salut, ça va ?",
+          "examplePhonetic": "salü, sa va",
+          "exampleTranslation": "Selam, nasılsın?"
         }
       ]
     },
@@ -351,6 +681,21 @@
           "text": "Nous mangeons du pain.",
           "phonetic": "nu manjon dü pen",
           "translation": "Ekmek yiyoruz."
+        },
+        {
+          "text": "Je mange une pomme.",
+          "phonetic": "jö manj ün pom",
+          "translation": "Bir elma yiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "manger sur le pouce",
+          "phonetic": "manje sür lö pus",
+          "translation": "ayaküstü yemek",
+          "exampleText": "Je mange sur le pouce à midi.",
+          "examplePhonetic": "jö manj sür lö pus a midi",
+          "exampleTranslation": "Öğlen ayaküstü yiyorum."
         }
       ]
     },
@@ -363,6 +708,21 @@
           "text": "Il boit du café.",
           "phonetic": "il bua dü kafe",
           "translation": "O kahve içiyor."
+        },
+        {
+          "text": "Je bois du thé.",
+          "phonetic": "jö bua dü te",
+          "translation": "Çay içiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "boire un coup",
+          "phonetic": "buar en ku",
+          "translation": "bir şeyler içmek",
+          "exampleText": "On boit un coup ce soir ?",
+          "examplePhonetic": "on bua en ku sö suar",
+          "exampleTranslation": "Bu akşam bir şeyler içelim mi?"
         }
       ]
     },
@@ -375,6 +735,21 @@
           "text": "Je veux de l'eau.",
           "phonetic": "jö vö dö lo",
           "translation": "Su istiyorum."
+        },
+        {
+          "text": "Elle veut un café.",
+          "phonetic": "el vö en kafe",
+          "translation": "O bir kahve istiyor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "vouloir dire",
+          "phonetic": "vulvuar dir",
+          "translation": "demek istemek; anlamına gelmek",
+          "exampleText": "Que veut dire ce mot ?",
+          "examplePhonetic": "kö vö dir sö mo",
+          "exampleTranslation": "Bu kelime ne demek?"
         }
       ]
     },
@@ -387,6 +762,21 @@
           "text": "Vous parlez français ?",
           "phonetic": "vu parle fransé",
           "translation": "Fransızca konuşuyor musunuz?"
+        },
+        {
+          "text": "Il parle très vite.",
+          "phonetic": "il parl tre vit",
+          "translation": "Çok hızlı konuşuyor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "parler de la pluie et du beau temps",
+          "phonetic": "parle dö la plüi e dü bo tan",
+          "translation": "havadan sudan konuşmak",
+          "exampleText": "Ils parlent de la pluie et du beau temps.",
+          "examplePhonetic": "il parl dö la plüi e dü bo tan",
+          "exampleTranslation": "Havadan sudan konuşuyorlar."
         }
       ]
     },
@@ -399,6 +789,11 @@
           "text": "Quel est votre nom ?",
           "phonetic": "kel e votr non",
           "translation": "Adınız nedir?"
+        },
+        {
+          "text": "Mon nom est Marie.",
+          "phonetic": "mon non e mari",
+          "translation": "Adım Marie."
         }
       ]
     },
@@ -411,6 +806,11 @@
           "text": "J'habite dans une ville.",
           "phonetic": "jabit dan zün vil",
           "translation": "Bir şehirde yaşıyorum."
+        },
+        {
+          "text": "Paris est une grande ville.",
+          "phonetic": "pari e tün grand vil",
+          "translation": "Paris büyük bir şehir."
         }
       ]
     },
@@ -423,6 +823,11 @@
           "text": "Un livre intéressant.",
           "phonetic": "en livr enteresan",
           "translation": "İlginç bir kitap."
+        },
+        {
+          "text": "Je lis un livre.",
+          "phonetic": "jö li en livr",
+          "translation": "Bir kitap okuyorum."
         }
       ]
     },
@@ -435,6 +840,11 @@
           "text": "L'école est fermée.",
           "phonetic": "lekol e ferme",
           "translation": "Okul kapalı."
+        },
+        {
+          "text": "Les enfants vont à l'école.",
+          "phonetic": "le zanfan von a lekol",
+          "translation": "Çocuklar okula gidiyor."
         }
       ]
     },
@@ -447,6 +857,21 @@
           "text": "Je vais au travail.",
           "phonetic": "jö ve zo travay",
           "translation": "İşe gidiyorum."
+        },
+        {
+          "text": "Mon travail est difficile.",
+          "phonetic": "mon travay e difisil",
+          "translation": "İşim zor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "bon travail",
+          "phonetic": "bon travay",
+          "translation": "aferin; iyi iş",
+          "exampleText": "Bon travail, les enfants !",
+          "examplePhonetic": "bon travay, le zanfan",
+          "exampleTranslation": "Aferin çocuklar!"
         }
       ]
     },
@@ -459,6 +884,11 @@
           "text": "Un, deux, trois.",
           "phonetic": "en, dö, trua",
           "translation": "Bir, iki, üç."
+        },
+        {
+          "text": "J'ai un chat.",
+          "phonetic": "je en şa",
+          "translation": "Bir kedim var."
         }
       ]
     },
@@ -471,6 +901,11 @@
           "text": "J'ai deux enfants.",
           "phonetic": "je dö zanfan",
           "translation": "İki çocuğum var."
+        },
+        {
+          "text": "Deux cafés, s'il vous plaît.",
+          "phonetic": "dö kafe, sil vu ple",
+          "translation": "İki kahve, lütfen."
         }
       ]
     },
@@ -483,6 +918,11 @@
           "text": "Il y a trois chats.",
           "phonetic": "il i a trua şa",
           "translation": "Üç kedi var."
+        },
+        {
+          "text": "Il est trois heures.",
+          "phonetic": "il e trua zör",
+          "translation": "Saat üç."
         }
       ]
     }

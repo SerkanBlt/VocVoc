@@ -32,6 +32,12 @@ describe('Summary and the last days',()=>{
     assert.deepEqual(result.last7.map(day=>day.day),['2026-10-01','2026-10-02','2026-10-03','2026-10-04','2026-10-05','2026-10-06','2026-10-07']);
     assert.deepEqual(result.last7.map(day=>[day.added,day.memorized,day.tests]),[[1,0,0],[0,0,0],[0,0,0],[0,0,0],[1,0,0],[0,1,0],[1,1,0]]);
   });
+  it('every day also lists its words (added and memorized), without the built-in starters; the counts stay exact when the list is capped',()=>{
+    assert.deepEqual(result.last7.map(day=>[day.addedWords,day.memorizedWords]),[[['B'],[]],[[],[]],[[],[]],[[],[]],[['C'],[]],[[],['C']],[['A'],['B']]]);
+    const many=Stats.compute(input({words:Array.from({length:250},(_,index)=>word('w'+index,'active','2026-10-07'))}));
+    const today=many.last7[6];
+    assert.deepEqual([today.added,today.addedWords.length,today.addedWords[0],today.addedWords[199]],[250,200,'w0','w199']);
+  });
   it('the memorized curve is cumulative over 30 days and starts from what was memorized earlier',()=>{
     assert.equal(result.memorizedSeries.length,30);
     assert.deepEqual([result.memorizedSeries[0].day,result.memorizedSeries[29].day],['2026-09-08','2026-10-07']);

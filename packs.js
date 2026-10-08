@@ -46,7 +46,17 @@
       if(entry.type!==undefined&&!isText(entry.type,60,{min:0}))problems.push(`${where}.type`);
       for(const field of ['synonyms','antonyms'])if(entry[field]!==undefined&&(!Array.isArray(entry[field])||entry[field].length>8||entry[field].some(item=>!isText(item,60))))problems.push(`${where}.${field}`);
       if(entry.examples!==undefined)checkSamples(entry.examples,`${where}.examples`,problems,{translation:true});
-      if(entry.expressions!==undefined)checkSamples(entry.expressions,`${where}.expressions`,problems,{translation:true});
+      if(entry.expressions!==undefined){
+        checkSamples(entry.expressions,`${where}.expressions`,problems,{translation:true});
+        // an idiom or phrase comes with the sentence that uses it
+        (Array.isArray(entry.expressions)?entry.expressions:[]).forEach((item,index)=>{
+          if(!item||typeof item!=='object'||item.exampleText===undefined)return;
+          const at=`${where}.expressions[${index}]`;
+          if(!isText(item.exampleText,200))problems.push(`${at}.exampleText`);
+          if(item.examplePhonetic!==undefined&&!isText(item.examplePhonetic,200,{min:0}))problems.push(`${at}.examplePhonetic`);
+          if(!isText(item.exampleTranslation,200))problems.push(`${at}.exampleTranslation`);
+        });
+      }
       const key=wordKey(entry.word,pack.target);
       if(seen.has(key))problems.push(`${where}: "${entry.word}" appears twice`);seen.add(key);
     });

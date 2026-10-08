@@ -4,7 +4,7 @@
   "target": "de",
   "native": "tr",
   "level": "A1-A2",
-  "version": 1,
+  "version": 2,
   "words": [
     {
       "word": "hallo",
@@ -15,6 +15,11 @@
           "text": "Hallo, wie geht's?",
           "phonetic": "halo, vi gets",
           "translation": "Merhaba, nasılsın?"
+        },
+        {
+          "text": "Hallo, ich heiße Anna.",
+          "phonetic": "halo, iç hayse ana",
+          "translation": "Merhaba, adım Anna."
         }
       ]
     },
@@ -27,6 +32,21 @@
           "text": "Tschüss, bis morgen!",
           "phonetic": "çüs, bis morgın",
           "translation": "Hoşça kal, yarın görüşürüz!"
+        },
+        {
+          "text": "Tschüss und bis bald!",
+          "phonetic": "çüs unt bis balt",
+          "translation": "Hoşça kal, yakında görüşürüz!"
+        }
+      ],
+      "expressions": [
+        {
+          "text": "bis später",
+          "phonetic": "bis şpeter",
+          "translation": "sonra görüşürüz",
+          "exampleText": "Ich muss los. Bis später!",
+          "examplePhonetic": "iç mus los. bis şpeter",
+          "exampleTranslation": "Gitmem lazım. Sonra görüşürüz!"
         }
       ]
     },
@@ -39,6 +59,21 @@
           "text": "Einen Kaffee, bitte.",
           "phonetic": "aynın kafe, bite",
           "translation": "Bir kahve, lütfen."
+        },
+        {
+          "text": "Setzen Sie sich, bitte.",
+          "phonetic": "zetsın zi ziç, bite",
+          "translation": "Lütfen oturun."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "bitte schön",
+          "phonetic": "bite şön",
+          "translation": "buyurun; rica ederim",
+          "exampleText": "Danke! — Bitte schön!",
+          "examplePhonetic": "danke! bite şön",
+          "exampleTranslation": "Teşekkürler! — Rica ederim!"
         }
       ]
     },
@@ -51,6 +86,21 @@
           "text": "Danke schön!",
           "phonetic": "danke şön",
           "translation": "Çok teşekkürler!"
+        },
+        {
+          "text": "Danke für deine Hilfe.",
+          "phonetic": "danke für dayne hilfe",
+          "translation": "Yardımın için teşekkürler."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "nein, danke",
+          "phonetic": "nayn, danke",
+          "translation": "hayır, teşekkürler",
+          "exampleText": "Noch Tee? Nein, danke.",
+          "examplePhonetic": "noh te? nayn, danke",
+          "exampleTranslation": "Biraz daha çay? Hayır, teşekkürler."
         }
       ]
     },
@@ -63,6 +113,11 @@
           "text": "Ja, gern.",
           "phonetic": "ya, gern",
           "translation": "Evet, memnuniyetle."
+        },
+        {
+          "text": "Ja, das ist richtig.",
+          "phonetic": "ya, das ist riçtiç",
+          "translation": "Evet, bu doğru."
         }
       ]
     },
@@ -75,6 +130,11 @@
           "text": "Nein, danke.",
           "phonetic": "nayn, danke",
           "translation": "Hayır, teşekkürler."
+        },
+        {
+          "text": "Nein, ich weiß es nicht.",
+          "phonetic": "nayn, iç vays es niçt",
+          "translation": "Hayır, bilmiyorum."
         }
       ]
     },
@@ -87,6 +147,11 @@
           "text": "Entschuldigung, wo ist der Bahnhof?",
           "phonetic": "entşuldigung, vo ist der banhof",
           "translation": "Pardon, istasyon nerede?"
+        },
+        {
+          "text": "Entschuldigung, ich bin zu spät.",
+          "phonetic": "entşuldigung, iç bin tsu şpet",
+          "translation": "Özür dilerim, geç kaldım."
         }
       ]
     },
@@ -99,6 +164,21 @@
           "text": "Ich trinke Wasser.",
           "phonetic": "iç trinke vasır",
           "translation": "Su içiyorum."
+        },
+        {
+          "text": "Das Wasser ist kalt.",
+          "phonetic": "das vasır ist kalt",
+          "translation": "Su soğuk."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "ein Glas Wasser",
+          "phonetic": "ayn glas vasır",
+          "translation": "bir bardak su",
+          "exampleText": "Ein Glas Wasser, bitte.",
+          "examplePhonetic": "ayn glas vasır, bite",
+          "exampleTranslation": "Bir bardak su, lütfen."
         }
       ]
     },
@@ -111,6 +191,21 @@
           "text": "Wir essen Brot.",
           "phonetic": "vir esın brot",
           "translation": "Ekmek yiyoruz."
+        },
+        {
+          "text": "Das Brot ist frisch.",
+          "phonetic": "das brot ist friş",
+          "translation": "Ekmek taze."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "sein Brot verdienen",
+          "phonetic": "zayn brot ferdinın",
+          "translation": "geçimini sağlamak",
+          "exampleText": "Er verdient sein Brot als Koch.",
+          "examplePhonetic": "er ferdint zayn brot als koh",
+          "exampleTranslation": "Aşçı olarak geçimini sağlıyor."
         }
       ]
     },
@@ -123,6 +218,21 @@
           "text": "Ich möchte einen Kaffee.",
           "phonetic": "iç möçte aynın kafe",
           "translation": "Bir kahve istiyorum."
+        },
+        {
+          "text": "Der Kaffee ist heiß.",
+          "phonetic": "der kafe ist hays",
+          "translation": "Kahve sıcak."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "Kaffee und Kuchen",
+          "phonetic": "kafe unt kuhın",
+          "translation": "kahve ve pasta",
+          "exampleText": "Am Sonntag gibt es Kaffee und Kuchen.",
+          "examplePhonetic": "am zontag gipt es kafe unt kuhın",
+          "exampleTranslation": "Pazar günü kahve ve pasta olur."
         }
       ]
     },
@@ -135,6 +245,29 @@
           "text": "Das Haus ist groß.",
           "phonetic": "das haus ist gros",
           "translation": "Ev büyük."
+        },
+        {
+          "text": "Mein Haus ist neben dem Bahnhof.",
+          "phonetic": "mayn haus ist nebın dem banhof",
+          "translation": "Evim istasyonun yanında."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "zu Hause",
+          "phonetic": "tsu hauze",
+          "translation": "evde",
+          "exampleText": "Ich bleibe heute zu Hause.",
+          "examplePhonetic": "iç blayber hoyte tsu hauze",
+          "exampleTranslation": "Bugün evde kalıyorum."
+        },
+        {
+          "text": "nach Hause",
+          "phonetic": "nah hauze",
+          "translation": "eve (doğru)",
+          "exampleText": "Ich gehe jetzt nach Hause.",
+          "examplePhonetic": "iç gehe yetst nah hauze",
+          "exampleTranslation": "Şimdi eve gidiyorum."
         }
       ]
     },
@@ -147,6 +280,11 @@
           "text": "Das ist mein Freund.",
           "phonetic": "das ist mayn froynd",
           "translation": "Bu benim arkadaşım."
+        },
+        {
+          "text": "Mein Freund wohnt in Berlin.",
+          "phonetic": "mayn froynd vont in berlin",
+          "translation": "Arkadaşım Berlin'de yaşıyor."
         }
       ]
     },
@@ -159,6 +297,11 @@
           "text": "Ich liebe meine Familie.",
           "phonetic": "iç libe mayne familye",
           "translation": "Ailemi seviyorum."
+        },
+        {
+          "text": "Meine Familie ist groß.",
+          "phonetic": "mayne familye ist gros",
+          "translation": "Ailem büyük."
         }
       ]
     },
@@ -171,6 +314,11 @@
           "text": "Der Mann spricht.",
           "phonetic": "der man şpriçt",
           "translation": "Adam konuşuyor."
+        },
+        {
+          "text": "Der Mann ist mein Nachbar.",
+          "phonetic": "der man ist mayn nahbar",
+          "translation": "Adam benim komşum."
         }
       ]
     },
@@ -183,6 +331,11 @@
           "text": "Die Frau liest ein Buch.",
           "phonetic": "di frau list ayn buh",
           "translation": "Kadın bir kitap okuyor."
+        },
+        {
+          "text": "Die Frau ist Ärztin.",
+          "phonetic": "di frau ist ertstin",
+          "translation": "Kadın doktor."
         }
       ]
     },
@@ -195,6 +348,11 @@
           "text": "Das Kind spielt.",
           "phonetic": "das kint şpilt",
           "translation": "Çocuk oynuyor."
+        },
+        {
+          "text": "Das Kind schläft.",
+          "phonetic": "das kint şleft",
+          "translation": "Çocuk uyuyor."
         }
       ]
     },
@@ -207,6 +365,29 @@
           "text": "Was für ein schöner Tag!",
           "phonetic": "vas für ayn şöner tag",
           "translation": "Ne güzel bir gün!"
+        },
+        {
+          "text": "Ich arbeite jeden Tag.",
+          "phonetic": "iç arbayte yedın tag",
+          "translation": "Her gün çalışıyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "guten Tag",
+          "phonetic": "gutın tag",
+          "translation": "iyi günler",
+          "exampleText": "Guten Tag, Frau Müller!",
+          "examplePhonetic": "gutın tag, frau müler",
+          "exampleTranslation": "İyi günler, Bayan Müller!"
+        },
+        {
+          "text": "jeden Tag",
+          "phonetic": "yedın tag",
+          "translation": "her gün",
+          "exampleText": "Ich lerne jeden Tag Deutsch.",
+          "examplePhonetic": "iç lerne yedın tag doyç",
+          "exampleTranslation": "Her gün Almanca öğreniyorum."
         }
       ]
     },
@@ -219,6 +400,21 @@
           "text": "Gute Nacht!",
           "phonetic": "gute naht",
           "translation": "İyi geceler!"
+        },
+        {
+          "text": "In der Nacht ist es dunkel.",
+          "phonetic": "in der naht ist es dunkıl",
+          "translation": "Geceleyin hava karanlıktır."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "die ganze Nacht",
+          "phonetic": "di gantse naht",
+          "translation": "bütün gece",
+          "exampleText": "Ich habe die ganze Nacht gelernt.",
+          "examplePhonetic": "iç habe di gantse naht gelernt",
+          "exampleTranslation": "Bütün gece çalıştım."
         }
       ]
     },
@@ -231,6 +427,21 @@
           "text": "Heute ist es warm.",
           "phonetic": "hoyte ist es varm",
           "translation": "Bugün hava sıcak."
+        },
+        {
+          "text": "Was machst du heute?",
+          "phonetic": "vas mahst du hoyte",
+          "translation": "Bugün ne yapıyorsun?"
+        }
+      ],
+      "expressions": [
+        {
+          "text": "heute Abend",
+          "phonetic": "hoyte abınt",
+          "translation": "bu akşam",
+          "exampleText": "Heute Abend gehe ich ins Kino.",
+          "examplePhonetic": "hoyte abınt gehe iç ins kino",
+          "exampleTranslation": "Bu akşam sinemaya gidiyorum."
         }
       ]
     },
@@ -243,6 +454,21 @@
           "text": "Bis morgen!",
           "phonetic": "bis morgın",
           "translation": "Yarın görüşürüz!"
+        },
+        {
+          "text": "Morgen gehe ich auf den Markt.",
+          "phonetic": "morgın gehe iç auf den markt",
+          "translation": "Yarın pazara gidiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "guten Morgen",
+          "phonetic": "gutın morgın",
+          "translation": "günaydın",
+          "exampleText": "Guten Morgen, wie geht's?",
+          "examplePhonetic": "gutın morgın, vi gets",
+          "exampleTranslation": "Günaydın, nasılsın?"
         }
       ]
     },
@@ -255,6 +481,29 @@
           "text": "Das ist gut.",
           "phonetic": "das ist gut",
           "translation": "Bu iyi."
+        },
+        {
+          "text": "Er ist ein guter Lehrer.",
+          "phonetic": "er ist ayn guter lerer",
+          "translation": "O iyi bir öğretmen."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "gut gemacht",
+          "phonetic": "gut gemaht",
+          "translation": "aferin; güzel yaptın",
+          "exampleText": "Gut gemacht, Anna!",
+          "examplePhonetic": "gut gemaht, ana",
+          "exampleTranslation": "Aferin Anna!"
+        },
+        {
+          "text": "guten Appetit",
+          "phonetic": "gutın apetit",
+          "translation": "afiyet olsun",
+          "exampleText": "Guten Appetit!",
+          "examplePhonetic": "gutın apetit",
+          "exampleTranslation": "Afiyet olsun!"
         }
       ]
     },
@@ -267,6 +516,11 @@
           "text": "Eine große Stadt.",
           "phonetic": "ayne grose ştat",
           "translation": "Büyük bir şehir."
+        },
+        {
+          "text": "Mein Bruder ist sehr groß.",
+          "phonetic": "mayn bruder ist zer gros",
+          "translation": "Kardeşim çok uzun boylu."
         }
       ]
     },
@@ -279,6 +533,11 @@
           "text": "Eine kleine Katze.",
           "phonetic": "ayne klayne katse",
           "translation": "Küçük bir kedi."
+        },
+        {
+          "text": "Sie hat einen kleinen Hund.",
+          "phonetic": "zi hat aynın klaynın hunt",
+          "translation": "Onun küçük bir köpeği var."
         }
       ]
     },
@@ -291,6 +550,21 @@
           "text": "Ein neues Buch.",
           "phonetic": "ayn noyes buh",
           "translation": "Yeni bir kitap."
+        },
+        {
+          "text": "Ich habe einen neuen Freund.",
+          "phonetic": "iç habe aynın noyın froynd",
+          "translation": "Yeni bir arkadaşım var."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "Was gibt's Neues?",
+          "phonetic": "vas gipts noyes",
+          "translation": "Ne var ne yok?",
+          "exampleText": "Hallo! Was gibt's Neues?",
+          "examplePhonetic": "halo! vas gipts noyes",
+          "exampleTranslation": "Merhaba! Ne var ne yok?"
         }
       ]
     },
@@ -303,6 +577,11 @@
           "text": "Das Wetter ist schön.",
           "phonetic": "das vetır ist şön",
           "translation": "Hava güzel."
+        },
+        {
+          "text": "Was für ein schöner Garten!",
+          "phonetic": "vas für ayn şöner gartın",
+          "translation": "Ne güzel bir bahçe!"
         }
       ]
     },
@@ -315,6 +594,11 @@
           "text": "Ich bin Student.",
           "phonetic": "iç bin ştudent",
           "translation": "Ben öğrenciyim."
+        },
+        {
+          "text": "Wir sind zu Hause.",
+          "phonetic": "vir zint tsu hauze",
+          "translation": "Evdeyiz."
         }
       ]
     },
@@ -327,6 +611,11 @@
           "text": "Ich habe einen Bruder.",
           "phonetic": "iç habe aynın bruder",
           "translation": "Bir erkek kardeşim var."
+        },
+        {
+          "text": "Sie hat ein Auto.",
+          "phonetic": "zi hat ayn auto",
+          "translation": "Onun bir arabası var."
         }
       ]
     },
@@ -339,6 +628,29 @@
           "text": "Ich gehe zur Schule.",
           "phonetic": "iç gehe tsur şule",
           "translation": "Okula gidiyorum."
+        },
+        {
+          "text": "Wir gehen ins Kino.",
+          "phonetic": "vir gehın ins kino",
+          "translation": "Sinemaya gidiyoruz."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "Wie geht's?",
+          "phonetic": "vi gets",
+          "translation": "Nasılsın?",
+          "exampleText": "Hallo Tom, wie geht's?",
+          "examplePhonetic": "halo tom, vi gets",
+          "exampleTranslation": "Merhaba Tom, nasılsın?"
+        },
+        {
+          "text": "zu Fuß gehen",
+          "phonetic": "tsu fus gehın",
+          "translation": "yürüyerek gitmek",
+          "exampleText": "Ich gehe zu Fuß zur Arbeit.",
+          "examplePhonetic": "iç gehe tsu fus tsur arbayt",
+          "exampleTranslation": "İşe yürüyerek gidiyorum."
         }
       ]
     },
@@ -351,6 +663,21 @@
           "text": "Sie essen zu Mittag.",
           "phonetic": "zi esın tsu mitag",
           "translation": "Öğle yemeği yiyorlar."
+        },
+        {
+          "text": "Ich esse einen Apfel.",
+          "phonetic": "iç ese aynın apfıl",
+          "translation": "Bir elma yiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "zu Mittag essen",
+          "phonetic": "tsu mitag esın",
+          "translation": "öğle yemeği yemek",
+          "exampleText": "Wir essen um eins zu Mittag.",
+          "examplePhonetic": "vir esın um ayns tsu mitag",
+          "exampleTranslation": "Saat birde öğle yemeği yeriz."
         }
       ]
     },
@@ -363,6 +690,21 @@
           "text": "Er trinkt Kaffee.",
           "phonetic": "er trinkt kafe",
           "translation": "O kahve içiyor."
+        },
+        {
+          "text": "Ich trinke Tee.",
+          "phonetic": "iç trinke te",
+          "translation": "Çay içiyorum."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "einen trinken gehen",
+          "phonetic": "aynın trinkın gehın",
+          "translation": "bir şeyler içmeye gitmek",
+          "exampleText": "Wollen wir einen trinken gehen?",
+          "examplePhonetic": "volın vir aynın trinkın gehın",
+          "exampleTranslation": "Bir şeyler içmeye gidelim mi?"
         }
       ]
     },
@@ -375,6 +717,11 @@
           "text": "Ich will Wasser.",
           "phonetic": "iç vil vasır",
           "translation": "Su istiyorum."
+        },
+        {
+          "text": "Sie will einen Kaffee.",
+          "phonetic": "zi vil aynın kafe",
+          "translation": "O bir kahve istiyor."
         }
       ]
     },
@@ -387,6 +734,11 @@
           "text": "Sprechen Sie Deutsch?",
           "phonetic": "şpreçın zi doyç",
           "translation": "Almanca konuşuyor musunuz?"
+        },
+        {
+          "text": "Er spricht sehr schnell.",
+          "phonetic": "er şpriçt zer şnel",
+          "translation": "Çok hızlı konuşuyor."
         }
       ]
     },
@@ -399,6 +751,11 @@
           "text": "Wie ist dein Name?",
           "phonetic": "vi ist dayn name",
           "translation": "Adın ne?"
+        },
+        {
+          "text": "Mein Name ist Tom.",
+          "phonetic": "mayn name ist tom",
+          "translation": "Adım Tom."
         }
       ]
     },
@@ -411,6 +768,21 @@
           "text": "Ich wohne in einer Stadt.",
           "phonetic": "iç vone in ayner ştat",
           "translation": "Bir şehirde yaşıyorum."
+        },
+        {
+          "text": "Berlin ist eine große Stadt.",
+          "phonetic": "berlin ist ayne grose ştat",
+          "translation": "Berlin büyük bir şehir."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "in der Stadt",
+          "phonetic": "in der ştat",
+          "translation": "şehirde",
+          "exampleText": "Wir treffen uns in der Stadt.",
+          "examplePhonetic": "vir trefın uns in der ştat",
+          "exampleTranslation": "Şehirde buluşuyoruz."
         }
       ]
     },
@@ -423,6 +795,11 @@
           "text": "Ein interessantes Buch.",
           "phonetic": "ayn interesantes buh",
           "translation": "İlginç bir kitap."
+        },
+        {
+          "text": "Ich lese ein Buch.",
+          "phonetic": "iç leze ayn buh",
+          "translation": "Bir kitap okuyorum."
         }
       ]
     },
@@ -435,6 +812,21 @@
           "text": "Die Schule ist geschlossen.",
           "phonetic": "di şule ist geşlosın",
           "translation": "Okul kapalı."
+        },
+        {
+          "text": "Die Kinder gehen zur Schule.",
+          "phonetic": "di kindır gehın tsur şule",
+          "translation": "Çocuklar okula gidiyor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "in die Schule gehen",
+          "phonetic": "in di şule gehın",
+          "translation": "okula gitmek",
+          "exampleText": "Meine Tochter geht in die Schule.",
+          "examplePhonetic": "mayne tohtır get in di şule",
+          "exampleTranslation": "Kızım okula gidiyor."
         }
       ]
     },
@@ -447,6 +839,21 @@
           "text": "Ich gehe zur Arbeit.",
           "phonetic": "iç gehe tsur arbayt",
           "translation": "İşe gidiyorum."
+        },
+        {
+          "text": "Meine Arbeit ist schwer.",
+          "phonetic": "mayne arbayt ist şver",
+          "translation": "İşim zor."
+        }
+      ],
+      "expressions": [
+        {
+          "text": "bei der Arbeit",
+          "phonetic": "bay der arbayt",
+          "translation": "işte",
+          "exampleText": "Ich bin gerade bei der Arbeit.",
+          "examplePhonetic": "iç bin gerade bay der arbayt",
+          "exampleTranslation": "Şu an işteyim."
         }
       ]
     },
@@ -459,6 +866,11 @@
           "text": "Eins, zwei, drei.",
           "phonetic": "ayns, tsvay, dray",
           "translation": "Bir, iki, üç."
+        },
+        {
+          "text": "Es ist Viertel nach eins.",
+          "phonetic": "es ist firtıl nah ayns",
+          "translation": "Saat biri çeyrek geçiyor."
         }
       ]
     },
@@ -471,6 +883,11 @@
           "text": "Ich habe zwei Kinder.",
           "phonetic": "iç habe tsvay kindır",
           "translation": "İki çocuğum var."
+        },
+        {
+          "text": "Zwei Kaffee, bitte.",
+          "phonetic": "tsvay kafe, bite",
+          "translation": "İki kahve, lütfen."
         }
       ]
     },
@@ -483,6 +900,11 @@
           "text": "Es gibt drei Katzen.",
           "phonetic": "es gipt dray katsın",
           "translation": "Üç kedi var."
+        },
+        {
+          "text": "Es ist drei Uhr.",
+          "phonetic": "es ist dray ur",
+          "translation": "Saat üç."
         }
       ]
     }

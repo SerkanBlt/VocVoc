@@ -35,7 +35,7 @@
   /* ---------- texts (Turkish and English; the other interface languages show English) ---------- */
   const TEXT={
     tr:{
-      nav:'Ana gezinme',today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistik',profile:'Profil',back:'Geri',menu:'Menü',menuClose:'Menüyü kapat',
+      nav:'Ana gezinme',today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistik',profile:'Profil',back:'Geri',menu:'Menü',menuClose:'Menüyü kapat',addedWords:'Eklenen kelimeler',photoAdd:'Fotoğraf ekle',photoChange:'Fotoğrafı değiştir',photoRemove:'Fotoğrafı kaldır',photoTitle:'Profil fotoğrafı',photoHelp:'Sürükleyerek yerleştir, iki parmakla veya kaydırıcıyla yakınlaştır. Dairenin içinde kalan kısım kullanılır.',photoZoom:'Yakınlaştır',photoStage:'Fotoğraf alanı: oklarla kaydır, + ve - ile yakınlaştır',photoSave:'Kaydet',photoCancel:'Vazgeç',photoBad:'Bu dosya bir resim olarak açılamadı. En fazla 15 MB bir resim seç.',photoSaveFailed:'Fotoğraf kaydedilemedi: bu cihazda yeterli yer yok.',dayWordsLabel:'{day}, {kind}: {n} kelime. Kelimeleri göster',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} kelime',dayWordsMore:'ve {n} kelime daha',
       authTitle:'VocVoc',authSub:'Kelimelerini cihazında öğren ve tekrar et.',authName:'Görünen ad (isteğe bağlı)',authGoogle:'Google ile devam et (simülasyon)',authGuest:'Misafir olarak devam et',
       authNote:'Simülasyon: gerçek hesap ve sunucu yok. Bilgilerin yalnızca bu cihazda kalır.',demoName:'Demo Kullanıcı',
       studyTitle:'Çalış',studyTest:'Test',studyTestSub:'{n} aktif kelimeden 10 soru',studyRecall:'Hatırla',studyRecallSub:'{n} ezberlediğin kelimeyi sına',studyFlip:'Flip',studyFlipSub:'Kartları çevirerek tekrar et',
@@ -59,17 +59,17 @@
       statsTests:'Testler',testsCount:'Test',testsAccuracy:'Ortalama başarı',testsBest:'En iyi',testsNone:'Henüz tamamlanmış test yok. Bir test bitirince sonuçların burada görünür.',lastTests:'Son testler',modeActive:'Test',modeRecall:'Hatırla',
       statsAnalysis:'Geçmiş analizi',hardestTitle:'En çok yanıldığın kelimeler',hardestNone:'Henüz yanlış yaptığın kelime yok.',speedTitle:'Ortalama ezberleme süresi',speedValue:'{n} gün ({m} kelimeye göre)',speedNone:'Henüz ezberlenmiş kelime yok.',
       statsFootnote:'Rakamlar kelimelerin eklenme ve ezberlenme zamanlarından ve tamamladığın testlerden hesaplanır. Arşive aldığın kelimeler ezberlenen sayısına girmez. Test geçmişi ve rozetler bu cihazda tutulur, yedeğe girmez.',
-      badgesSummary:'{n} / {m} rozet kazanıldı',badgeEarned:'Kazanıldı: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'Yeni rozet!',newBadgesTitle:'{n} yeni rozet!',
+      badgesSummary:'{n} / {m} rozet kazanıldı',badgesEarned:'Kazandıkların',badgesStarted:'Başladıkların',badgesWaiting:'Bekleyenler',badgesNoneEarned:'Henüz kazandığın rozet yok. Bir kelimeyi ezberlediğinde ilk rozetin gelir.',badgesNoneStarted:'Başladığın ama henüz kazanmadığın rozet yok.',badgesNoneWaiting:'Bekleyen rozet kalmadı: hepsine başladın.',badgeEarned:'Kazanıldı: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'Yeni rozet!',newBadgesTitle:'{n} yeni rozet!',
       b_memo1:'İlk adım',bd_memo1:'Bir kelimeyi ezberle.',b_memo10:'On kelime',bd_memo10:'10 kelime ezberle.',b_memo50:'Elli kelime',bd_memo50:'50 kelime ezberle.',b_memo100:'Yüz kelime',bd_memo100:'100 kelime ezberle.',b_memo500:'Kelime ustası',bd_memo500:'500 kelime ezberle.',
       b_words50:'Koleksiyoncu',bd_words50:'Listene 50 kelime ekle.',b_test1:'İlk test',bd_test1:'Bir test tamamla.',b_test10:'Düzenli çalışan',bd_test10:'10 test tamamla.',b_perfect:'Kusursuz',bd_perfect:'Bir testi 10/10 bitir.',b_recall8:'Güçlü hafıza',bd_recall8:'Hatırla testinde en az 8/10 yap.',
       b_streak3:'Isınma',bd_streak3:'3 gün üst üste çalış.',b_streak7:'Bir hafta',bd_streak7:'7 gün üst üste çalış.',b_streak30:'Bir ay',bd_streak30:'30 gün üst üste çalış.',b_goal1:'Hedef tamam',bd_goal1:'Günlük kelime hedefine ulaş.',
       packTitle:'Hazır kelimeler',packLevel:'Başlangıç (A1-A2)',packProgress:'{n} / {m} kelime eklendi',packLoading:'Paket indiriliyor…',packOffline:'Paket indirilemedi. İnternete bağlanınca yeniden denenir.',
       packNone:'Bu dil çifti için hazır paket henüz yok. Kendi API anahtarınla yeni kelime ekleyebilirsin.',packDone:'Paketteki tüm kelimeleri ekledin. Yeni kelime için kendi API anahtarını kullanabilirsin.',packAdded:'{n} kelime eklendi.',
-      speakLabel:'Sesli oku: {text}',speakLocked:'Sesli okuma Premium ile açılır.',speakLockedLabel:'Sesli oku (Premium)',speakNoVoice:'Bu cihazda {language} sesi yok.',speakNone:'Bu tarayıcı sesli okumayı desteklemiyor.',
+      speakLabel:'Sesli oku: {text}',speakLocked:'Sesli okuma Premium ile açılır.',speakLockedLabel:'Sesli oku (Premium)',speakNoVoice:'Bu cihazda {language} sesi yok.',speakNone:'Bu tarayıcı sesli okumayı desteklemiyor.',speedNormal:'normal',speedSlow:'yavaş',speedFast:'hızlı',speakSpeed:'{text} ({speed})',
       aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
     },
     en:{
-      nav:'Main navigation',today:'Today',words:'Words',study:'Study',stats:'Stats',profile:'Profile',back:'Back',menu:'Menu',menuClose:'Close menu',
+      nav:'Main navigation',today:'Today',words:'Words',study:'Study',stats:'Stats',profile:'Profile',back:'Back',menu:'Menu',menuClose:'Close menu',addedWords:'Added words',photoAdd:'Add a photo',photoChange:'Change photo',photoRemove:'Remove photo',photoTitle:'Profile photo',photoHelp:'Drag to place it, pinch or use the slider to zoom. The part inside the circle is used.',photoZoom:'Zoom',photoStage:'Photo area: arrow keys move it, + and - zoom',photoSave:'Save',photoCancel:'Cancel',photoBad:'This file could not be opened as a picture. Choose a picture of up to 15 MB.',photoSaveFailed:'The photo could not be saved: there is not enough room on this device.',dayWordsLabel:'{day}, {kind}: {n} words. Show the words',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} words',dayWordsMore:'and {n} more',
       authTitle:'VocVoc',authSub:'Learn and review your words on your device.',authName:'Display name (optional)',authGoogle:'Continue with Google (simulation)',authGuest:'Continue as guest',
       authNote:'Simulation: there is no real account or server. Your information stays on this device.',demoName:'Demo user',
       studyTitle:'Study',studyTest:'Test',studyTestSub:'10 questions from {n} active words',studyRecall:'Recall',studyRecallSub:'Quiz yourself on {n} memorized words',studyFlip:'Flip',studyFlipSub:'Review by flipping cards',
@@ -93,13 +93,13 @@
       statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Average score',testsBest:'Best',testsNone:'No finished test yet. Your results appear here once you finish one.',lastTests:'Latest tests',modeActive:'Test',modeRecall:'Recall',
       statsAnalysis:'History analysis',hardestTitle:'Words you miss most',hardestNone:'No missed words yet.',speedTitle:'Average time to memorize',speedValue:'{n} days (from {m} words)',speedNone:'No memorized words yet.',
       statsFootnote:'The numbers come from when words were added and memorized and from the tests you finished. Archived words are not counted as memorized. Test history and badges are kept on this device and are not part of a backup.',
-      badgesSummary:'{n} / {m} badges earned',badgeEarned:'Earned: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'New badge!',newBadgesTitle:'{n} new badges!',
+      badgesSummary:'{n} / {m} badges earned',badgesEarned:'Earned',badgesStarted:'Started',badgesWaiting:'Waiting',badgesNoneEarned:'No badge earned yet. Memorize a word and your first one arrives.',badgesNoneStarted:'No badge is under way that you have not earned yet.',badgesNoneWaiting:'No badge is waiting: you have started them all.',badgeEarned:'Earned: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'New badge!',newBadgesTitle:'{n} new badges!',
       b_memo1:'First step',bd_memo1:'Memorize a word.',b_memo10:'Ten words',bd_memo10:'Memorize 10 words.',b_memo50:'Fifty words',bd_memo50:'Memorize 50 words.',b_memo100:'Hundred words',bd_memo100:'Memorize 100 words.',b_memo500:'Word master',bd_memo500:'Memorize 500 words.',
       b_words50:'Collector',bd_words50:'Add 50 words to your list.',b_test1:'First test',bd_test1:'Complete a test.',b_test10:'Regular',bd_test10:'Complete 10 tests.',b_perfect:'Flawless',bd_perfect:'Finish a test 10/10.',b_recall8:'Strong memory',bd_recall8:'Score at least 8/10 in a Recall test.',
       b_streak3:'Warm-up',bd_streak3:'Study 3 days in a row.',b_streak7:'One week',bd_streak7:'Study 7 days in a row.',b_streak30:'One month',bd_streak30:'Study 30 days in a row.',b_goal1:'Goal reached',bd_goal1:'Reach your daily word goal.',
       packTitle:'Ready-made words',packLevel:'Beginner (A1-A2)',packProgress:'{n} / {m} words added',packLoading:'Downloading the pack…',packOffline:'The pack could not be downloaded. It is tried again when you are online.',
       packNone:'There is no ready-made pack for this language pair yet. You can add new words with your own API key.',packDone:'You have added every word of the pack. You can use your own API key for new words.',packAdded:'{n} words added.',
-      speakLabel:'Read aloud: {text}',speakLocked:'Read-aloud comes with Premium.',speakLockedLabel:'Read aloud (Premium)',speakNoVoice:'There is no {language} voice on this device.',speakNone:'This browser does not support read-aloud.',
+      speakLabel:'Read aloud: {text}',speakLocked:'Read-aloud comes with Premium.',speakLockedLabel:'Read aloud (Premium)',speakNoVoice:'There is no {language} voice on this device.',speakNone:'This browser does not support read-aloud.',speedNormal:'normal',speedSlow:'slow',speedFast:'fast',speakSpeed:'{text} ({speed})',
       aboutTitle:'About',version:'Version',uiMode:'Interface',uiProto:'New interface (prototype)',aboutSim:'Sign-in, Premium and payment in this version are simulations: there is no real account, server or payment.'
     }
   };
@@ -108,13 +108,13 @@
     privacy:{
       tr:{title:'Gizlilik Politikası',banner:'Taslak. Yayınlamadan önce iletişim bilgileri, veri sorumlusu, yaş sınırı ve hukuki gözden geçirme eklenmelidir.',sections:[
         {h:'Kısaca',p:["VocVoc'ta hesap, reklam, izleme veya analiz yoktur. Kelimelerin, ilerlemen ve ayarların yalnızca bu cihazda saklanır."]},
-        {h:'Cihazında saklananlar',p:['Kelime listen, ezber ve arşiv durumun ve ayarların tarayıcının yerel depolamasında (IndexedDB ve localStorage) tutulur ve bize gönderilmez.','Yedeği sen dışa aktarırsın; dosya senin kontrolündedir. Verileri silmek için Ayarlar\'daki "İlerlemeyi sıfırla"yı kullan ya da uygulamanın/tarayıcının verilerini temizle.']},
+        {h:'Cihazında saklananlar',p:['Kelime listen, ezber ve arşiv durumun, ayarların ve (eklediysen) profil fotoğrafın tarayıcının yerel depolamasında (IndexedDB ve localStorage) tutulur ve bize gönderilmez.','Yedeği sen dışa aktarırsın; dosya senin kontrolündedir. Verileri silmek için Ayarlar\'daki "İlerlemeyi sıfırla"yı kullan ya da uygulamanın/tarayıcının verilerini temizle.']},
         {h:'Yapay zekâ (kendi anahtarınla)',p:['Yeni bir kelime aradığında veya günlük kelime istediğinde, yazdığın kelime ve istem Google\'ın Gemini API\'sine gönderilir. Bu istek senin kendi API anahtarınla yapılır ve Google\'ın koşullarına tabidir.','API anahtarın yalnızca bu cihazda saklanır, yalnızca Google\'a giden istekte kullanılır ve dışa aktarılan yedeklere girmez.']},
         {h:'Premium (planlanan)',p:['Premium abonelik Google Play üzerinden satın alınır; ödeme bilgilerini biz görmeyiz. Dahili yapay zekâ kullanıldığında istekler bizim sunucumuz üzerinden Google\'a iletilecektir. Bu bölüm Premium yayınlanmadan önce güncellenecektir. Bu sürümde gerçek ödeme ve sunucu yoktur (simülasyon).']},
         {h:'İletişim',p:['[destek e-postası eklenecek]']}]},
       en:{title:'Privacy Policy',banner:'Draft. Contact details, the data controller, an age limit and a legal review must be added before release.',sections:[
         {h:'In short',p:['VocVoc has no accounts, ads, tracking or analytics. Your words, progress and settings are stored only on this device.']},
-        {h:'What stays on your device',p:["Your word list, memorized and archive status and settings are kept in the browser's local storage (IndexedDB and localStorage) and are not sent to us.",'You export backups yourself; the file is under your control. To delete your data use "Reset progress" in Settings or clear the app\'s or browser\'s data.']},
+        {h:'What stays on your device',p:["Your word list, memorized and archive status, settings and (if you added one) profile photo are kept in the browser's local storage (IndexedDB and localStorage) and are not sent to us.",'You export backups yourself; the file is under your control. To delete your data use "Reset progress" in Settings or clear the app\'s or browser\'s data.']},
         {h:'AI (with your own key)',p:["When you search for a new word or ask for daily words, the word you typed and the prompt are sent to Google's Gemini API. The request is made with your own API key and is subject to Google's terms.",'Your API key is stored only on this device, is used only in the request to Google, and is never part of an exported backup.']},
         {h:'Premium (planned)',p:['A Premium subscription is bought through Google Play; we do not see your payment details. When the built-in AI is used, requests will be passed to Google through our server. This section will be updated before Premium is released. This version has no real payment or server (simulation).']},
         {h:'Contact',p:['[support e-mail to be added]']}]}
@@ -300,17 +300,19 @@
   }
   function syncPack(){try{if(currentPair()!==packState.pair)refreshPack();}catch(_){}}               // the language pair changed
   const knownWord=word=>!!VocVocData.getWordProgress(word);
+  let dailyWords=[];                                                             // what the last press of the Daily button added: shown as pills under it
   // The next words of the pack, added the way the Daily words are (they count towards the daily goal). Returns false when the AI Daily should go on.
   async function addFromPack(){
     const remaining=getDailyLimit()-getDailyUsage().count;
     if(remaining<=0){showError(legacyText('dailyLimitReached'));return true;}
     const words=VocVocPacks.nextWords(packState.pack,knownWord,Math.min(10,remaining));
     if(!words.length){
-      if(VocVocPlan.ownKeyActive()&&VocVocSecrets.getApiKey())return false;                           // the pack is used up: carry on with the user's own key
+      if(VocVocSecrets.getApiKey())return false;                                                       // the pack is used up: carry on with the key (the built-in AI of Premium does not exist yet, so the Premium simulation uses the key too)
       toast(t('packDone'));return true;
     }
     try{await VocVocData.addWordBatch(words,{dailyCount:words.length});}catch(error){reportStorageError(error);return true;}
     quizSession=null;loadSavedWords();renderHistory();renderAllLocal();
+    dailyWords=words.map(entry=>entry.word);refreshDashboard();
     toast(fill(t('packAdded'),{n:words.length}));
     return true;
   }
@@ -321,8 +323,19 @@
       else if(packLoad)await packLoad;
       if(packState.status==='ready'&&await addFromPack())return;
     }finally{packBusy=false;}
-    addDailyWords();                                                                                   // no pack for this pair: the app's own Daily (needs the user's API key)
+    const before=new Set(getHistory());
+    await addDailyWords();                                                                             // no pack, or the pack is used up: the app's own Daily (needs the user's API key)
+    const added=getHistory().filter(word=>!before.has(word));
+    if(added.length){dailyWords=added;refreshDashboard();}
   }
+  function addedPills(){
+    const words=dailyWords.filter(word=>knownWord(word)&&!isArchivedWord(word));
+    if(!words.length)return null;
+    return h('div',{class:'v2-added'},h('p',{class:'v2-goal-label',text:t('addedWords')}),
+      h('ul',{class:'v2-pills','aria-label':t('addedWords')},words.map(word=>h('li',{},wordPill(word)))));
+  }
+  // A word as a pill: the app's own delegated handler opens its panel, like a chip of the History list.
+  const wordPill=(word,extra)=>h('button',{type:'button',class:'history-chip ui-pill v2-wordpill','data-history-word':encodeDomText(word)},h('span',{lang:getTargetLanguageCode(),text:word}),extra?[' ',extra]:null);
   function packCard(){
     if(packState.status==='idle')return null;
     let text,bar=null;
@@ -340,12 +353,14 @@
   // Buttons are added next to the words and example sentences of the cards, the word windows and Flip; the app's own markup is not touched.
   const SPEECH_TAGS={tr:'tr-TR',en:'en-US',fr:'fr-FR',de:'de-DE',es:'es-ES',it:'it-IT'};
   const LANGUAGE_NAMES={tr:{tr:'Türkçe',en:'İngilizce',fr:'Fransızca',de:'Almanca',es:'İspanyolca',it:'İtalyanca'},en:{tr:'Turkish',en:'English',fr:'French',de:'German',es:'Spanish',it:'Italian'}};
-  let speakingButton=null;
+  const SPEEDS={normal:1,slow:0.6,fast:1.3},SPEED_TEXT={normal:'speedNormal',slow:'speedSlow',fast:'speedFast'};
+  let speakingButton=null,speakToken=0,lastSpoken={text:'',step:-1};
   const speakText=button=>String(typeof button.speakText==='function'?button.speakText():'').trim();
   function syncSpeakButton(button){
     const locked=!VocVocPlan.has('speech');
     button.classList.toggle('v2-speak-free',locked);
-    button.setAttribute('aria-label',locked?t('speakLockedLabel'):fill(t('speakLabel'),{text:speakText(button)}));
+    const label=fill(t('speakLabel'),{text:speakText(button)});
+    button.setAttribute('aria-label',locked?t('speakLockedLabel'):(button.dataset.speed?fill(t('speakSpeed'),{text:label,speed:t(SPEED_TEXT[button.dataset.speed])}):label));
   }
   function speakButton(getText){
     const lock=icon('lock');lock.classList.add('v2-speak-lock');
@@ -358,21 +373,30 @@
     speakingButton=button;
     if(button){button.setAttribute('aria-pressed','true');button.classList.add('v2-speaking');}
   }
-  function stopSpeaking(){if(speakingButton){try{window.speechSynthesis?.cancel();}catch(_){}setSpeaking(null);}}
+  function stopSpeaking(){speakToken++;if(speakingButton){try{window.speechSynthesis?.cancel();}catch(_){}setSpeaking(null);}}
+  // The same text pressed again is read at the next speed: normal, then slow, then fast, slow, fast ... A different text starts at normal again.
+  function nextSpeed(text){
+    const step=lastSpoken.text===text?lastSpoken.step+1:0;
+    lastSpoken={text,step};
+    return step===0?'normal':(step%2===1?'slow':'fast');
+  }
   function speak(button,text){
     const synth=window.speechSynthesis;
     if(!synth||typeof SpeechSynthesisUtterance==='undefined'){toast(t('speakNone'));return;}
-    if(speakingButton===button){stopSpeaking();return;}                                               // a second press stops it
     synth.cancel();
     const code=getTargetLanguageCode(),tag=SPEECH_TAGS[code]||code;
     const voices=(synth.getVoices&&synth.getVoices())||[];
     const matching=voices.filter(voice=>String(voice.lang||'').replace('_','-').toLowerCase().startsWith(code));
     if(voices.length&&!matching.length){toast(fill(t('speakNoVoice'),{language:(LANGUAGE_NAMES[lang()]||LANGUAGE_NAMES.en)[code]||code}));return;}
     const utterance=new SpeechSynthesisUtterance(text);
-    utterance.lang=tag;utterance.rate=0.9;
+    const speed=nextSpeed(text);
+    utterance.lang=tag;utterance.rate=SPEEDS[speed];
     const voice=matching.find(item=>item.localService&&String(item.lang).replace('_','-').toLowerCase()===tag.toLowerCase())||matching.find(item=>item.localService)||matching[0];
     if(voice)utterance.voice=voice;
-    utterance.onend=utterance.onerror=()=>{if(speakingButton===button)setSpeaking(null);};
+    const mine=++speakToken;                                                                         // an older reading that ends late must not switch the new one off
+    utterance.onend=utterance.onerror=()=>{if(speakToken===mine&&speakingButton===button)setSpeaking(null);};
+    for(const other of document.querySelectorAll('.v2-speak[data-speed]'))if(other!==button){delete other.dataset.speed;delete other.dataset.rate;syncSpeakButton(other);}
+    button.dataset.speed=speed;button.dataset.rate=SPEEDS[speed]+'×';syncSpeakButton(button);
     setSpeaking(button);synth.speak(utterance);
   }
   function onSpeak(button){
@@ -382,7 +406,7 @@
   }
   // [where to put a button, how to find its text]
   const SPEECH_TARGETS=[
-    ['.main-word-body .shared-detail-content',host=>{const word=decodeDomText(host.closest('.main-word-card')?.dataset.word||'');if(!word)return;host.prepend(h('div',{class:'v2-speak-row'},speakButton(()=>word)));}],
+    ['.main-word-card',host=>{const word=decodeDomText(host.dataset.word||'');if(!word)return;const button=speakButton(()=>word);button.classList.add('v2-speak-corner');host.classList.add('v2-has-speak');host.append(button);}],
     ['.word-panel-fixed-header .word-title',host=>{const word=host.textContent.trim();if(word)host.after(speakButton(()=>word));}],
     ['.example-item .fr-text,.expression-item .fr-text',host=>{const text=host.textContent.trim();if(text)host.append(speakButton(()=>text));}],
     ['#flipOverlay .flip-panel',host=>host.append(speakButton(()=>document.querySelector('#flipOverlay [data-flip-face="front"] .flip-word-text')?.textContent||''))]
@@ -448,7 +472,8 @@
         h('p',{class:'v2-goal-label',text:t('goalTitle')}),
         h('p',{class:'v2-goal-value',text:unlimited?fill(t('goalUnlimited'),{n:used}):fill(t('goalValue'),{n:used,m:limit})}),
         bar,
-        h('button',{type:'button',class:'ui-button ui-button-success','data-v2-focus':'daily',onclick:()=>{addDailyFromPackOrAi();}},t('addDaily'))),
+        h('button',{type:'button',class:'ui-button ui-button-success','data-v2-focus':'daily',onclick:()=>{addDailyFromPackOrAi();}},t('addDaily')),
+        addedPills()),
       packCard(),
       h('ul',{class:'v2-statline'},tile(active,t('statActive')),tile(memorized,t('statMemorized')),tile(memorizedToday,t('statToday'))),
       weekSection(currentStats().last7),badgesSection()));
@@ -503,17 +528,56 @@
   const locale=()=>lang()==='tr'?'tr-TR':'en-GB';
   const formatDay=(day,options)=>new Date(day+'T12:00:00').toLocaleDateString(locale(),options||{day:'numeric',month:'short',year:'numeric'});
   const tile=(value,label)=>h('li',{class:'v2-stat'},h('strong',{text:String(value)}),h('span',{text:label}));
+  const DAY_LONG={weekday:'long',day:'numeric',month:'long'},HOVER_MS=650;
+  let dayPopup=null;
   function weekSection(days){
     const peak=Math.max(1,...days.map(day=>Math.max(day.added,day.memorized)));
     const weekday=day=>formatDay(day,{weekday:'short'});
-    const column=(value,kind)=>{const bar=h('span',{class:'v2-col v2-col-'+kind});bar.style.setProperty('--h',Math.round(value/peak*100)+'%');return bar;};
+    // A bar with something in it is a button: pressing it, or resting a mouse on it for a moment, shows the words of that day.
+    const column=(day,kind)=>{
+      const value=kind==='added'?day.added:day.memorized,bar=h('span',{class:'v2-col v2-col-'+kind});
+      bar.style.setProperty('--h',Math.round(value/peak*100)+'%');
+      if(!value)return h('span',{class:'v2-slot','aria-hidden':'true'},bar);
+      let timer=0;
+      const button=h('button',{type:'button',class:'v2-slot v2-slot-btn','aria-haspopup':'dialog',
+        'aria-label':fill(t('dayWordsLabel'),{day:formatDay(day.day,DAY_LONG),kind:t(kind==='added'?'legendAdded':'legendMemorized'),n:value}),
+        onclick:()=>{clearTimeout(timer);openDayWords(day,kind,button);}},bar);
+      button.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse')timer=setTimeout(()=>openDayWords(day,kind,button),HOVER_MS);});
+      button.addEventListener('pointerleave',()=>clearTimeout(timer));
+      return button;
+    };
     return h('section',{class:'v2-card'},h('h2',{text:t('statsWeek')}),
       h('ol',{class:'v2-days'},days.map(day=>h('li',{class:'v2-day'},
         h('span',{class:'sr-only',text:fill(t('dayLabel'),{day:weekday(day.day),added:day.added,memorized:day.memorized,tests:day.tests})}),
-        h('span',{class:'v2-bars','aria-hidden':'true'},column(day.added,'added'),column(day.memorized,'memorized')),
+        h('span',{class:'v2-bars'},column(day,'added'),column(day,'memorized')),
         h('span',{class:'v2-day-label','aria-hidden':'true',text:weekday(day.day)}),
         h('span',{class:'v2-day-num','aria-hidden':'true',text:day.added+'/'+day.memorized})))),
       h('p',{class:'v2-legend'},h('span',{class:'v2-key v2-key-added','aria-hidden':'true'}),' '+t('legendAdded')+'   ',h('span',{class:'v2-key v2-key-memorized','aria-hidden':'true'}),' '+t('legendMemorized')));
+  }
+  // The words of one day in a panel, as pills: pressing a pill opens that word's own panel above it, like a chip of the History list.
+  function openDayWords(day,kind,opener){
+    if(dayPopup&&dayPopup.day===day.day&&dayPopup.kind===kind)return;
+    closeDayWords(false);
+    const words=(kind==='added'?day.addedWords:day.memorizedWords)||[],count=kind==='added'?day.added:day.memorized;
+    const node=h('div',{id:'v2DayWords',class:'v2-popup',role:'dialog','aria-modal':'true','aria-labelledby':'v2DayWordsTitle',lang:lang()},
+      h('div',{class:'v2-scrim',onclick:()=>closeDayWords()}),
+      h('div',{class:'v2-popup-card'},
+        h('div',{class:'v2-popup-head'},
+          h('h2',{id:'v2DayWordsTitle',text:fill(t('dayWordsTitle'),{day:formatDay(day.day,DAY_LONG),kind:t(kind==='added'?'legendAdded':'legendMemorized')})}),
+          h('button',{type:'button',class:'v2-popup-close','aria-label':t('quizClose'),onclick:()=>closeDayWords()},'×')),
+        h('p',{class:'v2-muted',text:fill(t('dayWordsCount'),{n:count})}),
+        h('ul',{class:'v2-pills'},words.map(word=>h('li',{},knownWord(word)&&!isArchivedWord(word)?wordPill(word):h('span',{class:'ui-pill v2-wordpill v2-wordplain',lang:getTargetLanguageCode(),text:word})))),
+        count>words.length?h('p',{class:'v2-muted',text:fill(t('dayWordsMore'),{n:count-words.length})}):null));
+    document.body.append(node);
+    screen.inert=true;bar.inert=true;
+    dayPopup={day:day.day,kind,node,opener};
+    node.querySelector('.v2-popup-close').focus({preventScroll:true});
+  }
+  function closeDayWords(restoreFocus=true){
+    if(!dayPopup)return;
+    const {node,opener}=dayPopup;dayPopup=null;
+    node.remove();screen.inert=false;bar.inert=false;
+    if(restoreFocus&&opener?.isConnected)opener.focus({preventScroll:true});
   }
   function curveSection(series){
     const NS='http://www.w3.org/2000/svg',width=300,height=80,pad=4;
@@ -547,7 +611,9 @@
     return h('section',{class:'v2-card'},h('h2',{text:t('statsAnalysis')}),
       h('h3',{text:t('hardestTitle')}),
       stats.tests.hardest.length
-        ?h('ul',{class:'v2-chips'},stats.tests.hardest.map(item=>h('li',{class:'v2-chip',lang:getTargetLanguageCode()},item.word,' ',h('span',{class:'v2-muted',text:'×'+item.count}))))
+        ?h('ul',{class:'v2-chips'},stats.tests.hardest.map(item=>knownWord(item.word)&&!isArchivedWord(item.word)
+          ?h('li',{},wordPill(item.word,h('span',{class:'v2-muted',text:'×'+item.count})))
+          :h('li',{class:'v2-chip',lang:getTargetLanguageCode()},item.word,' ',h('span',{class:'v2-muted',text:'×'+item.count}))))
         :h('p',{class:'v2-muted',text:t('hardestNone')}),
       h('h3',{text:t('speedTitle')}),
       stats.speed.medianDays===null
@@ -576,10 +642,40 @@
         done?h('p',{class:'v2-badge-date',text:fill(t('badgeEarned'),{date:formatDay(badge.earnedOn)})}):h('p',{class:'v2-muted',text:fill(t('badgeProgress'),{n:badge.progress,m:badge.target})}),
         bar));
   }
+  // Three tabs: the badges you have earned (newest first), the ones you have started (closest first) and the ones still waiting. The tab you pick stays picked.
+  let badgeTab=null;
+  const BADGE_TABS=[['earned','badgesEarned','badgesNoneEarned'],['started','badgesStarted','badgesNoneStarted'],['waiting','badgesWaiting','badgesNoneWaiting']];
+  function badgeGroups(badges){
+    const ratio=badge=>badge.progress/badge.target;
+    return {
+      earned:badges.filter(badge=>badge.earnedOn).sort((a,b)=>b.earnedOn.localeCompare(a.earnedOn)),
+      started:badges.filter(badge=>!badge.earnedOn&&badge.progress>0).sort((a,b)=>ratio(b)-ratio(a)),
+      waiting:badges.filter(badge=>!badge.earnedOn&&badge.progress<=0)
+    };
+  }
+  function selectBadgeTab(id,{focus=false}={}){
+    badgeTab=id;
+    const current=document.querySelector('.v2-badges-section');if(!current)return;
+    const fresh=badgesSection();current.replaceWith(fresh);
+    if(focus)fresh.querySelector('[role="tab"][aria-selected="true"]')?.focus({preventScroll:true});
+  }
   function badgesSection(){                                                      // the whole list, at the end of Today
-    const badges=currentStats().badges,earned=badges.filter(badge=>badge.earnedOn).length;
-    const ordered=[...badges].sort((a,b)=>(a.earnedOn?0:1)-(b.earnedOn?0:1)||(a.earnedOn?b.earnedOn.localeCompare(a.earnedOn):b.progress/b.target-a.progress/a.target));
-    return h('section',{class:'v2-badges-section','aria-labelledby':'v2BadgesTitle'},h('h2',{id:'v2BadgesTitle',text:t('badgesTitle')}),h('p',{class:'v2-muted',text:fill(t('badgesSummary'),{n:earned,m:badges.length})}),h('ul',{class:'v2-badges'},ordered.map(badgeCard)));
+    const badges=currentStats().badges,groups=badgeGroups(badges);
+    if(!badgeTab)badgeTab=groups.earned.length?'earned':(groups.started.length?'started':'waiting');
+    const tabs=BADGE_TABS.map(([id])=>id);
+    const move=(event,id)=>{                                                       // arrows, Home and End move between the tabs
+      const index=tabs.indexOf(id),step={ArrowRight:1,ArrowLeft:-1}[event.key];
+      const target=event.key==='Home'?tabs[0]:event.key==='End'?tabs[tabs.length-1]:step?tabs[(index+step+tabs.length)%tabs.length]:null;
+      if(target){event.preventDefault();selectBadgeTab(target,{focus:true});}
+    };
+    const [,,noneKey]=BADGE_TABS.find(([id])=>id===badgeTab),list=groups[badgeTab];
+    return h('section',{class:'v2-badges-section','aria-labelledby':'v2BadgesTitle'},h('h2',{id:'v2BadgesTitle',text:t('badgesTitle')}),
+      h('p',{class:'v2-muted',text:fill(t('badgesSummary'),{n:groups.earned.length,m:badges.length})}),
+      h('div',{class:'v2-subtabs',role:'tablist','aria-label':t('badgesTitle')},BADGE_TABS.map(([id,key])=>
+        h('button',{type:'button',role:'tab',id:'v2BadgeTab-'+id,class:'v2-subtab','aria-selected':String(id===badgeTab),'aria-controls':'v2BadgePanel',tabindex:id===badgeTab?'0':'-1',onclick:()=>selectBadgeTab(id),onkeydown:event=>move(event,id)},
+          h('span',{text:t(key)}),' ',h('span',{class:'v2-subtab-count',text:String(groups[id].length)})))),
+      h('div',{id:'v2BadgePanel',role:'tabpanel','aria-labelledby':'v2BadgeTab-'+badgeTab},
+        list.length?h('ul',{class:'v2-badges'},list.map(badgeCard)):h('p',{class:'v2-muted v2-empty',text:t(noneKey)})));
   }
   function chipFor(plan){return h('span',{class:'v2-chip'+(plan==='premium'?' v2-premium':''),text:t(plan==='premium'?'planPremium':'planFree')});}
   function profileScreen(){
@@ -587,8 +683,13 @@
     const name=profile.name||t('guest');
     const row=(label,run,end,danger)=>h('li',{},h('button',{type:'button',class:'v2-row','data-danger':danger?'':null,onclick:run},h('span',{text:label}),end?h('span',{class:'v2-row-end',text:end}):null));
     return page(heading(t('profileTitle')),
-      h('div',{class:'v2-card v2-profile-head'},h('div',{class:'v2-avatar','aria-hidden':'true',text:name.trim().charAt(0).toUpperCase()||'V'}),
-        h('div',{},h('p',{class:'v2-profile-name',text:name}),h('div',{},chipFor(VocVocPlan.get()),' ',h('span',{class:'v2-muted',text:t(profile.mode==='google-sim'?'modeGoogle':'modeGuest')})))),
+      h('div',{class:'v2-card'},
+        h('div',{class:'v2-profile-head'},h('div',{class:'v2-avatar','aria-hidden':'true'},photo?photoCanvas(56):(name.trim().charAt(0).toUpperCase()||'V')),
+          h('div',{},h('p',{class:'v2-profile-name',text:name}),h('div',{},chipFor(VocVocPlan.get()),' ',h('span',{class:'v2-muted',text:t(profile.mode==='google-sim'?'modeGoogle':'modeGuest')})))),
+        h('div',{class:'v2-actions'},
+          h('button',{type:'button',class:'ui-button ui-button-secondary','data-v2-focus':'photo',onclick:()=>document.getElementById('v2PhotoInput').click()},t(photo?'photoChange':'photoAdd')),
+          photo?h('button',{type:'button',class:'ui-button ui-button-secondary',onclick:removePhoto},t('photoRemove')):null),
+        h('input',{type:'file',id:'v2PhotoInput',accept:'image/*',hidden:true,onchange:event=>chosePhoto(event.target)})),
       h('ul',{class:'v2-rows'},
         row(t('rowPremium'),()=>navigate('premium'),'›'),
         row(t('rowSettings'),()=>{openModal();},'›')),
@@ -644,7 +745,7 @@
   let bar=null,drawer=null,menuButton=null,avatarButton=null,drawerItems=[];
   function syncChrome(current){
     const name=readProfile()?.name||t('guest');
-    avatarButton.firstChild.textContent=name.trim().charAt(0).toUpperCase()||'V';
+    avatarButton.firstChild.replaceChildren(photo?photoCanvas(36):(name.trim().charAt(0).toUpperCase()||'V'));
     avatarButton.setAttribute('aria-label',t('profile')+': '+name);
     menuButton.setAttribute('aria-label',t('menu'));
     drawer.setAttribute('aria-label',t('menu'));drawer.lang=lang();
@@ -667,7 +768,7 @@
   /* ---------- render ---------- */
   function render(moveFocus){
     const route=currentRoute();shown=route;
-    stopSpeaking();
+    stopSpeaking();closeDayWords(false);
     // Leaving the study pages ends what they started: a Test that was left is abandoned, an open Flip is closed.
     if(!QUIZ_ROUTES.includes(route)&&quizSession)quizSession=null;
     if(route!=='flip'&&flipSession)closeFlip();
@@ -682,6 +783,99 @@
     afterRender(route);
     // The Test and Flip put focus on their own first control (the app's keyboard design); every other page takes it on its heading.
     if(moveFocus&&!QUIZ_ROUTES.includes(route)&&route!=='flip')screen.querySelector('h1')?.focus({preventScroll:true});
+  }
+
+  /* ---------- profile photo (kept only on this device) ---------- */
+  // A picture is chosen from the device, moved and zoomed inside a circle and kept as a small square JPEG. The page's security policy allows no data: or
+  // blob: images, so the picture is decoded with createImageBitmap and drawn on canvases instead of being shown as an image.
+  const PHOTO_KEY='VOCVOC_SIM_PHOTO',PHOTO_SIZE=256,PHOTO_MAX_BYTES=15*1024*1024,MAX_ZOOM=5;
+  let photo=null,crop=null;                                                      // the decoded picture of the profile (or null), the open crop dialog (or null)
+  function dataUrlToBlob(url){
+    const [head,body]=String(url).split(',');
+    return new Blob([Uint8Array.from(atob(body||''),letter=>letter.charCodeAt(0))],{type:/^data:([^;]+)/.exec(head)?.[1]||'image/jpeg'});
+  }
+  function photoCanvas(size){                                                    // the picture, round, to fill a circle of this many CSS pixels
+    const canvas=document.createElement('canvas'),ratio=Math.min(2,window.devicePixelRatio||1);
+    canvas.width=canvas.height=Math.round(size*ratio);canvas.className='v2-photo';
+    canvas.getContext('2d').drawImage(photo,0,0,canvas.width,canvas.height);
+    return canvas;
+  }
+  async function loadPhoto(){
+    const stored=store.get(PHOTO_KEY);photo=null;
+    if(stored&&/^data:image\/jpeg;base64,/.test(stored)){try{photo=await createImageBitmap(dataUrlToBlob(stored));}catch(_){store.remove(PHOTO_KEY);}}
+    if(shown)syncChrome(TAB_OF[shown]);
+    if(shown==='profile'&&!crop)render(false);
+  }
+  function removePhoto(){store.remove(PHOTO_KEY);photo=null;syncChrome('profile');render(false);screen.querySelector('[data-v2-focus="photo"]')?.focus({preventScroll:true});}
+  async function chosePhoto(input){
+    const file=input.files&&input.files[0];input.value='';                       // the same file can be chosen again
+    if(!file)return;
+    let bitmap=null;
+    if(/^image\//.test(file.type)&&file.size<=PHOTO_MAX_BYTES&&typeof createImageBitmap==='function'){try{bitmap=await createImageBitmap(file);}catch(_){bitmap=null;}}
+    if(!bitmap){toast(t('photoBad'));return;}
+    openCrop(bitmap);
+  }
+  function closeCrop(){
+    if(!crop)return;
+    const {node,bitmap}=crop;crop=null;node.remove();bitmap.close?.();
+    screen.inert=false;bar.inert=false;
+    screen.querySelector('[data-v2-focus="photo"]')?.focus({preventScroll:true});
+  }
+  // The picture is drawn under a round window. Dragging moves it, two fingers, the wheel, the slider or + and - zoom it; it always covers the whole window.
+  function openCrop(bitmap){
+    closeCrop();
+    const side=Math.max(180,Math.min(300,Math.floor(Math.min(window.innerWidth,window.innerHeight)*0.78))),ratio=Math.min(2,window.devicePixelRatio||1);
+    const fit=side/Math.min(bitmap.width,bitmap.height),view={scale:fit,x:(side-bitmap.width*fit)/2,y:(side-bitmap.height*fit)/2};
+    const canvas=h('canvas',{class:'v2-crop-canvas',width:String(Math.round(side*ratio)),height:String(Math.round(side*ratio))}),context2d=canvas.getContext('2d');
+    const slider=h('input',{type:'range',min:'100',max:String(MAX_ZOOM*100),step:'1',value:'100','aria-label':t('photoZoom'),oninput:()=>zoomTo(fit*Number(slider.value)/100)});
+    const draw=()=>{
+      view.x=Math.min(0,Math.max(side-bitmap.width*view.scale,view.x));view.y=Math.min(0,Math.max(side-bitmap.height*view.scale,view.y));
+      context2d.setTransform(ratio,0,0,ratio,0,0);context2d.fillStyle='#fff';context2d.fillRect(0,0,side,side);
+      context2d.drawImage(bitmap,view.x,view.y,bitmap.width*view.scale,bitmap.height*view.scale);
+      slider.value=String(Math.round(view.scale/fit*100));
+    };
+    function zoomTo(scale,fx=side/2,fy=side/2){                                    // around a point (the middle, or between the fingers)
+      const next=Math.min(fit*MAX_ZOOM,Math.max(fit,scale)),k=next/view.scale;
+      view.x=fx-(fx-view.x)*k;view.y=fy-(fy-view.y)*k;view.scale=next;draw();
+    }
+    const stage=h('div',{class:'v2-crop-stage',tabindex:'0',role:'group','aria-label':t('photoStage')},canvas,h('div',{class:'v2-crop-mask','aria-hidden':'true'}));
+    stage.style.width=stage.style.height=side+'px';
+    const pointers=new Map();let pinch=0;
+    stage.addEventListener('pointerdown',event=>{stage.setPointerCapture(event.pointerId);pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});pinch=0;event.preventDefault();});
+    stage.addEventListener('pointermove',event=>{
+      const before=pointers.get(event.pointerId);if(!before)return;
+      const now={x:event.clientX,y:event.clientY};
+      if(pointers.size===1){view.x+=now.x-before.x;view.y+=now.y-before.y;pointers.set(event.pointerId,now);draw();return;}
+      pointers.set(event.pointerId,now);
+      const [a,b]=[...pointers.values()],distance=Math.hypot(a.x-b.x,a.y-b.y),box=stage.getBoundingClientRect();
+      if(pinch)zoomTo(view.scale*distance/pinch,(a.x+b.x)/2-box.left,(a.y+b.y)/2-box.top);
+      pinch=distance;
+    });
+    const release=event=>{pointers.delete(event.pointerId);pinch=0;};
+    stage.addEventListener('pointerup',release);stage.addEventListener('pointercancel',release);
+    stage.addEventListener('wheel',event=>{event.preventDefault();const box=stage.getBoundingClientRect();zoomTo(view.scale*Math.exp(-event.deltaY/400),event.clientX-box.left,event.clientY-box.top);},{passive:false});
+    stage.addEventListener('keydown',event=>{
+      const move={ArrowLeft:[12,0],ArrowRight:[-12,0],ArrowUp:[0,12],ArrowDown:[0,-12]}[event.key];
+      if(move){event.preventDefault();view.x+=move[0];view.y+=move[1];draw();}
+      else if(event.key==='+'||event.key==='='){event.preventDefault();zoomTo(view.scale*1.1);}
+      else if(event.key==='-'){event.preventDefault();zoomTo(view.scale/1.1);}
+    });
+    const save=async()=>{
+      const out=document.createElement('canvas');out.width=out.height=PHOTO_SIZE;
+      const outContext=out.getContext('2d');outContext.fillStyle='#fff';outContext.fillRect(0,0,PHOTO_SIZE,PHOTO_SIZE);
+      outContext.drawImage(bitmap,-view.x/view.scale,-view.y/view.scale,side/view.scale,side/view.scale,0,0,PHOTO_SIZE,PHOTO_SIZE);
+      const url=out.toDataURL('image/jpeg',0.85);
+      store.set(PHOTO_KEY,url);
+      if(store.get(PHOTO_KEY)!==url){toast(t('photoSaveFailed'));return;}         // the device had no room
+      closeCrop();await loadPhoto();syncChrome('profile');render(false);screen.querySelector('[data-v2-focus="photo"]')?.focus({preventScroll:true});
+    };
+    const node=h('div',{id:'v2Crop',class:'v2-crop',role:'dialog','aria-modal':'true','aria-labelledby':'v2CropTitle',lang:lang()},
+      h('div',{class:'v2-scrim',onclick:closeCrop}),
+      h('div',{class:'v2-crop-card'},h('h2',{id:'v2CropTitle',text:t('photoTitle')}),h('p',{class:'v2-muted',text:t('photoHelp')}),stage,
+        h('label',{class:'v2-crop-zoom'},h('span',{text:t('photoZoom')}),slider),
+        h('div',{class:'v2-actions'},h('button',{type:'button',class:'ui-button ui-button-secondary',onclick:closeCrop},t('photoCancel')),h('button',{type:'button',class:'ui-button ui-button-success',onclick:save},t('photoSave')))));
+    document.body.append(node);screen.inert=true;bar.inert=true;
+    crop={node,bitmap};draw();stage.focus({preventScroll:true});
   }
 
   /* ---------- simulated sign-in ---------- */
@@ -703,7 +897,7 @@
     auth.classList.remove('v2-open');auth.replaceChildren();setBackgroundInert(false);
     navigate('today');
   }
-  function signOut(){store.remove(PROFILE_KEY);openAuth();}
+  function signOut(){store.remove(PROFILE_KEY);store.remove(PHOTO_KEY);photo=null;openAuth();}
   function oldInterface(){store.remove(UI_KEY);location.hash='';location.reload();}
 
   /* ---------- start ---------- */
@@ -725,7 +919,10 @@
     root=h('div',{id:'v2Root',class:'v2-root'},bar,screen,drawer);
     auth=h('div',{id:'v2Auth',class:'v2-auth',role:'dialog','aria-modal':'true','aria-labelledby':'v2AuthTitle'});
     document.body.append(root,auth);
-    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('v2-open')){event.preventDefault();setDrawer(false);}});
+    loadPhoto();
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('v2-open')){event.preventDefault();setDrawer(false);}},true);
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&crop){event.preventDefault();closeCrop();}},true);
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&dayPopup&&!document.querySelector('.word-popup-overlay.open')){event.preventDefault();closeDayWords();}},true);
     // Today follows every change of the data
     evaluateBadges();
     refreshPack();

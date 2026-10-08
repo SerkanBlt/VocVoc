@@ -70,6 +70,7 @@ body.v2 .top-chrome header{display:none}
 
 /* Profile */
 .v2-profile-head{display:flex;align-items:center;gap:14px}
+.v2-card .v2-actions{margin:14px 0 0}
 .v2-avatar{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--primary);color:var(--bg);font-size:1.4rem;font-weight:700}
 .v2-profile-name{font-size:1.15rem;font-weight:700;margin:0 0 4px}
 .v2-page .v2-rows{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--ui-panel-radius,16px);overflow:hidden;margin:0 0 14px;padding:0;list-style:none}
@@ -129,7 +130,11 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
 .v2-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;list-style:none;margin:0;padding:0}
 .v2-page .v2-days li{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px}
 .v2-bars{display:flex;align-items:flex-end;gap:3px;height:84px;width:100%;justify-content:center}
-.v2-col{display:block;width:34%;max-width:14px;min-height:3px;height:var(--h,0%);border-radius:4px 4px 0 0}
+.v2-slot{flex:0 0 38%;max-width:22px;height:100%;display:flex;align-items:flex-end;justify-content:center;margin:0;padding:0;border:0;border-radius:6px;background:transparent}
+.v2-slot-btn{cursor:pointer}
+.v2-slot-btn:hover .v2-col,.v2-slot-btn:focus-visible .v2-col{filter:brightness(1.18)}
+.v2-slot-btn:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
+.v2-col{display:block;width:100%;max-width:14px;min-height:3px;height:var(--h,0%);border-radius:4px 4px 0 0}
 .v2-col-added{background:var(--primary)}
 .v2-col-memorized{background:var(--success)}
 .v2-day-label{font-size:.75rem;color:var(--text-muted);font-weight:600}
@@ -178,7 +183,6 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
 .v2-speak-free{color:var(--text-muted)}
 .v2-speak-free .v2-speak-lock{display:inline-flex;position:absolute;right:-5px;bottom:-5px;width:16px;height:16px;align-items:center;justify-content:center;border-radius:50%;background:var(--card-bg);border:1px solid var(--border)}
 .v2-speak-free .v2-speak-lock svg{width:10px;height:10px}
-.v2-speak-row{margin:0 0 6px}
 .flip-panel>.v2-speak{position:absolute;top:var(--ui-panel-y);left:var(--ui-panel-x);z-index:2;margin:0}
 
 /* A new badge: appears in the middle with a small burst, stays a few seconds, fades away by itself and never blocks a tap */
@@ -212,3 +216,59 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
   .v2-celebrate-card{animation:v2-fade-in .3s ease-out both}
   .v2-celebrate.v2-leaving .v2-celebrate-card{animation:v2-fade-out .3s ease-in both}
 }
+
+/* The words the Daily button just added, as pills under it */
+.v2-added{margin:16px 0 0}
+.v2-added .v2-goal-label{margin:0 0 6px}
+.v2-page .v2-pills{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.v2-page .v2-pills li{margin:0}
+.v2-wordpill{font:inherit;font-size:.95rem;cursor:pointer}
+
+/* Badges in three tabs */
+.v2-subtabs{display:flex;gap:4px;margin:0 0 12px;padding:4px;background:var(--accent-bg);border:1px solid var(--border);border-radius:999px}
+.v2-subtab{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 6px;border:0;border-radius:999px;background:transparent;color:var(--text);font:inherit;font-size:.9rem;font-weight:600;white-space:nowrap;cursor:pointer}
+.v2-subtab[aria-selected="true"]{background:var(--card-bg);color:var(--primary);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.v2-subtab:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.v2-subtab-count{font-size:.8rem;font-weight:700}
+@media(max-width:359px){.v2-subtab{font-size:.8rem;gap:3px;padding:0 3px}}
+.v2-empty{padding:14px 4px}
+
+/* Read-aloud: in the header row of a card, to the right of the title; right of the sentence in the panels; the speed it was read at */
+.v2-speak-corner{position:absolute;top:8px;right:48px;margin:0;z-index:3}
+.v2-has-speak .main-word-toggle .word-header{padding-right:50px}
+body.v2 .example-item .fr-text,body.v2 .expression-item .fr-text{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+body.v2 .example-item .fr-text .v2-speak,body.v2 .expression-item .fr-text .v2-speak{flex:none;margin:0}
+.v2-speak[data-rate]::after{content:attr(data-rate);position:absolute;left:-5px;top:-7px;padding:2px 5px;border-radius:999px;background:var(--primary);color:var(--bg);font-size:.62rem;font-weight:700;line-height:1}
+.main-word-card.open .v2-speak-corner{top:18px}
+
+/* The words of one day, in a panel above the page (below the app's own word panel, which opens over it) */
+.v2-popup{position:fixed;inset:0;z-index:250;display:flex;align-items:center;justify-content:center;padding:18px}
+.v2-popup .v2-scrim{opacity:1;transition:none}
+.v2-popup-card{position:relative;box-sizing:border-box;width:min(420px,100%);max-height:min(80vh,560px);overflow-y:auto;padding:14px 18px 18px;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.35);animation:v2-card-in .28s cubic-bezier(.2,.9,.3,1.1) both}
+.v2-popup-head{display:flex;align-items:flex-start;gap:8px}
+.v2-popup-head h2{flex:1;min-width:0;margin:8px 0 4px;font-size:1.05rem;line-height:1.3}
+.v2-popup-close{flex:none;display:grid;place-items:center;width:44px;height:44px;margin:0 -8px 0 0;padding:0;border:0;border-radius:50%;background:transparent;color:var(--text);font:inherit;font-size:1.7rem;line-height:1;cursor:pointer}
+.v2-popup-close:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.v2-popup .v2-pills{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;padding:0;list-style:none}
+.v2-popup .v2-pills li{margin:0}
+.v2-wordplain{cursor:default}
+@media(prefers-reduced-motion:reduce){.v2-popup-card{animation:none}}
+
+/* Profile photo: round canvases, and the dialog where the picture is moved and zoomed under a round window */
+.v2-avatar{overflow:hidden}
+.v2-photo{display:block;width:100%;height:100%;border-radius:50%}
+.v2-crop{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:16px}
+.v2-crop .v2-scrim{opacity:1;transition:none}
+.v2-crop-card{position:relative;box-sizing:border-box;width:min(380px,100%);max-height:100%;overflow-y:auto;padding:16px 18px 18px;text-align:center;background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.35);animation:v2-card-in .28s cubic-bezier(.2,.9,.3,1.1) both}
+.v2-crop-card h2{margin:0 0 4px;font-size:1.1rem}
+.v2-crop-card p{margin:0 0 12px;font-size:.9rem;line-height:1.4}
+.v2-crop-stage{position:relative;margin:0 auto;overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:#fff;border-radius:6px}
+.v2-crop-stage:active{cursor:grabbing}
+.v2-crop-stage:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+.v2-crop-canvas{display:block;width:100%;height:100%}
+.v2-crop-mask{position:absolute;inset:0;box-sizing:border-box;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.55);pointer-events:none}
+.v2-crop-zoom{display:flex;align-items:center;gap:10px;margin:14px 0 0;font-size:.9rem;font-weight:600}
+.v2-crop-zoom input{flex:1;min-width:0}
+.v2-crop-card .v2-actions{justify-content:center;margin:16px 0 0}
+@media(prefers-reduced-motion:reduce){.v2-crop-card{animation:none}}
+.v2-crop-zoom input{accent-color:var(--primary)}

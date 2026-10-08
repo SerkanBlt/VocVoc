@@ -3,7 +3,7 @@
    The page (screens.js) builds the input from the app's data and keeps a small activity record (finished tests, earned badges).
    Days are local calendar days as "YYYY-MM-DD" strings; every date calculation works on those strings, so it does not depend on a time zone. */
 (function(root){
-  const MAX_QUIZZES=300,MAX_WRONG=10,MAX_WORD=60;
+  const MAX_QUIZZES=300,MAX_WRONG=10,MAX_WORD=60,MAX_DAY_WORDS=200;
   const KINDS=['memorized','collected','tests','perfect','recall','streak','goal'];
   // id, what it counts, how many are needed
   const BADGES=Object.freeze([
@@ -22,6 +22,7 @@
   function addDays(day,n){const [year,month,date]=day.split('-').map(Number);return new Date(Date.UTC(year,month-1,date+n)).toISOString().slice(0,10);}
   const median=numbers=>{if(!numbers.length)return null;const sorted=[...numbers].sort((a,b)=>a-b),middle=sorted.length>>1;return sorted.length%2?sorted[middle]:(sorted[middle-1]+sorted[middle])/2;};
   const bump=(map,key)=>map.set(key,(map.get(key)||0)+1);
+  const collect=(map,key,word)=>{const list=map.get(key)||[];if(!map.has(key))map.set(key,list);if(list.length<MAX_DAY_WORDS)list.push(word);};   // the words of a day (the counts stay exact)
 
   /* ---------- the activity record ---------- */
   const isQuiz=q=>q&&typeof q==='object'&&typeof q.t==='string'&&!Number.isNaN(Date.parse(q.t))&&(q.mode==='active'||q.mode==='recall')&&Number.isInteger(q.score)&&Number.isInteger(q.total)&&q.total>=1&&q.total<=50&&q.score>=0&&q.score<=q.total;
@@ -55,18 +56,18 @@
     const dayOf=input.dayOf||localDay,today=input.today,builtin=new Set(input.builtin||[]),earnedBefore=input.earned||{};
     let active=0,memorized=0,archived=0;
     const addedDays=[],memorizedDays=[],speeds=[],activity=new Set();
-    const addedByDay=new Map(),memorizedByDay=new Map(),testsByDay=new Map();
+    const addedByDay=new Map(),memorizedByDay=new Map(),testsByDay=new Map(),addedWordsByDay=new Map(),memorizedWordsByDay=new Map();
     for(const word of input.words||[]){
       if(word.status==='active')active++;else if(word.status==='memorized')memorized++;else if(word.status==='archived')archived++;
       // the built-in starter words are not something the user added
       if(word.addedAt&&!builtin.has(String(word.word||'').toLowerCase())){
         const day=dayOf(word.addedAt);
-        if(day){addedDays.push(day);bump(addedByDay,day);activity.add(day);}
+        if(day){addedDays.push(day);bump(addedByDay,day);collect(addedWordsByDay,day,word.word);activity.add(day);}
       }
       if(word.status==='memorized'&&word.memorizedAt){
         const day=dayOf(word.memorizedAt);
         if(day){
-          memorizedDays.push(day);bump(memorizedByDay,day);activity.add(day);
+          memorizedDays.push(day);bump(memorizedByDay,day);collect(memorizedWordsByDay,day,word.word);activity.add(day);
           if(word.addedAt){const span=(Date.parse(word.memorizedAt)-Date.parse(word.addedAt))/86400000;if(span>=0)speeds.push(span);}
         }
       }
@@ -88,7 +89,7 @@
     while(cursor&&activity.has(cursor)){current++;cursor=addDays(cursor,-1);}
 
     const last7=[];
-    for(let back=6;back>=0;back--){const day=addDays(today,-back);last7.push({day,added:addedByDay.get(day)||0,memorized:memorizedByDay.get(day)||0,tests:testsByDay.get(day)||0});}
+    for(let back=6;back>=0;back--){const day=addDays(today,-back);last7.push({day,added:addedByDay.get(day)||0,memorized:memorizedByDay.get(day)||0,tests:testsByDay.get(day)||0,addedWords:addedWordsByDay.get(day)||[],memorizedWords:memorizedWordsByDay.get(day)||[]});}
     const start=addDays(today,-29);
     let total=0;for(const day of memorizedDays)if(day<start)total++;
     const series=[];

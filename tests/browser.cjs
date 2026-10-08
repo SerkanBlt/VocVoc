@@ -401,7 +401,7 @@ async function main(){
   const ok=payload=>({status:200,contentType:'application/json',body:JSON.stringify({candidates:[{content:{parts:[{text:typeof payload==='string'?payload:JSON.stringify(payload)}]}}]})});
   const fail=(status,message,reason)=>({status,contentType:'application/json',body:JSON.stringify({error:{code:status,message,status:'X',details:reason?[{'@type':'type.googleapis.com/google.rpc.ErrorInfo',reason}]:[]}})});
   await page.route('https://generativelanguage.googleapis.com/**',async route=>{
-   const request=route.request(),body=JSON.parse(request.postData()),call={model:/models\/([^:]+):/.exec(request.url())[1],schema:body.generationConfig.responseSchema||null,mime:body.generationConfig.responseMimeType,key:request.headers()['x-goog-api-key'],url:request.url()};
+   const request=route.request(),body=JSON.parse(request.postData()),call={model:/models\/([^:]+):/.exec(request.url())[1],schema:body.generationConfig.responseSchema||null,mime:body.generationConfig.responseMimeType,key:request.headers()['x-goog-api-key'],url:request.url(),prompt:String(body.contents?.[0]?.parts?.[0]?.text||'')};
    calls.push(call);allCalls.push(call);const answer=await plan(calls.length,call);
    if(answer==='hang')return new Promise(()=>{}); // never answers: only the app's own timeout can end it
    if(answer==='drop')return route.abort('failed');
@@ -443,6 +443,10 @@ async function main(){
   calls.length=0;plan=n=>n===1?fail(429,'quota'):ok(wordCard('alpha'));await search('alphaq')();await page.waitForFunction(()=>!!VocVocData.getWordByText('alpha'));
   assert.deepEqual(calls.map(c=>c.model),models.slice(0,2));assert.equal(calls[0].key,KEY);assert(!calls[0].url.includes('key=')&&!calls[0].url.includes(KEY));
   assert.equal(calls[0].mime,'application/json');assert.equal(calls[0].schema.type,'OBJECT');assert(calls[0].schema.required.includes('word')&&calls[0].schema.required.includes('meaning'));
+  // a card has exactly two example sentences and at most two idioms, each idiom with the sentence that uses it: asked in the prompt and in the schema
+  assert(calls[0].prompt.includes('EXACTLY two example sentences')&&calls[0].prompt.includes('up to two common idioms'));
+  assert.deepEqual([calls[0].schema.properties.examples.minItems,calls[0].schema.properties.examples.maxItems,calls[0].schema.properties.expressions.maxItems],[2,2,2]);
+  assert.deepEqual(calls[0].schema.properties.expressions.items.required,['text','exampleText','exampleTranslation']);
   calls.length=0;plan=n=>n<=2?fail(404,'not found'):ok(wordCard('beta'));await search('betaq')();await page.waitForFunction(()=>!!VocVocData.getWordByText('beta'));assert.deepEqual(calls.map(c=>c.model),models);
   record('Gemini fallback order preserved (429 -> next model, 404 -> next model); key only in the x-goog-api-key header; responseSchema sent');
   // A model that refuses the schema gets plain JSON mode, once, and it is remembered.
@@ -455,6 +459,7 @@ async function main(){
   await page.reload();await ready();
   calls.length=0;plan=()=>ok({words:Array.from({length:10},(_,i)=>wordCard('delta'+i))});await daily();await page.waitForFunction(()=>!!VocVocData.getWordByText('delta9'));
   assert.equal(calls.length,1);assert.equal(calls[0].schema.properties.words.type,'ARRAY');assert.equal(calls[0].schema.properties.words.items.properties.word.type,'STRING');
+  assert(calls[0].prompt.includes('EXACTLY two example sentences')&&calls[0].schema.properties.words.items.properties.examples.minItems===2);   // the Daily words follow the same rule
   calls.length=0;plan=n=>n===1?ok({word:'epsilon'}):ok(wordCard('epsilon'));await random();await page.waitForFunction(()=>!!VocVocData.getWordByText('epsilon'));
   assert.deepEqual(calls[0].schema.required,['word']);assert.equal(calls[0].schema.properties.meaning,undefined);
   record('Gemini structured output: Daily words[] schema, Random headword schema');
@@ -711,7 +716,9 @@ async function main(){
   assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('archive-word')),true);                           // focus lands on the first new item
   await page.locator('#archiveList .archive-word').last().click();await page.locator('#archiveRestoreBtn').click();                  // selecting and restoring still works on a later page
   await page.waitForFunction(()=>VocVocData.getArchivedEntries().length===419);
-  await page.evaluate(()=>closeArchive());await openArchiveFromSettings();assert.equal((await archiveState()).words,400);          // reopening starts at the first page
+  await page.evaluate(()=>closeArchive());await openArchiveFromSettings();
+  await page.waitForFunction(()=>document.querySelectorAll('#archiveList .archive-word').length===400,null,{timeout:5000}).catch(()=>{});   // the first page is drawn a moment after the dialog opens
+  assert.equal((await archiveState()).words,400);                                                                                  // reopening starts at the first page
   record('archive paging: a page of 400, every word reachable (filter, Show more, restore from a later page), reopening starts over');
   await context.close();
  }
@@ -935,7 +942,14 @@ async function main(){
    assert.equal(await p.locator('.v2-curve').getAttribute('aria-label'),'30 gün önce 0, şimdi 12 ezberlenmiş kelime.');
    assert.deepEqual(await p.locator('#v2Screen .v2-statline:not(.v2-statline-4) .v2-stat strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['3','83%','10/10']);
    assert.equal(await p.locator('.v2-testlist').count(),0);                                          // the latest tests are listed at the bottom of the Study page, not here
-   assert.deepEqual(await p.locator('.v2-chips .v2-chip').evaluateAll(nodes=>nodes.map(node=>node.textContent.replace(/\s+/g,' ').trim())),['s20 ×2','s21 ×1','s22 ×1','s23 ×1']);
+   assert.deepEqual(await p.locator('.v2-chips li').evaluateAll(nodes=>nodes.map(node=>node.textContent.replace(/\s+/g,' ').trim())),['s20 ×2','s21 ×1','s22 ×1','s23 ×1']);
+   // a word you miss is a pill that opens its panel, like a chip of the History list; a word that left the list is plain text (pressing it would only start a search)
+   assert.equal(await p.locator('.v2-chips li button.history-chip').count(),4);
+   await p.locator('.v2-chips li button.history-chip').first().click();await p.waitForSelector('#historyDetails.open .word-title');
+   assert.equal(await p.locator('#historyDetails .word-title').first().textContent(),'s20');
+   await p.evaluate(()=>closeHistoryDetail());
+   await p.evaluate(()=>archiveWord('s23'));await route(p,'today');await route(p,'stats');
+   assert.deepEqual(await p.locator('.v2-chips li').evaluateAll(nodes=>nodes.map(node=>[node.querySelector('button')!==null,node.textContent.replace(/\s+/g,' ').trim()])),[[true,'s20 ×2'],[true,'s21 ×1'],[true,'s22 ×1'],[false,'s23 ×1']]);
    assert.match(await p.locator('#v2Screen').textContent(),/2 gün \(12 kelimeye göre\)/);
    // the Study page: the same Tests panel on top, the latest tests at the very bottom, newest first, a bullet by score (10 and 9 green, 6 orange)
    await route(p,'study');
@@ -957,11 +971,26 @@ async function main(){
    assert.equal(await p.locator('.v2-days').evaluate(node=>node.closest('.v2-card').nextElementSibling.className),'v2-badges-section');
    const names=selector=>p.locator(selector).evaluateAll(nodes=>nodes.map(node=>node.querySelector('h3').textContent));
    assert.deepEqual((await names('.v2-badge.v2-earned')).sort(),['Bir hafta','Güçlü hafıza','Isınma','Kusursuz','On kelime','İlk adım','İlk test'].sort());
-   assert.equal(await p.locator('.v2-badge').nth(6).evaluate(node=>node.classList.contains('v2-earned')),true);          // earned first ...
-   assert.equal(await p.locator('.v2-badge').nth(7).evaluate(node=>node.classList.contains('v2-earned')),false);         // ... then the rest
    assert.match(await p.locator('.v2-earned .v2-badge-date').first().textContent(),/^Kazanıldı: \d{1,2} \p{L}+ \d{4}$/u);
+   // three tabs: Earned (open, with counts), Started (closest first, with their progress), Waiting (nothing done yet)
+   const tabLabels=()=>p.locator('.v2-subtab').evaluateAll(nodes=>nodes.map(node=>node.textContent.replace(/\s+/g,' ').trim()+(node.getAttribute('aria-selected')==='true'?'*':'')));
+   assert.deepEqual(await tabLabels(),['Kazandıkların 7*','Başladıkların 6','Bekleyenler 1']);
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-subtabs').getAttribute('role'),[...document.querySelectorAll('.v2-subtab')].map(tab=>[tab.getAttribute('role'),tab.tabIndex]),document.getElementById('v2BadgePanel').getAttribute('role'),document.getElementById('v2BadgePanel').getAttribute('aria-labelledby')]),['tablist',[['tab',0],['tab',-1],['tab',-1]],'tabpanel','v2BadgeTab-earned']);
+   await p.getByRole('tab',{name:/Başladıkların/}).click();
+   assert.deepEqual(await names('.v2-badge'),['Koleksiyoncu','Bir ay','Düzenli çalışan','Elli kelime','Yüz kelime','Kelime ustası']);   // the closest to done first
    const fifty=p.locator('.v2-badge',{hasText:'Elli kelime'});
    assert.match(await fifty.textContent(),/12 \/ 50/);assert.equal(await fifty.locator('[role="progressbar"]').getAttribute('aria-valuenow'),'12');
+   await p.getByRole('tab',{name:/Bekleyenler/}).click();
+   assert.deepEqual(await names('.v2-badge'),['Hedef tamam']);
+   assert.deepEqual(await tabLabels(),['Kazandıkların 7','Başladıkların 6','Bekleyenler 1*']);
+   await route(p,'study');await route(p,'today');                                                       // the tab you picked stays picked
+   assert.deepEqual(await tabLabels(),['Kazandıkların 7','Başladıkların 6','Bekleyenler 1*']);
+   // the keyboard moves between the tabs: arrows (they wrap), Home and End; the focus follows
+   await p.getByRole('tab',{name:/Bekleyenler/}).focus();await p.keyboard.press('ArrowRight');
+   assert.deepEqual([await p.evaluate(()=>document.activeElement.id),(await tabLabels())[0]],['v2BadgeTab-earned','Kazandıkların 7*']);
+   await p.keyboard.press('End');assert.equal(await p.evaluate(()=>document.activeElement.id),'v2BadgeTab-waiting');
+   await p.keyboard.press('Home');await p.keyboard.press('ArrowLeft');assert.equal(await p.evaluate(()=>document.activeElement.id),'v2BadgeTab-waiting');
+   await p.getByRole('tab',{name:/Kazandıkların/}).click();
    // the first look recorded them silently (no announcement), with the days they were really earned
    assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Toast')?.classList.contains('v2-show')||false,Object.keys(JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges).length,JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded]),[false,7,true]);
    // a badge once earned stays earned when the words behind it are gone
@@ -1147,11 +1176,185 @@ async function main(){
   {
    const {c,p}=await openSignedIn({width:320,height:600});                                              // the narrowest phone: the bar and the menu fit
    assert.deepEqual(await p.evaluate(()=>{const brand=document.querySelector('.v2-appbar .v2-brand');return [document.querySelector('.v2-menu-btn').getBoundingClientRect().left>=0,document.querySelector('.v2-avatar-btn').getBoundingClientRect().right<=innerWidth,brand.scrollWidth<=brand.clientWidth];}),[true,true,true]);
+   assert.deepEqual(await p.evaluate(()=>[...document.querySelectorAll('.v2-subtab')].filter(tab=>tab.scrollWidth>tab.clientWidth).map(tab=>tab.textContent)),[]);   // the three badge tabs fit too
+   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.getElementById('v2Screen').scrollWidth<=innerWidth),true);   // and nothing on Today pushes the page sideways
    await p.locator('.v2-menu-btn').click();
    assert.deepEqual(await p.evaluate(()=>{const box=document.querySelector('.v2-drawer-panel').getBoundingClientRect();return [box.width<=innerWidth*0.85,[...document.querySelectorAll('.v2-nav-label')].filter(label=>label.scrollWidth>label.clientWidth).length];}),[true,0]);
    await c.close();
   }
   record('new interface: a bar with the menu button, VocVoc and the round profile button on every page, a menu that slides in from the left (closed by Escape, the dimmed page or an entry) with Settings at the bottom');
+ }
+ // ===== New interface: the words behind a bar of the last seven days, the profile photo =====
+ {
+  const noon=back=>{const date=new Date();date.setHours(12,0,0,0);date.setDate(date.getDate()-back);return date.toISOString();};
+  // 30 words: 12 memorized (on days 0..9, two days after being added), the rest added over the last seven days; a signed-in profile, Premium
+  const seedWords=stamps=>{
+   if(sessionStorage.getItem('seededWords'))return;sessionStorage.setItem('seededWords','1');
+   const words={},aliases={},progress={};
+   for(let i=0;i<30;i++){const word='s'+i,id='fr:tr:'+word,memorizedWord=i<12,added=memorizedWord?stamps[(i%10)+2]:stamps[i%7],memorized=memorizedWord?stamps[i%10]:null;
+    words[id]={id,word,normalized:word,targetLanguage:'fr',nativeLanguage:'tr',type:'isim',meaning:'anlam '+i,synonyms:[],antonyms:[],examples:[],expressions:[],createdAt:added,updatedAt:added};aliases[id]=id;
+    progress[id]={wordId:id,status:memorizedWord?'memorized':'active',firstSeenAt:added,lastSeenAt:added,statusChangedAt:memorized||added,memorizedAt:memorized,archivedAt:null,archiveSourceStatus:null};}
+   localStorage.setItem('VOCVOC_DB_V1',JSON.stringify({schemaVersion:1,meta:{starterWordsInitialized:true},settings:{nativeLanguage:'tr',targetLanguage:'fr',difficulty:'A1-A2',dailyLimit:'10',theme:'system',fontSize:'normal'},words,aliases,progress,dailyUsage:{date:null,count:0}}));
+   localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'}));localStorage.setItem('VOCVOC_SIM_PLAN','premium');
+   localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify({v:1,seeded:false,testsTaken:0,badges:{},quizzes:[]}));
+  };
+  const openSeeded=async(route='stats')=>{
+   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+   await c.addInitScript(seedWords,Array.from({length:14},(_,back)=>noon(back)));
+   await p.goto(url+'?ui=v2#/'+route);await ready(p);await p.waitForSelector('#v2Screen[data-route="'+route+'"] .v2-days');
+   return {c,p};
+  };
+
+  // a bar with something in it is a button; pressing it (or resting a mouse on it for a moment) shows that day's words as pills
+  {
+   const {c,p}=await openSeeded();
+   assert.equal(await p.locator('.v2-slot-btn').count(),14);
+   const bar=p.locator('.v2-slot-btn').first();
+   const label=await bar.getAttribute('aria-label');
+   assert.match(label,/^\d{1,2} \p{L}+ \p{L}+, Eklenen: \d+ kelime\. Kelimeleri göster$/u);
+   const count=Number(label.match(/: (\d+) kelime/)[1]);
+   await bar.click();
+   assert.deepEqual(await p.evaluate(()=>{const popup=document.getElementById('v2DayWords');return [popup.getAttribute('role'),popup.getAttribute('aria-modal'),document.getElementById('v2Screen').inert,document.activeElement.className];}),['dialog','true',true,'v2-popup-close']);
+   assert.equal(await p.locator('#v2DayWords .v2-pills li').count(),count);
+   assert.match(await p.locator('#v2DayWordsTitle').textContent(),/ · Eklenen$/);
+   assert.equal(await p.locator('#v2DayWords .v2-popup-card > p').first().textContent(),count+' kelime');
+   // a pill opens the word's own panel above the popup; Escape closes the panel first, then the popup, and the focus goes back to the bar
+   const word=await p.locator('#v2DayWords .history-chip').first().textContent();
+   await p.locator('#v2DayWords .history-chip').first().click();await p.waitForSelector('#historyDetails.open .word-title');
+   assert.equal(await p.locator('#historyDetails .word-title').first().textContent(),word);
+   assert.equal(await p.evaluate(()=>!!document.elementFromPoint(innerWidth/2,innerHeight/2).closest('#historyDetails')),true);   // the panel is on top
+   await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.querySelector('#historyDetails.open'));
+   assert.equal(await p.evaluate(()=>!!document.getElementById('v2DayWords')),true);
+   await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.getElementById('v2DayWords'));
+   assert.deepEqual(await p.evaluate(()=>[document.activeElement.className,document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert]),['v2-slot v2-slot-btn',false,false]);
+   // the dimmed page and the close button close it too; a word that left the list is plain text in it (pressing it would only start a search)
+   await bar.click();await p.locator('#v2DayWords .v2-scrim').click({position:{x:5,y:5}});assert.equal(await p.locator('#v2DayWords').count(),0);
+   await p.evaluate(name=>archiveWord(name),word);
+   await bar.click();
+   assert.deepEqual(await p.evaluate(name=>{const pill=[...document.querySelectorAll('#v2DayWords .v2-pills li > *')].find(node=>node.textContent===name);return [pill.tagName,pill.classList.contains('v2-wordplain')];},word),['SPAN',true]);
+   await p.locator('.v2-popup-close').click();assert.equal(await p.locator('#v2DayWords').count(),0);
+   // a mouse resting on a bar opens it after a moment, not at once, and not when it only passes by
+   const other=p.locator('.v2-slot-btn').nth(3);
+   await other.hover();await pause(250);assert.equal(await p.locator('#v2DayWords').count(),0);
+   await p.waitForSelector('#v2DayWords',{timeout:3000});
+   await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.getElementById('v2DayWords'));
+   await p.mouse.move(2,2);
+   await other.hover();await p.mouse.move(2,2);await pause(1100);assert.equal(await p.locator('#v2DayWords').count(),0);
+   // the memorized bars list the memorized words of the day; Today has the same chart and the same panels
+   await p.locator('.v2-slot-btn-memorized,.v2-slot-btn').nth(1).click();
+   assert.match(await p.locator('#v2DayWordsTitle').textContent(),/ · (Eklenen|Ezberlenen)$/);
+   await p.keyboard.press('Escape');
+   await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] .v2-slot-btn');
+   await p.locator('#v2Screen .v2-slot-btn').last().click();assert.equal(await p.locator('#v2DayWords .v2-pills li').count()>0,true);
+   await c.close();
+  }
+  {
+   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+   await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'guest',name:''})));
+   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-days');
+   assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('.v2-slot-btn').length,document.querySelectorAll('.v2-slot').length,[...document.querySelectorAll('.v2-slot')].every(node=>node.tagName==='SPAN'&&node.getAttribute('aria-hidden')==='true')]),[0,14,true]);   // empty bars are not buttons
+   await c.close();
+  }
+  record('Last 7 days: a bar with words is a button (press, or a mouse resting on it) that shows the words of the day as pills; a pill opens the word panel above, Escape closes them in order, empty bars are not buttons');
+
+  // the profile photo: chosen from the device, moved and zoomed under a round window (mouse, wheel, slider, keys, two fingers), kept as a small square JPEG, shown round in the bar and on the profile
+  {
+   const c=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+   await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+   await p.goto(url+'?ui=v2#/profile');await ready(p);await p.waitForSelector('#v2Screen[data-route="profile"] h1');
+   const choose=(options={})=>p.evaluate(async({type='image/png',size=0,text=null})=>{
+    let picture;
+    if(text!==null)picture=new File([text],'a.png',{type});
+    else if(size)picture=new File([new Uint8Array(size)],'big.png',{type});
+    else{const canvas=document.createElement('canvas');canvas.width=600;canvas.height=400;const context2d=canvas.getContext('2d');
+     context2d.fillStyle='#d00';context2d.fillRect(0,0,300,400);context2d.fillStyle='#00d';context2d.fillRect(300,0,300,400);context2d.fillStyle='#0a0';context2d.fillRect(250,150,100,100);   // left red, right blue, a green square in the middle
+     picture=new File([await new Promise(resolve=>canvas.toBlob(resolve,'image/png'))],'two-colours.png',{type:'image/png'});}
+    const transfer=new DataTransfer();transfer.items.add(picture);const input=document.getElementById('v2PhotoInput');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}));
+   },options);
+   const saved=()=>p.evaluate(async()=>{
+    const url=localStorage.getItem('VOCVOC_SIM_PHOTO');if(!url)return null;
+    const bytes=Uint8Array.from(atob(url.split(',')[1]),letter=>letter.charCodeAt(0)),bitmap=await createImageBitmap(new Blob([bytes],{type:'image/jpeg'}));
+    const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;const context2d=canvas.getContext('2d');context2d.drawImage(bitmap,0,0);
+    const dominant=([r,g,b])=>r>g&&r>b?'red':g>r&&g>b?'green':'blue',at=(x,y)=>[...context2d.getImageData(x,y,1,1).data].slice(0,3);
+    return {type:url.slice(0,23),size:[bitmap.width,bitmap.height],row:[32,128,224].map(x=>dominant(at(x,128))),corners:[[2,2],[253,2],[2,253],[253,253]].map(([x,y])=>at(x,y).every(value=>value>235))};
+   });
+   // nothing yet: the first letter, one button
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,document.querySelector('.v2-avatar-dot canvas'),[...document.querySelectorAll('#v2Screen .ui-button')].map(button=>button.textContent)]),['A',null,['Fotoğraf ekle']]);
+   // bad files are refused with a message, no dialog: not a picture, and too large
+   await choose({type:'image/png',text:'this is not a picture'});await p.waitForFunction(()=>/resim olarak açılamadı/.test(document.getElementById('v2Toast')?.textContent||''));
+   await choose({type:'image/png',size:16*1024*1024});await p.waitForFunction(()=>/resim olarak açılamadı/.test(document.getElementById('v2Toast')?.textContent||''));
+   assert.deepEqual([await p.locator('#v2Crop').count(),await saved()],[0,null]);
+   // the dialog: modal, the page behind it is out of reach, the picture covers the round window from the start
+   await choose();await p.waitForSelector('#v2Crop');
+   assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Crop').getAttribute('role'),document.getElementById('v2Crop').getAttribute('aria-modal'),document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.activeElement.className,document.querySelector('.v2-crop-zoom input').value]),['dialog','true',true,true,'v2-crop-stage','100']);
+   // Escape cancels: nothing is kept
+   await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.getElementById('v2Crop'));
+   assert.deepEqual([await saved(),await p.evaluate(()=>document.querySelector('.v2-avatar-dot canvas'))],[null,null]);
+   // saved as it is: the middle of the picture
+   await choose();await p.waitForSelector('#v2Crop');await p.getByRole('button',{name:'Kaydet'}).click();await p.waitForFunction(()=>!document.getElementById('v2Crop')&&document.querySelector('.v2-avatar-dot canvas'));
+   assert.deepEqual(await saved(),{type:'data:image/jpeg;base64,',size:[256,256],row:['red','green','blue'],corners:[false,false,false,false]});
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,!!document.querySelector('.v2-avatar canvas'),getComputedStyle(document.querySelector('.v2-avatar-dot')).borderRadius,[...document.querySelectorAll('#v2Screen .ui-button')].map(button=>button.textContent),document.activeElement.getAttribute('data-v2-focus')]),['',true,'50%',['Fotoğrafı değiştir','Fotoğrafı kaldır'],'photo']);
+   // zoom in with the slider and move it with the mouse: the part under the window is what is kept (and it never leaves an empty edge)
+   await choose();await p.waitForSelector('#v2Crop');
+   const box=await p.locator('.v2-crop-stage').boundingBox(),cx=box.x+box.width/2,cy=box.y+box.height/2;
+   await p.locator('.v2-crop-zoom input').fill('250');
+   await p.mouse.move(cx,cy);await p.mouse.down();await p.mouse.move(cx-60,cy,{steps:6});await p.mouse.move(cx-80,cy+10,{steps:4});await p.mouse.up();
+   await p.getByRole('button',{name:'Kaydet'}).click();await p.waitForFunction(()=>!document.getElementById('v2Crop'));
+   assert.deepEqual((await saved()).row,['green','green','blue']);                                    // moved to the right part of the picture, zoomed on the green square
+   // far too far: the picture still covers the whole window
+   await choose();await p.waitForSelector('#v2Crop');
+   await p.locator('.v2-crop-zoom input').fill('300');
+   await p.mouse.move(cx,cy);await p.mouse.down();await p.mouse.move(cx+400,cy-400,{steps:8});await p.mouse.up();
+   await p.getByRole('button',{name:'Kaydet'}).click();await p.waitForFunction(()=>!document.getElementById('v2Crop'));
+   assert.deepEqual((await saved()).corners,[false,false,false,false]);
+   // the wheel and the keyboard: + zooms, the arrows move; the slider follows
+   await choose();await p.waitForSelector('#v2Crop');
+   await p.mouse.move(cx,cy);await p.mouse.wheel(0,-400);
+   const afterWheel=Number(await p.locator('.v2-crop-zoom input').inputValue());assert(afterWheel>100,'the wheel zooms in: '+afterWheel);
+   await p.locator('.v2-crop-stage').focus();await p.keyboard.press('+');
+   assert(Number(await p.locator('.v2-crop-zoom input').inputValue())>afterWheel);
+   for(let press=0;press<14;press++)await p.keyboard.press('-');
+   assert.equal(await p.locator('.v2-crop-zoom input').inputValue(),'100');                          // it never zooms out beyond covering the window
+   // two fingers zoom, one finger moves
+   const cdp=await c.newCDPSession(p);
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:cx-20,y:cy,id:1},{x:cx+20,y:cy,id:2}]});
+   for(let step=1;step<=8;step++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:cx-20-step*10,y:cy,id:1},{x:cx+20+step*10,y:cy,id:2}]});
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+   assert(Number(await p.locator('.v2-crop-zoom input').inputValue())>=300,'a pinch zooms in');
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:cx,y:cy,id:1}]});
+   for(let step=1;step<=6;step++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:cx-step*12,y:cy,id:1}]});
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+   await p.getByRole('button',{name:'Kaydet'}).click();await p.waitForFunction(()=>!document.getElementById('v2Crop'));
+   assert.deepEqual((await saved()).row,['green','green','blue']);                                    // zoomed on the middle (the green square), then moved a little to the right
+   // it stays: after a reload the bar and the profile show it; removing it brings the letter back and deletes it from the device
+   await p.reload();await ready(p);await p.waitForFunction(()=>document.querySelector('.v2-avatar-dot canvas')&&document.querySelector('.v2-avatar canvas'));
+   await p.getByRole('button',{name:'Fotoğrafı kaldır'}).click();
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,document.querySelector('.v2-avatar-dot canvas'),localStorage.getItem('VOCVOC_SIM_PHOTO'),[...document.querySelectorAll('#v2Screen .ui-button')].map(button=>button.textContent)]),['A',null,null,['Fotoğraf ekle']]);
+   // signing out takes the photo of the profile with it
+   await choose();await p.waitForSelector('#v2Crop');await p.getByRole('button',{name:'Kaydet'}).click();await p.waitForFunction(()=>!document.getElementById('v2Crop'));
+   await p.getByRole('button',{name:/Çıkış yap/}).click();await p.waitForSelector('#v2Auth.v2-open');
+   assert.equal(await p.evaluate(()=>localStorage.getItem('VOCVOC_SIM_PHOTO')),null);
+   await c.close();
+  }
+  record('profile photo: choose, move and zoom under a round window (mouse, wheel, slider, keys, two fingers), never an empty edge, saved as a small JPEG, round in the bar and on the profile, kept after a reload, removable, bad and oversized files refused, taken away by signing out');
+ }
+ // ===== Word panel (the default interface): two examples, idioms as pills with the sentence that uses them =====
+ {
+  const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+  await p.goto(url);await ready(p);
+  await p.evaluate(()=>VocVocData.addWordBatch([{word:'idiomtest',type:'isim',meaning:'bir anlam',
+   examples:[{text:'First sentence.',phonetic:'ilk',translation:'Birinci cümle.'},{text:'Second sentence.',phonetic:'ikinci',translation:'İkinci cümle.'}],
+   expressions:[{text:'break a leg',phonetic:'breyk ı leg',translation:'bol şans',exampleText:'Break a leg tonight!',examplePhonetic:'breyk ı leg tunayt',exampleTranslation:'Bu akşam bol şans!'},
+                {text:'no sentence idiom',phonetic:'nou sentıns idiyım',translation:'cümlesiz deyim'}]}]));
+  await p.evaluate(()=>toggleHistoryDetail('idiomtest'));await p.waitForSelector('#historyDetails.open .word-title');
+  assert.equal(await p.locator('#historyDetails .example-item').count(),2);
+  assert.deepEqual(await p.locator('#historyDetails .expression-pill').evaluateAll(nodes=>nodes.map(node=>[node.textContent,getComputedStyle(node).borderRadius!=='0px'])),[['break a leg',true],['no sentence idiom',true]]);
+  // with a sentence: the pill, then the sentence with its pronunciation and meaning (not the idiom's own); without one: the idiom's own pronunciation and meaning stand in
+  await p.evaluate(()=>{for(const details of document.querySelectorAll('#historyDetails details.fold'))details.open=true;});
+  const items=await p.locator('#historyDetails .expression-item').evaluateAll(nodes=>nodes.map(node=>[...node.children].map(child=>child.className.split(' ')[0]+':'+child.innerText.replace(/\s+/g,' ').trim())));
+  assert.deepEqual(items,[['fr-text:break a leg','expression-example:Break a leg tonight! Okunuş: breyk ı leg tunayt Bu akşam bol şans!'],['fr-text:no sentence idiom','phonetic-text:Okunuş: nou sentıns idiyım','tr-text:cümlesiz deyim']]);
+  await c.close();
+  record('word panel: two example sentences, idioms as pills with the sentence that uses them (their own pronunciation and meaning only when there is no sentence)');
  }
  // ===== New interface: ready-made word packs and read-aloud =====
  {
@@ -1181,6 +1384,17 @@ async function main(){
    for(const word of ['au revoir',"s'il vous plaît",'oui','non','pardon','eau','pain','café','maison','ami'])assert(history.includes(word),word+' was not added');
    assert.equal(await p.evaluate(()=>VocVocData.getWordByText('maison').meaning),'ev');
    assert.equal(await p.evaluate(()=>VocVocData.getWordByText('maison').examples[0].phonetic),'la mezon e grand');
+   const maison=await p.evaluate(()=>VocVocData.getWordByText('maison'));                             // two examples, and idioms with the sentence that uses each
+   assert.deepEqual([maison.examples.length,maison.examples[1].text,maison.expressions.map(item=>item.text),maison.expressions[0].exampleText],[2,'Ma maison est près de la gare.',['faire comme chez soi','à la maison'],'Faites comme chez vous !']);
+   // the words just added are pills under the button, in the order they were added; a pill opens the word's panel
+   assert.deepEqual(await p.locator('.v2-added .history-chip').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['au revoir',"s'il vous plaît",'oui','non','pardon','eau','pain','café','maison','ami']);
+   await p.locator('.v2-added .history-chip',{hasText:'maison'}).click();await p.waitForSelector('#historyDetails.open .word-title');
+   assert.equal(await p.locator('#historyDetails .word-title').first().textContent(),'maison');
+   assert.equal(await p.locator('#historyDetails .example-item').count(),2);
+   assert.deepEqual(await p.locator('#historyDetails .expression-pill').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['faire comme chez soi','à la maison']);
+   // under an idiom: the sentence that uses it with its pronunciation and meaning, and nothing else (not the idiom's own pronunciation and meaning)
+   assert.deepEqual(await p.locator('#historyDetails .expression-item').first().evaluate(item=>[item.querySelectorAll('.phonetic-text').length,item.querySelector('.phonetic-text').textContent,item.querySelectorAll('.tr-text').length,item.querySelector('.tr-text').textContent,item.querySelector('.expression-example .fr-text').textContent]),[1,'Okunuş: fet kom şe vu',1,'Kendi evinizdeymiş gibi davranın!','Faites comme chez vous !']);
+   await p.evaluate(()=>closeHistoryDetail());
    await waitPack(p,'12 / 40 kelime eklendi');
    await goTo(p,'Kelimeler');                                          // the cards are on the Words tab
    const titles=await p.locator('#contentArea .main-word-card .word-title').evaluateAll(nodes=>nodes.map(node=>node.textContent));
@@ -1225,6 +1439,39 @@ async function main(){
   }
   record('word packs: a pair without a pack says so and sends nothing without a key; a damaged copy on the device is replaced');
 
+  // the pack is used up: with a key the Daily button goes on with the AI, also while the Premium simulation is on (it used to say "use your own key" to people who had one); without a key it says so
+  for(const plan of ['free','premium']){
+   const {c,p,seen}=await openPage({init:value=>{if(value==='premium')localStorage.setItem('VOCVOC_SIM_PLAN','premium');},initArg:plan});
+   await waitPack(p,'2 / 40 kelime eklendi');
+   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+   await p.evaluate(async()=>{const pack=await (await fetch('./packs/fr-tr.json')).json();await VocVocData.addWordBatch(pack.words.filter(entry=>!VocVocData.getWordProgress(entry.word)));});   // the whole pack is known now
+   await waitPack(p,'Paketteki tüm kelimeleri ekledin. Yeni kelime için kendi API anahtarını kullanabilirsin.');
+   await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();                               // no key: told so, nothing sent
+   await p.waitForFunction(()=>/Paketteki tüm kelimeleri/.test(document.getElementById('v2Toast')?.textContent||''));
+   assert.equal(seen.gemini,0);
+   await p.evaluate(()=>VocVocSecrets.setApiKey('AIzaTestKey1234567890'));                          // with a key: the AI goes on
+   await p.evaluate(()=>{document.getElementById('v2Toast').textContent='';document.getElementById('v2Toast').classList.remove('v2-show');});
+   await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();
+   for(let waited=0;waited<60&&!seen.gemini;waited++)await pause(100);
+   assert(seen.gemini>=1,plan+': the AI must be asked when the pack is used up and there is a key');
+   assert(!/Paketteki tüm kelimeleri/.test(await p.evaluate(()=>document.getElementById('v2Toast')?.textContent||'')));
+   await c.close();
+  }
+  {
+   // and when the AI answers, the words it added are pills under the button too
+   const {c,p}=await openPage();
+   await waitPack(p,'2 / 40 kelime eklendi');
+   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+   await p.evaluate(async()=>{const pack=await (await fetch('./packs/fr-tr.json')).json();await VocVocData.addWordBatch(pack.words.filter(entry=>!VocVocData.getWordProgress(entry.word)));VocVocSecrets.setApiKey('AIzaTestKey1234567890');});
+   const fresh=Array.from({length:10},(_,index)=>'nouveau'+index);
+   await p.route('https://generativelanguage.googleapis.com/**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({candidates:[{content:{parts:[{text:JSON.stringify({words:fresh.map(word=>({word,type:'n',meaning:'anlam '+word,synonyms:[],antonyms:[],examples:[{text:word+' un',phonetic:'p',translation:'t'},{text:word+' deux',phonetic:'p',translation:'t'}],expressions:[]}))})}]}}]})}));
+   await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();
+   await p.waitForFunction(()=>document.querySelectorAll('.v2-added .history-chip').length===10);
+   assert.deepEqual(await p.locator('.v2-added .history-chip').evaluateAll(nodes=>nodes.map(node=>node.textContent).sort()),[...fresh].sort());
+   await c.close();
+  }
+  record('word packs: when the pack is used up the Daily button goes on with the AI if there is a key (also with the Premium simulation on) and says so without one; the words the AI added are pills too');
+
   // read-aloud: the device's voice, Premium only; the app's own markup stays as it is
   const speechMock=([voices])=>{
    const calls=[];window.__speech=calls;
@@ -1244,23 +1491,42 @@ async function main(){
    await p.evaluate(()=>VocVocPlan.set('premium'));
    assert.equal(await p.locator('#historyDetails .v2-speak').first().getAttribute('aria-label'),'Sesli oku: Bonjour');
    await p.locator('#historyDetails .v2-speak').first().click();
-   assert.deepEqual((await calls()).filter(call=>!call.cancel),[{text:'Bonjour',lang:'fr-FR',voice:'Fake French',rate:0.9}]);
+   assert.deepEqual((await calls()).filter(call=>!call.cancel),[{text:'Bonjour',lang:'fr-FR',voice:'Fake French',rate:1}]);
    await p.waitForFunction(()=>document.querySelector('#historyDetails .v2-speak').getAttribute('aria-pressed')==='false');   // ended
-   // an example sentence is read as written; pressing while it speaks stops it
+   // an example sentence is read as written; the same sentence pressed again is read slower, then faster, then slower ...
    await p.evaluate(()=>{for(const details of document.querySelectorAll('#historyDetails details.fold'))details.open=true;});
    const sentence=await p.locator('#historyDetails .example-item .fr-text').first().evaluate(node=>node.firstChild.textContent.trim());
-   await p.evaluate(()=>{window.__speech.length=0;window.speechSynthesis.speak=function(utterance){window.__speech.push({text:utterance.text,lang:utterance.lang});};});   // it never ends by itself now
+   await p.evaluate(()=>{window.__speech.length=0;window.__utterances=[];window.speechSynthesis.speak=function(utterance){window.__utterances.push(utterance);window.__speech.push({text:utterance.text,lang:utterance.lang,rate:utterance.rate});};});   // it never ends by itself now
    const example=p.locator('#historyDetails .example-item .v2-speak').first();
-   await example.click();assert.equal(await example.getAttribute('aria-pressed'),'true');
-   await example.click();assert.equal(await example.getAttribute('aria-pressed'),'false');
-   assert.deepEqual(await calls(),[{cancel:true},{text:sentence,lang:'fr-FR'},{cancel:true}]);
+   const spoken=async()=>(await calls()).filter(call=>call.text);
+   await example.click();assert.deepEqual([(await spoken())[0].text,await example.getAttribute('aria-pressed'),await example.getAttribute('data-rate')],[sentence,'true','1×']);
+   for(let press=0;press<4;press++)await example.click();
+   assert.deepEqual((await spoken()).map(call=>call.rate),[1,0.6,1.3,0.6,1.3]);                      // normal, slow, fast, slow, fast
+   assert.deepEqual([await example.getAttribute('data-rate'),await example.getAttribute('aria-label')],['1.3×',`Sesli oku: ${sentence} (hızlı)`]);
+   // pressing while it is being read does not stop it, it starts again at the next speed; an older reading that ends late does not switch the new one off
+   await p.evaluate(()=>window.__utterances[0].onend());
+   assert.equal(await example.getAttribute('aria-pressed'),'true');
+   await p.evaluate(()=>window.__utterances[4].onend());
+   assert.equal(await example.getAttribute('aria-pressed'),'false');
+   // another text starts at normal speed again; the first one is at normal speed again when it is pressed next
+   await p.locator('#historyDetails .word-panel-fixed-header .v2-speak').click();
+   assert.deepEqual([(await spoken()).pop().rate,await example.getAttribute('data-rate')],[1,null]);   // the speed badge belongs to the one read last
+   await example.click();assert.equal((await spoken()).pop().rate,1);
+   // on a phone the button is at the right of the sentence, in its first line, not below it
+   assert.deepEqual(await p.evaluate(()=>{const row=document.querySelector('#historyDetails .example-item .fr-text'),button=row.querySelector('.v2-speak').getBoundingClientRect(),box=row.getBoundingClientRect();return {sameLine:button.top-box.top<14,atTheRight:button.right<=box.right+1&&button.left>box.left+box.width/2};}),{sameLine:true,atTheRight:true});
    await p.evaluate(()=>closeHistoryDetail());
-   // the main card (its title is a button, so the speaker sits at the top of the opened details) and Flip
+   // the main card: its speaker sits in the header row, to the right of the title (not on a row of its own below it), also while the card is closed
    await goTo(p,'Kelimeler');
-   await p.locator('#contentArea .main-word-toggle').first().click();await p.waitForSelector('#contentArea .main-word-card.open .v2-speak-row .v2-speak');
+   const firstCard=p.locator('#contentArea .main-word-card').first();
+   await p.evaluate(()=>{window.__speech.length=0;});
+   await firstCard.locator(':scope > .v2-speak-corner').click();
+   assert.equal(await firstCard.evaluate(card=>card.classList.contains('open')),false);                // it does not open the card
+   assert.equal((await spoken())[0].text,await firstCard.locator('.word-title').textContent());
+   await firstCard.locator('.main-word-toggle').click();await p.waitForSelector('#contentArea .main-word-card.open > .v2-speak-corner');
+   assert.deepEqual(await p.evaluate(()=>{const card=document.querySelector('#contentArea .main-word-card.open'),button=card.querySelector(':scope > .v2-speak-corner').getBoundingClientRect(),title=card.querySelector('.word-title').getBoundingClientRect(),box=card.getBoundingClientRect();return {rightOfTitle:button.left>=title.right-1,notBelow:button.top<title.bottom,inside:button.right<=box.right&&button.top>=box.top&&button.left>=box.left};}),{rightOfTitle:true,notBelow:true,inside:true});
    const cardWord=await p.locator('#contentArea .main-word-card.open .word-title').textContent();
    await p.evaluate(()=>{window.__speech.length=0;});
-   await p.locator('#contentArea .main-word-card.open .v2-speak-row .v2-speak').click();
+   await p.locator('#contentArea .main-word-card.open > .v2-speak-corner').click();
    assert.equal((await calls()).find(call=>call.text).text,cardWord);
    await p.evaluate(()=>{location.hash='#/flip';});await p.waitForSelector('#flipOverlay.open [data-flip-face="front"] .flip-word-text');
    assert.equal(await p.locator('#flipOverlay .flip-panel > .v2-speak').count(),2);
@@ -1291,7 +1557,7 @@ async function main(){
    await none.p.waitForFunction(()=>document.getElementById('v2Toast')?.textContent==='Bu tarayıcı sesli okumayı desteklemiyor.');
    await none.c.close();
   }
-  record('read-aloud: locked on Free, the device voice for the word, example, main card and Flip on Premium, stop on a second press and on leaving, clear messages without a voice');
+  record('read-aloud: locked on Free, the device voice for the word, example, main card and Flip on Premium, the same text pressed again is read slower, faster, slower ..., the button of a card in its header row, stop on leaving, clear messages without a voice');
  }
  // ===== New interface: WCAG AA contrast of its screens, light and dark =====
  {
@@ -1308,7 +1574,7 @@ async function main(){
    const style=getComputedStyle(el);return {ratio:Math.round(ratio*100)/100,size:parseFloat(style.fontSize),weight:style.fontWeight};
  };
   const checks=[['',[['#v2Auth h1'],['#v2Auth p'],['#v2Auth label'],['#v2Auth .ui-button-success'],['#v2Auth .ui-button-secondary'],['#v2Auth .v2-note']]],
-   ['#/today',[['#v2Screen h1'],['.v2-goal-label'],['.v2-goal-value'],['.v2-pack .v2-goal-label'],['.v2-pack-text'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['#v2Dashboard .v2-day-label'],['#v2Dashboard .v2-day-num'],['#v2Dashboard .v2-legend'],['#v2Dashboard .v2-card h2']]],
+   ['#/today',[['#v2Screen h1'],['.v2-goal-label'],['.v2-goal-value'],['.v2-pack .v2-goal-label'],['.v2-pack-text'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['#v2Dashboard .v2-day-label'],['#v2Dashboard .v2-day-num'],['#v2Dashboard .v2-legend'],['#v2Dashboard .v2-card h2'],['.v2-subtab[aria-selected="true"]'],['.v2-subtab[aria-selected="false"]'],['.v2-subtab-count']]],
    ['#/test',[['.v2-study-bar h1'],['#v2QuizCount'],['.v2-close'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91']]],
    ['#/study',[['.v2-appbar .v2-brand'],['.v2-avatar-dot'],['.v2-menu-btn'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1'],['.v2-card h2'],['.v2-statline .v2-stat strong'],['.v2-statline .v2-stat span'],
     ['.v2-testlist .v2-bullet-great'],['.v2-testlist .v2-bullet-good'],['.v2-testlist .v2-bullet-fair'],['.v2-testlist .v2-bullet-low'],['.v2-test-day'],['.v2-testlist .v2-muted'],['.v2-testlist strong']]],
@@ -1325,7 +1591,7 @@ async function main(){
    const measureAll=async list=>{for(const [selector] of list){const result=await page.evaluate(MEASURE,[selector,null]);assert(result,`${selector} not found (${colorScheme})`);measured++;const need=(result.size>=24||(result.size>=18.66&&Number(result.weight)>=700))?3:4.5;if(result.ratio<need)failures.push(`${selector} ${result.ratio}:1 < ${need}`);}};
    await measureAll(checks[0][1]);
    await page.getByRole('button',{name:/Misafir olarak/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
-   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i}))));
+   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i,...(i===1?{expressions:[{text:'an idiom',translation:'bir deyim',exampleText:'An example.',examplePhonetic:'en igzempıl',exampleTranslation:'Bir örnek.'}]}:{})}))));
    for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'#v2Screen[data-route="today"] .v2-pack-text':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
    await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip.v2-premium');await measureAll([['.v2-chip'],['.v2-card .ui-button']]);
    await page.evaluate(()=>markMemorized('contrast0'));await page.waitForFunction(()=>VocVocData.getWordProgress('contrast0').status==='memorized');
@@ -1333,6 +1599,14 @@ async function main(){
    await page.evaluate(()=>toggleHistoryDetail('contrast0'));await page.waitForSelector('#historyDetails.open .v2-speak');await measureAll([['#historyDetails .v2-speak']]);await page.evaluate(()=>closeHistoryDetail());
    for(const [hash,list] of [['#/stats',[['.v2-statline-4 .v2-stat strong'],['.v2-statline-4 .v2-stat span'],['.v2-day-label'],['.v2-day-num'],['.v2-legend'],['.v2-curve-range'],['.v2-card h2'],['.v2-card h3'],['.v2-card .v2-muted'],['.v2-page > .v2-muted']]],['#/today',[['.v2-badge-body h3'],['.v2-badge-body p.v2-muted'],['.v2-badge-date'],['.v2-badge-icon'],['.v2-badges-section > .v2-muted'],['.v2-badges-section h2']]]]){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(`#v2Screen[data-route="${hash.slice(2)}"] h1`);await measureAll(list);}
    await page.locator('.v2-menu-btn').click();await measureAll([['.v2-drawer-head .v2-brand'],['.v2-nav-item'],['.v2-nav-item[aria-current="page"]'],['.v2-nav-settings'],['.v2-drawer-close']]);await page.keyboard.press('Escape');   // the open menu
+   // the pills under the Daily button, the words of a day, the photo dialog, an idiom in the word panel
+   await page.evaluate(()=>{location.hash='#/today';});await page.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
+   await page.getByRole('button',{name:'Günlük kelimeler ekle'}).click();await page.waitForSelector('.v2-added .v2-wordpill');await measureAll([['.v2-added .v2-goal-label'],['.v2-added .v2-wordpill']]);
+   await page.locator('#v2Screen .v2-slot-btn').first().click();await page.waitForSelector('#v2DayWords');await measureAll([['#v2DayWordsTitle'],['#v2DayWords .v2-popup-card > p'],['#v2DayWords .v2-wordpill'],['.v2-popup-close']]);await page.keyboard.press('Escape');
+   await page.evaluate(()=>{location.hash='#/profile';});await page.waitForSelector('#v2PhotoInput',{state:'attached'});
+   await page.evaluate(async()=>{const canvas=document.createElement('canvas');canvas.width=300;canvas.height=200;canvas.getContext('2d').fillRect(0,0,300,200);const file=new File([await new Promise(resolve=>canvas.toBlob(resolve,'image/png'))],'a.png',{type:'image/png'});const transfer=new DataTransfer();transfer.items.add(file);const input=document.getElementById('v2PhotoInput');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}));});
+   await page.waitForSelector('#v2Crop');await measureAll([['.v2-crop-card h2'],['.v2-crop-card p'],['.v2-crop-zoom span'],['.v2-crop-card .ui-button-secondary'],['.v2-crop-card .ui-button-success']]);await page.keyboard.press('Escape');
+   await page.evaluate(()=>toggleHistoryDetail('contrast1'));await page.waitForSelector('#historyDetails.open .expression-pill',{state:'attached'});await page.evaluate(()=>{for(const details of document.querySelectorAll('#historyDetails details.fold'))details.open=true;});await measureAll([['#historyDetails .expression-pill']]);await page.evaluate(()=>closeHistoryDetail());
    assert.deepEqual(failures,[],`contrast below WCAG AA in the ${colorScheme} theme`);
    await context.close();
   }

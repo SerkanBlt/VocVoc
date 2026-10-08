@@ -6,45 +6,45 @@
       "target": "de",
       "native": "tr",
       "level": "A1-A2",
-      "version": 1,
+      "version": 2,
       "words": 40,
-      "bytes": 10872
+      "bytes": 25129
     },
     {
       "id": "en-tr",
       "target": "en",
       "native": "tr",
       "level": "A1-A2",
-      "version": 1,
+      "version": 2,
       "words": 40,
-      "bytes": 10511
+      "bytes": 26282
     },
     {
       "id": "es-tr",
       "target": "es",
       "native": "tr",
       "level": "A1-A2",
-      "version": 1,
+      "version": 2,
       "words": 40,
-      "bytes": 10691
+      "bytes": 24316
     },
     {
       "id": "fr-tr",
       "target": "fr",
       "native": "tr",
       "level": "A1-A2",
-      "version": 1,
+      "version": 2,
       "words": 40,
-      "bytes": 10741
+      "bytes": 25625
     },
     {
       "id": "it-tr",
       "target": "it",
       "native": "tr",
       "level": "A1-A2",
-      "version": 1,
+      "version": 2,
       "words": 40,
-      "bytes": 10725
+      "bytes": 25802
     }
   ]
 }
