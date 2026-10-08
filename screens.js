@@ -35,7 +35,7 @@
   /* ---------- texts (Turkish and English; the other interface languages show English) ---------- */
   const TEXT={
     tr:{
-      nav:'Ana gezinme',today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistik',badges:'Rozetler',profile:'Profil',back:'Geri',
+      nav:'Ana gezinme',today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistik',profile:'Profil',back:'Geri',menu:'Menü',menuClose:'Menüyü kapat',
       authTitle:'VocVoc',authSub:'Kelimelerini cihazında öğren ve tekrar et.',authName:'Görünen ad (isteğe bağlı)',authGoogle:'Google ile devam et (simülasyon)',authGuest:'Misafir olarak devam et',
       authNote:'Simülasyon: gerçek hesap ve sunucu yok. Bilgilerin yalnızca bu cihazda kalır.',demoName:'Demo Kullanıcı',
       studyTitle:'Çalış',studyTest:'Test',studyTestSub:'{n} aktif kelimeden 10 soru',studyRecall:'Hatırla',studyRecallSub:'{n} ezberlediğin kelimeyi sına',studyFlip:'Flip',studyFlipSub:'Kartları çevirerek tekrar et',
@@ -69,7 +69,7 @@
       aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
     },
     en:{
-      nav:'Main navigation',today:'Today',words:'Words',study:'Study',stats:'Stats',badges:'Badges',profile:'Profile',back:'Back',
+      nav:'Main navigation',today:'Today',words:'Words',study:'Study',stats:'Stats',profile:'Profile',back:'Back',menu:'Menu',menuClose:'Close menu',
       authTitle:'VocVoc',authSub:'Learn and review your words on your device.',authName:'Display name (optional)',authGoogle:'Continue with Google (simulation)',authGuest:'Continue as guest',
       authNote:'Simulation: there is no real account or server. Your information stays on this device.',demoName:'Demo user',
       studyTitle:'Study',studyTest:'Test',studyTestSub:'10 questions from {n} active words',studyRecall:'Recall',studyRecallSub:'Quiz yourself on {n} memorized words',studyFlip:'Flip',studyFlipSub:'Review by flipping cards',
@@ -180,7 +180,8 @@
     today:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
     study:'<rect x="3" y="7" width="14" height="14" rx="2"/><path d="M7 3h12a2 2 0 012 2v12"/>',
     stats:'<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>',
-    badges:'<circle cx="12" cy="9" r="6"/><path d="M8.5 14.5L7 22l5-3 5 3-1.5-7.5"/>',
+    menu:'<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
+    settings:'<circle cx="12" cy="12" r="3.2"/><path d="M19.1 13.4a7.4 7.4 0 0 0 0-2.8l2-1.55-2-3.45-2.45 1a7.4 7.4 0 0 0-2.4-1.4L13.9 2h-3.8l-.35 3.2a7.4 7.4 0 0 0-2.4 1.4l-2.45-1-2 3.45 2 1.55a7.4 7.4 0 0 0 0 2.8l-2 1.55 2 3.45 2.45-1a7.4 7.4 0 0 0 2.4 1.4l.35 3.2h3.8l.35-3.2a7.4 7.4 0 0 0 2.4-1.4l2.45 1 2-3.45-2-1.55z"/>',
     profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
     words:'<path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="M4 6h.01"/><path d="M4 12h.01"/><path d="M4 18h.01"/>',
     lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
@@ -402,11 +403,11 @@
   }
 
   /* ---------- routing ---------- */
-  const TABS=['today','words','study','stats','badges','profile'];
+  const TABS=['today','words','study','stats','profile'];                        // the entries of the menu
   const QUIZ_ROUTES=['test','recall'];
   const ROUTES=[...TABS,'test','recall','flip','premium','help','privacy','terms','about'];
-  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',badges:'badges',profile:'profile',test:'study',recall:'study',flip:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
-  let shown=null,internalNavigations=0,tabButtons=null,screen=null,container=null,auth=null,root=null;
+  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',profile:'profile',test:'study',recall:'study',flip:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
+  let shown=null,internalNavigations=0,screen=null,container=null,auth=null,root=null;
   const currentRoute=()=>{const route=location.hash.replace(/^#\/?/,'');return ROUTES.includes(route)?route:'today';};
   function navigate(route){
     internalNavigations++;
@@ -450,7 +451,7 @@
         h('button',{type:'button',class:'ui-button ui-button-success','data-v2-focus':'daily',onclick:()=>{addDailyFromPackOrAi();}},t('addDaily'))),
       packCard(),
       h('ul',{class:'v2-statline'},tile(active,t('statActive')),tile(memorized,t('statMemorized')),tile(memorizedToday,t('statToday'))),
-      weekSection(currentStats().last7)));
+      weekSection(currentStats().last7),badgesSection()));
   }
   let dashboardTimer=0;
   function refreshDashboard(){                                                   // after any change of the data, once per burst
@@ -575,10 +576,10 @@
         done?h('p',{class:'v2-badge-date',text:fill(t('badgeEarned'),{date:formatDay(badge.earnedOn)})}):h('p',{class:'v2-muted',text:fill(t('badgeProgress'),{n:badge.progress,m:badge.target})}),
         bar));
   }
-  function badgesScreen(){
+  function badgesSection(){                                                      // the whole list, at the end of Today
     const badges=currentStats().badges,earned=badges.filter(badge=>badge.earnedOn).length;
     const ordered=[...badges].sort((a,b)=>(a.earnedOn?0:1)-(b.earnedOn?0:1)||(a.earnedOn?b.earnedOn.localeCompare(a.earnedOn):b.progress/b.target-a.progress/a.target));
-    return page(heading(t('badgesTitle')),h('p',{class:'v2-muted',text:fill(t('badgesSummary'),{n:earned,m:badges.length})}),h('ul',{class:'v2-badges'},ordered.map(badgeCard)));
+    return h('section',{class:'v2-badges-section','aria-labelledby':'v2BadgesTitle'},h('h2',{id:'v2BadgesTitle',text:t('badgesTitle')}),h('p',{class:'v2-muted',text:fill(t('badgesSummary'),{n:earned,m:badges.length})}),h('ul',{class:'v2-badges'},ordered.map(badgeCard)));
   }
   function chipFor(plan){return h('span',{class:'v2-chip'+(plan==='premium'?' v2-premium':''),text:t(plan==='premium'?'planPremium':'planFree')});}
   function profileScreen(){
@@ -629,7 +630,6 @@
       case 'study':case 'flip':return studyScreen();
       case 'test':case 'recall':return quizScreen(route);
       case 'stats':return statsScreen();
-      case 'badges':return badgesScreen();
       case 'profile':return profileScreen();
       case 'premium':return premiumScreen();
       case 'help':case 'privacy':case 'terms':return textPage(route);
@@ -638,20 +638,41 @@
     }
   }
 
+  /* ---------- the bar at the top of every page, and the menu that slides in from the left ---------- */
+  // The bar says VocVoc, opens the menu (the entries the tab bar used to have, and Settings at the bottom) and leads to the profile.
+  // There is no picture to show yet (the sign-in is a simulation): the round button shows the first letter of the name.
+  let bar=null,drawer=null,menuButton=null,avatarButton=null,drawerItems=[];
+  function syncChrome(current){
+    const name=readProfile()?.name||t('guest');
+    avatarButton.firstChild.textContent=name.trim().charAt(0).toUpperCase()||'V';
+    avatarButton.setAttribute('aria-label',t('profile')+': '+name);
+    menuButton.setAttribute('aria-label',t('menu'));
+    drawer.setAttribute('aria-label',t('menu'));drawer.lang=lang();
+    drawer.querySelector('nav').setAttribute('aria-label',t('nav'));
+    drawer.querySelector('.v2-drawer-close').setAttribute('aria-label',t('menuClose'));
+    for(const item of drawerItems){
+      item.querySelector('.v2-nav-label').textContent=t(item.dataset.label);
+      if(item.dataset.route===current)item.setAttribute('aria-current','page');else item.removeAttribute('aria-current');
+    }
+  }
+  function setDrawer(open){
+    if(open===drawer.classList.contains('v2-open'))return;
+    drawer.classList.toggle('v2-open',open);
+    drawer.inert=!open;container.inert=open;screen.inert=open;bar.inert=open;                       // nothing behind the menu can be reached while it is open
+    menuButton.setAttribute('aria-expanded',String(open));
+    if(open)(drawer.querySelector('[aria-current="page"]')||drawerItems[0]).focus({preventScroll:true});
+    else menuButton.focus({preventScroll:true});
+  }
+
   /* ---------- render ---------- */
   function render(moveFocus){
     const route=currentRoute();shown=route;
     stopSpeaking();
-    const tab=TAB_OF[route];
     // Leaving the study pages ends what they started: a Test that was left is abandoned, an open Flip is closed.
     if(!QUIZ_ROUTES.includes(route)&&quizSession)quizSession=null;
     if(route!=='flip'&&flipSession)closeFlip();
     document.body.classList.toggle('v2-immersive',QUIZ_ROUTES.includes(route));
-    tabButtons.forEach(button=>{
-      button.querySelector('.v2-tab-label').textContent=t(button.dataset.tab);
-      if(button.dataset.tab===tab)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
-    });
-    root.querySelector('.v2-tabs').setAttribute('aria-label',t('nav'));
+    syncChrome(TAB_OF[route]);
     if(route==='words'){                                                           // the existing home screen: search, word cards, the list
       container.classList.remove('v2-away');screen.hidden=true;screen.replaceChildren();delete screen.dataset.route;
       return;
@@ -690,11 +711,21 @@
     document.body.classList.add('v2');
     container=document.querySelector('.container');
     screen=h('main',{id:'v2Screen',class:'v2-screen',hidden:true});
-    const nav=h('nav',{class:'v2-tabs'},TABS.map(tab=>h('button',{type:'button',class:'v2-tab','data-tab':tab,onclick:()=>navigate(tab)},icon(tab),h('span',{class:'v2-tab-label'}))));
-    root=h('div',{id:'v2Root',class:'v2-root'},screen,nav);
+    menuButton=h('button',{type:'button',class:'v2-menu-btn','aria-controls':'v2Drawer','aria-expanded':'false',onclick:()=>setDrawer(true)},icon('menu'));
+    avatarButton=h('button',{type:'button',class:'v2-avatar-btn',onclick:()=>navigate('profile')},h('span',{class:'v2-avatar-dot','aria-hidden':'true'}));
+    bar=h('div',{class:'v2-appbar',role:'banner'},menuButton,h('span',{class:'v2-brand',text:'VocVoc'}),avatarButton);
+    const entry=(route,label,run)=>h('button',{type:'button',class:'v2-nav-item'+(route==='settings'?' v2-nav-settings':''),'data-route':route,'data-label':label,onclick:run},icon(route==='settings'?'settings':route),h('span',{class:'v2-nav-label'}));
+    drawer=h('div',{id:'v2Drawer',class:'v2-drawer',role:'dialog','aria-modal':'true',inert:true},
+      h('div',{class:'v2-scrim',onclick:()=>setDrawer(false)}),
+      h('nav',{class:'v2-drawer-panel'},
+        h('div',{class:'v2-drawer-head'},h('span',{class:'v2-brand',text:'VocVoc'}),h('button',{type:'button',class:'v2-drawer-close',onclick:()=>setDrawer(false)},'×')),
+        h('ul',{class:'v2-nav-list'},TABS.map(route=>h('li',{},entry(route,route,()=>{setDrawer(false);navigate(route);})))),
+        h('div',{class:'v2-drawer-foot'},entry('settings','rowSettings',()=>{setDrawer(false);openModal();}))));
+    drawerItems=[...drawer.querySelectorAll('.v2-nav-item')];
+    root=h('div',{id:'v2Root',class:'v2-root'},bar,screen,drawer);
     auth=h('div',{id:'v2Auth',class:'v2-auth',role:'dialog','aria-modal':'true','aria-labelledby':'v2AuthTitle'});
     document.body.append(root,auth);
-    tabButtons=[...nav.querySelectorAll('.v2-tab')];
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('v2-open')){event.preventDefault();setDrawer(false);}});
     // Today follows every change of the data
     evaluateBadges();
     refreshPack();

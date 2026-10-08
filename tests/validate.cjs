@@ -209,7 +209,7 @@ describe('New interface (prototype)',()=>{
       ...[...code.matchAll(/list\(\[([^\]]*)\]/g)].flatMap(match=>[...match[1].matchAll(/'(\w+)'/g)].map(item=>item[1])),   // list(['free1',...])
       ...[...code.matchAll(/lockedScreen\('(\w+)','(\w+)'\)/g)].flatMap(match=>[match[1],match[2]]),
       ...[...code.matchAll(/\['(row\w+)','(\w+)'\]/g)].map(match=>match[1]),                       // ['rowHelp','help']
-      ...['today','words','study','stats','badges','profile']                                  // tab labels
+      ...['today','words','study','stats','profile']                                           // menu entries
     ]);
     for(const key of asked)assert(key in TEXT.en,`missing text key ${key}`);
     const badgeIds=require('../stats.js').BADGES.map(badge=>badge.id);

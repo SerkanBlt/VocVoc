@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.4.0">
+  <meta name="vocvoc-shell" content="1.5.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -803,7 +803,8 @@ input.ui-input:focus{
 .history-toolbar::before{
   content:"";
   position:absolute;z-index:-1;
-  inset:-12px -6px 0;
+  /* Not above the toolbar: it is no longer sticky, and 12px up painted over the bottom edge of the last card above it. */
+  inset:0 -6px 0;
   background:var(--bg);
 }
 .popup-status-text{color:var(--text-muted);line-height:1.45}

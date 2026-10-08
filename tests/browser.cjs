@@ -19,6 +19,7 @@ async function main(){
   c.on('console',m=>{if(/CSP-VIOLATION|Content Security Policy/i.test(m.text()))cspViolations.push(m.text());});return c;};
  const errors=[];let context=await browser.newContext();await context.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>{window.bootRenderCounts={history:0,content:0};for(const [name,key] of [['renderHistory','history'],['renderAllLocal','content']]){const original=window[name];window[name]=(...args)=>{bootRenderCounts[key]++;return original(...args);};}}));let page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  const ready=async(p=page)=>{await p.waitForFunction(()=>document.getElementById('storageBoot').hidden);await p.evaluate(()=>VocVocData.flush());};
+ const goTo=async(p,label)=>{await p.locator('.v2-menu-btn').click();await p.locator('.v2-nav-item',{hasText:label}).click();};   // the menu replaced the tab bar
  await page.goto(url);await ready();assert.equal(await page.evaluate(()=>VocVocData.getHistoryWords().length),3);assert.equal(await page.evaluate(()=>VocVocRegression.run().passed),true);assert.deepEqual(await page.evaluate(()=>bootRenderCounts),{history:1,content:1});assert.equal(await page.locator('#storageBoot').isVisible(),false);record('fresh initialization + 12 SPA guards + one main render pass');
  await page.evaluate(()=>navigator.serviceWorker.ready);await page.reload();await ready();await page.waitForFunction(()=>!!navigator.serviceWorker.controller);assert.equal((await page.evaluate(()=>VocVocPWARegression.run())).passed,true);record('online load/reload + worker activation + PWA guards');
  // Network failure path and UI must not mutate data.
@@ -764,21 +765,23 @@ async function main(){
   assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Root').inert,document.querySelector('.container').inert,JSON.parse(localStorage.getItem('VOCVOC_SIM_PROFILE')).name]),[false,false,'Ayşe']);
   record('new interface: the simulated sign-in comes first, blocks what is behind it, and a profile is remembered');
 
-  // tab bar: six tabs; Words is the existing home screen (search, word cards, the list), Today and the others are pages
-  const tabs=()=>page.evaluate(()=>[...document.querySelectorAll('.v2-tab')].map(button=>button.textContent+(button.getAttribute('aria-current')==='page'?'*':'')));
-  assert.deepEqual(await tabs(),['Bugün*','Kelimeler','Çalış','İstatistik','Rozetler','Profil']);
+  // menu: the entries the tab bar had (Badges moved into Today), Settings last; Words is the existing home screen (search, word cards, the list), Today and the others are pages
+  const entries=()=>page.evaluate(()=>[...document.querySelectorAll('.v2-nav-item')].map(item=>item.textContent+(item.getAttribute('aria-current')==='page'?'*':'')));
+  assert.deepEqual(await entries(),['Bugün*','Kelimeler','Çalış','İstatistik','Profil','Ayarlar']);
+  assert.equal(await page.evaluate(()=>document.querySelectorAll('.v2-tabs,.v2-tab,[data-route="badges"]').length),0);   // no bar at the bottom, no Badges page
   assert.deepEqual(await page.evaluate(()=>[document.querySelector('.container').classList.contains('v2-away'),document.getElementById('v2Screen').dataset.route,document.querySelector('#v2Screen h1').textContent]),[true,'today','Bugün']);   // Today is a page
-  for(const [tab,heading] of [['Çalış','Çalış'],['İstatistik','İstatistikler'],['Rozetler','Rozetler'],['Profil','Profil'],['Bugün','Bugün']]){
-   await page.locator('.v2-tab',{hasText:tab}).click();
+  for(const [entry,heading] of [['Çalış','Çalış'],['İstatistik','İstatistikler'],['Profil','Profil'],['Bugün','Bugün']]){
+   await goTo(page,entry);
    assert.equal(await page.locator('#v2Screen h1').textContent(),heading);
    assert.equal(await page.evaluate(()=>document.activeElement.tagName),'H1');                                       // focus moves to the new page's heading
-   assert.equal((await tabs()).filter(label=>label.endsWith('*')).length,1);
+   assert.equal((await entries()).filter(label=>label.endsWith('*')).length,1);
    assert.equal(await page.evaluate(()=>document.querySelector('.container').classList.contains('v2-away')),true);  // the home screen steps aside
+   assert.equal(await page.evaluate(()=>document.getElementById('v2Drawer').classList.contains('v2-open')),false);  // choosing an entry closes the menu
   }
-  await page.locator('.v2-tab',{hasText:'Kelimeler'}).click();                                          // the existing home screen takes over
-  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Screen').hidden,document.querySelector('.container').classList.contains('v2-away'),!!document.getElementById('searchInput').offsetParent,!!document.getElementById('contentArea').offsetParent||document.getElementById('contentArea').children.length===0,!!document.getElementById('historyPanel').offsetParent,document.querySelector('.v2-tab[aria-current="page"]').textContent]),[true,false,true,true,true,'Kelimeler']);
-  await page.locator('.v2-tab',{hasText:'Bugün'}).click();
-  record('new interface: six tabs, Words is the existing home screen, Today and the others are full pages, the heading takes focus, one tab is current');
+  await goTo(page,'Kelimeler');                                                                          // the existing home screen takes over
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Screen').hidden,document.querySelector('.container').classList.contains('v2-away'),!!document.getElementById('searchInput').offsetParent,!!document.getElementById('historyPanel').offsetParent,document.querySelector('.v2-nav-item[aria-current="page"]').textContent]),[true,false,true,true,'Kelimeler']);
+  await goTo(page,'Bugün');
+  record('new interface: the menu has the five pages and Settings, Words is the existing home screen, Today and the others are full pages, the heading takes focus, one entry is current');
 
   // Today: daily goal, ready-made words, the three counts and the last seven days under them; no greeting, streak label, shortcut row, word cards or list; the old study row steps aside
   const dash=()=>page.evaluate(()=>({goal:document.querySelector('.v2-goal-value')?.textContent,bar:document.querySelector('#v2Dashboard .v2-bar')?.getAttribute('aria-valuenow'),stats:[...document.querySelectorAll('.v2-stat strong')].map(node=>node.textContent),oldRow:getComputedStyle(document.querySelector('.study-actions')).display,
@@ -796,15 +799,15 @@ async function main(){
   record('new interface: Today shows the daily goal, the counts and the last seven days (no greeting, streak label, shortcuts or word list) and follows every data change');
 
   // Test page: its own page, immersive (no tab bar), with a progress bar; closing abandons it
-  await page.locator('.v2-tab',{hasText:'Çalış'}).click();
+  await goTo(page,'Çalış');
   assert.match(await page.locator('.v2-study-card',{hasText:'Test'}).textContent(),/14 aktif kelimeden 10 soru/);
   await page.locator('.v2-study-card',{hasText:'Test'}).click();await page.waitForSelector('#v2QuizHost .quiz-option');
-  const testState=()=>page.evaluate(()=>({hash:location.hash,running:!!quizSession,tabs:getComputedStyle(document.querySelector('.v2-tabs')).display,count:document.getElementById('v2QuizCount').textContent,now:document.getElementById('v2QuizProgress').getAttribute('aria-valuenow'),inHost:!!document.querySelector('#v2QuizHost .quiz-card'),inList:!!document.querySelector('#contentArea .quiz-card'),focus:document.activeElement.classList.contains('quiz-option')}));
+  const testState=()=>page.evaluate(()=>({hash:location.hash,running:!!quizSession,tabs:getComputedStyle(document.querySelector('.v2-appbar')).display,count:document.getElementById('v2QuizCount').textContent,now:document.getElementById('v2QuizProgress').getAttribute('aria-valuenow'),inHost:!!document.querySelector('#v2QuizHost .quiz-card'),inList:!!document.querySelector('#contentArea .quiz-card'),focus:document.activeElement.classList.contains('quiz-option')}));
   assert.deepEqual(await testState(),{hash:'#/test',running:true,tabs:'none',count:'Soru 1/10',now:'0',inHost:true,inList:false,focus:true});
   await page.locator('#v2QuizHost .quiz-option').first().click();await page.waitForFunction(()=>document.getElementById('v2QuizCount').textContent==='Soru 2/10');
   assert.equal((await testState()).now,'1');
   await page.getByRole('button',{name:'Kapat'}).click();
-  assert.deepEqual(await page.evaluate(()=>[location.hash,!!quizSession,getComputedStyle(document.querySelector('.v2-tabs')).display,document.getElementById('v2Screen').dataset.route]),['#/study',false,'flex','study']);
+  assert.deepEqual(await page.evaluate(()=>[location.hash,!!quizSession,getComputedStyle(document.querySelector('.v2-appbar')).display,document.getElementById('v2Screen').dataset.route]),['#/study',false,'flex','study']);
   // finishing: the result is on the page, "new test" starts again on the same page
   await page.locator('.v2-study-card',{hasText:'Test'}).click();await page.waitForSelector('#v2QuizHost .quiz-option');
   for(let question=0;question<10;question++){await page.locator('#v2QuizHost .quiz-option:not([disabled])').first().click();await page.waitForFunction(count=>quizSession.index>count,question);}
@@ -822,7 +825,7 @@ async function main(){
   record('new interface: the Test is a page of its own (no tab bar, progress, result, new test), closing and the back button abandon it, Recall explains when there are too few words');
 
   // Flip page: the app's own Flip dialog shown like a page and tied to the address; every way of closing it returns
-  await page.locator('.v2-tab',{hasText:'Çalış'}).click();await page.locator('.v2-study-card',{hasText:'Flip'}).click();
+  await goTo(page,'Çalış');await page.locator('.v2-study-card',{hasText:'Flip'}).click();
   await page.waitForSelector('#flipOverlay.open [data-flip-face="front"]');
   assert.deepEqual(await page.evaluate(()=>[location.hash,!!flipSession,document.getElementById('v2Screen').dataset.route,getComputedStyle(document.getElementById('flipOverlay')).backgroundColor!=='rgba(0, 0, 0, 0.48)']),['#/flip',true,'flip',true]);
   await page.goBack();                                                                                   // Android back closes it
@@ -836,14 +839,14 @@ async function main(){
   record('new interface: Flip is tied to the address: Android back, its close button and Escape all close it and return to the study page');
 
   // Free: Statistics are locked and lead to Premium; simulating Premium unlocks them and switches the API key off
-  await page.locator('.v2-tab',{hasText:'İstatistik'}).click();
+  await goTo(page,'İstatistik');
   assert.equal(await page.locator('#v2Screen .v2-locked').count(),1);
   await page.getByRole('button',{name:"Premium'a geç"}).click();assert.equal(await page.locator('#v2Screen h1').textContent(),'Premium');
   assert.match(await page.locator('#v2Screen').textContent(),/API anahtarı: etkin/);
   await page.getByRole('button',{name:"Premium'u simüle et"}).click();
   assert.deepEqual(await page.evaluate(()=>[VocVocPlan.get(),VocVocPlan.has('stats'),VocVocPlan.has('sentenceBuilder'),VocVocPlan.ownKeyActive(),localStorage.getItem('VOCVOC_SIM_PLAN')]),['premium',true,true,false,'premium']);
   assert.match(await page.locator('#v2Screen').textContent(),/API anahtarı: devre dışı/);
-  await page.locator('.v2-tab',{hasText:'İstatistik'}).click();assert.equal(await page.locator('#v2Screen .v2-locked').count(),0);
+  await goTo(page,'İstatistik');assert.equal(await page.locator('#v2Screen .v2-locked').count(),0);
   record('new interface: Statistics are locked on Free, "Premium" simulation unlocks them and switches the own API key off');
 
   // the choices survive a reload and a normal page does not ask for sign-in again
@@ -866,7 +869,7 @@ async function main(){
   const wordCount=await page.evaluate(()=>VocVocData.getWords().length);
   await page.getByRole('button',{name:/Çıkış yap/}).click();await page.waitForSelector('#v2Auth.v2-open');
   assert.equal(await page.evaluate(()=>VocVocData.getWords().length),wordCount);
-  await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  await page.getByRole('button',{name:/Misafir olarak/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
   await page.evaluate(()=>{location.hash='#/profile';});await Promise.all([page.waitForNavigation(),page.getByRole('button',{name:/Eski arayüze dön/}).click()]);await ready();
   assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),localStorage.getItem('VOCVOC_UI')]),[false,null]);
   record('new interface: draft policy/terms/help/about pages, sign-out keeps the data, "old interface" turns the new one off');
@@ -877,7 +880,7 @@ async function main(){
   const quizWords=n=>Array.from({length:n},(_,index)=>({word:'qa'+index,meaning:'anlam '+index}));
   // a finished Test is recorded; a perfect one earns badges, announced once
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(url+'?ui=v2');await ready();await page.waitForSelector('#v2Auth.v2-open');await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  await page.goto(url+'?ui=v2');await ready();await page.waitForSelector('#v2Auth.v2-open');await page.getByRole('button',{name:/Misafir olarak/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
   const activity=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')));
   assert.deepEqual(await page.evaluate(()=>[JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded,document.getElementById('v2Celebrate')?.classList.contains('v2-on')||false]),[true,false]);   // the very first look is silent
   await page.evaluate(words=>VocVocData.addWordBatch(words),quizWords(12));
@@ -948,8 +951,10 @@ async function main(){
   }
   // badges (free): earned ones with their real dates first, the others with their progress
   {
-   const {c,p}=await open(false);await route(p,'badges');
-   assert.equal(await p.locator('#v2Screen .v2-muted').first().textContent(),'7 / 14 rozet kazanıldı');
+   const {c,p}=await open(false);await route(p,'today');
+   assert.equal(await p.locator('.v2-badges-section > .v2-muted').textContent(),'7 / 14 rozet kazanıldı');
+   assert.equal(await p.locator('.v2-days').count(),1);                                                // right under the last seven days
+   assert.equal(await p.locator('.v2-days').evaluate(node=>node.closest('.v2-card').nextElementSibling.className),'v2-badges-section');
    const names=selector=>p.locator(selector).evaluateAll(nodes=>nodes.map(node=>node.querySelector('h3').textContent));
    assert.deepEqual((await names('.v2-badge.v2-earned')).sort(),['Bir hafta','Güçlü hafıza','Isınma','Kusursuz','On kelime','İlk adım','İlk test'].sort());
    assert.equal(await p.locator('.v2-badge').nth(6).evaluate(node=>node.classList.contains('v2-earned')),true);          // earned first ...
@@ -961,7 +966,7 @@ async function main(){
    assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Toast')?.classList.contains('v2-show')||false,Object.keys(JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges).length,JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded]),[false,7,true]);
    // a badge once earned stays earned when the words behind it are gone
    await p.evaluate(async()=>{for(let i=0;i<12;i++)await VocVocData.setStatus('s'+i,'active');});
-   await route(p,'study');await route(p,'badges');
+   await route(p,'study');await route(p,'today');
    assert.equal(await p.locator('.v2-badge.v2-earned',{hasText:'On kelime'}).count(),1);
    await c.close();
   }
@@ -981,7 +986,7 @@ async function main(){
   const openGuest=async({scores,width=360,height=640,context:options={}}={})=>{
    const c=await browser.newContext({viewport:{width,height},...options}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
    if(scores)await c.addInitScript(list=>{if(!localStorage.getItem('VOCVOC_ACTIVITY_V1'))localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify({v:1,seeded:false,testsTaken:list.length,badges:{},quizzes:list.map((score,index)=>({t:new Date(Date.now()-(list.length-index)*864e5).toISOString(),mode:'active',score,total:10,wrong:[]}))}));},scores);
-   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Auth.v2-open');await p.getByRole('button',{name:/Misafir/}).click();await p.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Auth.v2-open');await p.getByRole('button',{name:/Misafir olarak/}).click();await p.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
    return {c,p};
   };
   const openStudy=async p=>{await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] h1');};
@@ -1025,8 +1030,8 @@ async function main(){
    });
    assert.deepEqual(card,{dx:0,dy:card.dy,role:'status',events:'none',sparks:12,motion:['v2-medal-in','v2-spark'],text:['Yeni rozet!','İlk adım','Bir kelimeyi ezberle.'],hiddenArt:'true'});
    assert(card.dy<=2,'centred vertically: '+card.dy);
-   await p.locator('.v2-tab',{hasText:'Rozetler'}).click();                                            // it never blocks a tap
-   assert.equal(await p.evaluate(()=>document.getElementById('v2Screen').dataset.route),'badges');
+   await goTo(p,'Çalış');                                                                              // it never blocks a tap
+   assert.equal(await p.evaluate(()=>document.getElementById('v2Screen').dataset.route),'study');
    for(let index=1;index<10;index++)await p.evaluate(number=>markMemorized('cw'+number),index);       // the tenth memorized word earns the next badge while the first card is still up
    await p.waitForFunction(()=>window.__seen.length===2,null,{timeout:12000});
    const seen=await p.evaluate(()=>window.__seen);
@@ -1046,32 +1051,107 @@ async function main(){
   }
   record('new badge: a card in the middle with a burst, never blocks a tap, away by itself, badges earned in a row come one after the other, reduced motion is a plain fade');
 
-  // the bottom edge of the last panel is visible above the tab bar on every page, on a short phone screen (the old home screen's own padding is !important)
+  // the bottom edge of the last panel is visible on every page, on a short phone screen; the last card of the main list is not painted over (default interface too)
+  const lastCardEdge=p=>p.evaluate(()=>{const cards=document.querySelectorAll('#contentArea .main-word-card'),card=cards[cards.length-1];card.scrollIntoView({block:'center'});const box=card.getBoundingClientRect(),x=box.left+box.width/2;return [1,2,4].map(inset=>!!document.elementsFromPoint(x,box.bottom-inset)[0]?.closest('.main-word-card'));});
   {
    const {c,p}=await openGuest();
    await p.evaluate(list=>VocVocData.addWordBatch(list),words(30));await p.evaluate(()=>VocVocPlan.set('premium'));
    await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();await p.waitForFunction(()=>document.querySelector('.v2-goal-value')?.textContent==='10 / 10 kelime');
    const ends={};
-   for(const route of ['today','words','study','stats','badges','profile','premium']){
+   for(const route of ['today','words','study','stats','profile','premium']){
     await p.evaluate(name=>{location.hash='#/'+name;},route);
     await (route==='words'?p.waitForSelector('#contentArea .main-word-card'):p.waitForSelector('#v2Screen[data-route="'+route+'"] h1'));
     ends[route]=await p.evaluate(()=>{
-     const tabs=document.querySelector('.v2-tabs').getBoundingClientRect(),container=document.querySelector('.container'),away=container.classList.contains('v2-away'),screen=document.getElementById('v2Screen');
+     const container=document.querySelector('.container'),away=container.classList.contains('v2-away'),screen=document.getElementById('v2Screen');
      const scroller=away?screen:container;scroller.scrollTop=scroller.scrollHeight;
      const last=away?screen.querySelector('.v2-page').lastElementChild:document.getElementById('historyPanel');
-     return {gap:Math.round(tabs.top-last.getBoundingClientRect().bottom),scrolls:scroller.scrollHeight>scroller.clientHeight};
+     return {gap:Math.round(innerHeight-last.getBoundingClientRect().bottom),scrolls:scroller.scrollHeight>scroller.clientHeight};
     });
    }
-   for(const route of ['words','stats','badges'])assert.equal(ends[route].scrolls,true,route+' must really scroll for this check to mean anything');
-   for(const [route,end] of Object.entries(ends))assert(end.gap>=8,route+': the last panel ends '+end.gap+'px from the tab bar (hidden when negative)');
+   for(const route of ['today','words','stats'])assert.equal(ends[route].scrolls,true,route+' must really scroll for this check to mean anything');
+   for(const [route,end] of Object.entries(ends))assert(end.gap>=8,route+': the last panel ends '+end.gap+'px from the bottom of the screen (hidden when negative)');
+   await p.evaluate(()=>{location.hash='#/words';});await p.waitForSelector('#contentArea .main-word-card');
+   assert.deepEqual(await lastCardEdge(p),[true,true,true]);                                            // the last card's own bottom edge is on top, not covered by the toolbar below it
    await c.close();
   }
   {
-   const {c,p}=await openGuest({width:320,height:600});                                                 // six tab labels fit on the narrowest phone
-   assert.deepEqual(await p.evaluate(()=>[...document.querySelectorAll('.v2-tab-label')].filter(label=>label.scrollWidth>label.clientWidth).map(label=>label.textContent)),[]);
+   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));       // the default interface had the same cut
+   await p.goto(url);await ready(p);
+   await p.evaluate(async()=>{await VocVocData.addWordBatch(Array.from({length:6},(_,index)=>({word:'edge'+index,meaning:'anlam '+index})));quizSession=null;loadSavedWords();renderHistory();renderAllLocal();});
+   await p.waitForSelector('#contentArea .main-word-card');
+   assert.deepEqual(await lastCardEdge(p),[true,true,true]);
    await c.close();
   }
-  record('new interface: the bottom edge of the last panel is visible on every page, also under the Words list, and six tab labels fit on a 320 px phone');
+  record('main list: the bottom edge of the last card is not painted over, in both interfaces, and the last panel of every page ends above the bottom of the screen');
+ }
+ // ===== New interface: the bar at the top of every page and the menu that slides in from the left =====
+ {
+  const openSignedIn=async({width=390,height=844,context:options={},profile={mode:'google-sim',name:'Ayşe'}}={})=>{
+   const c=await browser.newContext({viewport:{width,height},...options}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+   await c.addInitScript(value=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify(value)),profile);
+   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] h1');
+   return {c,p};
+  };
+  {
+   const {c,p}=await openSignedIn();
+   // on every page: fixed and as wide as the screen, the menu button first, VocVoc, the round profile button at the far right; the page starts under it
+   for(const route of ['today','words','study','stats','profile','premium','help']){
+    await p.evaluate(name=>{location.hash='#/'+name;},route);
+    await p.waitForFunction(name=>name==='words'?document.querySelector('.container:not(.v2-away)'):document.querySelector('#v2Screen[data-route="'+name+'"] h1'),route);
+    const bar=await p.evaluate(()=>{
+     const box=document.querySelector('.v2-appbar').getBoundingClientRect(),avatar=document.querySelector('.v2-avatar-btn').getBoundingClientRect(),menu=document.querySelector('.v2-menu-btn').getBoundingClientRect(),brand=document.querySelector('.v2-appbar .v2-brand').getBoundingClientRect();
+     const words=!!document.querySelector('.container:not(.v2-away)'),under=(words?document.querySelector('.top-chrome'):document.getElementById('v2Screen')).getBoundingClientRect().top;
+     return {full:box.width===innerWidth&&box.left===0&&box.top===0,fixed:getComputedStyle(document.querySelector('.v2-appbar')).position,text:document.querySelector('.v2-appbar .v2-brand').textContent,order:menu.right<=brand.left+1&&brand.right<=avatar.left+1,farRight:Math.round(innerWidth-avatar.right)<=12,round:getComputedStyle(document.querySelector('.v2-avatar-dot')).borderRadius==='50%',under:Math.round(under)>=Math.round(box.bottom)};
+    });
+    assert.deepEqual(bar,{full:true,fixed:'fixed',text:'VocVoc',order:true,farRight:true,round:true,under:true},route);
+   }
+   // the round button shows the first letter of the name and leads to the profile
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,document.querySelector('.v2-avatar-btn').getAttribute('aria-label')]),['A','Profil: Ayşe']);
+   await p.evaluate(()=>{location.hash='#/words';});await p.waitForSelector('.container:not(.v2-away)');
+   await p.locator('.v2-avatar-btn').click();
+   assert.deepEqual(await p.evaluate(()=>[location.hash,document.querySelector('#v2Screen h1').textContent]),['#/profile','Profil']);
+   // the Test has its own bar with a close button: no top bar while it runs
+   await p.evaluate(()=>{location.hash='#/test';});await p.waitForSelector('#v2Screen[data-route="test"]');
+   assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-appbar')).display),'none');
+   await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] h1');
+   // the menu: closed it cannot be reached; opened it slides in from the left to the right and everything behind it is out of reach
+   assert.deepEqual(await p.evaluate(()=>{const drawer=document.getElementById('v2Drawer');return [drawer.inert,getComputedStyle(drawer).visibility,drawer.classList.contains('v2-open'),document.querySelector('.v2-menu-btn').getAttribute('aria-expanded')];}),[true,'hidden',false,'false']);
+   const slide=await p.evaluate(async()=>{const panel=document.querySelector('.v2-drawer-panel');document.querySelector('.v2-menu-btn').click();await new Promise(resolve=>requestAnimationFrame(resolve));const early=panel.getBoundingClientRect().left;await new Promise(resolve=>setTimeout(resolve,600));return {early:Math.round(early),late:Math.round(panel.getBoundingClientRect().left)};});
+   assert(slide.early<-20&&slide.late===0,'the menu slides in: '+JSON.stringify(slide));
+   assert.deepEqual(await p.evaluate(()=>{const drawer=document.getElementById('v2Drawer');return [drawer.inert,document.querySelector('.container').inert,document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.querySelector('.v2-menu-btn').getAttribute('aria-expanded'),document.activeElement.textContent,drawer.getAttribute('aria-modal')];}),[false,true,true,true,'true','Bugün','true']);
+   // Settings is the last entry, at the very bottom, away from the five pages
+   assert.deepEqual(await p.evaluate(()=>{const items=[...document.querySelectorAll('.v2-nav-item')],last=items[items.length-1].getBoundingClientRect(),previous=items[items.length-2].getBoundingClientRect(),panel=document.querySelector('.v2-drawer-panel').getBoundingClientRect();return {settings:items[items.length-1].classList.contains('v2-nav-settings'),text:items[items.length-1].textContent,apart:last.top>previous.bottom+100,atBottom:panel.bottom-last.bottom<24,entries:items.length};}),{settings:true,text:'Ayarlar',apart:true,atBottom:true,entries:6});
+   // Escape and the dimmed page close it; the focus goes back to the button and the page is reachable again
+   await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.getElementById('v2Drawer').classList.contains('v2-open'));
+   assert.deepEqual(await p.evaluate(()=>[document.activeElement.className,document.querySelector('.container').inert,document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.getElementById('v2Drawer').inert]),['v2-menu-btn',false,false,false,true]);
+   await p.locator('.v2-menu-btn').click();await p.locator('.v2-scrim').click({position:{x:370,y:400}});
+   await p.waitForFunction(()=>!document.getElementById('v2Drawer').classList.contains('v2-open'));
+   // Settings opens the app's own Settings, and the menu is closed behind it
+   await p.locator('.v2-menu-btn').click();await p.locator('.v2-nav-settings').click();
+   await p.waitForFunction(()=>getComputedStyle(document.getElementById('modalOverlay')).display==='flex');
+   assert.equal(await p.evaluate(()=>document.getElementById('v2Drawer').classList.contains('v2-open')),false);
+   await p.evaluate(()=>closeModal());
+   await c.close();
+  }
+  {
+   const {c,p}=await openSignedIn({profile:{mode:'guest',name:''}});                                    // a guest has no name: the letter of "Misafir"
+   assert.equal(await p.evaluate(()=>document.querySelector('.v2-avatar-dot').textContent),'M');
+   await c.close();
+  }
+  {
+   const {c,p}=await openSignedIn({context:{reducedMotion:'reduce'}});                                  // reduced motion: it simply appears
+   const left=await p.evaluate(async()=>{document.querySelector('.v2-menu-btn').click();await new Promise(resolve=>requestAnimationFrame(resolve));return Math.round(document.querySelector('.v2-drawer-panel').getBoundingClientRect().left);});
+   assert.equal(left,0);
+   await c.close();
+  }
+  {
+   const {c,p}=await openSignedIn({width:320,height:600});                                              // the narrowest phone: the bar and the menu fit
+   assert.deepEqual(await p.evaluate(()=>{const brand=document.querySelector('.v2-appbar .v2-brand');return [document.querySelector('.v2-menu-btn').getBoundingClientRect().left>=0,document.querySelector('.v2-avatar-btn').getBoundingClientRect().right<=innerWidth,brand.scrollWidth<=brand.clientWidth];}),[true,true,true]);
+   await p.locator('.v2-menu-btn').click();
+   assert.deepEqual(await p.evaluate(()=>{const box=document.querySelector('.v2-drawer-panel').getBoundingClientRect();return [box.width<=innerWidth*0.85,[...document.querySelectorAll('.v2-nav-label')].filter(label=>label.scrollWidth>label.clientWidth).length];}),[true,0]);
+   await c.close();
+  }
+  record('new interface: a bar with the menu button, VocVoc and the round profile button on every page, a menu that slides in from the left (closed by Escape, the dimmed page or an entry) with Settings at the bottom');
  }
  // ===== New interface: ready-made word packs and read-aloud =====
  {
@@ -1102,12 +1182,12 @@ async function main(){
    assert.equal(await p.evaluate(()=>VocVocData.getWordByText('maison').meaning),'ev');
    assert.equal(await p.evaluate(()=>VocVocData.getWordByText('maison').examples[0].phonetic),'la mezon e grand');
    await waitPack(p,'12 / 40 kelime eklendi');
-   await p.locator('.v2-tab',{hasText:'Kelimeler'}).click();                                          // the cards are on the Words tab
+   await goTo(p,'Kelimeler');                                          // the cards are on the Words tab
    const titles=await p.locator('#contentArea .main-word-card .word-title').evaluateAll(nodes=>nodes.map(node=>node.textContent));
    assert.deepEqual(titles.slice(0,10).sort(),['au revoir',"s'il vous plaît",'oui','non','pardon','eau','pain','café','maison','ami'].sort());   // the new words are on top
    assert.equal(titles.length,13);                                                                  // and the three starters are still there
    assert.equal(seen.gemini,0);                                                                      // no AI, no key needed
-   await p.locator('.v2-tab',{hasText:'Bugün'}).click();
+   await goTo(p,'Bugün');
    // the daily limit applies to the pack as it does to the AI
    await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();
    await p.waitForFunction(()=>!!document.querySelector('.app-alert .app-alert-text'));
@@ -1176,7 +1256,7 @@ async function main(){
    assert.deepEqual(await calls(),[{cancel:true},{text:sentence,lang:'fr-FR'},{cancel:true}]);
    await p.evaluate(()=>closeHistoryDetail());
    // the main card (its title is a button, so the speaker sits at the top of the opened details) and Flip
-   await p.locator('.v2-tab',{hasText:'Kelimeler'}).click();
+   await goTo(p,'Kelimeler');
    await p.locator('#contentArea .main-word-toggle').first().click();await p.waitForSelector('#contentArea .main-word-card.open .v2-speak-row .v2-speak');
    const cardWord=await p.locator('#contentArea .main-word-card.open .word-title').textContent();
    await p.evaluate(()=>{window.__speech.length=0;});
@@ -1230,7 +1310,7 @@ async function main(){
   const checks=[['',[['#v2Auth h1'],['#v2Auth p'],['#v2Auth label'],['#v2Auth .ui-button-success'],['#v2Auth .ui-button-secondary'],['#v2Auth .v2-note']]],
    ['#/today',[['#v2Screen h1'],['.v2-goal-label'],['.v2-goal-value'],['.v2-pack .v2-goal-label'],['.v2-pack-text'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['#v2Dashboard .v2-day-label'],['#v2Dashboard .v2-day-num'],['#v2Dashboard .v2-legend'],['#v2Dashboard .v2-card h2']]],
    ['#/test',[['.v2-study-bar h1'],['#v2QuizCount'],['.v2-close'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91']]],
-   ['#/study',[['.v2-tab[aria-current="page"] .v2-tab-label'],['.v2-tab:not([aria-current="page"]) .v2-tab-label'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1'],['.v2-card h2'],['.v2-statline .v2-stat strong'],['.v2-statline .v2-stat span'],
+   ['#/study',[['.v2-appbar .v2-brand'],['.v2-avatar-dot'],['.v2-menu-btn'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1'],['.v2-card h2'],['.v2-statline .v2-stat strong'],['.v2-statline .v2-stat span'],
     ['.v2-testlist .v2-bullet-great'],['.v2-testlist .v2-bullet-good'],['.v2-testlist .v2-bullet-fair'],['.v2-testlist .v2-bullet-low'],['.v2-test-day'],['.v2-testlist .v2-muted'],['.v2-testlist strong']]],
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
    ['#/profile',[['.v2-profile-name'],['.v2-chip'],['.v2-profile-head .v2-muted'],['.v2-row'],['.v2-row-end'],['.v2-row[data-danger]'],['.v2-page > .v2-muted']]],
@@ -1244,14 +1324,15 @@ async function main(){
    const failures=[];
    const measureAll=async list=>{for(const [selector] of list){const result=await page.evaluate(MEASURE,[selector,null]);assert(result,`${selector} not found (${colorScheme})`);measured++;const need=(result.size>=24||(result.size>=18.66&&Number(result.weight)>=700))?3:4.5;if(result.ratio<need)failures.push(`${selector} ${result.ratio}:1 < ${need}`);}};
    await measureAll(checks[0][1]);
-   await page.getByRole('button',{name:/Misafir/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+   await page.getByRole('button',{name:/Misafir olarak/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
    await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i}))));
    for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'#v2Screen[data-route="today"] .v2-pack-text':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
    await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip.v2-premium');await measureAll([['.v2-chip'],['.v2-card .ui-button']]);
    await page.evaluate(()=>markMemorized('contrast0'));await page.waitForFunction(()=>VocVocData.getWordProgress('contrast0').status==='memorized');
    await page.waitForSelector('#v2Celebrate.v2-on');await measureAll([['.v2-celebrate-kicker'],['.v2-celebrate-name'],['.v2-celebrate-desc'],['.v2-medal']]);   // the new-badge card
    await page.evaluate(()=>toggleHistoryDetail('contrast0'));await page.waitForSelector('#historyDetails.open .v2-speak');await measureAll([['#historyDetails .v2-speak']]);await page.evaluate(()=>closeHistoryDetail());
-   for(const [hash,list] of [['#/stats',[['.v2-statline-4 .v2-stat strong'],['.v2-statline-4 .v2-stat span'],['.v2-day-label'],['.v2-day-num'],['.v2-legend'],['.v2-curve-range'],['.v2-card h2'],['.v2-card h3'],['.v2-card .v2-muted'],['.v2-page > .v2-muted']]],['#/badges',[['.v2-badge-body h3'],['.v2-badge-body p.v2-muted'],['.v2-badge-date'],['.v2-badge-icon'],['.v2-page > .v2-muted']]]]){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(`#v2Screen[data-route="${hash.slice(2)}"] h1`);await measureAll(list);}
+   for(const [hash,list] of [['#/stats',[['.v2-statline-4 .v2-stat strong'],['.v2-statline-4 .v2-stat span'],['.v2-day-label'],['.v2-day-num'],['.v2-legend'],['.v2-curve-range'],['.v2-card h2'],['.v2-card h3'],['.v2-card .v2-muted'],['.v2-page > .v2-muted']]],['#/today',[['.v2-badge-body h3'],['.v2-badge-body p.v2-muted'],['.v2-badge-date'],['.v2-badge-icon'],['.v2-badges-section > .v2-muted'],['.v2-badges-section h2']]]]){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(`#v2Screen[data-route="${hash.slice(2)}"] h1`);await measureAll(list);}
+   await page.locator('.v2-menu-btn').click();await measureAll([['.v2-drawer-head .v2-brand'],['.v2-nav-item'],['.v2-nav-item[aria-current="page"]'],['.v2-nav-settings'],['.v2-drawer-close']]);await page.keyboard.press('Escape');   // the open menu
    assert.deepEqual(failures,[],`contrast below WCAG AA in the ${colorScheme} theme`);
    await context.close();
   }
