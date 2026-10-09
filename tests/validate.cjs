@@ -151,9 +151,11 @@ describe('API key handling (static guards)',()=>{
     assert(/roundError\.terminal\|\|roundError\.kind==="geminiBudget"/.test(daily)&&daily.includes('idleRounds>=2'),'no endless retries: a refused request, the time budget and two empty failed rounds end the run');
     for(const key of ['apiNeeded','invalidApiKey','connectionError'])assert(new RegExp(`geminiError\\("${key}",\\{terminal:true\\}\\)`).test(html),`${key} must end a Daily run at once`);
     assert(html.includes('const GEMINI_THINKING=[{thinkingLevel:"low"},{thinkingBudget:0},null];')&&html.includes('generationConfig.thinkingConfig=thinking'),'little thinking is asked for, with older forms and none as fallbacks');
-    assert(html.includes('/thinking/i.test(String(body?.error?.message')&&html.includes('trace,schema:GEMINI_SCHEMAS.words'),'a refused setting is retried; a failed run shows what each request did');
+    assert(html.includes('/thinking/i.test(String(body?.error?.message')&&html.includes('{epoch,deadline,trace,'),'a refused setting is retried; a failed run shows what each request did');
+    assert(daily.includes('maxOutputTokens:size*GEMINI_TOKENS_PER_WORD+800')&&html.includes('generationConfig.maxOutputTokens=maxOutputTokens')&&html.includes('maxOutputTokens:GEMINI_CARD_TOKENS'),'an answer is cut at a token cap: a runaway answer would only run into the time limit');
+    assert(daily.includes('if(epoch!==appDataEpoch||!fresh.length)throw error;')&&daily.includes('t("dailyPartial",{count:fresh.length,total:target})')&&daily.includes('dailyCount:fresh.length'),'a run that stops early keeps and counts the words that arrived');
     const limits=/const GEMINI_LIMITS=\{timeoutMs:(\d+),dailyBudgetMs:(\d+)/.exec(html);
-    assert(limits&&+limits[1]>=20000&&+limits[2]>=2*+limits[1],'a request may take long enough for a part, and the run may take two of them');
+    assert(limits&&+limits[1]>=10000&&+limits[1]<=20000&&+limits[2]>=3*+limits[1],'a request that has not answered in 10-20 s is stuck (answers take a few seconds), and the run may try three models in a row');
   });
 });
 

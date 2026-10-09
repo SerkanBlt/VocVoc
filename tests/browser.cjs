@@ -122,10 +122,10 @@ async function main(){
    assert.deepEqual(got.daily[0],newest100);                                     // 150 records -> exactly the newest 100, newest first
    assert.deepEqual([got.daily[1],got.daily[2]],[newest100,newest100]);          // the three parts of round 1 are asked at the same time with the same list
    assert.deepEqual(got.daily[3],['zz1','zz2','zz3',...newest100.slice(0,97)]);   // round 2: words accepted this run first, then the newest 97
-   assert.deepEqual(got.avoid,newest100);                                        // Random: same 100
+   assert.deepEqual(got.avoid,['zz1','zz2','zz3',...newest100.slice(0,97)]);     // Random: the same newest 100; the 3 words the stopped Daily run did bring were kept, so they are the newest
    await page.evaluate(db=>VocVocData.import(db),recency(30,12));
    got=await lists();const spare=[...newestFirst('h',30,3),...newestFirst('a',12,2)];
-   assert.deepEqual(got.daily[0],spare);assert.deepEqual(got.avoid,spare);       // under the cap: all History newest-first, then archived newest-first
+   assert.deepEqual(got.daily[0],spare);assert.deepEqual(got.avoid,['zz1','zz2','zz3',...spare]);       // under the cap: all History newest-first, then archived newest-first
    record('prompt word cap keeps the newest 100 of 150 records; this-run words outrank them; archived fill spare slots');
   }
  }
@@ -404,7 +404,7 @@ async function main(){
   const ok=payload=>({status:200,contentType:'application/json',body:JSON.stringify({candidates:[{content:{parts:[{text:typeof payload==='string'?payload:JSON.stringify(payload)}]}}]})});
   const fail=(status,message,reason)=>({status,contentType:'application/json',body:JSON.stringify({error:{code:status,message,status:'X',details:reason?[{'@type':'type.googleapis.com/google.rpc.ErrorInfo',reason}]:[]}})});
   await page.route('https://generativelanguage.googleapis.com/**',async route=>{
-   const request=route.request(),body=JSON.parse(request.postData()),call={model:/models\/([^:]+):/.exec(request.url())[1],schema:body.generationConfig.responseSchema||null,thinking:body.generationConfig.thinkingConfig||null,mime:body.generationConfig.responseMimeType,key:request.headers()['x-goog-api-key'],url:request.url(),prompt:String(body.contents?.[0]?.parts?.[0]?.text||'')};
+   const request=route.request(),body=JSON.parse(request.postData()),call={model:/models\/([^:]+):/.exec(request.url())[1],schema:body.generationConfig.responseSchema||null,thinking:body.generationConfig.thinkingConfig||null,maxTokens:body.generationConfig.maxOutputTokens||0,mime:body.generationConfig.responseMimeType,key:request.headers()['x-goog-api-key'],url:request.url(),prompt:String(body.contents?.[0]?.parts?.[0]?.text||'')};
    calls.push(call);allCalls.push(call);const answer=await plan(calls.length,call);
    if(answer==='hang')return new Promise(()=>{}); // never answers: only the app's own timeout can end it
    if(answer==='drop')return route.abort('failed');
@@ -416,7 +416,7 @@ async function main(){
   // A failing scenario: localized message, expected number of requests, spinner closed, controls usable, stored data identical.
   const failing=async(label,{answer,act,message,count,limits={}})=>{
    const before=await state();calls.length=0;plan=answer;
-   await page.evaluate(l=>Object.assign(GEMINI_LIMITS,l),{timeoutMs:25000,dailyBudgetMs:75000,minSliceMs:500,...limits});
+   await page.evaluate(l=>Object.assign(GEMINI_LIMITS,l),{timeoutMs:15000,dailyBudgetMs:60000,minSliceMs:500,...limits});
    const started=Date.now();await act();await page.waitForSelector('.app-alert');const text=await page.locator('#appAlertLayer').innerText(),elapsed=Date.now()-started;
    assert.match(text,message,label);if(count!=null)assert.equal(calls.length,count,label+': number of requests');
    assert.equal(await page.locator('#loader').evaluate(el=>getComputedStyle(el).display),'none',label+': spinner');assert.equal(await page.locator('#dailyLoadingOverlay.show').count(),0,label+': daily overlay');
@@ -496,6 +496,7 @@ async function main(){
    assert.equal(peak,3,'the three parts are in flight at the same time');
    const themes=calls.map(c=>/own theme: ([^.]*)\./.exec(c.prompt)?.[1]);assert(themes.every(Boolean)&&new Set(themes).size===3,'every part has its own theme: '+themes.join(' | '));
    assert.equal(await wordsOf('partz'),10);
+   assert(calls.every(c=>c.maxTokens===(+/EXACTLY (\d+)/.exec(c.prompt)[1])*900+800),'every part has an output cap that fits the words it asks for (a runaway answer is cut short)');
    assert.equal(await page.locator('.app-alert').count(),0);
    // a part that never answers (every model) is asked for again in the next round: nothing is lost, nothing is stored twice
    calls.length=0;await page.evaluate(()=>Object.assign(GEMINI_LIMITS,{timeoutMs:400,dailyBudgetMs:20000}));
@@ -505,14 +506,27 @@ async function main(){
    await daily();await page.waitForFunction(()=>Object.keys(VocVocData.getDb().words).filter(id=>id.split(':').pop().startsWith('retryz')).length>=10,null,{timeout:20000});
    assert.equal(await wordsOf('retryz'),10);assert.equal(calls.length,3+2+1,'3 parts, the stuck part on its two other models, then one request for the missing 4');
    assert.equal(await page.locator('.app-alert').count(),0);
-   await page.evaluate(()=>Object.assign(GEMINI_LIMITS,{timeoutMs:25000,dailyBudgetMs:75000}));
+   await page.evaluate(()=>Object.assign(GEMINI_LIMITS,{timeoutMs:15000,dailyBudgetMs:60000}));
    // one unusable word (no meaning) in each answer costs only itself: the rest is kept and the next round asks for the missing ones
    calls.length=0;
    plan=async(n,call)=>ok({words:[...(n<=3?[{word:'badz'+n}]:[]),...Array.from({length:+/EXACTLY (\d+)/.exec(call.prompt)[1]-(n<=3?1:0)},(_,i)=>wordCard(`partial${n}x${i}`))]});
    await daily();await page.waitForFunction(()=>Object.keys(VocVocData.getDb().words).filter(id=>id.split(':').pop().startsWith('partial')).length>=10);
    assert.equal(await wordsOf('partial'),10);assert.equal(await wordsOf('badz'),0);assert.equal(calls.length,4,'three parts, then one request for the 3 that were missing');
    assert.equal(await page.locator('.app-alert').count(),0);
-   record('Daily: ten words asked as 4 + 3 + 3 at the same time, each part with its own theme; a stuck part is asked again and an unusable word costs only itself');
+   // a part that never answers (and no later round does either) must not cost the words that did arrive: they are added and counted, and the message says how many
+   calls.length=0;await page.evaluate(()=>Object.assign(GEMINI_LIMITS,{timeoutMs:300,dailyBudgetMs:3000}));
+   const usedBefore=await page.evaluate(()=>getDailyUsage().count);
+   plan=async(n,call)=>/own theme: work, school/.test(call.prompt)||!/own theme/.test(call.prompt)?'hang'
+    :ok({words:Array.from({length:+/EXACTLY (\d+)/.exec(call.prompt)[1]},(_,i)=>wordCard(`halfz${n}x${i}`))});
+   await daily();await page.waitForSelector('.app-alert');
+   const halfText=await page.locator('#appAlertLayer').innerText();
+   assert.match(halfText,/10 kelimeden yalnızca 7 tanesi alınabildi ve eklendi/);assert.match(halfText,/\[[^\]]*\d+s ok[^\]]*\d+s timeout[^\]]*\]/);
+   assert.equal(await wordsOf('halfz'),7);
+   assert.equal(await page.evaluate(()=>getDailyUsage().count),usedBefore+7,'only the added words count against the daily limit');
+   assert.equal(await page.locator('#dailyLoadingOverlay.show').count(),0);assert.equal(await page.evaluate(()=>document.querySelector('[onclick="addDailyWords()"]').disabled),false);
+   await page.evaluate(()=>showError(''));await page.waitForFunction(()=>!document.querySelector('.app-alert'));
+   await page.evaluate(()=>Object.assign(GEMINI_LIMITS,{timeoutMs:15000,dailyBudgetMs:60000}));
+   record('Daily: ten words asked as 4 + 3 + 3 at the same time, each part with its own theme and an output cap; a stuck part is asked again, an unusable word costs only itself, and a run that stops early keeps the words that arrived');
   }
   assert(allCalls.length>20&&allCalls.every(c=>c.key===KEY||c.key==='anahtar-ğüş')&&allCalls.every(c=>!c.url.includes('key=')),'every request carried the key only in the header');
   assert(logged.every(line=>!line.includes(KEY)),'the API key never reached the console');

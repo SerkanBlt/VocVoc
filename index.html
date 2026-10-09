@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.8.1">
+  <meta name="vocvoc-shell" content="1.8.2">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -2487,7 +2487,7 @@ const I18N={
     recallNeed:"Recall needs at least 10 active memorized words.",
     clozeNeed:"Fill in the blank needs at least 10 words that have an example sentence.",archivedWord:"This word is archived. Reactivate it from Settings → Show archive.",
     apiNeeded:"Add a Gemini API key in Settings to query new words.",dailyError:"Daily words could not be added",dailyLimitReached:"Daily limit reached. Change it in Settings.",
-    difficultyA:"Beginner",difficultyB:"Intermediate",difficultyC:"Advanced",system:"System",light:"Light",dark:"Dark",newTest:"New 10-question test",wordLabel:"Word",chooseWord:"Choose the correct word",wrongSelected:"Incorrect answers",unlimited:"Unlimited",dailyPreparing:"Preparing daily words",dailyAction:"Daily — add 10 words",settingsAction:"Settings",randomAction:"Random word",aiPreparing:"AI response is being prepared, please wait...",openDetails:"Open details",memorizedOpenDetails:"Memorized — open details",rememberCue:"Memorized",forgetCue:"Remove memorized",archiveCue:"↓ Archive",archiveToast:"Archived",undo:"Undo",wordFallback:"Word",detailsLoadError:"Word details could not be loaded.",unknownError:"An unknown error occurred.",dailyUniqueError:"Only {count}/10 unique new words could be prepared. Please try again.",alertClose:"Close alert",optionShow:"Show options",close:"Close",searchAction:"Search",testAction:"Test active words",recallAction:"Test memorized words",limitPlaceholder:"Enter a limit",connectionError:"Gemini connection failed. Check your internet connection and try again.",noGeminiResponse:"Gemini did not return a response.",noWordGenerated:"No word was generated.",randomError:"Random word could not be generated.",apiKeyHint:"Stored only in this browser. In Google AI Studio, restrict the key to this site's address (HTTP referrer) and to the Gemini API.",statusFilter:"Status filter",sortOrder:"Sort order",apiKeyLabel:"Gemini API key",swipeActions:"Swipe actions",fontSmall:"Small",fontNormal:"Normal",fontLarge:"Large",fontXLarge:"Extra large",showMore:"Show more ({count})"
+    difficultyA:"Beginner",difficultyB:"Intermediate",difficultyC:"Advanced",system:"System",light:"Light",dark:"Dark",newTest:"New 10-question test",wordLabel:"Word",chooseWord:"Choose the correct word",wrongSelected:"Incorrect answers",unlimited:"Unlimited",dailyPreparing:"Preparing daily words",dailyAction:"Daily — add 10 words",settingsAction:"Settings",randomAction:"Random word",aiPreparing:"AI response is being prepared, please wait...",openDetails:"Open details",memorizedOpenDetails:"Memorized — open details",rememberCue:"Memorized",forgetCue:"Remove memorized",archiveCue:"↓ Archive",archiveToast:"Archived",undo:"Undo",wordFallback:"Word",detailsLoadError:"Word details could not be loaded.",unknownError:"An unknown error occurred.",dailyUniqueError:"Only {count}/10 unique new words could be prepared. Please try again.",dailyPartial:"Only {count} of {total} words could be fetched, and they were added. Press Daily again for the rest.",alertClose:"Close alert",optionShow:"Show options",close:"Close",searchAction:"Search",testAction:"Test active words",recallAction:"Test memorized words",limitPlaceholder:"Enter a limit",connectionError:"Gemini connection failed. Check your internet connection and try again.",noGeminiResponse:"Gemini did not return a response.",noWordGenerated:"No word was generated.",randomError:"Random word could not be generated.",apiKeyHint:"Stored only in this browser. In Google AI Studio, restrict the key to this site's address (HTTP referrer) and to the Gemini API.",statusFilter:"Status filter",sortOrder:"Sort order",apiKeyLabel:"Gemini API key",swipeActions:"Swipe actions",fontSmall:"Small",fontNormal:"Normal",fontLarge:"Large",fontXLarge:"Extra large",showMore:"Show more ({count})"
   },
   tr:{
     geminiTimeout:"Gemini yanıtı zaman aşımına uğradı. Tekrar deneyin.",invalidApiKey:"Ayarlardaki Gemini API anahtarınızı ve kısıtlamalarını kontrol edin.",geminiBudget:"Gemini toplam süre sınırını aştı. Hiçbir kayıt değişmedi; daha sonra tekrar deneyin.",geminiQuota:"Gemini kota veya istek sınırına ulaşıldı. Daha sonra deneyin.",geminiUnavailable:"Gemini şu anda kullanılamıyor. Daha sonra deneyin.",invalidGeminiResponse:"Gemini geçersiz kelime verisi döndürdü. Tekrar deneyin.",
@@ -2505,7 +2505,7 @@ const I18N={
     recallNeed:"Hatırla testi için Ezberimde en az 10 aktif kelime gerekli.",
     clozeNeed:"Boşluk Doldurma için cümlesi olan en az 10 kelime gerekli.",archivedWord:"Bu kelime arşivde. Ayarlar → Arşivi göster bölümünden tekrar aktif hale getirebilirsiniz.",
     apiNeeded:"Yeni kelime sorgulamak için Ayarlar bölümünden Gemini API anahtarı ekleyin.",dailyError:"Günlük kelimeler eklenemedi",dailyLimitReached:"Günlük limite ulaşıldı. Ayarlardaki limiti değiştirin.",
-    difficultyA:"Başlangıç",difficultyB:"Orta",difficultyC:"İleri",system:"Sistem",light:"Açık",dark:"Koyu",newTest:"Yeni 10 Soruluk Test",wordLabel:"Kelime",chooseWord:"Doğru kelimeyi seç",wrongSelected:"Yanlış işaretlediklerin",unlimited:"Sınırsız",dailyPreparing:"Günlük kelimeler hazırlanıyor",dailyAction:"Günlük — 10 kelime ekle",settingsAction:"Ayarlar",randomAction:"Rastgele kelime",aiPreparing:"AI yanıtı hazırlanıyor, lütfen bekleyin...",openDetails:"Detayı aç",memorizedOpenDetails:"Ezberimde — detayı aç",rememberCue:"Ezberimde",forgetCue:"Ezberimden Çıkar",archiveCue:"↓ Arşivle",archiveToast:"Arşivlendi",undo:"Geri al",wordFallback:"Kelime",detailsLoadError:"Kelime detayı alınamadı.",unknownError:"Bilinmeyen bir hata oluştu.",dailyUniqueError:"Yalnızca {count}/10 benzersiz yeni kelime hazırlanabildi. Lütfen tekrar deneyin.",alertClose:"Uyarıyı kapat",optionShow:"Seçenekleri göster",close:"Kapat",searchAction:"Ara",testAction:"Aktif kelimelerden test",recallAction:"Ezberimdeki kelimelerden test",limitPlaceholder:"Limit girin",connectionError:"Gemini bağlantısı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",noGeminiResponse:"Gemini yanıt vermedi.",noWordGenerated:"Kelime üretilemedi.",randomError:"Rastgele kelime üretilemedi.",apiKeyHint:"Yalnızca bu tarayıcıda saklanır. Google AI Studio'da anahtarı bu sitenin adresiyle (HTTP referrer) ve Gemini API ile sınırlayın.",statusFilter:"Durum filtresi",sortOrder:"Sıralama",apiKeyLabel:"Gemini API anahtarı",swipeActions:"Kaydırma eylemleri",fontSmall:"Küçük",fontNormal:"Normal",fontLarge:"Büyük",fontXLarge:"Çok büyük",showMore:"Daha fazla göster ({count})"
+    difficultyA:"Başlangıç",difficultyB:"Orta",difficultyC:"İleri",system:"Sistem",light:"Açık",dark:"Koyu",newTest:"Yeni 10 Soruluk Test",wordLabel:"Kelime",chooseWord:"Doğru kelimeyi seç",wrongSelected:"Yanlış işaretlediklerin",unlimited:"Sınırsız",dailyPreparing:"Günlük kelimeler hazırlanıyor",dailyAction:"Günlük — 10 kelime ekle",settingsAction:"Ayarlar",randomAction:"Rastgele kelime",aiPreparing:"AI yanıtı hazırlanıyor, lütfen bekleyin...",openDetails:"Detayı aç",memorizedOpenDetails:"Ezberimde — detayı aç",rememberCue:"Ezberimde",forgetCue:"Ezberimden Çıkar",archiveCue:"↓ Arşivle",archiveToast:"Arşivlendi",undo:"Geri al",wordFallback:"Kelime",detailsLoadError:"Kelime detayı alınamadı.",unknownError:"Bilinmeyen bir hata oluştu.",dailyUniqueError:"Yalnızca {count}/10 benzersiz yeni kelime hazırlanabildi. Lütfen tekrar deneyin.",dailyPartial:"{total} kelimeden yalnızca {count} tanesi alınabildi ve eklendi. Kalanlar için Günlük'e yeniden bas.",alertClose:"Uyarıyı kapat",optionShow:"Seçenekleri göster",close:"Kapat",searchAction:"Ara",testAction:"Aktif kelimelerden test",recallAction:"Ezberimdeki kelimelerden test",limitPlaceholder:"Limit girin",connectionError:"Gemini bağlantısı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",noGeminiResponse:"Gemini yanıt vermedi.",noWordGenerated:"Kelime üretilemedi.",randomError:"Rastgele kelime üretilemedi.",apiKeyHint:"Yalnızca bu tarayıcıda saklanır. Google AI Studio'da anahtarı bu sitenin adresiyle (HTTP referrer) ve Gemini API ile sınırlayın.",statusFilter:"Durum filtresi",sortOrder:"Sıralama",apiKeyLabel:"Gemini API anahtarı",swipeActions:"Kaydırma eylemleri",fontSmall:"Küçük",fontNormal:"Normal",fontLarge:"Büyük",fontXLarge:"Çok büyük",showMore:"Daha fazla göster ({count})"
   },
   fr:{
     geminiTimeout:"Gemini a mis trop de temps. Réessayez.",invalidApiKey:"Vérifiez votre clé API Gemini et ses restrictions dans les réglages.",geminiBudget:"Gemini a dépassé le temps total autorisé. Rien n’a été modifié ; réessayez plus tard.",geminiQuota:"Quota ou limite de requêtes Gemini atteint. Réessayez plus tard.",geminiUnavailable:"Gemini est temporairement indisponible. Réessayez plus tard.",invalidGeminiResponse:"Gemini a renvoyé des données invalides. Réessayez.",
@@ -2523,7 +2523,7 @@ const I18N={
     recallNeed:"La révision nécessite au moins 10 mots mémorisés actifs.",
     clozeNeed:"Compléter la phrase nécessite au moins 10 mots avec une phrase d'exemple.",archivedWord:"Ce mot est archivé. Réactivez-le via Réglages → Afficher l’archive.",
     apiNeeded:"Ajoutez une clé API Gemini dans Réglages pour rechercher de nouveaux mots.",dailyError:"Impossible d’ajouter les mots du jour",dailyLimitReached:"Limite quotidienne atteinte. Modifiez-la dans Réglages.",
-    difficultyA:"Débutant",difficultyB:"Intermédiaire",difficultyC:"Avancé",system:"Système",light:"Clair",dark:"Sombre",newTest:"Nouveau test de 10 questions",wordLabel:"Mot",chooseWord:"Choisissez le bon mot",wrongSelected:"Réponses incorrectes",unlimited:"Illimité",dailyPreparing:"Préparation des mots du jour",dailyAction:"Quotidien — ajouter 10 mots",settingsAction:"Réglages",randomAction:"Mot aléatoire",aiPreparing:"La réponse de l’IA est en préparation, veuillez patienter...",openDetails:"Ouvrir les détails",memorizedOpenDetails:"Mémorisé — ouvrir les détails",rememberCue:"Mémorisé",forgetCue:"Retirer des mémorisés",archiveCue:"↓ Archiver",archiveToast:"Archivé",undo:"Annuler",wordFallback:"Mot",detailsLoadError:"Impossible de charger les détails du mot.",unknownError:"Une erreur inconnue s’est produite.",dailyUniqueError:"Seulement {count}/10 nouveaux mots uniques ont pu être préparés. Veuillez réessayer.",alertClose:"Fermer l’alerte",optionShow:"Afficher les options",close:"Fermer",searchAction:"Rechercher",testAction:"Tester les mots actifs",recallAction:"Tester les mots mémorisés",limitPlaceholder:"Saisir une limite",connectionError:"Connexion à Gemini impossible. Vérifiez votre connexion Internet et réessayez.",noGeminiResponse:"Gemini n’a pas répondu.",noWordGenerated:"Aucun mot n’a été généré.",randomError:"Impossible de générer un mot aléatoire.",apiKeyHint:"Stockée uniquement dans ce navigateur. Dans Google AI Studio, limitez la clé à l’adresse de ce site (référent HTTP) et à l’API Gemini.",statusFilter:"Filtre de statut",sortOrder:"Ordre de tri",apiKeyLabel:"Clé API Gemini",swipeActions:"Actions par glissement",fontSmall:"Petit",fontNormal:"Normal",fontLarge:"Grand",fontXLarge:"Très grand",showMore:"Afficher plus ({count})"
+    difficultyA:"Débutant",difficultyB:"Intermédiaire",difficultyC:"Avancé",system:"Système",light:"Clair",dark:"Sombre",newTest:"Nouveau test de 10 questions",wordLabel:"Mot",chooseWord:"Choisissez le bon mot",wrongSelected:"Réponses incorrectes",unlimited:"Illimité",dailyPreparing:"Préparation des mots du jour",dailyAction:"Quotidien — ajouter 10 mots",settingsAction:"Réglages",randomAction:"Mot aléatoire",aiPreparing:"La réponse de l’IA est en préparation, veuillez patienter...",openDetails:"Ouvrir les détails",memorizedOpenDetails:"Mémorisé — ouvrir les détails",rememberCue:"Mémorisé",forgetCue:"Retirer des mémorisés",archiveCue:"↓ Archiver",archiveToast:"Archivé",undo:"Annuler",wordFallback:"Mot",detailsLoadError:"Impossible de charger les détails du mot.",unknownError:"Une erreur inconnue s’est produite.",dailyUniqueError:"Seulement {count}/10 nouveaux mots uniques ont pu être préparés. Veuillez réessayer.",dailyPartial:"Seulement {count} mots sur {total} ont pu être récupérés, et ils ont été ajoutés. Appuyez de nouveau sur Quotidien pour le reste.",alertClose:"Fermer l’alerte",optionShow:"Afficher les options",close:"Fermer",searchAction:"Rechercher",testAction:"Tester les mots actifs",recallAction:"Tester les mots mémorisés",limitPlaceholder:"Saisir une limite",connectionError:"Connexion à Gemini impossible. Vérifiez votre connexion Internet et réessayez.",noGeminiResponse:"Gemini n’a pas répondu.",noWordGenerated:"Aucun mot n’a été généré.",randomError:"Impossible de générer un mot aléatoire.",apiKeyHint:"Stockée uniquement dans ce navigateur. Dans Google AI Studio, limitez la clé à l’adresse de ce site (référent HTTP) et à l’API Gemini.",statusFilter:"Filtre de statut",sortOrder:"Ordre de tri",apiKeyLabel:"Clé API Gemini",swipeActions:"Actions par glissement",fontSmall:"Petit",fontNormal:"Normal",fontLarge:"Grand",fontXLarge:"Très grand",showMore:"Afficher plus ({count})"
   },
   de:{
     geminiTimeout:"Gemini hat zu lange gebraucht. Erneut versuchen.",invalidApiKey:"Prüfen Sie Ihren Gemini-API-Schlüssel und dessen Einschränkungen in den Einstellungen.",geminiBudget:"Gemini hat das Gesamtzeitlimit überschritten. Nichts wurde geändert; bitte später erneut versuchen.",geminiQuota:"Gemini-Kontingent oder Anfragelimit erreicht. Später versuchen.",geminiUnavailable:"Gemini ist vorübergehend nicht verfügbar. Später versuchen.",invalidGeminiResponse:"Gemini hat ungültige Wortdaten zurückgegeben. Erneut versuchen.",
@@ -2542,7 +2542,7 @@ const I18N={
     clozeNeed:"Lückentext braucht mindestens 10 Wörter mit einem Beispielsatz.",archivedWord:"Dieses Wort ist archiviert. Reaktivieren Sie es unter Einstellungen → Archiv anzeigen.",
     apiNeeded:"Fügen Sie in den Einstellungen einen Gemini-API-Schlüssel hinzu, um neue Wörter abzufragen.",dailyError:"Tägliche Wörter konnten nicht hinzugefügt werden",dailyLimitReached:"Tageslimit erreicht. Ändern Sie es in den Einstellungen.",
     difficultyA:"Anfänger",difficultyB:"Mittelstufe",difficultyC:"Fortgeschritten",system:"System",light:"Hell",dark:"Dunkel",newTest:"Neuer Test mit 10 Fragen",wordLabel:"Wort",chooseWord:"Wählen Sie das richtige Wort",wrongSelected:"Falsche Antworten",
-    unlimited:"Unbegrenzt",dailyPreparing:"Tägliche Wörter werden vorbereitet",dailyAction:"Täglich — 10 Wörter hinzufügen",settingsAction:"Einstellungen",randomAction:"Zufälliges Wort",aiPreparing:"KI-Antwort wird vorbereitet, bitte warten...",openDetails:"Details öffnen",memorizedOpenDetails:"Gelernt — Details öffnen",rememberCue:"Gelernt",forgetCue:"Aus Gelernt entfernen",archiveCue:"↓ Archivieren",archiveToast:"Archiviert",undo:"Rückgängig",wordFallback:"Wort",detailsLoadError:"Wortdetails konnten nicht geladen werden.",unknownError:"Ein unbekannter Fehler ist aufgetreten.",dailyUniqueError:"Nur {count}/10 eindeutige neue Wörter konnten vorbereitet werden. Bitte erneut versuchen.",alertClose:"Warnung schließen",optionShow:"Optionen anzeigen",close:"Schließen",searchAction:"Suchen",testAction:"Aktive Wörter testen",recallAction:"Gelernte Wörter testen",limitPlaceholder:"Limit eingeben",connectionError:"Verbindung zu Gemini fehlgeschlagen. Internetverbindung prüfen und erneut versuchen.",noGeminiResponse:"Gemini hat nicht geantwortet.",noWordGenerated:"Es wurde kein Wort erzeugt.",randomError:"Zufälliges Wort konnte nicht erzeugt werden.",apiKeyHint:"Wird nur in diesem Browser gespeichert. Beschränken Sie den Schlüssel in Google AI Studio auf die Adresse dieser Seite (HTTP-Referrer) und die Gemini-API.",statusFilter:"Statusfilter",sortOrder:"Sortierung",apiKeyLabel:"Gemini-API-Schlüssel",swipeActions:"Wischaktionen",fontSmall:"Klein",fontNormal:"Normal",fontLarge:"Groß",fontXLarge:"Sehr groß",showMore:"Mehr anzeigen ({count})"
+    unlimited:"Unbegrenzt",dailyPreparing:"Tägliche Wörter werden vorbereitet",dailyAction:"Täglich — 10 Wörter hinzufügen",settingsAction:"Einstellungen",randomAction:"Zufälliges Wort",aiPreparing:"KI-Antwort wird vorbereitet, bitte warten...",openDetails:"Details öffnen",memorizedOpenDetails:"Gelernt — Details öffnen",rememberCue:"Gelernt",forgetCue:"Aus Gelernt entfernen",archiveCue:"↓ Archivieren",archiveToast:"Archiviert",undo:"Rückgängig",wordFallback:"Wort",detailsLoadError:"Wortdetails konnten nicht geladen werden.",unknownError:"Ein unbekannter Fehler ist aufgetreten.",dailyUniqueError:"Nur {count}/10 eindeutige neue Wörter konnten vorbereitet werden. Bitte erneut versuchen.",dailyPartial:"Nur {count} von {total} Wörtern konnten geholt werden; sie wurden hinzugefügt. Tippen Sie erneut auf Täglich für den Rest.",alertClose:"Warnung schließen",optionShow:"Optionen anzeigen",close:"Schließen",searchAction:"Suchen",testAction:"Aktive Wörter testen",recallAction:"Gelernte Wörter testen",limitPlaceholder:"Limit eingeben",connectionError:"Verbindung zu Gemini fehlgeschlagen. Internetverbindung prüfen und erneut versuchen.",noGeminiResponse:"Gemini hat nicht geantwortet.",noWordGenerated:"Es wurde kein Wort erzeugt.",randomError:"Zufälliges Wort konnte nicht erzeugt werden.",apiKeyHint:"Wird nur in diesem Browser gespeichert. Beschränken Sie den Schlüssel in Google AI Studio auf die Adresse dieser Seite (HTTP-Referrer) und die Gemini-API.",statusFilter:"Statusfilter",sortOrder:"Sortierung",apiKeyLabel:"Gemini-API-Schlüssel",swipeActions:"Wischaktionen",fontSmall:"Klein",fontNormal:"Normal",fontLarge:"Groß",fontXLarge:"Sehr groß",showMore:"Mehr anzeigen ({count})"
   },
   es:{
     geminiTimeout:"Gemini tardó demasiado. Inténtalo de nuevo.",invalidApiKey:"Comprueba tu clave API de Gemini y sus restricciones en Ajustes.",geminiBudget:"Gemini superó el tiempo total permitido. No se cambió nada; inténtalo más tarde.",geminiQuota:"Se alcanzó la cuota o límite de Gemini. Inténtalo más tarde.",geminiUnavailable:"Gemini no está disponible temporalmente. Inténtalo más tarde.",invalidGeminiResponse:"Gemini devolvió datos no válidos. Inténtalo de nuevo.",
@@ -2561,7 +2561,7 @@ const I18N={
     clozeNeed:"Completar la frase necesita al menos 10 palabras con una frase de ejemplo.",archivedWord:"Esta palabra está archivada. Reactívala en Ajustes → Mostrar archivo.",
     apiNeeded:"Añade una clave API de Gemini en Ajustes para consultar palabras nuevas.",dailyError:"No se pudieron añadir las palabras diarias",dailyLimitReached:"Se alcanzó el límite diario. Cámbialo en Ajustes.",
     difficultyA:"Principiante",difficultyB:"Intermedio",difficultyC:"Avanzado",system:"Sistema",light:"Claro",dark:"Oscuro",newTest:"Nuevo test de 10 preguntas",wordLabel:"Palabra",chooseWord:"Elige la palabra correcta",wrongSelected:"Respuestas incorrectas",
-    unlimited:"Ilimitado",dailyPreparing:"Preparando palabras diarias",dailyAction:"Diario — añadir 10 palabras",settingsAction:"Ajustes",randomAction:"Palabra aleatoria",aiPreparing:"Preparando la respuesta de IA, espera...",openDetails:"Abrir detalles",memorizedOpenDetails:"Memorizado — abrir detalles",rememberCue:"Memorizado",forgetCue:"Quitar de memorizados",archiveCue:"↓ Archivar",archiveToast:"Archivado",undo:"Deshacer",wordFallback:"Palabra",detailsLoadError:"No se pudieron cargar los detalles de la palabra.",unknownError:"Ocurrió un error desconocido.",dailyUniqueError:"Solo se pudieron preparar {count}/10 palabras nuevas únicas. Inténtalo de nuevo.",alertClose:"Cerrar aviso",optionShow:"Mostrar opciones",close:"Cerrar",searchAction:"Buscar",testAction:"Probar palabras activas",recallAction:"Probar palabras memorizadas",limitPlaceholder:"Introduce un límite",connectionError:"No se pudo conectar con Gemini. Comprueba Internet e inténtalo de nuevo.",noGeminiResponse:"Gemini no respondió.",noWordGenerated:"No se generó ninguna palabra.",randomError:"No se pudo generar una palabra aleatoria.",apiKeyHint:"Se guarda solo en este navegador. En Google AI Studio, restringe la clave a la dirección de este sitio (referente HTTP) y a la API de Gemini.",statusFilter:"Filtro de estado",sortOrder:"Orden",apiKeyLabel:"Clave API de Gemini",swipeActions:"Acciones de deslizamiento",fontSmall:"Pequeño",fontNormal:"Normal",fontLarge:"Grande",fontXLarge:"Muy grande",showMore:"Mostrar más ({count})"
+    unlimited:"Ilimitado",dailyPreparing:"Preparando palabras diarias",dailyAction:"Diario — añadir 10 palabras",settingsAction:"Ajustes",randomAction:"Palabra aleatoria",aiPreparing:"Preparando la respuesta de IA, espera...",openDetails:"Abrir detalles",memorizedOpenDetails:"Memorizado — abrir detalles",rememberCue:"Memorizado",forgetCue:"Quitar de memorizados",archiveCue:"↓ Archivar",archiveToast:"Archivado",undo:"Deshacer",wordFallback:"Palabra",detailsLoadError:"No se pudieron cargar los detalles de la palabra.",unknownError:"Ocurrió un error desconocido.",dailyUniqueError:"Solo se pudieron preparar {count}/10 palabras nuevas únicas. Inténtalo de nuevo.",dailyPartial:"Solo se pudieron obtener {count} de {total} palabras y se añadieron. Pulsa Diario otra vez para el resto.",alertClose:"Cerrar aviso",optionShow:"Mostrar opciones",close:"Cerrar",searchAction:"Buscar",testAction:"Probar palabras activas",recallAction:"Probar palabras memorizadas",limitPlaceholder:"Introduce un límite",connectionError:"No se pudo conectar con Gemini. Comprueba Internet e inténtalo de nuevo.",noGeminiResponse:"Gemini no respondió.",noWordGenerated:"No se generó ninguna palabra.",randomError:"No se pudo generar una palabra aleatoria.",apiKeyHint:"Se guarda solo en este navegador. En Google AI Studio, restringe la clave a la dirección de este sitio (referente HTTP) y a la API de Gemini.",statusFilter:"Filtro de estado",sortOrder:"Orden",apiKeyLabel:"Clave API de Gemini",swipeActions:"Acciones de deslizamiento",fontSmall:"Pequeño",fontNormal:"Normal",fontLarge:"Grande",fontXLarge:"Muy grande",showMore:"Mostrar más ({count})"
   },
   it:{
     geminiTimeout:"Gemini ha impiegato troppo tempo. Riprova.",invalidApiKey:"Controlla la chiave API Gemini e le sue restrizioni nelle Impostazioni.",geminiBudget:"Gemini ha superato il tempo totale consentito. Nulla è stato modificato; riprova più tardi.",geminiQuota:"Quota o limite di richieste Gemini raggiunto. Riprova più tardi.",geminiUnavailable:"Gemini non è temporaneamente disponibile. Riprova più tardi.",invalidGeminiResponse:"Gemini ha restituito dati non validi. Riprova.",
@@ -2580,7 +2580,7 @@ const I18N={
     clozeNeed:"Completa la frase richiede almeno 10 parole con una frase di esempio.",archivedWord:"Questa parola è archiviata. Riattivala da Impostazioni → Mostra archivio.",
     apiNeeded:"Aggiungi una chiave API Gemini nelle Impostazioni per cercare nuove parole.",dailyError:"Impossibile aggiungere le parole giornaliere",dailyLimitReached:"Limite giornaliero raggiunto. Modificalo nelle Impostazioni.",
     difficultyA:"Principiante",difficultyB:"Intermedio",difficultyC:"Avanzato",system:"Sistema",light:"Chiaro",dark:"Scuro",newTest:"Nuovo test di 10 domande",wordLabel:"Parola",chooseWord:"Scegli la parola corretta",wrongSelected:"Risposte errate",
-    unlimited:"Illimitato",dailyPreparing:"Preparazione delle parole giornaliere",dailyAction:"Giornaliero — aggiungi 10 parole",settingsAction:"Impostazioni",randomAction:"Parola casuale",aiPreparing:"Preparazione della risposta AI, attendi...",openDetails:"Apri dettagli",memorizedOpenDetails:"Memorizzato — apri dettagli",rememberCue:"Memorizzato",forgetCue:"Rimuovi dai memorizzati",archiveCue:"↓ Archivia",archiveToast:"Archiviato",undo:"Annulla",wordFallback:"Parola",detailsLoadError:"Impossibile caricare i dettagli della parola.",unknownError:"Si è verificato un errore sconosciuto.",dailyUniqueError:"È stato possibile preparare solo {count}/10 nuove parole uniche. Riprova.",alertClose:"Chiudi avviso",optionShow:"Mostra opzioni",close:"Chiudi",searchAction:"Cerca",testAction:"Testa parole attive",recallAction:"Testa parole memorizzate",limitPlaceholder:"Inserisci un limite",connectionError:"Connessione a Gemini non riuscita. Controlla Internet e riprova.",noGeminiResponse:"Gemini non ha risposto.",noWordGenerated:"Nessuna parola generata.",randomError:"Impossibile generare una parola casuale.",apiKeyHint:"Salvata solo in questo browser. In Google AI Studio, limita la chiave all’indirizzo di questo sito (referrer HTTP) e all’API Gemini.",statusFilter:"Filtro di stato",sortOrder:"Ordinamento",apiKeyLabel:"Chiave API Gemini",swipeActions:"Azioni di scorrimento",fontSmall:"Piccolo",fontNormal:"Normale",fontLarge:"Grande",fontXLarge:"Molto grande",showMore:"Mostra altri ({count})"
+    unlimited:"Illimitato",dailyPreparing:"Preparazione delle parole giornaliere",dailyAction:"Giornaliero — aggiungi 10 parole",settingsAction:"Impostazioni",randomAction:"Parola casuale",aiPreparing:"Preparazione della risposta AI, attendi...",openDetails:"Apri dettagli",memorizedOpenDetails:"Memorizzato — apri dettagli",rememberCue:"Memorizzato",forgetCue:"Rimuovi dai memorizzati",archiveCue:"↓ Archivia",archiveToast:"Archiviato",undo:"Annulla",wordFallback:"Parola",detailsLoadError:"Impossibile caricare i dettagli della parola.",unknownError:"Si è verificato un errore sconosciuto.",dailyUniqueError:"È stato possibile preparare solo {count}/10 nuove parole uniche. Riprova.",dailyPartial:"Sono state recuperate solo {count} parole su {total} e sono state aggiunte. Tocca di nuovo Giornaliero per le altre.",alertClose:"Chiudi avviso",optionShow:"Mostra opzioni",close:"Chiudi",searchAction:"Cerca",testAction:"Testa parole attive",recallAction:"Testa parole memorizzate",limitPlaceholder:"Inserisci un limite",connectionError:"Connessione a Gemini non riuscita. Controlla Internet e riprova.",noGeminiResponse:"Gemini non ha risposto.",noWordGenerated:"Nessuna parola generata.",randomError:"Impossibile generare una parola casuale.",apiKeyHint:"Salvata solo in questo browser. In Google AI Studio, limita la chiave all’indirizzo di questo sito (referrer HTTP) e all’API Gemini.",statusFilter:"Filtro di stato",sortOrder:"Ordinamento",apiKeyLabel:"Chiave API Gemini",swipeActions:"Azioni di scorrimento",fontSmall:"Piccolo",fontNormal:"Normale",fontLarge:"Grande",fontXLarge:"Molto grande",showMore:"Mostra altri ({count})"
   }
 };
 // Interface language is its own setting. Data saved before it existed has none,
@@ -4063,7 +4063,7 @@ Return ONLY valid JSON:
 {"word":"dictionary headword","type":"part of speech and grammatical properties","meaning":"detailed meaning in ${native}","synonyms":["${target} synonym"],"antonyms":["${target} antonym"],"examples":[{"text":"${target} sentence","phonetic":"pronunciation guide for a ${native} speaker","translation":"${native} translation"},{"text":"another ${target} sentence","phonetic":"pronunciation guide","translation":"${native} translation"}],"expressions":[{"text":"${target} idiom or phrase","phonetic":"pronunciation guide","translation":"meaning in ${native}","exampleText":"${target} sentence that uses it","examplePhonetic":"pronunciation guide","exampleTranslation":"${native} translation"}]}`;
 
   try{
-    const parsedData=await callGeminiJSON(promptText,{apiKey,epoch,validate:validateWordPayload,schema:GEMINI_SCHEMAS.word});
+    const parsedData=await callGeminiJSON(promptText,{apiKey,epoch,maxOutputTokens:GEMINI_CARD_TOKENS,validate:validateWordPayload,schema:GEMINI_SCHEMAS.word});
     if(epoch!==appDataEpoch||requestId!==mainRequestId)return;
     await VocVocData.saveAndTouch(parsedData,word,()=>assertRequestContext(epoch));
     if(epoch!==appDataEpoch||requestId!==mainRequestId)return;
@@ -4078,7 +4078,9 @@ Return ONLY valid JSON:
 const GEMINI_MODELS=["gemini-3.8-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite"];
 // Limits are one object so tests can shorten them. timeoutMs: one request; dailyBudgetMs: the whole Daily run (all attempts and models);
 // minSliceMs: do not start another request with less budget than this left.
-const GEMINI_LIMITS={timeoutMs:25000,dailyBudgetMs:75000,minSliceMs:500};
+const GEMINI_LIMITS={timeoutMs:15000,dailyBudgetMs:60000,minSliceMs:500};
+// An answer is cut at this many tokens: a card needs about 450, so a longer one is a runaway (it would only run into the time limit).
+const GEMINI_TOKENS_PER_WORD=900,GEMINI_CARD_TOKENS=4000;
 let appDataEpoch=0,mainRequestId=0,relatedRequestId=0,dailyBusy=false;
 const geminiControllers=new Set();
 function invalidateAsyncWork(){
@@ -4138,7 +4140,7 @@ function geminiError(key,details={}){return Object.assign(new Error(t(key)),{kin
 // older form is tried, last none at all. What a model accepted is remembered for the session.
 const GEMINI_THINKING=[{thinkingLevel:"low"},{thinkingBudget:0},null];
 const geminiThinkingStep=new Map();                                     // model -> index in GEMINI_THINKING of the form it accepts
-async function geminiRequest(model,promptText,{apiKey,schema,validate,epoch,timeoutMs}){
+async function geminiRequest(model,promptText,{apiKey,schema,validate,epoch,timeoutMs,maxOutputTokens}){
   const controller=new AbortController();geminiControllers.add(controller);
   let timer;
   try{
@@ -4147,6 +4149,7 @@ async function geminiRequest(model,promptText,{apiKey,schema,validate,epoch,time
         const thinking=GEMINI_THINKING[Math.min(geminiThinkingStep.get(model)||0,GEMINI_THINKING.length-1)];
         const generationConfig={responseMimeType:"application/json"};
         if(schema)generationConfig.responseSchema=schema;
+        if(maxOutputTokens)generationConfig.maxOutputTokens=maxOutputTokens;
         if(thinking)generationConfig.thinkingConfig=thinking;
         const response=await fetch(`${GEMINI_ENDPOINT}${model}:generateContent`,{
           method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":apiKey},signal:controller.signal,
@@ -4180,7 +4183,7 @@ async function geminiRequest(model,promptText,{apiKey,schema,validate,epoch,time
 // Models are tried in GEMINI_MODELS order. `deadline` (absolute ms) caps the whole call, e.g. a Daily run.
 // `trace` (an array) collects one short line per request: model, seconds, result. A failed Daily run shows it, so a slow or refusing model can be seen.
 const geminiTraceLine=(model,started,what)=>`${model.replace(/^gemini-/,"")} ${Math.round((Date.now()-started)/1000)}s ${what}`;
-async function callGeminiJSON(promptText,{validate=value=>value,epoch=appDataEpoch,apiKey=VocVocSecrets.getApiKey(),schema=null,deadline=Infinity,trace=null}={}){
+async function callGeminiJSON(promptText,{validate=value=>value,epoch=appDataEpoch,apiKey=VocVocSecrets.getApiKey(),schema=null,deadline=Infinity,trace=null,maxOutputTokens=0}={}){
   if(!apiKey)throw geminiError("apiNeeded",{terminal:true});
   if(!GEMINI_KEY_SHAPE.test(apiKey))throw geminiError("invalidApiKey",{terminal:true});
   if(navigator.onLine===false)throw Object.assign(new Error(pwaText("offline")),{terminal:true});
@@ -4192,7 +4195,7 @@ async function callGeminiJSON(promptText,{validate=value=>value,epoch=appDataEpo
       if(left()<GEMINI_LIMITS.minSliceMs)throw geminiError("geminiBudget");
       const started=Date.now();
       try{
-        const result=await geminiRequest(model,promptText,{apiKey,schema:useSchema?schema:null,validate,epoch,timeoutMs:Math.min(GEMINI_LIMITS.timeoutMs,left())});
+        const result=await geminiRequest(model,promptText,{apiKey,schema:useSchema?schema:null,validate,epoch,maxOutputTokens,timeoutMs:Math.min(GEMINI_LIMITS.timeoutMs,left())});
         trace?.push(geminiTraceLine(model,started,"ok"));
         return result;
       }catch(error){
@@ -4313,48 +4316,51 @@ async function addDailyWords(){
     };
     let lastError=null,idleRounds=0;
 
-    for(let attempt=1; attempt<=maxAttempts && fresh.length<target; attempt++){
-      const sizes=dailyParts(target-fresh.length);
-      // The prompt lists at most 100 words. `blocked` is not in recency order (History newest-first, then
-      // archived, then words accepted during this run appended last), so rank explicitly: words accepted in
-      // this run (must never repeat), then History newest-first, then archived. Everything stays blocked locally.
-      const forbidden=[...new Set([...fresh.map(data=>normalizeHistoryKey(data.word)),...blocked])].filter(Boolean).slice(0,100).join(", ");
-      let gained=0,roundError=null;
+    // A run that stops early (time budget, a part that never answers, quota) keeps the words that did arrive: they are added below.
+    try{
+      for(let attempt=1; attempt<=maxAttempts && fresh.length<target; attempt++){
+        const sizes=dailyParts(target-fresh.length);
+        // The prompt lists at most 100 words. `blocked` is not in recency order (History newest-first, then
+        // archived, then words accepted during this run appended last), so rank explicitly: words accepted in
+        // this run (must never repeat), then History newest-first, then archived. Everything stays blocked locally.
+        const forbidden=[...new Set([...fresh.map(data=>normalizeHistoryKey(data.word)),...blocked])].filter(Boolean).slice(0,100).join(", ");
+        let gained=0,roundError=null;
 
-      await Promise.all(sizes.map(async(size,index)=>{
-        try{
-          const r=await callGeminiJSON(
-            `You are a ${targetLanguage} language teacher. Generate EXACTLY ${size} different NEW useful ${targetLanguage} words for a ${level} learner. `+
-            `NEVER use any word in this blocked list: ${forbidden || "(none)"}. Do not repeat equivalent headwords. `+
-            (sizes.length>1?`Other word lists are being made at the same time, so keep to your own theme: ${DAILY_THEMES[(attempt+index)%DAILY_THEMES.length]}. `:"")+
-            `The "word" field must contain only the dictionary headword, without articles/determiners. Put part of speech, grammatical gender and other grammar in "type". `+
-            `All meanings and translations must be in ${nativeLanguage}. Pronunciation guides must be practical for a native ${nativeLanguage} speaker. ${examplesRule(nativeLanguage)} Return ONLY JSON: `+
-            `{"words":[{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${nativeLanguage}","synonyms":["${targetLanguage} synonym"],"antonyms":["${targetLanguage} antonym"],`+
-            `"examples":[{"text":"${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"},{"text":"another ${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"}],`+
-            `"expressions":[{"text":"${targetLanguage} phrase","phonetic":"pronunciation","translation":"meaning in ${nativeLanguage}","exampleText":"${targetLanguage} sentence that uses it","examplePhonetic":"pronunciation","exampleTranslation":"${nativeLanguage} translation"}]}]}`,
-            {epoch,deadline,trace,schema:GEMINI_SCHEMAS.words,validate:value=>{if(!Array.isArray(value.words))throw new Error(t("invalidGeminiResponse"));
-              // One unusable word must not cost the others: it is left out and the next round asks for a replacement.
-              const words=[];for(const item of value.words){try{words.push(validateWordPayload(item));}catch(_){}}
-              if(value.words.length&&!words.length)throw new Error(t("invalidGeminiResponse"));
-              return {words};}}
-          );
-          if(epoch===appDataEpoch)gained+=accept(r.words,size);
-        }catch(error){
-          if(epoch===appDataEpoch)roundError=worseDailyError(roundError,error);
-        }
-      }));
-      assertRequestContext(epoch);
-      lastError=roundError;
-      // A part that failed is asked for again in the next round, unless asking again cannot help: a refused key or request, a lost
-      // connection, the time budget, a quota answer when nothing arrived in this round, or two failed rounds in a row with nothing gained.
-      idleRounds=roundError&&!gained?idleRounds+1:0;
-      if(roundError&&(roundError.terminal||roundError.kind==="geminiBudget"||(roundError.kind==="geminiQuota"&&!gained)||idleRounds>=2))throw roundError;
+        await Promise.all(sizes.map(async(size,index)=>{
+          try{
+            const r=await callGeminiJSON(
+              `You are a ${targetLanguage} language teacher. Generate EXACTLY ${size} different NEW useful ${targetLanguage} words for a ${level} learner. `+
+              `NEVER use any word in this blocked list: ${forbidden || "(none)"}. Do not repeat equivalent headwords. `+
+              (sizes.length>1?`Other word lists are being made at the same time, so keep to your own theme: ${DAILY_THEMES[(attempt+index)%DAILY_THEMES.length]}. `:"")+
+              `The "word" field must contain only the dictionary headword, without articles/determiners. Put part of speech, grammatical gender and other grammar in "type". `+
+              `All meanings and translations must be in ${nativeLanguage}. Pronunciation guides must be practical for a native ${nativeLanguage} speaker. ${examplesRule(nativeLanguage)} Return ONLY JSON: `+
+              `{"words":[{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${nativeLanguage}","synonyms":["${targetLanguage} synonym"],"antonyms":["${targetLanguage} antonym"],`+
+              `"examples":[{"text":"${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"},{"text":"another ${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"}],`+
+              `"expressions":[{"text":"${targetLanguage} phrase","phonetic":"pronunciation","translation":"meaning in ${nativeLanguage}","exampleText":"${targetLanguage} sentence that uses it","examplePhonetic":"pronunciation","exampleTranslation":"${nativeLanguage} translation"}]}]}`,
+              {epoch,deadline,trace,maxOutputTokens:size*GEMINI_TOKENS_PER_WORD+800,schema:GEMINI_SCHEMAS.words,validate:value=>{if(!Array.isArray(value.words))throw new Error(t("invalidGeminiResponse"));
+                // One unusable word must not cost the others: it is left out and the next round asks for a replacement.
+                const words=[];for(const item of value.words){try{words.push(validateWordPayload(item));}catch(_){}}
+                if(value.words.length&&!words.length)throw new Error(t("invalidGeminiResponse"));
+                return {words};}}
+            );
+            if(epoch===appDataEpoch)gained+=accept(r.words,size);
+          }catch(error){
+            if(epoch===appDataEpoch)roundError=worseDailyError(roundError,error);
+          }
+        }));
+        assertRequestContext(epoch);
+        lastError=roundError;
+        // A part that failed is asked for again in the next round, unless asking again cannot help: a refused key or request, a lost
+        // connection, the time budget, a quota answer when nothing arrived in this round, or two failed rounds in a row with nothing gained.
+        idleRounds=roundError&&!gained?idleRounds+1:0;
+        if(roundError&&(roundError.terminal||roundError.kind==="geminiBudget"||(roundError.kind==="geminiQuota"&&!gained)||idleRounds>=2))throw roundError;
+      }
+    }catch(error){
+      if(epoch!==appDataEpoch||!fresh.length)throw error;
     }
     await reveal;
 
-    if(fresh.length<target){
-      throw lastError||new Error(t("dailyUniqueError",{count:fresh.length}));
-    }
+    if(!fresh.length)throw lastError||new Error(t("dailyUniqueError",{count:0}));
 
     assertRequestContext(epoch);
     if(fresh.some(data=>VocVocData.getWordProgress(data.word)))throw new Error(t("dailyUniqueError",{count:0}));
@@ -4366,6 +4372,7 @@ async function addDailyWords(){
 
     // 10 kelimenin kartları ana alana da eklenir.
     if(requestId===mainRequestId)area.innerHTML=fresh.map(data=>renderWordCard(data)).join("");
+    if(fresh.length<target)showError(`${t("dailyPartial",{count:fresh.length,total:target})}${trace.length?` [${trace.slice(-12).join(" · ")}]`:""}`);
   }catch(e){
     const message=e?.message||t("unknownError");
     if(btn)btn.classList.remove("loading");
