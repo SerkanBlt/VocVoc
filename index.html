@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.8.0">
+  <meta name="vocvoc-shell" content="1.8.1">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -4132,32 +4132,44 @@ function geminiFailure(status,body){
   return {key:"geminiUnavailable",terminal:false};                       // 404 unknown model, 5xx, ...: try the next model
 }
 function geminiError(key,details={}){return Object.assign(new Error(t(key)),{kind:key},details);}
+// Writing a word card is not a reasoning task, but the newer models think before they answer, and with the long instructions of a card
+// (two examples, idioms, a respelling in the user's letters) that thinking can take longer than the whole request may. So the request asks
+// for as little thinking as the model allows. A model that does not know the setting answers 400 and names it ("thinking"): the next,
+// older form is tried, last none at all. What a model accepted is remembered for the session.
+const GEMINI_THINKING=[{thinkingLevel:"low"},{thinkingBudget:0},null];
+const geminiThinkingStep=new Map();                                     // model -> index in GEMINI_THINKING of the form it accepts
 async function geminiRequest(model,promptText,{apiKey,schema,validate,epoch,timeoutMs}){
   const controller=new AbortController();geminiControllers.add(controller);
   let timer;
   try{
     const run=async()=>{
-      const generationConfig={responseMimeType:"application/json"};
-      if(schema)generationConfig.responseSchema=schema;
-      const response=await fetch(`${GEMINI_ENDPOINT}${model}:generateContent`,{
-        method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":apiKey},signal:controller.signal,
-        body:JSON.stringify({contents:[{parts:[{text:promptText}]}],generationConfig})
-      });
-      if(!response.ok){
-        const failure=geminiFailure(response.status,await response.json().catch(()=>({})));
-        // A 400 that is not about the key, while a schema was sent: the model may not accept this schema.
-        throw geminiError(failure.key,{terminal:failure.terminal,schemaRefused:!!(schema&&failure.rejected)});
+      for(;;){
+        const thinking=GEMINI_THINKING[Math.min(geminiThinkingStep.get(model)||0,GEMINI_THINKING.length-1)];
+        const generationConfig={responseMimeType:"application/json"};
+        if(schema)generationConfig.responseSchema=schema;
+        if(thinking)generationConfig.thinkingConfig=thinking;
+        const response=await fetch(`${GEMINI_ENDPOINT}${model}:generateContent`,{
+          method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":apiKey},signal:controller.signal,
+          body:JSON.stringify({contents:[{parts:[{text:promptText}]}],generationConfig})
+        });
+        if(!response.ok){
+          const body=await response.json().catch(()=>({}));
+          if(thinking&&response.status===400&&/thinking/i.test(String(body?.error?.message||""))){geminiThinkingStep.set(model,(geminiThinkingStep.get(model)||0)+1);continue;}
+          const failure=geminiFailure(response.status,body);
+          // A 400 that is not about the key, while a schema was sent: the model may not accept this schema.
+          throw geminiError(failure.key,{terminal:failure.terminal,status:response.status,schemaRefused:!!(schema&&failure.rejected)});
+        }
+        const data=await response.json().catch(()=>{throw geminiError("invalidGeminiResponse");});
+        const parts=data?.candidates?.[0]?.content?.parts||[];
+        if(!Array.isArray(parts))throw geminiError("invalidGeminiResponse");
+        const raw=parts.map(part=>typeof part?.text==="string"?part.text:"").join("").trim();
+        if(!raw)throw geminiError("noGeminiResponse");
+        let parsed;
+        try{parsed=JSON.parse(raw.replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/, ""));}
+        catch(_){throw geminiError("invalidGeminiResponse");}
+        if(!parsed||typeof parsed!=="object")throw geminiError("invalidGeminiResponse");
+        assertRequestContext(epoch);return validate(parsed);
       }
-      const data=await response.json().catch(()=>{throw geminiError("invalidGeminiResponse");});
-      const parts=data?.candidates?.[0]?.content?.parts||[];
-      if(!Array.isArray(parts))throw geminiError("invalidGeminiResponse");
-      const raw=parts.map(part=>typeof part?.text==="string"?part.text:"").join("").trim();
-      if(!raw)throw geminiError("noGeminiResponse");
-      let parsed;
-      try{parsed=JSON.parse(raw.replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/, ""));}
-      catch(_){throw geminiError("invalidGeminiResponse");}
-      if(!parsed||typeof parsed!=="object")throw geminiError("invalidGeminiResponse");
-      assertRequestContext(epoch);return validate(parsed);
     };
     const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>{
       reject(geminiError("geminiTimeout"));controller.abort();
@@ -4166,7 +4178,9 @@ async function geminiRequest(model,promptText,{apiKey,schema,validate,epoch,time
   }finally{clearTimeout(timer);geminiControllers.delete(controller);}
 }
 // Models are tried in GEMINI_MODELS order. `deadline` (absolute ms) caps the whole call, e.g. a Daily run.
-async function callGeminiJSON(promptText,{validate=value=>value,epoch=appDataEpoch,apiKey=VocVocSecrets.getApiKey(),schema=null,deadline=Infinity}={}){
+// `trace` (an array) collects one short line per request: model, seconds, result. A failed Daily run shows it, so a slow or refusing model can be seen.
+const geminiTraceLine=(model,started,what)=>`${model.replace(/^gemini-/,"")} ${Math.round((Date.now()-started)/1000)}s ${what}`;
+async function callGeminiJSON(promptText,{validate=value=>value,epoch=appDataEpoch,apiKey=VocVocSecrets.getApiKey(),schema=null,deadline=Infinity,trace=null}={}){
   if(!apiKey)throw geminiError("apiNeeded",{terminal:true});
   if(!GEMINI_KEY_SHAPE.test(apiKey))throw geminiError("invalidApiKey",{terminal:true});
   if(navigator.onLine===false)throw Object.assign(new Error(pwaText("offline")),{terminal:true});
@@ -4176,10 +4190,14 @@ async function callGeminiJSON(promptText,{validate=value=>value,epoch=appDataEpo
     for(const useSchema of schema&&!geminiSchemaRefused.has(model)?[true,false]:[false]){
       assertRequestContext(epoch);
       if(left()<GEMINI_LIMITS.minSliceMs)throw geminiError("geminiBudget");
+      const started=Date.now();
       try{
-        return await geminiRequest(model,promptText,{apiKey,schema:useSchema?schema:null,validate,epoch,timeoutMs:Math.min(GEMINI_LIMITS.timeoutMs,left())});
+        const result=await geminiRequest(model,promptText,{apiKey,schema:useSchema?schema:null,validate,epoch,timeoutMs:Math.min(GEMINI_LIMITS.timeoutMs,left())});
+        trace?.push(geminiTraceLine(model,started,"ok"));
+        return result;
       }catch(error){
         assertRequestContext(epoch);
+        trace?.push(geminiTraceLine(model,started,error instanceof TypeError?"network":error.kind==="geminiTimeout"?"timeout":error.status||error.kind||"invalid"));
         if(error instanceof TypeError)throw geminiError("connectionError",{terminal:true});
         if(left()<=0)throw geminiError("geminiBudget");
         if(error.schemaRefused){geminiSchemaRefused.add(model);continue;} // same model again, plain JSON mode
@@ -4259,6 +4277,7 @@ async function addDailyWords(){
   dailyBusy=true;
   if(btn){btn.classList.add("loading");btn.disabled=true;}
   showDailyLoading();
+  const trace=[];                                                              // what each request did (model, seconds, result): shown with a failure
 
   try{
     // Gemini bazen eksik, tekrar veya History'de olan kelimeler döndürebilir.
@@ -4313,7 +4332,7 @@ async function addDailyWords(){
             `{"words":[{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${nativeLanguage}","synonyms":["${targetLanguage} synonym"],"antonyms":["${targetLanguage} antonym"],`+
             `"examples":[{"text":"${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"},{"text":"another ${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"}],`+
             `"expressions":[{"text":"${targetLanguage} phrase","phonetic":"pronunciation","translation":"meaning in ${nativeLanguage}","exampleText":"${targetLanguage} sentence that uses it","examplePhonetic":"pronunciation","exampleTranslation":"${nativeLanguage} translation"}]}]}`,
-            {epoch,deadline,schema:GEMINI_SCHEMAS.words,validate:value=>{if(!Array.isArray(value.words))throw new Error(t("invalidGeminiResponse"));
+            {epoch,deadline,trace,schema:GEMINI_SCHEMAS.words,validate:value=>{if(!Array.isArray(value.words))throw new Error(t("invalidGeminiResponse"));
               // One unusable word must not cost the others: it is left out and the next round asks for a replacement.
               const words=[];for(const item of value.words){try{words.push(validateWordPayload(item));}catch(_){}}
               if(value.words.length&&!words.length)throw new Error(t("invalidGeminiResponse"));
@@ -4351,7 +4370,7 @@ async function addDailyWords(){
     const message=e?.message||t("unknownError");
     if(btn)btn.classList.remove("loading");
     hideDailyLoading();
-    if(epoch===appDataEpoch)showError(`${t("dailyError")}: ${message}`);
+    if(epoch===appDataEpoch)showError(`${t("dailyError")}: ${message}${trace.length?` [${trace.slice(-8).join(" · ")}]`:""}`);
     return;
   }finally{
     dailyBusy=false;

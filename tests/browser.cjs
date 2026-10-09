@@ -404,7 +404,7 @@ async function main(){
   const ok=payload=>({status:200,contentType:'application/json',body:JSON.stringify({candidates:[{content:{parts:[{text:typeof payload==='string'?payload:JSON.stringify(payload)}]}}]})});
   const fail=(status,message,reason)=>({status,contentType:'application/json',body:JSON.stringify({error:{code:status,message,status:'X',details:reason?[{'@type':'type.googleapis.com/google.rpc.ErrorInfo',reason}]:[]}})});
   await page.route('https://generativelanguage.googleapis.com/**',async route=>{
-   const request=route.request(),body=JSON.parse(request.postData()),call={model:/models\/([^:]+):/.exec(request.url())[1],schema:body.generationConfig.responseSchema||null,mime:body.generationConfig.responseMimeType,key:request.headers()['x-goog-api-key'],url:request.url(),prompt:String(body.contents?.[0]?.parts?.[0]?.text||'')};
+   const request=route.request(),body=JSON.parse(request.postData()),call={model:/models\/([^:]+):/.exec(request.url())[1],schema:body.generationConfig.responseSchema||null,thinking:body.generationConfig.thinkingConfig||null,mime:body.generationConfig.responseMimeType,key:request.headers()['x-goog-api-key'],url:request.url(),prompt:String(body.contents?.[0]?.parts?.[0]?.text||'')};
    calls.push(call);allCalls.push(call);const answer=await plan(calls.length,call);
    if(answer==='hang')return new Promise(()=>{}); // never answers: only the app's own timeout can end it
    if(answer==='drop')return route.abort('failed');
@@ -436,7 +436,8 @@ async function main(){
   await failing('unavailable model on every fallback (404)',{answer:()=>fail(404,'models/x is not found','NOT_FOUND'),act:search('inconnu9'),message:/kullanılamıyor/,count:3});
   await failing('connection dropped: no pointless retries',{answer:()=>'drop',act:search('inconnu10'),message:/bağlantısı kurulamadı/,count:1});
   await page.evaluate(()=>VocVocSecrets.setApiKey('anahtar-ğüş'));await failing('key that can never be valid is rejected before any request',{act:search('inconnu11'),message:/API anahtarınızı ve kısıtlamalarını/,count:0});await page.evaluate(k=>VocVocSecrets.setApiKey(k),KEY);
-  const slow=await failing('Daily total budget',{answer:()=>'hang',act:daily,message:/toplam süre sınırını/,limits:{timeoutMs:1000,dailyBudgetMs:1500}});
+  // the failure also says what each request did (model, seconds, result), so a slow or refusing model can be told from the message
+  const slow=await failing('Daily total budget',{answer:()=>'hang',act:daily,message:/toplam süre sınırını[^]*\[[^\]]*\d+s timeout/,limits:{timeoutMs:1000,dailyBudgetMs:1500}});
   assert(calls.length<=6&&slow.elapsed<8000,`budget exhausted after ${calls.length} requests in ${slow.elapsed} ms`);   // three parts, at most two models each
   await failing('Daily: connection dropped',{answer:()=>'drop',act:daily,message:/Günlük kelimeler eklenemedi.*bağlantısı kurulamadı/,count:3});   // the three parts go out together; no second round
   await failing('Random: 429 everywhere',{answer:()=>fail(429,'quota'),act:random,message:/kota veya istek sınırı/,count:3});
@@ -463,6 +464,19 @@ async function main(){
   assert.deepEqual(calls.map(c=>[c.model,!!c.schema]),[[models[0],true],[models[0],false]]);
   calls.length=0;plan=()=>ok(wordCard('gammb'));await search('gammbq')();await page.waitForFunction(()=>!!VocVocData.getWordByText('gammb'));assert.deepEqual(calls.map(c=>[c.model,!!c.schema]),[[models[0],false]]);
   record('Gemini schema refused by a model: plain JSON mode on the same model, remembered, no fallback consumed');
+  // The request asks for little thinking (a card is no reasoning task, and long thinking made Daily run out of time). A model that refuses
+  // the setting names it in its 400: the older form is tried, last none; the form a model accepts is remembered, and no other model is used up.
+  await page.reload();await ready();
+  calls.length=0;plan=()=>ok(wordCard('thinka'));await search('thinkaq')();await page.waitForFunction(()=>!!VocVocData.getWordByText('thinka'));
+  assert.deepEqual(calls.map(c=>c.thinking),[{thinkingLevel:'low'}]);
+  await page.reload();await ready();
+  calls.length=0;plan=n=>n===1?fail(400,'Invalid JSON payload received. Unknown name "thinkingLevel" at \'generation_config.thinking_config\': Cannot find field.')
+   :n===2?fail(400,'Budget 0 is invalid. This model only works in thinking mode.'):ok(wordCard('thinkb'));
+  await search('thinkbq')();await page.waitForFunction(()=>!!VocVocData.getWordByText('thinkb'));
+  assert.deepEqual(calls.map(c=>[c.model,c.thinking]),[[models[0],{thinkingLevel:'low'}],[models[0],{thinkingBudget:0}],[models[0],null]]);
+  calls.length=0;plan=()=>ok(wordCard('thinkc'));await search('thinkcq')();await page.waitForFunction(()=>!!VocVocData.getWordByText('thinkc'));
+  assert.deepEqual(calls.map(c=>[c.model,c.thinking]),[[models[0],null]],'what the model accepted is remembered');
+  record('Gemini thinking: the least thinking is asked for ({thinkingLevel:low}), a model that refuses it gets the older form and then none, remembered, without using up another model');
   // Daily and Random use their own schemas (a reload forgets which models refused one).
   await page.reload();await ready();
   calls.length=0;plan=()=>ok({words:Array.from({length:10},(_,i)=>wordCard('delta'+i))});await daily();await page.waitForFunction(()=>!!VocVocData.getWordByText('delta9'));

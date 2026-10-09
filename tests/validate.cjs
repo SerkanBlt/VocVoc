@@ -150,6 +150,8 @@ describe('API key handling (static guards)',()=>{
     assert(daily.includes('DAILY_THEMES[')&&daily.includes('keep to your own theme'),'parts get their own theme so they do not repeat each other');
     assert(/roundError\.terminal\|\|roundError\.kind==="geminiBudget"/.test(daily)&&daily.includes('idleRounds>=2'),'no endless retries: a refused request, the time budget and two empty failed rounds end the run');
     for(const key of ['apiNeeded','invalidApiKey','connectionError'])assert(new RegExp(`geminiError\\("${key}",\\{terminal:true\\}\\)`).test(html),`${key} must end a Daily run at once`);
+    assert(html.includes('const GEMINI_THINKING=[{thinkingLevel:"low"},{thinkingBudget:0},null];')&&html.includes('generationConfig.thinkingConfig=thinking'),'little thinking is asked for, with older forms and none as fallbacks');
+    assert(html.includes('/thinking/i.test(String(body?.error?.message')&&html.includes('trace,schema:GEMINI_SCHEMAS.words'),'a refused setting is retried; a failed run shows what each request did');
     const limits=/const GEMINI_LIMITS=\{timeoutMs:(\d+),dailyBudgetMs:(\d+)/.exec(html);
     assert(limits&&+limits[1]>=20000&&+limits[2]>=2*+limits[1],'a request may take long enough for a part, and the run may take two of them');
   });

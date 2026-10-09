@@ -100,6 +100,7 @@ Service Worker sadece allowlist'teki app-shell dosyalarını precache eder. Navi
 - **Yapılandırılmış çıktı:** istekler `generationConfig.responseSchema` taşır (tek kelime kartı, Daily `words[]`, Random `word`); istemci yine de her yanıtı doğrular. Bir model şemayı reddederse (anahtarla ilgisiz 400) aynı model şemasız JSON moduyla yeniden denenir ve oturum boyunca hatırlanır. Model sırası (`GEMINI_MODELS`) ve fallback davranışı değişmedi. **Şema, canlı Gemini API'sine karşı denenmedi** (test ortamında anahtar yok); sahte yanıtlarla doğrulandı. Canlıda şema 400 verirse yukarıdaki geri dönüş devreye girer.
 - **Süre sınırları** (`GEMINI_LIMITS`): istek başına 25 sn, Daily için tüm denemeler ve modeller toplamında 75 sn. Bütçe dolunca yeni istek başlatılmaz.
 - **Daily parçalı ve eşzamanlı çalışır:** bir kartta iki örnek ve iki deyim cümlesi olduğundan on kelime tek yanıt için çok uzundu (yavaşlık, istek başına süreyi aşma, kesilen yanıt). Günlük kelimeler en çok dört kelimelik parçalar halinde (10 kelime: 4 + 3 + 3) aynı anda istenir; her parça kendi konusuna bağlı kalır (birbirini tekrarlamasın diye), gelen kelimeler hemen ortadaki yükleme yuvarlağında görünür ve kaydedilecek küme yine tamamen hazır olmadan hiçbir şey yazılmaz. Takılan ya da eksik dönen parça sonraki turda yeniden istenir; geçersiz tek bir kelime yalnızca kendini kaybettirir. Yeniden denemenin işe yaramayacağı durumlarda (reddedilen anahtar veya istek, bağlantı kopması, süre bütçesi, hiçbir şey gelmeden kota yanıtı, kazanç olmadan art arda iki başarısız tur) koşu hemen biter.
+- **Az düşünme iste:** kelime kartı yazmak akıl yürütme işi değildir, ama yeni modeller yanıtlamadan önce düşünür ve bir kartın uzun yönergeleriyle (iki örnek, deyimler, okunuş) bu düşünme bir isteğe tanınan süreyi aşabilir (Daily'de "toplam süre sınırını aştı"). İstek bu yüzden `thinkingConfig` ile en az düşünmeyi ister (`GEMINI_THINKING`: önce `thinkingLevel:"low"`). Ayarı bilmeyen bir model 400 döner ve yanıtında "thinking" geçer; bu durumda eski biçim (`thinkingBudget:0`), en sonda hiçbiri denenir ve modelin kabul ettiği biçim oturum boyunca hatırlanır (başka model harcanmaz). Başarısız bir Daily koşusunun mesajının sonunda her isteğin ne yaptığı köşeli parantez içinde görünür (model, saniye, sonuç: `ok`, `timeout`, HTTP kodu); yavaş ya da reddeden modeli buradan ayırt edebilirsin.
 - **Hatalar:** hepsi yerelleştirilmiş tek mesaj verir, yükleme göstergesi kapanır, kayıtlı veri değişmez ve uygulama kullanılabilir kalır: offline, zaman aşımı, HTTP hatası (5xx), 429/kota (başka model denenir; hepsi başarısızsa kota mesajı öncelikli), geçersiz anahtar veya anahtar kısıtlaması (denemeyi durdurur, fallback tüketmez), bozuk JSON, boş yanıt, bulunamayan model (404 → sonraki model), tüm modellerin başarısız olması, kopan bağlantı (tekrar denenmez), Daily toplam süre aşımı.
 
 ### Çoklu sekme
@@ -127,7 +128,7 @@ Service Worker IndexedDB'ye hiç dokunmaz ve diğer sekmeleri reload etmez; bu y
 - **Yeni shell + migration gerektiren DB:** IndexedDB yoksa ve legacy kaynak duruyorsa migration idempotent çalışır (aynı ID'ler, tekrar kopya yok, marker `complete`).
 - **Daha yeni şemadaki DB (geri alınan deploy / ileride şema artışı):** `schemaVersion` 1 dışındaki kayıt hiçbir shell tarafından değiştirilmez; uygulama güvenli hata ekranı gösterir. Bu sürümde yerinde şema migration'ı yoktur; ileride eklenirse tek transaction'da yazılmalı ve revision'ı artırmalıdır, aksi halde eski sekmeler çakışmayı fark edemez.
 
-## Yeni arayüz (prototip, 1.8.0)
+## Yeni arayüz (prototip, 1.8.1)
 
 Mağaza uygulaması için ekranların ilk iskeleti. **Varsayılan olarak kapalıdır**: `?ui=v2` ile açılır (seçim hatırlanır), Profil'deki *Eski arayüze dön* veya `?ui=v1` ile kapanır. Kapalıyken hiçbir şey değişmez ve mevcut testler aynen çalışır. Gerçek hesap, sunucu veya ödeme **yoktur**: giriş, plan ve Premium simülasyondur ve yalnızca bu tarayıcının `VOCVOC_UI`, `VOCVOC_SIM_PLAN`, `VOCVOC_SIM_PROFILE` anahtarlarında durur (yedeğe ve kelime verisine girmez).
 
@@ -156,7 +157,7 @@ Mağaza uygulaması için ekranların ilk iskeleti. **Varsayılan olarak kapalı
 ```
 cd tests && npm ci      # test araçları: playwright, fake-indexeddb (uygulamanın çalışma zamanı bağımlılığı yoktur)
 npm test                # hızlı paket, tarayıcı gerekmez (yaklaşık 3 sn): 55 doğrulama + 94 veri testi
-npm run test:browser    # Chrome regresyon paketi (125 senaryo, yaklaşık 4 dk)
+npm run test:browser    # Chrome regresyon paketi (126 senaryo, yaklaşık 4 dk)
 npm run test:all        # ikisi birden
 npm run checksums       # SHA256SUMS'ı yeniden üretir (kökten; sürüm yayınlama adımı)
 ```
