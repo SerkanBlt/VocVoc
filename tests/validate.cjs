@@ -245,6 +245,18 @@ describe('Word card content (examples and idioms)',()=>{
     assert.equal((html.match(/\$\{examplesRule\((?:native|nativeLanguage)\)\}/g)||[]).length,3,'every prompt that makes a word card must use the shared rule');
     assert(/examples:\{type:"ARRAY",minItems:2,maxItems:2,/.test(html)&&/expressions:\{type:"ARRAY",maxItems:2,items:\{type:"OBJECT",required:\["text","exampleText","exampleTranslation"\]/.test(html));
   });
+  it('every card prompt asks for the pronunciation guide in the user\'s ORIGINAL language (the native setting), never IPA and never the interface language',()=>{
+    const rule=html.slice(html.indexOf('const examplesRule'),html.indexOf('const GEMINI_ENDPOINT'));
+    assert(rule.includes('written with the letters and spelling habits of ${native} (the user\'s original language), never in IPA and never in any other language'));
+    assert(!/getAppLanguage|appLanguage/.test(rule),'the rule must not look at the interface language');
+    for(const prompt of html.match(/pronunciation guides? [^`]*?\$\{native(?:Language)?\}/gi)||[])assert(!/appLanguage|getAppLanguage/.test(prompt));
+  });
+  it('the Fill in the blank test is part of the app: a mode of the same quiz engine, with its message in all six languages and a restart that starts the same kind',()=>{
+    assert(/function startClozeQuiz\(\)\{[^]*?mode:"cloze"/.test(html)&&/function getClozePool\(\)/.test(html)&&/function blankSentence\(/.test(html));
+    assert.equal((html.match(/clozeNeed:"/g)||[]).length,6,'one message per interface language');
+    assert(html.includes("quizSession.mode==='cloze'?'startClozeQuiz()'"),'"new test" must start the same kind of test');
+    assert(/q\.cloze\.text/.test(html)&&html.includes('quiz-cloze-hint'));
+  });
   it('an idiom is shown as a pill with the sentence that uses it underneath, not with its own pronunciation and meaning (those only when it has no sentence)',()=>{
     const render=html.slice(html.indexOf('function renderWordDetailBody'),html.indexOf('async function removeMemorized'));
     assert(render.includes('<span class=\\"expression-pill\\">${esc(exp.text)}</span>')||render.includes('<span class="expression-pill">${esc(exp.text)}</span>'));

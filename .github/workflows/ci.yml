@@ -78,7 +78,23 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run browser regression tests
-        run: npm run test:browser
+        shell: bash
+        run: npm run test:browser 2>&1 | tee browser-output.txt
+
+      # The job log can only be read when signed in; the run's summary page can be read by anyone.
+      # When the suite fails, put its message (the failing check and the last scenario that passed) there.
+      - name: Show why the browser tests failed in the job summary
+        if: failure()
+        shell: bash
+        run: |
+          [ -f browser-output.txt ] || exit 0
+          {
+            echo '### Browser tests failed'
+            echo
+            echo '```'
+            grep -v '^PASS' browser-output.txt | grep -vE '^\s+"' | tail -60
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: List the scenarios in the job summary
         if: success()

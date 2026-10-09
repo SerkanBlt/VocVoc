@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.6.0">
+  <meta name="vocvoc-shell" content="1.7.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -2484,7 +2484,8 @@ const I18N={
     swipeLeftForget:"← Swipe left · Remove memorized",swipeLeftDismiss:"← Swipe left · Dismiss",swipeRightMem:"Swipe right · Memorized →",
     archiveEmpty:"Archive is empty.",archiveNoMatch:"No archived words match the filters.",selected:"selected",words:"words",
     testDone:"Test complete",correct:"correct",wrong:"wrong",bravo:"Bravo!",testNeed:"A 10-question Test needs at least 10 active, non-memorized words with details.",
-    recallNeed:"Recall needs at least 10 active memorized words.",archivedWord:"This word is archived. Reactivate it from Settings → Show archive.",
+    recallNeed:"Recall needs at least 10 active memorized words.",
+    clozeNeed:"Fill in the blank needs at least 10 words that have an example sentence.",archivedWord:"This word is archived. Reactivate it from Settings → Show archive.",
     apiNeeded:"Add a Gemini API key in Settings to query new words.",dailyError:"Daily words could not be added",dailyLimitReached:"Daily limit reached. Change it in Settings.",
     difficultyA:"Beginner",difficultyB:"Intermediate",difficultyC:"Advanced",system:"System",light:"Light",dark:"Dark",newTest:"New 10-question test",wordLabel:"Word",chooseWord:"Choose the correct word",wrongSelected:"Incorrect answers",unlimited:"Unlimited",dailyPreparing:"Preparing daily words",dailyAction:"Daily — add 10 words",settingsAction:"Settings",randomAction:"Random word",aiPreparing:"AI response is being prepared, please wait...",openDetails:"Open details",memorizedOpenDetails:"Memorized — open details",rememberCue:"Memorized",forgetCue:"Remove memorized",archiveCue:"↓ Archive",archiveToast:"Archived",undo:"Undo",wordFallback:"Word",detailsLoadError:"Word details could not be loaded.",unknownError:"An unknown error occurred.",dailyUniqueError:"Only {count}/10 unique new words could be prepared. Please try again.",alertClose:"Close alert",optionShow:"Show options",close:"Close",searchAction:"Search",testAction:"Test active words",recallAction:"Test memorized words",limitPlaceholder:"Enter a limit",connectionError:"Gemini connection failed. Check your internet connection and try again.",noGeminiResponse:"Gemini did not return a response.",noWordGenerated:"No word was generated.",randomError:"Random word could not be generated.",apiKeyHint:"Stored only in this browser. In Google AI Studio, restrict the key to this site's address (HTTP referrer) and to the Gemini API.",statusFilter:"Status filter",sortOrder:"Sort order",apiKeyLabel:"Gemini API key",swipeActions:"Swipe actions",fontSmall:"Small",fontNormal:"Normal",fontLarge:"Large",fontXLarge:"Extra large",showMore:"Show more ({count})"
   },
@@ -2501,7 +2502,8 @@ const I18N={
     swipeLeftForget:"← Sola kaydır · Ezberimden çıkar",swipeLeftDismiss:"← Sola kaydır · Kapat",swipeRightMem:"Sağa kaydır · Ezberimde →",
     archiveEmpty:"Arşiv boş.",archiveNoMatch:"Filtreye uygun arşiv kelimesi yok.",selected:"seçili",words:"kelime",
     testDone:"Test tamamlandı",correct:"doğru",wrong:"yanlış",bravo:"Bravo!",testNeed:"10 soruluk Test için aktif, Ezberimde olmayan ve detay verisi bulunan en az 10 kelime gerekli.",
-    recallNeed:"Hatırla testi için Ezberimde en az 10 aktif kelime gerekli.",archivedWord:"Bu kelime arşivde. Ayarlar → Arşivi göster bölümünden tekrar aktif hale getirebilirsiniz.",
+    recallNeed:"Hatırla testi için Ezberimde en az 10 aktif kelime gerekli.",
+    clozeNeed:"Boşluk Doldurma için cümlesi olan en az 10 kelime gerekli.",archivedWord:"Bu kelime arşivde. Ayarlar → Arşivi göster bölümünden tekrar aktif hale getirebilirsiniz.",
     apiNeeded:"Yeni kelime sorgulamak için Ayarlar bölümünden Gemini API anahtarı ekleyin.",dailyError:"Günlük kelimeler eklenemedi",dailyLimitReached:"Günlük limite ulaşıldı. Ayarlardaki limiti değiştirin.",
     difficultyA:"Başlangıç",difficultyB:"Orta",difficultyC:"İleri",system:"Sistem",light:"Açık",dark:"Koyu",newTest:"Yeni 10 Soruluk Test",wordLabel:"Kelime",chooseWord:"Doğru kelimeyi seç",wrongSelected:"Yanlış işaretlediklerin",unlimited:"Sınırsız",dailyPreparing:"Günlük kelimeler hazırlanıyor",dailyAction:"Günlük — 10 kelime ekle",settingsAction:"Ayarlar",randomAction:"Rastgele kelime",aiPreparing:"AI yanıtı hazırlanıyor, lütfen bekleyin...",openDetails:"Detayı aç",memorizedOpenDetails:"Ezberimde — detayı aç",rememberCue:"Ezberimde",forgetCue:"Ezberimden Çıkar",archiveCue:"↓ Arşivle",archiveToast:"Arşivlendi",undo:"Geri al",wordFallback:"Kelime",detailsLoadError:"Kelime detayı alınamadı.",unknownError:"Bilinmeyen bir hata oluştu.",dailyUniqueError:"Yalnızca {count}/10 benzersiz yeni kelime hazırlanabildi. Lütfen tekrar deneyin.",alertClose:"Uyarıyı kapat",optionShow:"Seçenekleri göster",close:"Kapat",searchAction:"Ara",testAction:"Aktif kelimelerden test",recallAction:"Ezberimdeki kelimelerden test",limitPlaceholder:"Limit girin",connectionError:"Gemini bağlantısı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",noGeminiResponse:"Gemini yanıt vermedi.",noWordGenerated:"Kelime üretilemedi.",randomError:"Rastgele kelime üretilemedi.",apiKeyHint:"Yalnızca bu tarayıcıda saklanır. Google AI Studio'da anahtarı bu sitenin adresiyle (HTTP referrer) ve Gemini API ile sınırlayın.",statusFilter:"Durum filtresi",sortOrder:"Sıralama",apiKeyLabel:"Gemini API anahtarı",swipeActions:"Kaydırma eylemleri",fontSmall:"Küçük",fontNormal:"Normal",fontLarge:"Büyük",fontXLarge:"Çok büyük",showMore:"Daha fazla göster ({count})"
   },
@@ -2518,7 +2520,8 @@ const I18N={
     swipeLeftForget:"← Glisser à gauche · Retirer des mémorisés",swipeLeftDismiss:"← Glisser à gauche · Fermer",swipeRightMem:"Glisser à droite · Mémorisé →",
     archiveEmpty:"L’archive est vide.",archiveNoMatch:"Aucun mot archivé ne correspond aux filtres.",selected:"sélectionné",words:"mots",
     testDone:"Test terminé",correct:"correct",wrong:"incorrect",bravo:"Bravo !",testNeed:"Le test de 10 questions nécessite au moins 10 mots actifs non mémorisés avec leurs détails.",
-    recallNeed:"La révision nécessite au moins 10 mots mémorisés actifs.",archivedWord:"Ce mot est archivé. Réactivez-le via Réglages → Afficher l’archive.",
+    recallNeed:"La révision nécessite au moins 10 mots mémorisés actifs.",
+    clozeNeed:"Compléter la phrase nécessite au moins 10 mots avec une phrase d'exemple.",archivedWord:"Ce mot est archivé. Réactivez-le via Réglages → Afficher l’archive.",
     apiNeeded:"Ajoutez une clé API Gemini dans Réglages pour rechercher de nouveaux mots.",dailyError:"Impossible d’ajouter les mots du jour",dailyLimitReached:"Limite quotidienne atteinte. Modifiez-la dans Réglages.",
     difficultyA:"Débutant",difficultyB:"Intermédiaire",difficultyC:"Avancé",system:"Système",light:"Clair",dark:"Sombre",newTest:"Nouveau test de 10 questions",wordLabel:"Mot",chooseWord:"Choisissez le bon mot",wrongSelected:"Réponses incorrectes",unlimited:"Illimité",dailyPreparing:"Préparation des mots du jour",dailyAction:"Quotidien — ajouter 10 mots",settingsAction:"Réglages",randomAction:"Mot aléatoire",aiPreparing:"La réponse de l’IA est en préparation, veuillez patienter...",openDetails:"Ouvrir les détails",memorizedOpenDetails:"Mémorisé — ouvrir les détails",rememberCue:"Mémorisé",forgetCue:"Retirer des mémorisés",archiveCue:"↓ Archiver",archiveToast:"Archivé",undo:"Annuler",wordFallback:"Mot",detailsLoadError:"Impossible de charger les détails du mot.",unknownError:"Une erreur inconnue s’est produite.",dailyUniqueError:"Seulement {count}/10 nouveaux mots uniques ont pu être préparés. Veuillez réessayer.",alertClose:"Fermer l’alerte",optionShow:"Afficher les options",close:"Fermer",searchAction:"Rechercher",testAction:"Tester les mots actifs",recallAction:"Tester les mots mémorisés",limitPlaceholder:"Saisir une limite",connectionError:"Connexion à Gemini impossible. Vérifiez votre connexion Internet et réessayez.",noGeminiResponse:"Gemini n’a pas répondu.",noWordGenerated:"Aucun mot n’a été généré.",randomError:"Impossible de générer un mot aléatoire.",apiKeyHint:"Stockée uniquement dans ce navigateur. Dans Google AI Studio, limitez la clé à l’adresse de ce site (référent HTTP) et à l’API Gemini.",statusFilter:"Filtre de statut",sortOrder:"Ordre de tri",apiKeyLabel:"Clé API Gemini",swipeActions:"Actions par glissement",fontSmall:"Petit",fontNormal:"Normal",fontLarge:"Grand",fontXLarge:"Très grand",showMore:"Afficher plus ({count})"
   },
@@ -2535,7 +2538,8 @@ const I18N={
     swipeLeftForget:"← Nach links wischen · Aus Gelernt entfernen",swipeLeftDismiss:"← Nach links wischen · Schließen",swipeRightMem:"Nach rechts wischen · Gelernt →",
     archiveEmpty:"Das Archiv ist leer.",archiveNoMatch:"Keine archivierten Wörter entsprechen den Filtern.",selected:"ausgewählt",words:"Wörter",
     testDone:"Test abgeschlossen",correct:"richtig",wrong:"falsch",bravo:"Bravo!",testNeed:"Für den 10-Fragen-Test werden mindestens 10 aktive, nicht gelernte Wörter mit Details benötigt.",
-    recallNeed:"Für Wiederholen werden mindestens 10 aktive gelernte Wörter benötigt.",archivedWord:"Dieses Wort ist archiviert. Reaktivieren Sie es unter Einstellungen → Archiv anzeigen.",
+    recallNeed:"Für Wiederholen werden mindestens 10 aktive gelernte Wörter benötigt.",
+    clozeNeed:"Lückentext braucht mindestens 10 Wörter mit einem Beispielsatz.",archivedWord:"Dieses Wort ist archiviert. Reaktivieren Sie es unter Einstellungen → Archiv anzeigen.",
     apiNeeded:"Fügen Sie in den Einstellungen einen Gemini-API-Schlüssel hinzu, um neue Wörter abzufragen.",dailyError:"Tägliche Wörter konnten nicht hinzugefügt werden",dailyLimitReached:"Tageslimit erreicht. Ändern Sie es in den Einstellungen.",
     difficultyA:"Anfänger",difficultyB:"Mittelstufe",difficultyC:"Fortgeschritten",system:"System",light:"Hell",dark:"Dunkel",newTest:"Neuer Test mit 10 Fragen",wordLabel:"Wort",chooseWord:"Wählen Sie das richtige Wort",wrongSelected:"Falsche Antworten",
     unlimited:"Unbegrenzt",dailyPreparing:"Tägliche Wörter werden vorbereitet",dailyAction:"Täglich — 10 Wörter hinzufügen",settingsAction:"Einstellungen",randomAction:"Zufälliges Wort",aiPreparing:"KI-Antwort wird vorbereitet, bitte warten...",openDetails:"Details öffnen",memorizedOpenDetails:"Gelernt — Details öffnen",rememberCue:"Gelernt",forgetCue:"Aus Gelernt entfernen",archiveCue:"↓ Archivieren",archiveToast:"Archiviert",undo:"Rückgängig",wordFallback:"Wort",detailsLoadError:"Wortdetails konnten nicht geladen werden.",unknownError:"Ein unbekannter Fehler ist aufgetreten.",dailyUniqueError:"Nur {count}/10 eindeutige neue Wörter konnten vorbereitet werden. Bitte erneut versuchen.",alertClose:"Warnung schließen",optionShow:"Optionen anzeigen",close:"Schließen",searchAction:"Suchen",testAction:"Aktive Wörter testen",recallAction:"Gelernte Wörter testen",limitPlaceholder:"Limit eingeben",connectionError:"Verbindung zu Gemini fehlgeschlagen. Internetverbindung prüfen und erneut versuchen.",noGeminiResponse:"Gemini hat nicht geantwortet.",noWordGenerated:"Es wurde kein Wort erzeugt.",randomError:"Zufälliges Wort konnte nicht erzeugt werden.",apiKeyHint:"Wird nur in diesem Browser gespeichert. Beschränken Sie den Schlüssel in Google AI Studio auf die Adresse dieser Seite (HTTP-Referrer) und die Gemini-API.",statusFilter:"Statusfilter",sortOrder:"Sortierung",apiKeyLabel:"Gemini-API-Schlüssel",swipeActions:"Wischaktionen",fontSmall:"Klein",fontNormal:"Normal",fontLarge:"Groß",fontXLarge:"Sehr groß",showMore:"Mehr anzeigen ({count})"
@@ -2553,7 +2557,8 @@ const I18N={
     swipeLeftForget:"← Desliza a la izquierda · Quitar de memorizados",swipeLeftDismiss:"← Desliza a la izquierda · Cerrar",swipeRightMem:"Desliza a la derecha · Memorizado →",
     archiveEmpty:"El archivo está vacío.",archiveNoMatch:"Ninguna palabra archivada coincide con los filtros.",selected:"seleccionados",words:"palabras",
     testDone:"Test terminado",correct:"correctas",wrong:"incorrectas",bravo:"¡Bravo!",testNeed:"El test de 10 preguntas necesita al menos 10 palabras activas no memorizadas con detalles.",
-    recallNeed:"Repasar necesita al menos 10 palabras memorizadas activas.",archivedWord:"Esta palabra está archivada. Reactívala en Ajustes → Mostrar archivo.",
+    recallNeed:"Repasar necesita al menos 10 palabras memorizadas activas.",
+    clozeNeed:"Completar la frase necesita al menos 10 palabras con una frase de ejemplo.",archivedWord:"Esta palabra está archivada. Reactívala en Ajustes → Mostrar archivo.",
     apiNeeded:"Añade una clave API de Gemini en Ajustes para consultar palabras nuevas.",dailyError:"No se pudieron añadir las palabras diarias",dailyLimitReached:"Se alcanzó el límite diario. Cámbialo en Ajustes.",
     difficultyA:"Principiante",difficultyB:"Intermedio",difficultyC:"Avanzado",system:"Sistema",light:"Claro",dark:"Oscuro",newTest:"Nuevo test de 10 preguntas",wordLabel:"Palabra",chooseWord:"Elige la palabra correcta",wrongSelected:"Respuestas incorrectas",
     unlimited:"Ilimitado",dailyPreparing:"Preparando palabras diarias",dailyAction:"Diario — añadir 10 palabras",settingsAction:"Ajustes",randomAction:"Palabra aleatoria",aiPreparing:"Preparando la respuesta de IA, espera...",openDetails:"Abrir detalles",memorizedOpenDetails:"Memorizado — abrir detalles",rememberCue:"Memorizado",forgetCue:"Quitar de memorizados",archiveCue:"↓ Archivar",archiveToast:"Archivado",undo:"Deshacer",wordFallback:"Palabra",detailsLoadError:"No se pudieron cargar los detalles de la palabra.",unknownError:"Ocurrió un error desconocido.",dailyUniqueError:"Solo se pudieron preparar {count}/10 palabras nuevas únicas. Inténtalo de nuevo.",alertClose:"Cerrar aviso",optionShow:"Mostrar opciones",close:"Cerrar",searchAction:"Buscar",testAction:"Probar palabras activas",recallAction:"Probar palabras memorizadas",limitPlaceholder:"Introduce un límite",connectionError:"No se pudo conectar con Gemini. Comprueba Internet e inténtalo de nuevo.",noGeminiResponse:"Gemini no respondió.",noWordGenerated:"No se generó ninguna palabra.",randomError:"No se pudo generar una palabra aleatoria.",apiKeyHint:"Se guarda solo en este navegador. En Google AI Studio, restringe la clave a la dirección de este sitio (referente HTTP) y a la API de Gemini.",statusFilter:"Filtro de estado",sortOrder:"Orden",apiKeyLabel:"Clave API de Gemini",swipeActions:"Acciones de deslizamiento",fontSmall:"Pequeño",fontNormal:"Normal",fontLarge:"Grande",fontXLarge:"Muy grande",showMore:"Mostrar más ({count})"
@@ -2571,7 +2576,8 @@ const I18N={
     swipeLeftForget:"← Scorri a sinistra · Rimuovi dai memorizzati",swipeLeftDismiss:"← Scorri a sinistra · Chiudi",swipeRightMem:"Scorri a destra · Memorizzato →",
     archiveEmpty:"L’archivio è vuoto.",archiveNoMatch:"Nessuna parola archiviata corrisponde ai filtri.",selected:"selezionati",words:"parole",
     testDone:"Test completato",correct:"corrette",wrong:"errate",bravo:"Bravo!",testNeed:"Il test da 10 domande richiede almeno 10 parole attive non memorizzate con dettagli.",
-    recallNeed:"Ripassa richiede almeno 10 parole memorizzate attive.",archivedWord:"Questa parola è archiviata. Riattivala da Impostazioni → Mostra archivio.",
+    recallNeed:"Ripassa richiede almeno 10 parole memorizzate attive.",
+    clozeNeed:"Completa la frase richiede almeno 10 parole con una frase di esempio.",archivedWord:"Questa parola è archiviata. Riattivala da Impostazioni → Mostra archivio.",
     apiNeeded:"Aggiungi una chiave API Gemini nelle Impostazioni per cercare nuove parole.",dailyError:"Impossibile aggiungere le parole giornaliere",dailyLimitReached:"Limite giornaliero raggiunto. Modificalo nelle Impostazioni.",
     difficultyA:"Principiante",difficultyB:"Intermedio",difficultyC:"Avanzato",system:"Sistema",light:"Chiaro",dark:"Scuro",newTest:"Nuovo test di 10 domande",wordLabel:"Parola",chooseWord:"Scegli la parola corretta",wrongSelected:"Risposte errate",
     unlimited:"Illimitato",dailyPreparing:"Preparazione delle parole giornaliere",dailyAction:"Giornaliero — aggiungi 10 parole",settingsAction:"Impostazioni",randomAction:"Parola casuale",aiPreparing:"Preparazione della risposta AI, attendi...",openDetails:"Apri dettagli",memorizedOpenDetails:"Memorizzato — apri dettagli",rememberCue:"Memorizzato",forgetCue:"Rimuovi dai memorizzati",archiveCue:"↓ Archivia",archiveToast:"Archiviato",undo:"Annulla",wordFallback:"Parola",detailsLoadError:"Impossibile caricare i dettagli della parola.",unknownError:"Si è verificato un errore sconosciuto.",dailyUniqueError:"È stato possibile preparare solo {count}/10 nuove parole uniche. Riprova.",alertClose:"Chiudi avviso",optionShow:"Mostra opzioni",close:"Chiudi",searchAction:"Cerca",testAction:"Testa parole attive",recallAction:"Testa parole memorizzate",limitPlaceholder:"Inserisci un limite",connectionError:"Connessione a Gemini non riuscita. Controlla Internet e riprova.",noGeminiResponse:"Gemini non ha risposto.",noWordGenerated:"Nessuna parola generata.",randomError:"Impossibile generare una parola casuale.",apiKeyHint:"Salvata solo in questo browser. In Google AI Studio, limita la chiave all’indirizzo di questo sito (referrer HTTP) e all’API Gemini.",statusFilter:"Filtro di stato",sortOrder:"Ordinamento",apiKeyLabel:"Chiave API Gemini",swipeActions:"Azioni di scorrimento",fontSmall:"Piccolo",fontNormal:"Normale",fontLarge:"Grande",fontXLarge:"Molto grande",showMore:"Mostra altri ({count})"
@@ -3211,6 +3217,7 @@ function applyAppLanguage(){
   syncUiDropdown("archiveStatusDropdown",document.getElementById("archiveStatusFilter")?.value||"all");
   syncUiDropdown("archiveSortDropdown",document.getElementById("archiveSort")?.value||"none");
 
+  window.dispatchEvent(new CustomEvent("vocvoc-language-applied"));
   const archiveTitle=document.querySelector("#archiveOverlay .ui-panel-title");if(archiveTitle)archiveTitle.textContent=t("archive");
   const restore=document.getElementById("archiveRestoreBtn");if(restore)restore.textContent=t("activate");
   const del=document.getElementById("archiveDeleteBtn");if(del)del.textContent=t("delete");
@@ -4099,7 +4106,7 @@ function validateWordPayload(data,{meaning=true}={}){
     expressions:(data.expressions||[]).filter(x=>x&&typeof x==="object")};
 }
 // What a card must contain, said the same way in every prompt.
-const examplesRule=native=>`Give EXACTLY two example sentences in "examples", each with its own pronunciation guide and translation. In "expressions" give up to two common idioms or fixed phrases that use the word (an empty array when there is no natural one): "text" is the idiom or phrase itself, and each one needs an example sentence that uses it (exampleText, examplePhonetic and exampleTranslation in ${native}).`;
+const examplesRule=native=>`Give EXACTLY two example sentences in "examples", each with its own pronunciation guide and translation. In "expressions" give up to two common idioms or fixed phrases that use the word (an empty array when there is no natural one): "text" is the idiom or phrase itself, and each one needs an example sentence that uses it (exampleText, examplePhonetic and exampleTranslation in ${native}). Every "phonetic" and "examplePhonetic" field is a respelling of how the word is pronounced, written with the letters and spelling habits of ${native} (the user's original language), never in IPA and never in any other language.`;
 const GEMINI_ENDPOINT="https://generativelanguage.googleapis.com/v1beta/models/";
 // Printable ASCII without spaces: anything else can never be a valid key, and would make fetch throw while reading the header.
 const GEMINI_KEY_SHAPE=/^[\x21-\x7e]+$/;
@@ -4584,6 +4591,7 @@ function closeFlip(){
 }
 document.addEventListener("keydown",e=>{
   if(!flipSession)return;
+  if(document.querySelector("#historyDetails.open,#relatedWordPopup.open"))return;   // a word panel is open above the Flip: the keys belong to that panel
   if(e.key==="Escape"){e.preventDefault();closeFlip();}
   else if(e.key==="ArrowRight"){e.preventDefault();moveFlip(1);}
   else if(e.key==="ArrowLeft"){e.preventDefault();moveFlip(-1);}
@@ -4644,6 +4652,54 @@ function startQuiz(){
     return;
   }
   quizSession={questions:shuffle([...pool]).slice(0,10),pool:[...pool],index:0,score:0,answered:false,mode:"active",wrongWords:[]};
+  renderQuizQuestion();
+}
+
+// Fill in the blank: a sentence of the word with the word itself left out ("_____"), and four words to choose from.
+// The word is found as written (a whole word or phrase) or, for a verb or noun that changes its ending, as the word that starts like it (the same rule as maskQuizAnswer).
+function blankSentence(sentence,answer){
+  const text=String(sentence??"").trim(),word=String(answer??"").trim();
+  if(!text||!word)return null;
+  const pattern=word.replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/\s+/g,"\\s+");
+  const exact=new RegExp("(?<![\\p{L}\\p{N}])"+pattern+"(?![\\p{L}\\p{N}])","iu");
+  if(exact.test(text))return text.replace(exact,"_____");
+  if(/\s/.test(word))return null;                                              // a phrase has to appear as it is
+  const answerNorm=normalizeForMask(word).replace(/[^\p{L}\p{N}'’-]/gu,"");
+  if(!answerNorm)return null;
+  let found=false;
+  const blanked=text.replace(/[\p{L}\p{M}\p{N}]+(?:['’-][\p{L}\p{M}\p{N}]+)*/gu,token=>{
+    if(found)return token;
+    const tokenNorm=normalizeForMask(token);
+    let common=0;const limit=Math.min(tokenNorm.length,answerNorm.length);
+    while(common<limit&&tokenNorm[common]===answerNorm[common])common++;
+    if(tokenNorm===answerNorm||(common>=4&&common>=Math.ceil(answerNorm.length*.7))){found=true;return "_____";}
+    return token;
+  });
+  return found?blanked:null;
+}
+function getClozePool(){
+  const archived=getArchiveWordSet(),words=[],seen=new Set();
+  for(const w of getHistory()){
+    const d=getHistoryWordData(w);
+    if(!d?.word)continue;
+    const key=normalizeHistoryKey(d.word);
+    if(archived.has(key)||seen.has(key))continue;
+    const clozes=(d.examples||[]).map(ex=>({text:blankSentence(ex?.text??ex?.fr??"",d.word),translation:String(ex?.translation??ex?.tr??"")})).filter(item=>item.text);
+    if(clozes.length){seen.add(key);words.push({word:d.word,meaning:d.meaning,clozes});}
+  }
+  return words;
+}
+function startClozeQuiz(){
+  mainRequestId++;document.getElementById("loader").style.display="none";
+  showError("");
+  const pool=getClozePool();
+  if(pool.length<10){
+    quizSession=null;
+    showError(`${t("clozeNeed")} ${pool.length}/10.`);
+    return;
+  }
+  const questions=shuffle([...pool]).slice(0,10).map(entry=>({...entry,cloze:entry.clozes[Math.floor(Math.random()*entry.clozes.length)]}));
+  quizSession={questions,pool:[...pool],index:0,score:0,answered:false,mode:"cloze",wrongWords:[]};
   renderQuizQuestion();
 }
 
@@ -4708,17 +4764,17 @@ function renderQuizQuestionContent(){
       <div class="quiz-head-v91"><div class="quiz-word-v91">${t("testDone")}</div></div>
       ${renderQuizResult()}
       ${renderQuizWrongBadges()}
-      <button type="button" class="quiz-restart-btn ui-button ui-button-secondary" style="margin-top:16px;" onclick="${quizSession.mode==='recall'?'startRecallQuiz()':'startQuiz()'}">${t("newTest")}</button>
+      <button type="button" class="quiz-restart-btn ui-button ui-button-secondary" style="margin-top:16px;" onclick="${quizSession.mode==='recall'?'startRecallQuiz()':quizSession.mode==='cloze'?'startClozeQuiz()':'startQuiz()'}">${t("newTest")}</button>
     </div>`;
     return;
   }
   const q=quizSession.questions[quizSession.index],answer=q.word,meaning=String(q.meaning||"").trim();
   const pool=quizSession.pool.filter(x=>normalizeHistoryKey(x.word)!==normalizeHistoryKey(answer));
   const distractors=shuffle(pool).slice(0,3).map(x=>x.word),options=shuffle([answer,...distractors]);
-  const masked=maskQuizAnswer(meaning,answer);
+  const cloze=quizSession.mode==="cloze"&&q.cloze,masked=cloze?"":maskQuizAnswer(meaning,answer);
   area.innerHTML=`<div class="card quiz-card">
     <div class="quiz-head-v91">
-      <div class="quiz-word-v91">${esc(masked||meaning||t("chooseWord"))}</div>
+      <div class="quiz-word-v91"${cloze?langAttr():""}>${esc(cloze?q.cloze.text:(masked||meaning||t("chooseWord")))}</div>${cloze&&q.cloze.translation?`<div class="quiz-cloze-hint">${esc(q.cloze.translation)}</div>`:""}
       <div class="quiz-count-v91">${t("wordLabel")} ${quizSession.index+1}/10</div>
     </div>
     <div class="quiz-options">${options.map(x=>`<button class="quiz-option" type="button"${langAttr()} data-quiz-answer="${encodeDomText(x)}">${esc(x)}</button>`).join("")}</div>

@@ -15,7 +15,10 @@ body.v2 .top-chrome header{display:none}
 
 /* The bar at the top of every page: menu button, VocVoc, the round profile button */
 .v2-appbar{position:fixed;top:0;left:0;right:0;z-index:85;box-sizing:border-box;display:flex;align-items:center;gap:6px;height:calc(var(--v2-bar-h) + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 10px 0;background:var(--bg);border-bottom:1px solid var(--border)}
-.v2-brand{flex:1;min-width:0;font-size:1.6rem;font-weight:800;line-height:1;color:var(--brand)}
+.v2-brand{flex:none;font-size:1.6rem;font-weight:800;line-height:1;color:var(--brand)}
+.v2-bar-sep{flex:none;width:1px;height:22px;margin:0 6px;background:var(--text-muted);opacity:.5}
+.v2-bar-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:1.05rem;font-weight:600;line-height:1.2;color:var(--text-muted)}
+.v2-drawer-head .v2-brand{flex:1}
 .v2-menu-btn,.v2-avatar-btn,.v2-drawer-close{flex:none;display:grid;place-items:center;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:50%;background:transparent;color:var(--text);font:inherit;font-size:1.7rem;line-height:1;cursor:pointer}
 .v2-menu-btn:focus-visible,.v2-avatar-btn:focus-visible,.v2-drawer-close:focus-visible,.v2-nav-item:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 .v2-avatar-dot{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--primary);color:var(--bg);font-size:1.05rem;font-weight:700}
@@ -184,6 +187,17 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
 .v2-speak-free .v2-speak-lock{display:inline-flex;position:absolute;right:-5px;bottom:-5px;width:16px;height:16px;align-items:center;justify-content:center;border-radius:50%;background:var(--card-bg);border:1px solid var(--border)}
 .v2-speak-free .v2-speak-lock svg{width:10px;height:10px}
 .flip-panel>.v2-speak{position:absolute;top:var(--ui-panel-y);left:var(--ui-panel-x);z-index:2;margin:0}
+/* Flip: the lock to the right of the speaker (on = shut: every new card is read by itself), the word's panel from the lower left corner */
+.v2-flip-auto,.v2-flip-more{position:relative;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;margin:0;padding:0;border:1px solid var(--border);border-radius:50%;background:var(--card-bg);color:var(--primary);cursor:pointer;flex:none}
+.v2-flip-auto .v2-icon svg,.v2-flip-more .v2-icon svg{width:18px;height:18px}
+.v2-flip-auto:focus-visible,.v2-flip-more:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.v2-flip-auto[aria-pressed="true"]{background:var(--primary);color:var(--bg)}
+.v2-flip-auto[aria-pressed="true"] .v2-icon-off,.v2-flip-auto[aria-pressed="false"] .v2-icon-on{display:none}
+.v2-flip-auto.v2-speak-free{color:var(--text-muted)}
+.flip-panel>.v2-flip-auto{position:absolute;top:var(--ui-panel-y);left:calc(var(--ui-panel-x) + 44px);z-index:2}
+.flip-panel>.v2-flip-more{position:absolute;bottom:var(--ui-panel-y);left:var(--ui-panel-x);z-index:2}
+body.v2 #historyDetails.open{z-index:610}      /* the word's panel opens above a Flip (both are overlays; the later one in the page would win otherwise) */
+body.v2 #relatedWordPopup.open{z-index:620}
 
 /* A new badge: appears in the middle with a small burst, stays a few seconds, fades away by itself and never blocks a tap */
 .v2-celebrate{position:fixed;inset:0;z-index:12600;display:none;align-items:center;justify-content:center;padding:24px;pointer-events:none}
@@ -225,12 +239,13 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
 .v2-wordpill{font:inherit;font-size:.95rem;cursor:pointer}
 
 /* Badges in three tabs */
-.v2-subtabs{display:flex;gap:4px;margin:0 0 12px;padding:4px;background:var(--accent-bg);border:1px solid var(--border);border-radius:999px}
-.v2-subtab{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 6px;border:0;border-radius:999px;background:transparent;color:var(--text);font:inherit;font-size:.9rem;font-weight:600;white-space:nowrap;cursor:pointer}
+.v2-subtabs{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 12px;padding:4px;background:var(--accent-bg);border:1px solid var(--border);border-radius:24px}   /* when the labels do not fit in one row (wider letters, a larger system font) the tabs go to a second row instead of being cut off */
+.v2-subtab{flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 6px;border:0;border-radius:999px;background:transparent;color:var(--text);font:inherit;font-size:.9rem;font-weight:600;white-space:nowrap;cursor:pointer}
 .v2-subtab[aria-selected="true"]{background:var(--card-bg);color:var(--primary);box-shadow:0 1px 3px rgba(0,0,0,.14)}
 .v2-subtab:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 .v2-subtab-count{font-size:.8rem;font-weight:700}
-@media(max-width:359px){.v2-subtab{font-size:.8rem;gap:3px;padding:0 3px}}
+@media(max-width:400px){.v2-subtab{font-size:.84rem;gap:4px;padding:0 4px}}
+@media(max-width:359px){.v2-subtab{font-size:.76rem;gap:3px;padding:0 3px}}
 .v2-empty{padding:14px 4px}
 
 /* Read-aloud: in the header row of a card, to the right of the title; right of the sentence in the panels; the speed it was read at */
@@ -272,3 +287,10 @@ body.v2 .example-item .fr-text .v2-speak,body.v2 .expression-item .fr-text .v2-s
 .v2-crop-card .v2-actions{justify-content:center;margin:16px 0 0}
 @media(prefers-reduced-motion:reduce){.v2-crop-card{animation:none}}
 .v2-crop-zoom input{accent-color:var(--primary)}
+
+/* The sentence of a Fill in the blank question has its translation under it as a hint */
+.quiz-cloze-hint{margin-top:8px;color:var(--text-muted);font-size:.95rem;line-height:1.4}
+
+/* No scrollbar is drawn anywhere in the new interface; everything that can scroll still scrolls (wheel, touch, keys) */
+html:has(body.v2),body.v2,body.v2 *{scrollbar-width:none;-ms-overflow-style:none}
+html:has(body.v2)::-webkit-scrollbar,body.v2::-webkit-scrollbar,body.v2 *::-webkit-scrollbar{display:none;width:0;height:0}

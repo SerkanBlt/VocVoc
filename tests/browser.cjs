@@ -448,6 +448,11 @@ async function main(){
   assert.deepEqual([calls[0].schema.properties.examples.minItems,calls[0].schema.properties.examples.maxItems,calls[0].schema.properties.expressions.maxItems],[2,2,2]);
   assert.deepEqual(calls[0].schema.properties.expressions.items.required,['text','exampleText','exampleTranslation']);
   calls.length=0;plan=n=>n<=2?fail(404,'not found'):ok(wordCard('beta'));await search('betaq')();await page.waitForFunction(()=>!!VocVocData.getWordByText('beta'));assert.deepEqual(calls.map(c=>c.model),models);
+  // the pronunciation guide is asked for in the user's ORIGINAL language (the "native" setting), whatever language the interface is in
+  await page.evaluate(()=>VocVocData.updateSettings({appLanguage:'en'}));
+  calls.length=0;plan=()=>ok(wordCard('zetaw'));await search('zetaq')();await page.waitForFunction(()=>!!VocVocData.getWordByText('zetaw'));
+  assert(calls[0].prompt.includes('spelling habits of Turkish')&&!calls[0].prompt.includes('spelling habits of English'),'the guide must follow the original language, not the interface language');
+  await page.evaluate(()=>VocVocData.updateSettings({appLanguage:'tr'}));
   record('Gemini fallback order preserved (429 -> next model, 404 -> next model); key only in the x-goog-api-key header; responseSchema sent');
   // A model that refuses the schema gets plain JSON mode, once, and it is remembered.
   await page.reload();await ready();
@@ -954,7 +959,7 @@ async function main(){
    // the Study page: the same Tests panel on top, the latest tests at the very bottom, newest first, a bullet by score (10 and 9 green, 6 orange)
    await route(p,'study');
    assert.deepEqual(await p.locator('#v2Screen .v2-statline .v2-stat strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['3','83%','10/10']);
-   assert.equal(await p.locator('#v2Screen .v2-page').evaluate(node=>[...node.children].map(child=>child.tagName+(child.querySelector('.v2-testlist')?'-list':'')).join()),'H1,SECTION,BUTTON,BUTTON,BUTTON,SECTION-list');
+   assert.equal(await p.locator('#v2Screen .v2-page').evaluate(node=>[...node.children].map(child=>child.tagName+(child.querySelector('.v2-testlist')?'-list':'')).join()),'H1,SECTION,BUTTON,BUTTON,BUTTON,BUTTON,SECTION-list');
    assert.deepEqual(await p.locator('.v2-testlist li strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['10/10','9/10','6/10']);
    assert.deepEqual(await p.locator('.v2-testlist .v2-bullet').evaluateAll(nodes=>nodes.map(node=>node.className.replace('v2-bullet ',''))),['v2-bullet-great','v2-bullet-great','v2-bullet-fair']);
    // Today shows the last seven days of the same history (the streak is on the Statistics page)
@@ -1130,9 +1135,15 @@ async function main(){
     const bar=await p.evaluate(()=>{
      const box=document.querySelector('.v2-appbar').getBoundingClientRect(),avatar=document.querySelector('.v2-avatar-btn').getBoundingClientRect(),menu=document.querySelector('.v2-menu-btn').getBoundingClientRect(),brand=document.querySelector('.v2-appbar .v2-brand').getBoundingClientRect();
      const words=!!document.querySelector('.container:not(.v2-away)'),under=(words?document.querySelector('.top-chrome'):document.getElementById('v2Screen')).getBoundingClientRect().top;
-     return {full:box.width===innerWidth&&box.left===0&&box.top===0,fixed:getComputedStyle(document.querySelector('.v2-appbar')).position,text:document.querySelector('.v2-appbar .v2-brand').textContent,order:menu.right<=brand.left+1&&brand.right<=avatar.left+1,farRight:Math.round(innerWidth-avatar.right)<=12,round:getComputedStyle(document.querySelector('.v2-avatar-dot')).borderRadius==='50%',under:Math.round(under)>=Math.round(box.bottom)};
+     return {full:box.width===innerWidth&&box.left===0&&box.top===0,fixed:getComputedStyle(document.querySelector('.v2-appbar')).position,text:document.querySelector('.v2-appbar .v2-brand').textContent,order:menu.right<=brand.left+1&&brand.right<=avatar.left+1,farRight:Math.round(innerWidth-avatar.right)<=12,round:getComputedStyle(document.querySelector('.v2-avatar-dot')).borderRadius==='50%',under:Math.round(under)>=Math.round(box.bottom),
+      // the title of the page is next to VocVoc, after a thin grey vertical line, in grey; the page's own heading is out of sight (it stays for screen readers)
+      title:document.querySelector('.v2-bar-title').textContent,after:document.querySelector('.v2-bar-title').getBoundingClientRect().left>=document.querySelector('.v2-bar-sep').getBoundingClientRect().right-1&&document.querySelector('.v2-bar-sep').getBoundingClientRect().left>=brand.right-1,
+      sep:(sep=>[Math.round(sep.width),Math.round(sep.height)>=20])(document.querySelector('.v2-bar-sep').getBoundingClientRect()),
+      grey:getComputedStyle(document.querySelector('.v2-bar-title')).color===getComputedStyle(document.querySelector('.v2-menu-btn')).color?'same as the text':'grey',
+      headingHidden:(rect=>rect.width<=1&&rect.height<=1)(document.querySelector('#v2Screen h1')?.getBoundingClientRect()||{width:0,height:0})};
     });
-    assert.deepEqual(bar,{full:true,fixed:'fixed',text:'VocVoc',order:true,farRight:true,round:true,under:true},route);
+    assert.deepEqual(bar,{full:true,fixed:'fixed',text:'VocVoc',order:true,farRight:true,round:true,under:true,title:{today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistikler',profile:'Profil',premium:'Premium',help:'Yardım'}[route],after:true,sep:[1,true],grey:'grey',headingHidden:true},route);
+    if(route!=='words')assert.equal(await p.locator('#v2Screen h1').textContent(),bar.title);                  // the heading is still there for screen readers, with the same words
    }
    // the round button shows the first letter of the name and leads to the profile
    assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,document.querySelector('.v2-avatar-btn').getAttribute('aria-label')]),['A','Profil: Ayşe']);
@@ -1337,6 +1348,111 @@ async function main(){
    await c.close();
   }
   record('profile photo: choose, move and zoom under a round window (mouse, wheel, slider, keys, two fingers), never an empty edge, saved as a small JPEG, round in the bar and on the profile, kept after a reload, removable, bad and oversized files refused, taken away by signing out');
+ }
+ // ===== New interface: the interface language follows the Settings; the pronunciation stays in the user's original language =====
+ {
+  const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+  await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] h1');
+  const snapshot=()=>p.evaluate(()=>({bar:document.querySelector('.v2-bar-title').textContent,heading:document.querySelector('#v2Screen h1')?.textContent,menu:[...document.querySelectorAll('.v2-nav-label')].map(node=>node.textContent),menuButton:document.querySelector('.v2-menu-btn').getAttribute('aria-label'),avatar:document.querySelector('.v2-avatar-btn').getAttribute('aria-label'),daily:document.querySelector('.v2-goal .ui-button')?.textContent,pageLang:document.querySelector('.v2-page')?.lang}));
+  assert.deepEqual(await snapshot(),{bar:'Bugün',heading:'Bugün',menu:['Bugün','Kelimeler','Çalış','İstatistik','Profil','Ayarlar'],menuButton:'Menü',avatar:'Profil: Ayşe',daily:'Günlük kelimeler ekle',pageLang:'tr'});
+  // through the real Settings dialog: the bar, the menu and the page change at once (the menu and the bar used to stay in the old language)
+  await p.locator('.v2-menu-btn').click();await p.locator('.v2-nav-settings').click();await p.waitForFunction(()=>getComputedStyle(document.getElementById('modalOverlay')).display==='flex');
+  await p.locator('#appLanguageDropdown .ui-dropdown-trigger').click();await p.locator('#appLanguageDropdown .ui-dropdown-option[data-value="en"]').click();
+  await p.waitForFunction(()=>document.querySelector('.v2-bar-title').textContent==='Today');
+  assert.deepEqual(await snapshot(),{bar:'Today',heading:'Today',menu:['Today','Words','Study','Stats','Profile','Settings'],menuButton:'Menu',avatar:'Profile: Ayşe',daily:'Add daily words',pageLang:'en'});
+  await p.evaluate(()=>closeModal());
+  // another page: a change made while it is open redraws it in the new language and keeps its place
+  await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Recall','Fill in the blank','Flip']);
+  await p.evaluate(()=>{document.getElementById('v2Screen').scrollTop=60;});
+  await p.evaluate(()=>changeAppLanguage('tr'));
+  await p.waitForFunction(()=>document.querySelector('.v2-study-title')?.textContent==='Test'&&document.querySelectorAll('.v2-study-title')[1].textContent==='Hatırla');
+  assert.deepEqual([await p.locator('.v2-study-title').allTextContents(),await p.locator('.v2-bar-title').textContent(),await p.evaluate(()=>document.getElementById('v2Screen').scrollTop>0||document.getElementById('v2Screen').scrollHeight<=document.getElementById('v2Screen').clientHeight)],[['Test','Hatırla','Boşluk Doldurma','Flip'],'Çalış',true]);
+  // a language the new screens have no texts for shows English there, and the app's own language (the document language) follows
+  await p.evaluate(()=>changeAppLanguage('fr'));
+  await p.waitForFunction(()=>document.querySelector('.v2-bar-title').textContent==='Study');
+  assert.deepEqual(await p.evaluate(()=>[document.documentElement.lang,document.querySelector('.v2-page').lang,[...document.querySelectorAll('.v2-nav-label')].map(node=>node.textContent).join()]),['fr','en','Today,Words,Study,Stats,Profile,Settings']);
+  // the interface language never touches the original (native) language or the learned one, so the pronunciation guides stay in the original language
+  await p.evaluate(()=>changeAppLanguage('en'));
+  assert.deepEqual(await p.evaluate(()=>[getNativeLanguageCode(),getTargetLanguageCode(),VocVocData.getSettings().appLanguage]),['tr','fr','en']);
+  await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
+  await p.getByRole('button',{name:'Add daily words'}).click();await p.waitForFunction(()=>!!VocVocData.getWordByText('au revoir'));
+  assert.deepEqual(await p.evaluate(()=>{const word=VocVocData.getWordByText('au revoir');return [word.meaning,word.examples[0].phonetic,word.examples[0].translation];}),['hoşça kal; görüşürüz','o rövuar, a dömen','Hoşça kal, yarın görüşürüz!']);   // meaning, respelling and translation in Turkish with the interface in English
+  await c.close();
+  record('language: changing the interface language in Settings redraws the bar, the menu and the open page at once (Turkish, English, a language without screen texts); the original language and the pronunciation guides stay the same');
+ }
+ // ===== New interface: no scrollbar anywhere, and everything still scrolls =====
+ {
+  const c=await browser.newContext({viewport:{width:390,height:500}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+  await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
+  await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+  for(let press=0;press<2;press++){await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();await pause(500);}
+  const check=async(selector,label)=>{
+   const info=await p.evaluate(sel=>{const node=document.querySelector(sel);if(!node)return null;const style=getComputedStyle(node);return {none:style.scrollbarWidth,gutter:node.offsetWidth-node.clientWidth,scrolls:node.scrollHeight>node.clientHeight};},selector);
+   assert(info,label+': not found');assert.deepEqual([info.none,info.gutter,info.scrolls],['none',0,true],label+' must scroll without a scrollbar: '+JSON.stringify(info));
+   const moved=await p.evaluate(sel=>{const node=document.querySelector(sel);node.scrollTop=120;return node.scrollTop;},selector);
+   assert(moved>0,label+' still scrolls ('+moved+')');
+  };
+  await check('#v2Screen','Today');                                                                       // the page of Today
+  await p.evaluate(()=>{location.hash='#/words';});await p.waitForSelector('.container:not(.v2-away)');
+  await check('.container','the Words list');
+  await p.evaluate(()=>toggleHistoryDetail('Bonjour'));await p.waitForSelector('#historyDetails.open .word-panel-scroll-body');
+  await p.evaluate(()=>{for(const details of document.querySelectorAll('#historyDetails details.fold'))details.open=true;});
+  await check('#historyDetails .word-panel-scroll-body','the word panel');
+  await p.evaluate(()=>closeHistoryDetail());
+  await p.evaluate(()=>openModal());await p.waitForFunction(()=>getComputedStyle(document.getElementById('modalOverlay')).display==='flex');
+  await check('#modalOverlay .settings-panel-body','Settings');
+  assert.equal(await p.evaluate(()=>[document.documentElement,document.body].every(node=>getComputedStyle(node).scrollbarWidth==='none')),true);
+  await c.close();
+  record('scrollbars: none is drawn on any page, list, dialog or panel of the new interface, and each of them still scrolls');
+ }
+ // ===== New interface: the Fill in the blank test =====
+ {
+  const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+  await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
+  // how the blank is made (it must leave the word out, find it also as written in an inflected form, and not invent one)
+  assert.deepEqual(await p.evaluate(()=>[
+   blankSentence('Je mange du pain.','pain'),blankSentence('Bonjour, madame.','bonjour'),blankSentence('Je mange une pomme.','manger'),
+   blankSentence("Un café, s'il vous plaît.","s'il vous plaît"),blankSentence('Il est trois heures.','être'),blankSentence("L'eau est froide.",'eau'),
+   blankSentence('Le chat dort.','main'),blankSentence('','pain'),blankSentence('Le pain.','')]),
+   ['Je mange du _____.','_____, madame.','Je _____ une pomme.',"Un café, _____.",null,"L'_____ est froide.",null,null,null]);
+  // not enough words with a sentence: the page says how many there are, and nothing starts
+  await p.evaluate(()=>{location.hash='#/cloze';});await p.waitForSelector('#v2Screen[data-route="cloze"] .v2-card');
+  assert.match(await p.locator('#v2Screen').textContent(),/Boşluk Doldurma için cümlesi olan en az 10 kelime gerekir\. Şu an \d+ var\./);
+  assert.equal(await p.evaluate(()=>!!quizSession),false);
+  // enough words: the Study page offers it between Recall and Flip
+  await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+  for(let press=0;press<2;press++){await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');await p.getByRole('button',{name:'Günlük kelimeler ekle'}).click();await pause(500);}
+  await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Flip']);
+  assert.match(await p.locator('.v2-study-card',{hasText:'Boşluk Doldurma'}).textContent(),/\d+ kelimenin cümlesinden 10 soru/);
+  await p.locator('.v2-study-card',{hasText:'Boşluk Doldurma'}).click();await p.waitForSelector('#v2QuizHost .quiz-option');
+  assert.deepEqual(await p.evaluate(()=>[location.hash,document.querySelector('.v2-study-bar h1').textContent,document.querySelector('.v2-appbar')&&getComputedStyle(document.querySelector('.v2-appbar')).display,quizSession.mode,quizSession.questions.length]),['#/cloze','Boşluk Doldurma','none','cloze',10]);
+  // a question: the sentence of the word with a blank, its translation as a hint, four different words, one of them the answer
+  const ask=()=>p.evaluate(()=>{const q=quizSession.questions[quizSession.index],sentence=document.querySelector('#v2QuizHost .quiz-word-v91').textContent;return {answer:q.word,sentence,hint:document.querySelector('#v2QuizHost .quiz-cloze-hint')?.textContent||'',options:[...document.querySelectorAll('#v2QuizHost .quiz-option')].map(node=>node.textContent),blank:sentence.includes('_____'),original:q.cloze.text===sentence};});
+  const first=await ask();
+  assert.deepEqual([first.blank,first.original,first.options.length,new Set(first.options).size,first.options.includes(first.answer),first.hint.length>0],[true,true,4,4,true,true]);
+  assert(!new RegExp('(^|[^\\p{L}])'+first.answer.replace(/[.*+?^\${}()|[\]\\]/g,'\\$&')+'([^\\p{L}]|$)','iu').test(first.sentence),'the sentence must not show the word: '+first.sentence);
+  // answer: the first one wrongly, the rest rightly
+  const pick=text=>p.locator('#v2QuizHost .quiz-option:not([disabled])').evaluateAll((nodes,wanted)=>nodes.find(node=>node.textContent===wanted).click(),text);
+  const wrong=first.options.find(option=>option!==first.answer);
+  await pick(wrong);await p.waitForFunction(()=>quizSession.index===1);
+  for(let question=1;question<10;question++){const now=await ask();await pick(now.answer);await p.waitForFunction(count=>quizSession.index>count,question);}
+  await p.waitForSelector('#v2QuizHost .quiz-result-card');
+  assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2QuizCount').textContent,quizSession.score,quizSession.wrongWords.length,document.querySelectorAll('#v2QuizHost .quiz-wrong-badge').length]),['Tamamlandı',9,1,1]);
+  // it is recorded as a Fill in the blank test (it counts as a test; the Recall badge is for Recall only)
+  const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')));
+  assert.deepEqual([saved.testsTaken,saved.quizzes.at(-1).mode,saved.quizzes.at(-1).score,saved.quizzes.at(-1).wrong.length,saved.badges.recall8],[1,'cloze',9,1,undefined]);
+  // "new test" starts another one of the same kind; the list on the Study page names it
+  await p.locator('#v2QuizHost .quiz-restart-btn').click();await p.waitForSelector('#v2QuizHost .quiz-option');
+  assert.equal(await p.evaluate(()=>quizSession.mode),'cloze');
+  await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('.v2-testlist li');
+  assert.deepEqual(await p.locator('.v2-testlist li').first().evaluate(item=>[item.querySelector('.v2-muted').textContent,item.querySelector('strong').textContent,item.querySelector('.v2-bullet').className]),['Boşluk','9/10','v2-bullet v2-bullet-great']);
+  await c.close();
+  record('Fill in the blank: a sentence of the word with a blank and its translation, four words to choose from, ten questions, recorded as a test of its own kind; too few words say so; it sits between Recall and Flip');
  }
  // ===== Word panel (the default interface): two examples, idioms as pills with the sentence that uses them =====
  {
@@ -1558,6 +1674,59 @@ async function main(){
    await none.c.close();
   }
   record('read-aloud: locked on Free, the device voice for the word, example, main card and Flip on Premium, the same text pressed again is read slower, faster, slower ..., the button of a card in its header row, stop on leaving, clear messages without a voice');
+
+  // Flip: a lock to the right of the speaker (off at the first card; on reads every new card by itself) and three dots at the lower left that open the word's panel
+  {
+   const {c,p}=await openPage({init:speechMock,initArg:[FRENCH]});
+   const spoken=async()=>(await p.evaluate(()=>window.__speech)).filter(call=>call.text);
+   const flipText=()=>p.locator('#flipOverlay [data-flip-face="front"] .flip-word-text').textContent();
+   await p.evaluate(()=>{location.hash='#/flip';});await p.waitForSelector('#flipOverlay.open [data-flip-face="front"] .v2-flip-auto');
+   const lock=p.locator('#flipOverlay [data-flip-face="front"] .v2-flip-auto');
+   // Free: the lock is there but locked; pressing says why and nothing changes
+   assert.equal(await lock.getAttribute('aria-pressed'),'false');
+   await lock.click();await p.waitForFunction(()=>/Premium/.test(document.getElementById('v2Toast')?.textContent||''));
+   assert.equal(await lock.getAttribute('aria-pressed'),'false');
+   await p.evaluate(()=>VocVocPlan.set('premium'));
+   // where they are: the speaker, the lock to its right on the same line, the three dots at the lower left; round, one tap big
+   assert.deepEqual(await p.evaluate(()=>{const panel=document.querySelector('#flipOverlay [data-flip-face="front"]'),box=panel.getBoundingClientRect(),speak=panel.querySelector(':scope > .v2-speak').getBoundingClientRect(),auto=panel.querySelector(':scope > .v2-flip-auto').getBoundingClientRect(),more=panel.querySelector(':scope > .v2-flip-more').getBoundingClientRect();
+    return {lockRightOfSpeaker:auto.left>=speak.right,sameLine:Math.abs(auto.top-speak.top)<2,dotsLowerLeft:more.left<box.left+box.width/3&&more.bottom>box.bottom-box.height/3&&more.top>box.top+box.height/2,big:[speak,auto,more].every(item=>item.width>=32&&item.height>=32)};}),{lockRightOfSpeaker:true,sameLine:true,dotsLowerLeft:true,big:true});
+   assert.equal(await lock.getAttribute('aria-label'),'Kart değişince kelimeyi otomatik oku');
+   // off at the first card: nothing is read when the Flip opens or when the lock is pressed; only a change of card is read
+   assert.deepEqual(await spoken(),[]);
+   await lock.click();assert.deepEqual([await lock.getAttribute('aria-pressed'),(await spoken()).length],['true',0]);
+   assert.equal(await p.locator('#flipOverlay .v2-flip-auto[aria-pressed="true"]').count(),2);               // both faces agree
+   const before=await flipText();
+   await p.locator('#flipOverlay [data-flip-face="front"] [data-flip-nav="1"]').click();
+   await p.waitForFunction(old=>document.querySelector('#flipOverlay [data-flip-face="front"] .flip-word-text')?.textContent!==old,before);
+   const second=await flipText();
+   await p.waitForFunction(word=>window.__speech.some(call=>call.text===word),second);
+   assert.deepEqual((await spoken()).map(call=>[call.text,call.lang,call.rate]),[[second,'fr-FR',1]]);   // the new card, by itself, at normal speed
+   assert.equal(await p.locator('#flipOverlay [data-flip-face="front"] .v2-flip-auto').getAttribute('aria-pressed'),'true');   // the lock stays on while the cards change
+   await p.locator('#flipOverlay [data-flip-face="front"] [data-flip-nav="-1"]').click();
+   await p.waitForFunction(word=>window.__speech.some(call=>call.text===word),before);
+   assert.deepEqual((await spoken()).map(call=>call.text),[second,before]);
+   // turning the face does not read anything; the lock off again: the next card is silent
+   await p.locator('#flipOverlay [data-flip-face="front"] .flip-card').click();await p.locator('#flipCardBack').click();assert.equal((await spoken()).length,2);
+   await lock.click();assert.equal(await p.locator('#flipOverlay [data-flip-face="front"] .v2-flip-auto').getAttribute('aria-pressed'),'false');
+   await p.locator('#flipOverlay [data-flip-face="front"] [data-flip-nav="1"]').click();
+   await p.waitForFunction(old=>document.querySelector('#flipOverlay [data-flip-face="front"] .flip-word-text')?.textContent!==old,before);
+   await pause(300);assert.equal((await spoken()).length,2);
+   // the three dots: the word's own panel above the Flip, like a chip of the History list; its keys belong to it, Escape closes it first
+   const current=await flipText();
+   await p.locator('#flipOverlay [data-flip-face="front"] .v2-flip-more').click();await p.waitForSelector('#historyDetails.open .word-title');
+   assert.equal(await p.locator('#historyDetails .word-title').first().textContent(),current);
+   assert.equal(await p.evaluate(()=>!!document.elementFromPoint(innerWidth/2,innerHeight/2).closest('#historyDetails')),true);        // on top of the Flip
+   await p.keyboard.press('ArrowRight');await pause(400);assert.equal(await flipText(),current);                                       // the Flip behind did not move
+   await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.querySelector('#historyDetails.open'));
+   assert.deepEqual(await p.evaluate(()=>[!!document.querySelector('#flipOverlay.open'),location.hash]),[true,'#/flip']);              // only the panel closed
+   // closing the Flip and opening it again: the lock is off again at its first card
+   await lock.click();assert.equal(await p.locator('#flipOverlay [data-flip-face="front"] .v2-flip-auto').getAttribute('aria-pressed'),'true');
+   await p.keyboard.press('Escape');await p.waitForFunction(()=>location.hash==='#/study');
+   await p.evaluate(()=>{location.hash='#/flip';});await p.waitForSelector('#flipOverlay.open [data-flip-face="front"] .v2-flip-auto');
+   assert.equal(await p.locator('#flipOverlay [data-flip-face="front"] .v2-flip-auto').getAttribute('aria-pressed'),'false');
+   await c.close();
+  }
+  record('Flip: a lock beside the speaker (locked on Free, off at the first card, on reads each new card by itself and goes off when the Flip closes) and three dots at the lower left that open the word panel above the Flip');
  }
  // ===== New interface: WCAG AA contrast of its screens, light and dark =====
  {
@@ -1576,7 +1745,8 @@ async function main(){
   const checks=[['',[['#v2Auth h1'],['#v2Auth p'],['#v2Auth label'],['#v2Auth .ui-button-success'],['#v2Auth .ui-button-secondary'],['#v2Auth .v2-note']]],
    ['#/today',[['#v2Screen h1'],['.v2-goal-label'],['.v2-goal-value'],['.v2-pack .v2-goal-label'],['.v2-pack-text'],['.v2-goal .ui-button'],['.v2-stat strong'],['.v2-stat span'],['#v2Dashboard .v2-day-label'],['#v2Dashboard .v2-day-num'],['#v2Dashboard .v2-legend'],['#v2Dashboard .v2-card h2'],['.v2-subtab[aria-selected="true"]'],['.v2-subtab[aria-selected="false"]'],['.v2-subtab-count']]],
    ['#/test',[['.v2-study-bar h1'],['#v2QuizCount'],['.v2-close'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91']]],
-   ['#/study',[['.v2-appbar .v2-brand'],['.v2-avatar-dot'],['.v2-menu-btn'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1'],['.v2-card h2'],['.v2-statline .v2-stat strong'],['.v2-statline .v2-stat span'],
+   ['#/cloze',[['.v2-study-bar h1'],['#v2QuizCount'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91'],['#v2QuizHost .quiz-cloze-hint']]],
+   ['#/study',[['.v2-appbar .v2-brand'],['.v2-bar-title'],['.v2-avatar-dot'],['.v2-menu-btn'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1'],['.v2-card h2'],['.v2-statline .v2-stat strong'],['.v2-statline .v2-stat span'],
     ['.v2-testlist .v2-bullet-great'],['.v2-testlist .v2-bullet-good'],['.v2-testlist .v2-bullet-fair'],['.v2-testlist .v2-bullet-low'],['.v2-test-day'],['.v2-testlist .v2-muted'],['.v2-testlist strong']]],
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
    ['#/profile',[['.v2-profile-name'],['.v2-chip'],['.v2-profile-head .v2-muted'],['.v2-row'],['.v2-row-end'],['.v2-row[data-danger]'],['.v2-page > .v2-muted']]],
@@ -1591,8 +1761,8 @@ async function main(){
    const measureAll=async list=>{for(const [selector] of list){const result=await page.evaluate(MEASURE,[selector,null]);assert(result,`${selector} not found (${colorScheme})`);measured++;const need=(result.size>=24||(result.size>=18.66&&Number(result.weight)>=700))?3:4.5;if(result.ratio<need)failures.push(`${selector} ${result.ratio}:1 < ${need}`);}};
    await measureAll(checks[0][1]);
    await page.getByRole('button',{name:/Misafir olarak/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
-   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i,...(i===1?{expressions:[{text:'an idiom',translation:'bir deyim',exampleText:'An example.',examplePhonetic:'en igzempıl',exampleTranslation:'Bir örnek.'}]}:{})}))));
-   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'#v2Screen[data-route="today"] .v2-pack-text':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
+   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i,examples:[{text:'This is contrast'+i+' here.',phonetic:'dis iz kontrast here',translation:'Bu burada.'}],...(i===1?{expressions:[{text:'an idiom',translation:'bir deyim',exampleText:'An example.',examplePhonetic:'en igzempıl',exampleTranslation:'Bir örnek.'}]}:{})}))));
+   for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'#v2Screen[data-route="today"] .v2-pack-text':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test'||hash==='#/cloze')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
    await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip.v2-premium');await measureAll([['.v2-chip'],['.v2-card .ui-button']]);
    await page.evaluate(()=>markMemorized('contrast0'));await page.waitForFunction(()=>VocVocData.getWordProgress('contrast0').status==='memorized');
    await page.waitForSelector('#v2Celebrate.v2-on');await measureAll([['.v2-celebrate-kicker'],['.v2-celebrate-name'],['.v2-celebrate-desc'],['.v2-medal']]);   // the new-badge card

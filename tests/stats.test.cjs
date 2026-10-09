@@ -162,6 +162,12 @@ describe('The activity record',()=>{
     const record=Stats.appendQuiz(null,quiz('2026-10-07',2,{wrong:Array.from({length:14},(_,index)=>'w'.repeat(80)+index)}));
     assert.equal(record.quizzes[0].wrong.length,10);assert.equal(record.quizzes[0].wrong[0].length,60);
   });
+  it('a Fill in the blank test is kept and listed with its own mode; it counts as a test but never earns the Recall badge',()=>{
+    const record=Stats.appendQuiz(null,quiz('2026-10-07',10,{mode:'cloze',wrong:['x']}));
+    assert.deepEqual([record.testsTaken,record.quizzes[0].mode,Stats.normalizeRecord(JSON.parse(JSON.stringify(record))).quizzes.length],[1,'cloze',1]);
+    const result=Stats.compute(input({quizzes:[quiz('2026-10-06',9,{mode:'cloze'}),quiz('2026-10-07',10,{mode:'cloze'})]}));
+    assert.deepEqual([result.tests.count,result.tests.last.map(test=>test.mode),badge(result,'perfect').progress,badge(result,'recall8').progress],[2,['cloze','cloze'],1,0]);
+  });
   it('refuses a result that makes no sense',()=>{
     for(const bad of [null,{},{t:'x',mode:'active',score:1,total:10},{t:at('2026-10-07'),mode:'other',score:1,total:10},{t:at('2026-10-07'),mode:'active',score:12,total:10},{t:at('2026-10-07'),mode:'active',score:-1,total:10},{t:at('2026-10-07'),mode:'active',score:1.5,total:10}])
       assert.equal(Stats.appendQuiz(null,bad).testsTaken,0);

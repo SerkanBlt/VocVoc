@@ -25,7 +25,7 @@
   const collect=(map,key,word)=>{const list=map.get(key)||[];if(!map.has(key))map.set(key,list);if(list.length<MAX_DAY_WORDS)list.push(word);};   // the words of a day (the counts stay exact)
 
   /* ---------- the activity record ---------- */
-  const isQuiz=q=>q&&typeof q==='object'&&typeof q.t==='string'&&!Number.isNaN(Date.parse(q.t))&&(q.mode==='active'||q.mode==='recall')&&Number.isInteger(q.score)&&Number.isInteger(q.total)&&q.total>=1&&q.total<=50&&q.score>=0&&q.score<=q.total;
+  const isQuiz=q=>q&&typeof q==='object'&&typeof q.t==='string'&&!Number.isNaN(Date.parse(q.t))&&(q.mode==='active'||q.mode==='recall'||q.mode==='cloze')&&Number.isInteger(q.score)&&Number.isInteger(q.total)&&q.total>=1&&q.total<=50&&q.score>=0&&q.score<=q.total;
   const cleanQuiz=q=>({t:q.t,mode:q.mode,score:q.score,total:q.total,wrong:(Array.isArray(q.wrong)?q.wrong:[]).filter(word=>typeof word==='string'&&word.trim()).slice(0,MAX_WRONG).map(word=>word.slice(0,MAX_WORD))});
   const emptyRecord=()=>({v:1,seeded:false,testsTaken:0,quizzes:[],badges:{}});
   // Whatever is in storage: keep what is valid, drop the rest.
