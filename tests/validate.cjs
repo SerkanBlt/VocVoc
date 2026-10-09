@@ -142,6 +142,17 @@ describe('API key handling (static guards)',()=>{
   it('structured output and the Daily time budget are wired in',()=>{
     assert(html.includes('responseSchema')&&html.includes('GEMINI_SCHEMAS.words')&&html.includes('GEMINI_LIMITS.dailyBudgetMs')&&html.includes('geminiSchemaRefused'));
   });
+  it('Daily asks for its words in small parts that are in flight together (a card with two examples and two idioms makes ten words too long for one answer), and gives up only when asking again cannot help',()=>{
+    assert(/const DAILY_PART=4;/.test(html)&&/function dailyParts\(count\)/.test(html),'parts of at most four words');
+    const daily=html.slice(html.indexOf('async function addDailyWords()'),html.indexOf('async function randomWord()'));
+    assert(/await Promise\.all\(sizes\.map\(async/.test(daily)&&daily.includes('dailyParts(target-fresh.length)'),'the parts of a round are asked at the same time');
+    assert(daily.includes('accept(r.words,size)'),'a part brings at most the words it was asked for');
+    assert(daily.includes('DAILY_THEMES[')&&daily.includes('keep to your own theme'),'parts get their own theme so they do not repeat each other');
+    assert(/roundError\.terminal\|\|roundError\.kind==="geminiBudget"/.test(daily)&&daily.includes('idleRounds>=2'),'no endless retries: a refused request, the time budget and two empty failed rounds end the run');
+    for(const key of ['apiNeeded','invalidApiKey','connectionError'])assert(new RegExp(`geminiError\\("${key}",\\{terminal:true\\}\\)`).test(html),`${key} must end a Daily run at once`);
+    const limits=/const GEMINI_LIMITS=\{timeoutMs:(\d+),dailyBudgetMs:(\d+)/.exec(html);
+    assert(limits&&+limits[1]>=20000&&+limits[2]>=2*+limits[1],'a request may take long enough for a part, and the run may take two of them');
+  });
 });
 
 describe('New interface (prototype)',()=>{
@@ -189,17 +200,32 @@ describe('New interface (prototype)',()=>{
     assert.throws(()=>{'use strict';plan.features.stats='free';},TypeError);
     assert.equal(load({VOCVOC_SIM_PLAN:'garbage'}).win.VocVocPlan.get(),'free');
   });
-  it('Turkish and English texts have exactly the same keys and every page has both languages with the same shape',()=>{
-    const {TEXT,PAGES}=load().win.VocVocScreens;
-    assert.deepEqual(Object.keys(TEXT.tr).sort(),Object.keys(TEXT.en).sort());
-    for(const [language,table] of Object.entries(TEXT))for(const [key,value] of Object.entries(table))assert(typeof value==='string'&&value.trim(),`${language}.${key} is empty`);
-    for(const [kind,page] of Object.entries(PAGES)){
-      assert.deepEqual(Object.keys(page).sort(),['en','tr'],kind);
-      assert.equal(page.tr.sections.length,page.en.sections.length,`${kind}: different number of sections`);
-      page.tr.sections.forEach((section,index)=>assert.equal(section.p.length,page.en.sections[index].p.length,`${kind}, section ${index}`));
-      assert.equal(Boolean(page.tr.banner),Boolean(page.en.banner),`${kind}: banner`);
+  it('all six interface languages have exactly the same text keys and placeholders, and every page exists in all six with the same shape',()=>{
+    const {TEXT,PAGES}=load().win.VocVocScreens,LANGUAGES=['de','en','es','fr','it','tr'];
+    assert.deepEqual(Object.keys(TEXT).sort(),LANGUAGES);
+    const holes=text=>[...String(text).matchAll(/\{(\w+)\}/g)].map(match=>match[1]).sort().join();
+    for(const language of LANGUAGES){
+      assert.deepEqual(Object.keys(TEXT[language]).sort(),Object.keys(TEXT.en).sort(),`${language}: text keys differ from English`);
+      for(const [key,value] of Object.entries(TEXT[language])){
+        assert(typeof value==='string'&&value.trim(),`${language}.${key} is empty`);
+        assert.equal(holes(value),holes(TEXT.en[key]),`${language}.${key}: placeholders differ from English`);
+      }
     }
-    for(const draft of ['privacy','terms'])assert(PAGES[draft].tr.banner.startsWith('Taslak')&&PAGES[draft].en.banner.startsWith('Draft'),`${draft} must be marked as a draft`);
+    // a language that only repeats the English text has not been translated (a few words are the same in several languages)
+    for(const language of ['de','es','fr','it','tr']){
+      const same=Object.keys(TEXT.en).filter(key=>TEXT[language][key]===TEXT.en[key]);
+      assert(same.length<=20,`${language}: ${same.length} texts are identical to English: ${same.join(', ')}`);
+    }
+    for(const [kind,page] of Object.entries(PAGES)){
+      assert.deepEqual(Object.keys(page).sort(),LANGUAGES,kind);
+      for(const language of LANGUAGES){
+        assert.equal(page[language].sections.length,page.en.sections.length,`${kind}/${language}: different number of sections`);
+        page[language].sections.forEach((section,index)=>{assert(section.h.trim(),`${kind}/${language}, section ${index}: heading`);assert.equal(section.p.length,page.en.sections[index].p.length,`${kind}/${language}, section ${index}`);});
+        assert.equal(Boolean(page[language].banner),Boolean(page.en.banner),`${kind}/${language}: banner`);
+      }
+    }
+    const draft={tr:'Taslak',en:'Draft',fr:'Brouillon',de:'Entwurf',es:'Borrador',it:'Bozza'};
+    for(const kind of ['privacy','terms'])for(const language of LANGUAGES)assert(PAGES[kind][language].banner.startsWith(draft[language]),`${kind}/${language} must be marked as a draft`);
   });
   it('every text key the screens ask for exists, and no text key is left unused',()=>{
     const {TEXT}=load().win.VocVocScreens;
@@ -217,7 +243,7 @@ describe('New interface (prototype)',()=>{
       if(/^bd?_(\w+)$/.test(key)&&badgeIds.includes(key.replace(/^bd?_/,'')))continue;                // badge texts are looked up as t('b_'+id) / t('bd_'+id)
       assert(new RegExp(`'${key}'`).test(code),`text key ${key} is never used`);
     }
-    for(const id of badgeIds)for(const language of ['tr','en'])assert(TEXT[language]['b_'+id]&&TEXT[language]['bd_'+id],`badge ${id} has no ${language} name or description`);
+    for(const id of badgeIds)for(const language of ['tr','en','fr','de','es','it'])assert(TEXT[language]['b_'+id]&&TEXT[language]['bd_'+id],`badge ${id} has no ${language} name or description`);
     assert(code.includes("t('b_'+")&&code.includes("t('bd_'+"));
   });
   it('word packs are pure logic, load before the screens, and stay out of the offline shell (they are downloaded for the chosen pair only)',()=>{
@@ -250,6 +276,14 @@ describe('Word card content (examples and idioms)',()=>{
     assert(rule.includes('written with the letters and spelling habits of ${native} (the user\'s original language), never in IPA and never in any other language'));
     assert(!/getAppLanguage|appLanguage/.test(rule),'the rule must not look at the interface language');
     for(const prompt of html.match(/pronunciation guides? [^`]*?\$\{native(?:Language)?\}/gi)||[])assert(!/appLanguage|getAppLanguage/.test(prompt));
+  });
+  it('the top bar keeps VocVoc, the separator and the page title in one line on a common baseline, and the profile photo has icon actions over its edge plus a larger view and a question before removing',()=>{
+    const screensJs=read('screens.js'),screensCss=read('screens.css');
+    assert(/class:'v2-bar-line'\},h\('span',\{class:'v2-brand'[^]*?barTitle\)/.test(screensJs)&&/\.v2-bar-line\{[^}]*align-items:baseline/.test(screensCss));
+    assert(/\.v2-photo-wrap\{position:relative/.test(screensCss)&&/\.v2-photo-btn\{position:absolute/.test(screensCss));
+    for(const piece of ["icon('edit')","icon('trash')",'function openPhotoView()','function askRemovePhoto()',"role:'alertdialog'",'onclick:askRemovePhoto','onclick:openPhotoView'])assert(screensJs.includes(piece),piece);
+    assert(!/onclick:removePhoto/.test(screensJs),'removing a photo is asked first: only the confirmation may call removePhoto');
+    assert(/closeConfirm\(false\);removePhoto\(\)/.test(screensJs));
   });
   it('the Fill in the blank test is part of the app: a mode of the same quiz engine, with its message in all six languages and a restart that starts the same kind',()=>{
     assert(/function startClozeQuiz\(\)\{[^]*?mode:"cloze"/.test(html)&&/function getClozePool\(\)/.test(html)&&/function blankSentence\(/.test(html));

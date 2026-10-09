@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.7.0">
+  <meta name="vocvoc-shell" content="1.8.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -4078,7 +4078,7 @@ Return ONLY valid JSON:
 const GEMINI_MODELS=["gemini-3.8-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite"];
 // Limits are one object so tests can shorten them. timeoutMs: one request; dailyBudgetMs: the whole Daily run (all attempts and models);
 // minSliceMs: do not start another request with less budget than this left.
-const GEMINI_LIMITS={timeoutMs:15000,dailyBudgetMs:45000,minSliceMs:500};
+const GEMINI_LIMITS={timeoutMs:25000,dailyBudgetMs:75000,minSliceMs:500};
 let appDataEpoch=0,mainRequestId=0,relatedRequestId=0,dailyBusy=false;
 const geminiControllers=new Set();
 function invalidateAsyncWork(){
@@ -4167,9 +4167,9 @@ async function geminiRequest(model,promptText,{apiKey,schema,validate,epoch,time
 }
 // Models are tried in GEMINI_MODELS order. `deadline` (absolute ms) caps the whole call, e.g. a Daily run.
 async function callGeminiJSON(promptText,{validate=value=>value,epoch=appDataEpoch,apiKey=VocVocSecrets.getApiKey(),schema=null,deadline=Infinity}={}){
-  if(!apiKey)throw new Error(t("apiNeeded"));
-  if(!GEMINI_KEY_SHAPE.test(apiKey))throw new Error(t("invalidApiKey"));
-  if(navigator.onLine===false)throw new Error(pwaText("offline"));
+  if(!apiKey)throw geminiError("apiNeeded",{terminal:true});
+  if(!GEMINI_KEY_SHAPE.test(apiKey))throw geminiError("invalidApiKey",{terminal:true});
+  if(navigator.onLine===false)throw Object.assign(new Error(pwaText("offline")),{terminal:true});
   const left=()=>deadline-Date.now();
   let lastError=null,quotaError=null;
   for(const model of GEMINI_MODELS){
@@ -4180,7 +4180,7 @@ async function callGeminiJSON(promptText,{validate=value=>value,epoch=appDataEpo
         return await geminiRequest(model,promptText,{apiKey,schema:useSchema?schema:null,validate,epoch,timeoutMs:Math.min(GEMINI_LIMITS.timeoutMs,left())});
       }catch(error){
         assertRequestContext(epoch);
-        if(error instanceof TypeError)throw new Error(t("connectionError"));
+        if(error instanceof TypeError)throw geminiError("connectionError",{terminal:true});
         if(left()<=0)throw geminiError("geminiBudget");
         if(error.schemaRefused){geminiSchemaRefused.add(model);continue;} // same model again, plain JSON mode
         if(error.terminal)throw error;
@@ -4214,6 +4214,20 @@ function addDailyUsage(n){
 function getDailyLimit(){
   const v=VocVocData.getSettings().dailyLimit||'10';
   return v==='unlimited'?Infinity:Math.max(1,parseInt(v,10)||10);
+}
+// Daily asks for its words in parts of at most this many, all at once (see addDailyWords). 10 words -> 4 + 3 + 3.
+const DAILY_PART=4;
+const DAILY_THEMES=["everyday life and the home","people, family, feelings and talking","food, shopping, travel and places","work, school, technology and routines","nature, health, weather and time"];
+function dailyParts(count){
+  const parts=Math.max(1,Math.ceil(count/DAILY_PART)),base=Math.floor(count/parts),extra=count%parts;
+  return Array.from({length:parts},(_,index)=>base+(index<extra?1:0));
+}
+// Of two failures of one round keep the more telling one: a refused request first, then a quota answer, else the first.
+function worseDailyError(current,next){
+  if(!current)return next;
+  if(next.terminal&&!current.terminal)return next;
+  if(next.kind==="geminiQuota"&&!current.terminal&&current.kind!=="geminiQuota")return next;
+  return current;
 }
 async function addDailyWords(){
   if(dailyBusy)return;
@@ -4252,28 +4266,13 @@ async function addDailyWords(){
     const maxAttempts=5;
     // Network or Gemini trouble must not keep the user waiting: the whole run (every attempt and model) shares one time budget.
     const deadline=Date.now()+GEMINI_LIMITS.dailyBudgetMs;
-
-    for(let attempt=1; attempt<=maxAttempts && fresh.length<target; attempt++){
-      const missing=target-fresh.length;
-      // The prompt lists at most 100 words. `blocked` is not in recency order (History newest-first, then
-      // archived, then words accepted during this run appended last), so rank explicitly: words accepted in
-      // this run (must never repeat), then History newest-first, then archived. Everything stays blocked locally.
-      const forbidden=[...new Set([...fresh.map(data=>normalizeHistoryKey(data.word)),...blocked])].filter(Boolean).slice(0,100).join(", ");
-
-      const r=await callGeminiJSON(
-        `You are a ${targetLanguage} language teacher. Generate EXACTLY ${missing} different NEW useful ${targetLanguage} words for a ${level} learner. `+
-        `NEVER use any word in this blocked list: ${forbidden || "(none)"}. Do not repeat equivalent headwords. `+
-        `The "word" field must contain only the dictionary headword, without articles/determiners. Put part of speech, grammatical gender and other grammar in "type". `+
-        `All meanings and translations must be in ${nativeLanguage}. Pronunciation guides must be practical for a native ${nativeLanguage} speaker. ${examplesRule(nativeLanguage)} Return ONLY JSON: `+
-        `{"words":[{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${nativeLanguage}","synonyms":["${targetLanguage} synonym"],"antonyms":["${targetLanguage} antonym"],`+
-        `"examples":[{"text":"${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"},{"text":"another ${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"}],`+
-        `"expressions":[{"text":"${targetLanguage} phrase","phonetic":"pronunciation","translation":"meaning in ${nativeLanguage}","exampleText":"${targetLanguage} sentence that uses it","examplePhonetic":"pronunciation","exampleTranslation":"${nativeLanguage} translation"}]}]}`,
-        {epoch,deadline,schema:GEMINI_SCHEMAS.words,validate:value=>{if(!Array.isArray(value.words))throw new Error(t("invalidGeminiResponse"));
-          return {words:value.words.map(data=>validateWordPayload(data))};}}
-      );
-
-      const incoming=Array.isArray(r.words)?r.words:[];
-      for(const data of incoming){
+    // A card carries two examples and two idioms, so ten of them in one answer is a long wait that can outlast one request's time limit.
+    // The words are asked for in small parts, all at once, and each part's words are shown as soon as it arrives.
+    let reveal=Promise.resolve();
+    const accept=(incoming,limit)=>{
+      let added=0;
+      for(const data of Array.isArray(incoming)?incoming:[]){
+        if(added>=limit||fresh.length>=target)break;
         if(!data || !data.word)continue;
 
         // Defensive normalization: Daily headwords are stored without French articles.
@@ -4281,25 +4280,61 @@ async function addDailyWords(){
         data.word=normalizeGeneratedHeadword(data.word);
         if(!data.word)continue;
 
-        assertRequestContext(epoch);
         const key=normalizeHistoryKey(data.word);
         if(!key || blocked.has(key)||VocVocData.getWordProgress(data.word))continue;
 
         blocked.add(key);
-        fresh.push(data);
+        fresh.push(data);added++;
 
         // Kelime gelir gelmez ortadaki yükleme yuvarlağında göster.
-        if(typeof updateDailyLoadingWord==="function"){
-          updateDailyLoadingWord(data.word, fresh.length, target);
-          await new Promise(resolve=>setTimeout(resolve,260));
-        }
-
-        if(fresh.length===target)break;
+        const shown=fresh.length;
+        reveal=reveal.then(()=>{updateDailyLoadingWord(data.word, shown, target);return new Promise(resolve=>setTimeout(resolve,260));});
       }
+      return added;
+    };
+    let lastError=null,idleRounds=0;
+
+    for(let attempt=1; attempt<=maxAttempts && fresh.length<target; attempt++){
+      const sizes=dailyParts(target-fresh.length);
+      // The prompt lists at most 100 words. `blocked` is not in recency order (History newest-first, then
+      // archived, then words accepted during this run appended last), so rank explicitly: words accepted in
+      // this run (must never repeat), then History newest-first, then archived. Everything stays blocked locally.
+      const forbidden=[...new Set([...fresh.map(data=>normalizeHistoryKey(data.word)),...blocked])].filter(Boolean).slice(0,100).join(", ");
+      let gained=0,roundError=null;
+
+      await Promise.all(sizes.map(async(size,index)=>{
+        try{
+          const r=await callGeminiJSON(
+            `You are a ${targetLanguage} language teacher. Generate EXACTLY ${size} different NEW useful ${targetLanguage} words for a ${level} learner. `+
+            `NEVER use any word in this blocked list: ${forbidden || "(none)"}. Do not repeat equivalent headwords. `+
+            (sizes.length>1?`Other word lists are being made at the same time, so keep to your own theme: ${DAILY_THEMES[(attempt+index)%DAILY_THEMES.length]}. `:"")+
+            `The "word" field must contain only the dictionary headword, without articles/determiners. Put part of speech, grammatical gender and other grammar in "type". `+
+            `All meanings and translations must be in ${nativeLanguage}. Pronunciation guides must be practical for a native ${nativeLanguage} speaker. ${examplesRule(nativeLanguage)} Return ONLY JSON: `+
+            `{"words":[{"word":"headword","type":"part of speech and grammar","meaning":"meaning in ${nativeLanguage}","synonyms":["${targetLanguage} synonym"],"antonyms":["${targetLanguage} antonym"],`+
+            `"examples":[{"text":"${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"},{"text":"another ${targetLanguage} sentence","phonetic":"pronunciation","translation":"${nativeLanguage} translation"}],`+
+            `"expressions":[{"text":"${targetLanguage} phrase","phonetic":"pronunciation","translation":"meaning in ${nativeLanguage}","exampleText":"${targetLanguage} sentence that uses it","examplePhonetic":"pronunciation","exampleTranslation":"${nativeLanguage} translation"}]}]}`,
+            {epoch,deadline,schema:GEMINI_SCHEMAS.words,validate:value=>{if(!Array.isArray(value.words))throw new Error(t("invalidGeminiResponse"));
+              // One unusable word must not cost the others: it is left out and the next round asks for a replacement.
+              const words=[];for(const item of value.words){try{words.push(validateWordPayload(item));}catch(_){}}
+              if(value.words.length&&!words.length)throw new Error(t("invalidGeminiResponse"));
+              return {words};}}
+          );
+          if(epoch===appDataEpoch)gained+=accept(r.words,size);
+        }catch(error){
+          if(epoch===appDataEpoch)roundError=worseDailyError(roundError,error);
+        }
+      }));
+      assertRequestContext(epoch);
+      lastError=roundError;
+      // A part that failed is asked for again in the next round, unless asking again cannot help: a refused key or request, a lost
+      // connection, the time budget, a quota answer when nothing arrived in this round, or two failed rounds in a row with nothing gained.
+      idleRounds=roundError&&!gained?idleRounds+1:0;
+      if(roundError&&(roundError.terminal||roundError.kind==="geminiBudget"||(roundError.kind==="geminiQuota"&&!gained)||idleRounds>=2))throw roundError;
     }
+    await reveal;
 
     if(fresh.length<target){
-      throw new Error(t("dailyUniqueError",{count:fresh.length}));
+      throw lastError||new Error(t("dailyUniqueError",{count:fresh.length}));
     }
 
     assertRequestContext(epoch);

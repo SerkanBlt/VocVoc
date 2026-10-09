@@ -105,11 +105,13 @@ async function main(){
     for(let i=0;i<archived;i++)add('a'+String(i).padStart(2,'0'),'archived',1000+i);              // highest index = archived most recently
     return {exportVersion:1,schemaVersion:1,meta:{starterWordsInitialized:true},settings:{nativeLanguage:'tr',targetLanguage:'fr',difficulty:'A1-A2',dailyLimit:'unlimited',theme:'system',fontSize:'normal'},words,aliases,progress,dailyUsage:{date:null,count:0}};};
    const newestFirst=(prefix,n,width)=>Array.from({length:n},(_,i)=>prefix+String(n-1-i).padStart(width,'0'));
-   const lists=async()=>{ // one Daily run (attempt 1 accepts 3 new words, attempt 2 ends the run) and one Random run
+   const lists=async()=>{ // one Daily run (round 1 is three parts at once: the first part brings 3 new words, the others none; round 2 ends the run) and one Random run
     const daily=[],avoid=[];let calls=0;const pattern='https://generativelanguage.googleapis.com/**';
+    const answer=words=>route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({candidates:[{content:{parts:[{text:JSON.stringify({words:words.map(w=>({word:w,type:'n',meaning:'m',synonyms:[],antonyms:[],examples:[],expressions:[]}))})}]}}]})});
     await page.route(pattern,route=>{let prompt='';try{prompt=JSON.parse(route.request().postData()).contents[0].parts[0].text;}catch(_){}calls++;
      if(/Generate EXACTLY/.test(prompt)){daily.push(((prompt.match(/blocked list: ([^.]*)\. Do not/)||[])[1]||'').split(', ').filter(Boolean));
-      if(daily.length===1)return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({candidates:[{content:{parts:[{text:JSON.stringify({words:['zz1','zz2','zz3'].map(w=>({word:w,type:'n',meaning:'m',synonyms:[],antonyms:[],examples:[],expressions:[]}))})}]}}]})});}
+      if(daily.length===1)return answer(['zz1','zz2','zz3'])(route);
+      if(daily.length<=3)return answer([])(route);}
      else if(/Choose ONE/.test(prompt))avoid.push(((prompt.match(/Avoid these words: (.*?)\. Return the dictionary/)||[])[1]||'').split(', ').filter(Boolean));
      return route.fulfill({status:400,contentType:'application/json',body:'{"error":{"message":"stop"}}'});});
     await page.evaluate(async()=>{VocVocSecrets.setApiKey('TEST-KEY');await addDailyWords();document.getElementById('loader').style.display='none';await randomWord();});
@@ -118,7 +120,8 @@ async function main(){
    assert.equal(await page.evaluate(()=>getHistory().length),150);assert.deepEqual(await page.evaluate(()=>getHistory().slice(0,3)),['h149','h148','h147']); // History is newest-first
    let got=await lists();const newest100=newestFirst('h',150,3).slice(0,100);
    assert.deepEqual(got.daily[0],newest100);                                     // 150 records -> exactly the newest 100, newest first
-   assert.deepEqual(got.daily[1],['zz1','zz2','zz3',...newest100.slice(0,97)]);   // retry: words accepted this run first, then the newest 97
+   assert.deepEqual([got.daily[1],got.daily[2]],[newest100,newest100]);          // the three parts of round 1 are asked at the same time with the same list
+   assert.deepEqual(got.daily[3],['zz1','zz2','zz3',...newest100.slice(0,97)]);   // round 2: words accepted this run first, then the newest 97
    assert.deepEqual(got.avoid,newest100);                                        // Random: same 100
    await page.evaluate(db=>VocVocData.import(db),recency(30,12));
    got=await lists();const spare=[...newestFirst('h',30,3),...newestFirst('a',12,2)];
@@ -413,7 +416,7 @@ async function main(){
   // A failing scenario: localized message, expected number of requests, spinner closed, controls usable, stored data identical.
   const failing=async(label,{answer,act,message,count,limits={}})=>{
    const before=await state();calls.length=0;plan=answer;
-   await page.evaluate(l=>Object.assign(GEMINI_LIMITS,l),{timeoutMs:15000,dailyBudgetMs:45000,minSliceMs:500,...limits});
+   await page.evaluate(l=>Object.assign(GEMINI_LIMITS,l),{timeoutMs:25000,dailyBudgetMs:75000,minSliceMs:500,...limits});
    const started=Date.now();await act();await page.waitForSelector('.app-alert');const text=await page.locator('#appAlertLayer').innerText(),elapsed=Date.now()-started;
    assert.match(text,message,label);if(count!=null)assert.equal(calls.length,count,label+': number of requests');
    assert.equal(await page.locator('#loader').evaluate(el=>getComputedStyle(el).display),'none',label+': spinner');assert.equal(await page.locator('#dailyLoadingOverlay.show').count(),0,label+': daily overlay');
@@ -434,8 +437,8 @@ async function main(){
   await failing('connection dropped: no pointless retries',{answer:()=>'drop',act:search('inconnu10'),message:/bağlantısı kurulamadı/,count:1});
   await page.evaluate(()=>VocVocSecrets.setApiKey('anahtar-ğüş'));await failing('key that can never be valid is rejected before any request',{act:search('inconnu11'),message:/API anahtarınızı ve kısıtlamalarını/,count:0});await page.evaluate(k=>VocVocSecrets.setApiKey(k),KEY);
   const slow=await failing('Daily total budget',{answer:()=>'hang',act:daily,message:/toplam süre sınırını/,limits:{timeoutMs:1000,dailyBudgetMs:1500}});
-  assert(calls.length<=2&&slow.elapsed<8000,`budget exhausted after ${calls.length} requests in ${slow.elapsed} ms`);
-  await failing('Daily: connection dropped',{answer:()=>'drop',act:daily,message:/Günlük kelimeler eklenemedi.*bağlantısı kurulamadı/,count:1});
+  assert(calls.length<=6&&slow.elapsed<8000,`budget exhausted after ${calls.length} requests in ${slow.elapsed} ms`);   // three parts, at most two models each
+  await failing('Daily: connection dropped',{answer:()=>'drop',act:daily,message:/Günlük kelimeler eklenemedi.*bağlantısı kurulamadı/,count:3});   // the three parts go out together; no second round
   await failing('Random: 429 everywhere',{answer:()=>fail(429,'quota'),act:random,message:/kota veya istek sınırı/,count:3});
   record('Gemini errors: offline, timeout, HTTP 5xx, 429/quota, invalid key, key restriction, malformed JSON, empty, unavailable model, fallback failure, dropped connection, Daily budget: all localized, spinner closed, data untouched');
   // Fallback and structured output keep working.
@@ -463,11 +466,40 @@ async function main(){
   // Daily and Random use their own schemas (a reload forgets which models refused one).
   await page.reload();await ready();
   calls.length=0;plan=()=>ok({words:Array.from({length:10},(_,i)=>wordCard('delta'+i))});await daily();await page.waitForFunction(()=>!!VocVocData.getWordByText('delta9'));
-  assert.equal(calls.length,1);assert.equal(calls[0].schema.properties.words.type,'ARRAY');assert.equal(calls[0].schema.properties.words.items.properties.word.type,'STRING');
+  assert.equal(calls.length,3);assert.equal(calls[0].schema.properties.words.type,'ARRAY');assert.equal(calls[0].schema.properties.words.items.properties.word.type,'STRING');
   assert(calls[0].prompt.includes('EXACTLY two example sentences')&&calls[0].schema.properties.words.items.properties.examples.minItems===2);   // the Daily words follow the same rule
   calls.length=0;plan=n=>n===1?ok({word:'epsilon'}):ok(wordCard('epsilon'));await random();await page.waitForFunction(()=>!!VocVocData.getWordByText('epsilon'));
   assert.deepEqual(calls[0].schema.required,['word']);assert.equal(calls[0].schema.properties.meaning,undefined);
   record('Gemini structured output: Daily words[] schema, Random headword schema');
+  // Daily asks for its ten words in parts (4 + 3 + 3) that are in flight together, each with its own theme, so one slow answer does not hold the rest.
+  {
+   const wordsOf=prefix=>page.evaluate(p=>Object.keys(VocVocData.getDb().words).filter(id=>id.split(':').pop().startsWith(p)).length,prefix);
+   let inflight=0,peak=0;calls.length=0;
+   plan=async(n,call)=>{inflight++;peak=Math.max(peak,inflight);await new Promise(resolve=>setTimeout(resolve,400));inflight--;
+    return ok({words:Array.from({length:+/EXACTLY (\d+)/.exec(call.prompt)[1]},(_,i)=>wordCard(`partz${n}x${i}`))});};
+   await daily();await page.waitForFunction(()=>Object.keys(VocVocData.getDb().words).filter(id=>id.split(':').pop().startsWith('partz')).length>=10);
+   assert.deepEqual(calls.map(c=>+/EXACTLY (\d+)/.exec(c.prompt)[1]).sort(),[3,3,4],'ten words are asked for as 4 + 3 + 3');
+   assert.equal(peak,3,'the three parts are in flight at the same time');
+   const themes=calls.map(c=>/own theme: ([^.]*)\./.exec(c.prompt)?.[1]);assert(themes.every(Boolean)&&new Set(themes).size===3,'every part has its own theme: '+themes.join(' | '));
+   assert.equal(await wordsOf('partz'),10);
+   assert.equal(await page.locator('.app-alert').count(),0);
+   // a part that never answers (every model) is asked for again in the next round: nothing is lost, nothing is stored twice
+   calls.length=0;await page.evaluate(()=>Object.assign(GEMINI_LIMITS,{timeoutMs:400,dailyBudgetMs:20000}));
+   plan=async(n,call)=>{
+    if(/own theme/.test(call.prompt)&&/EXACTLY 4 /.test(call.prompt))return 'hang';
+    return ok({words:Array.from({length:+/EXACTLY (\d+)/.exec(call.prompt)[1]},(_,i)=>wordCard(`retryz${n}x${i}`))});};
+   await daily();await page.waitForFunction(()=>Object.keys(VocVocData.getDb().words).filter(id=>id.split(':').pop().startsWith('retryz')).length>=10,null,{timeout:20000});
+   assert.equal(await wordsOf('retryz'),10);assert.equal(calls.length,3+2+1,'3 parts, the stuck part on its two other models, then one request for the missing 4');
+   assert.equal(await page.locator('.app-alert').count(),0);
+   await page.evaluate(()=>Object.assign(GEMINI_LIMITS,{timeoutMs:25000,dailyBudgetMs:75000}));
+   // one unusable word (no meaning) in each answer costs only itself: the rest is kept and the next round asks for the missing ones
+   calls.length=0;
+   plan=async(n,call)=>ok({words:[...(n<=3?[{word:'badz'+n}]:[]),...Array.from({length:+/EXACTLY (\d+)/.exec(call.prompt)[1]-(n<=3?1:0)},(_,i)=>wordCard(`partial${n}x${i}`))]});
+   await daily();await page.waitForFunction(()=>Object.keys(VocVocData.getDb().words).filter(id=>id.split(':').pop().startsWith('partial')).length>=10);
+   assert.equal(await wordsOf('partial'),10);assert.equal(await wordsOf('badz'),0);assert.equal(calls.length,4,'three parts, then one request for the 3 that were missing');
+   assert.equal(await page.locator('.app-alert').count(),0);
+   record('Daily: ten words asked as 4 + 3 + 3 at the same time, each part with its own theme; a stuck part is asked again and an unusable word costs only itself');
+  }
   assert(allCalls.length>20&&allCalls.every(c=>c.key===KEY||c.key==='anahtar-ğüş')&&allCalls.every(c=>!c.url.includes('key=')),'every request carried the key only in the header');
   assert(logged.every(line=>!line.includes(KEY)),'the API key never reached the console');
   record('Gemini API key: never in a URL and never in the console across all scenarios');
@@ -1139,10 +1171,12 @@ async function main(){
       // the title of the page is next to VocVoc, after a thin grey vertical line, in grey; the page's own heading is out of sight (it stays for screen readers)
       title:document.querySelector('.v2-bar-title').textContent,after:document.querySelector('.v2-bar-title').getBoundingClientRect().left>=document.querySelector('.v2-bar-sep').getBoundingClientRect().right-1&&document.querySelector('.v2-bar-sep').getBoundingClientRect().left>=brand.right-1,
       sep:(sep=>[Math.round(sep.width),Math.round(sep.height)>=20])(document.querySelector('.v2-bar-sep').getBoundingClientRect()),
+      // VocVoc and the title stand on the same line (the same baseline), whatever their sizes; a zero-size marker inside each text shows where its baseline is
+      baseline:(()=>{const mark=element=>{const probe=document.createElement('span');probe.style.cssText='display:inline-block;width:0;height:0;vertical-align:baseline';element.append(probe);const y=probe.getBoundingClientRect().bottom;probe.remove();return y;};return Math.abs(mark(document.querySelector('.v2-appbar .v2-brand'))-mark(document.querySelector('.v2-bar-title')))<=1;})(),
       grey:getComputedStyle(document.querySelector('.v2-bar-title')).color===getComputedStyle(document.querySelector('.v2-menu-btn')).color?'same as the text':'grey',
       headingHidden:(rect=>rect.width<=1&&rect.height<=1)(document.querySelector('#v2Screen h1')?.getBoundingClientRect()||{width:0,height:0})};
     });
-    assert.deepEqual(bar,{full:true,fixed:'fixed',text:'VocVoc',order:true,farRight:true,round:true,under:true,title:{today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistikler',profile:'Profil',premium:'Premium',help:'Yardım'}[route],after:true,sep:[1,true],grey:'grey',headingHidden:true},route);
+    assert.deepEqual(bar,{full:true,fixed:'fixed',text:'VocVoc',order:true,farRight:true,round:true,under:true,title:{today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistikler',profile:'Profil',premium:'Premium',help:'Yardım'}[route],after:true,sep:[1,true],baseline:true,grey:'grey',headingHidden:true},route);
     if(route!=='words')assert.equal(await p.locator('#v2Screen h1').textContent(),bar.title);                  // the heading is still there for screen readers, with the same words
    }
    // the round button shows the first letter of the name and leads to the profile
@@ -1289,8 +1323,10 @@ async function main(){
     const dominant=([r,g,b])=>r>g&&r>b?'red':g>r&&g>b?'green':'blue',at=(x,y)=>[...context2d.getImageData(x,y,1,1).data].slice(0,3);
     return {type:url.slice(0,23),size:[bitmap.width,bitmap.height],row:[32,128,224].map(x=>dominant(at(x,128))),corners:[[2,2],[253,2],[2,253],[253,253]].map(([x,y])=>at(x,y).every(value=>value>235))};
    });
-   // nothing yet: the first letter, one button
-   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,document.querySelector('.v2-avatar-dot canvas'),[...document.querySelectorAll('#v2Screen .ui-button')].map(button=>button.textContent)]),['A',null,['Fotoğraf ekle']]);
+   // nothing yet: the first letter (not a button), and one action: a pencil icon laid over the edge of the picture
+   const photoButtons=()=>p.evaluate(()=>[...document.querySelectorAll('#v2Screen .v2-photo-btn')].map(button=>[button.getAttribute('aria-label'),button.title,button.textContent,!!button.querySelector('svg')]));
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,document.querySelector('.v2-avatar-dot canvas'),document.querySelector('.v2-avatar-open'),document.querySelectorAll('#v2Screen .ui-button').length]),['A',null,null,0]);
+   assert.deepEqual(await photoButtons(),[['Fotoğraf ekle','Fotoğraf ekle','',true]]);
    // bad files are refused with a message, no dialog: not a picture, and too large
    await choose({type:'image/png',text:'this is not a picture'});await p.waitForFunction(()=>/resim olarak açılamadı/.test(document.getElementById('v2Toast')?.textContent||''));
    await choose({type:'image/png',size:16*1024*1024});await p.waitForFunction(()=>/resim olarak açılamadı/.test(document.getElementById('v2Toast')?.textContent||''));
@@ -1304,7 +1340,28 @@ async function main(){
    // saved as it is: the middle of the picture
    await choose();await p.waitForSelector('#v2Crop');await p.getByRole('button',{name:'Kaydet'}).click();await p.waitForFunction(()=>!document.getElementById('v2Crop')&&document.querySelector('.v2-avatar-dot canvas'));
    assert.deepEqual(await saved(),{type:'data:image/jpeg;base64,',size:[256,256],row:['red','green','blue'],corners:[false,false,false,false]});
-   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,!!document.querySelector('.v2-avatar canvas'),getComputedStyle(document.querySelector('.v2-avatar-dot')).borderRadius,[...document.querySelectorAll('#v2Screen .ui-button')].map(button=>button.textContent),document.activeElement.getAttribute('data-v2-focus')]),['',true,'50%',['Fotoğrafı değiştir','Fotoğrafı kaldır'],'photo']);
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,!!document.querySelector('.v2-avatar canvas'),getComputedStyle(document.querySelector('.v2-avatar-dot')).borderRadius,[...document.querySelectorAll('#v2Screen .v2-photo-btn')].map(button=>button.getAttribute('aria-label')),document.activeElement.getAttribute('data-v2-focus')]),['',true,'50%',['Fotoğrafı değiştir','Fotoğrafı kaldır'],'photo']);
+   // the two actions are icons (pencil, bin) laid over the picture's lower corners: change at the right, remove at the left
+   assert.deepEqual(await photoButtons(),[['Fotoğrafı değiştir','Fotoğrafı değiştir','',true],['Fotoğrafı kaldır','Fotoğrafı kaldır','',true]]);
+   assert.deepEqual(await p.evaluate(()=>{
+    const box=document.querySelector('.v2-photo-wrap').getBoundingClientRect(),centre=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return [r.left+r.width/2-box.left,r.top+r.height/2-box.top];};
+    const [ex,ey]=centre('.v2-photo-edit'),[rx,ry]=centre('.v2-photo-remove'),big=document.querySelector('.v2-avatar-open').getBoundingClientRect();
+    return {onTheEdge:[ex>box.width*0.7&&ey>box.height*0.7,rx<box.width*0.3&&ry>box.height*0.7],larger:big.width>=88&&big.height>=88,round:getComputedStyle(document.querySelector('.v2-photo-edit')).borderRadius==='50%'};
+   }),{onTheEdge:[true,true],larger:true,round:true});
+   // the picture opens a larger view: modal, the page behind it out of reach, focus on its close button; Escape or the dark area close it and focus returns to the picture
+   await p.locator('.v2-avatar-open').click();await p.waitForSelector('#v2PhotoView');
+   assert.deepEqual(await p.evaluate(()=>{const view=document.getElementById('v2PhotoView'),big=view.querySelector('canvas').getBoundingClientRect();return [view.getAttribute('role'),view.getAttribute('aria-modal'),view.getAttribute('aria-label'),document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.activeElement.className,big.width>=200&&big.width<=346&&Math.round(big.width)===Math.round(big.height),big.width>document.querySelector('.v2-avatar-open').getBoundingClientRect().width*1.8];}),['dialog','true','Profil fotoğrafı',true,true,'v2-view-close',true,true]);
+   await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.getElementById('v2PhotoView'));
+   assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.activeElement.classList.contains('v2-avatar-open')]),[false,false,true]);
+   await p.locator('.v2-avatar-open').click();await p.waitForSelector('#v2PhotoView');await p.mouse.click(8,8);await p.waitForFunction(()=>!document.getElementById('v2PhotoView'));
+   await p.locator('.v2-avatar-open').click();await p.waitForSelector('#v2PhotoView');await p.locator('.v2-view-close').click();await p.waitForFunction(()=>!document.getElementById('v2PhotoView'));
+   // removing asks first: the safe answer has the focus; Escape and Cancel keep the picture
+   await p.locator('.v2-photo-remove').click();await p.waitForSelector('#v2Confirm');
+   assert.deepEqual(await p.evaluate(()=>{const ask=document.getElementById('v2Confirm');return [ask.getAttribute('role'),ask.getAttribute('aria-modal'),ask.querySelector('h2').textContent,document.activeElement.textContent,document.getElementById('v2Screen').inert,[...ask.querySelectorAll('button')].map(button=>button.textContent)];}),['alertdialog','true','Fotoğraf kaldırılsın mı?','Vazgeç',true,['Vazgeç','Kaldır']]);
+   await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.getElementById('v2Confirm'));
+   assert.deepEqual(await p.evaluate(()=>[!!localStorage.getItem('VOCVOC_SIM_PHOTO'),document.activeElement.classList.contains('v2-photo-remove'),document.getElementById('v2Screen').inert]),[true,true,false]);
+   await p.locator('.v2-photo-remove').click();await p.waitForSelector('#v2Confirm');await p.getByRole('button',{name:'Vazgeç'}).click();await p.waitForFunction(()=>!document.getElementById('v2Confirm'));
+   assert.equal(await p.evaluate(()=>!!localStorage.getItem('VOCVOC_SIM_PHOTO')),true);
    // zoom in with the slider and move it with the mouse: the part under the window is what is kept (and it never leaves an empty edge)
    await choose();await p.waitForSelector('#v2Crop');
    const box=await p.locator('.v2-crop-stage').boundingBox(),cx=box.x+box.width/2,cy=box.y+box.height/2;
@@ -1339,8 +1396,8 @@ async function main(){
    assert.deepEqual((await saved()).row,['green','green','blue']);                                    // zoomed on the middle (the green square), then moved a little to the right
    // it stays: after a reload the bar and the profile show it; removing it brings the letter back and deletes it from the device
    await p.reload();await ready(p);await p.waitForFunction(()=>document.querySelector('.v2-avatar-dot canvas')&&document.querySelector('.v2-avatar canvas'));
-   await p.getByRole('button',{name:'Fotoğrafı kaldır'}).click();
-   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,document.querySelector('.v2-avatar-dot canvas'),localStorage.getItem('VOCVOC_SIM_PHOTO'),[...document.querySelectorAll('#v2Screen .ui-button')].map(button=>button.textContent)]),['A',null,null,['Fotoğraf ekle']]);
+   await p.getByRole('button',{name:'Fotoğrafı kaldır'}).click();await p.waitForSelector('#v2Confirm');await p.getByRole('button',{name:'Kaldır',exact:true}).click();await p.waitForFunction(()=>!document.getElementById('v2Confirm'));
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,document.querySelector('.v2-avatar-dot canvas'),localStorage.getItem('VOCVOC_SIM_PHOTO'),[...document.querySelectorAll('#v2Screen .v2-photo-btn')].map(button=>button.getAttribute('aria-label')),document.activeElement.getAttribute('data-v2-focus'),document.getElementById('v2Screen').inert]),['A',null,null,['Fotoğraf ekle'],'photo',false]);
    // signing out takes the photo of the profile with it
    await choose();await p.waitForSelector('#v2Crop');await p.getByRole('button',{name:'Kaydet'}).click();await p.waitForFunction(()=>!document.getElementById('v2Crop'));
    await p.getByRole('button',{name:/Çıkış yap/}).click();await p.waitForSelector('#v2Auth.v2-open');
@@ -1369,10 +1426,26 @@ async function main(){
   await p.evaluate(()=>changeAppLanguage('tr'));
   await p.waitForFunction(()=>document.querySelector('.v2-study-title')?.textContent==='Test'&&document.querySelectorAll('.v2-study-title')[1].textContent==='Hatırla');
   assert.deepEqual([await p.locator('.v2-study-title').allTextContents(),await p.locator('.v2-bar-title').textContent(),await p.evaluate(()=>document.getElementById('v2Screen').scrollTop>0||document.getElementById('v2Screen').scrollHeight<=document.getElementById('v2Screen').clientHeight)],[['Test','Hatırla','Boşluk Doldurma','Flip'],'Çalış',true]);
-  // a language the new screens have no texts for shows English there, and the app's own language (the document language) follows
-  await p.evaluate(()=>changeAppLanguage('fr'));
-  await p.waitForFunction(()=>document.querySelector('.v2-bar-title').textContent==='Study');
-  assert.deepEqual(await p.evaluate(()=>[document.documentElement.lang,document.querySelector('.v2-page').lang,[...document.querySelectorAll('.v2-nav-label')].map(node=>node.textContent).join()]),['fr','en','Today,Words,Study,Stats,Profile,Settings']);
+  // French, German, Spanish and Italian have their own texts on every page of the new interface: bar, menu, page language, and no English left over
+  await p.evaluate(()=>VocVocPlan.set('premium'));                                                 // the statistics page is complete only with Premium
+  const wanted={fr:['Étudier','Aujourd’hui,Mots,Étudier,Statistiques,Profil,Réglages'],de:['Lernen','Heute,Wörter,Lernen,Statistik,Profil,Einstellungen'],es:['Estudiar','Hoy,Palabras,Estudiar,Estadísticas,Perfil,Ajustes'],it:['Studia','Oggi,Parole,Studia,Statistiche,Profilo,Impostazioni']};
+  for(const [code,[studyTitle,menu]] of Object.entries(wanted)){
+   await p.evaluate(language=>changeAppLanguage(language),code);
+   await p.evaluate(()=>{location.hash='#/study';});await p.waitForFunction(title=>document.querySelector('.v2-bar-title').textContent===title,studyTitle);
+   assert.deepEqual(await p.evaluate(()=>[document.documentElement.lang,document.querySelector('.v2-page').lang,[...document.querySelectorAll('.v2-nav-label')].map(node=>node.textContent).join()]),[code,code,menu]);
+   const leftovers=[];
+   for(const route of ['today','study','stats','profile','premium','help','privacy','terms','about']){
+    await p.evaluate(target=>{location.hash='#/'+target;},route);await p.waitForSelector(`#v2Screen[data-route="${route}"] h1`,{state:'attached'});
+    leftovers.push(...await p.evaluate(target=>{
+     const {TEXT,PAGES}=VocVocScreens,language=document.documentElement.lang,text=document.getElementById('v2Screen').innerText;
+     const english=Object.entries(TEXT.en).filter(([key,value])=>value.length>14&&!/\{/.test(value)&&value!==TEXT[language][key]).map(([,value])=>value);
+     if(PAGES[target])for(const section of PAGES[target].en.sections)english.push(...section.p.filter(paragraph=>paragraph!==PAGES[target][language].sections[PAGES[target].en.sections.indexOf(section)].p[section.p.indexOf(paragraph)]));
+     return english.filter(value=>text.includes(value)).map(value=>target+': '+value);
+    },route));
+   }
+   assert.deepEqual(leftovers,[],code+': English text left over on the new screens');
+  }
+  await p.evaluate(()=>VocVocPlan.set('free'));
   // the interface language never touches the original (native) language or the learned one, so the pronunciation guides stay in the original language
   await p.evaluate(()=>changeAppLanguage('en'));
   assert.deepEqual(await p.evaluate(()=>[getNativeLanguageCode(),getTargetLanguageCode(),VocVocData.getSettings().appLanguage]),['tr','fr','en']);
@@ -1380,7 +1453,7 @@ async function main(){
   await p.getByRole('button',{name:'Add daily words'}).click();await p.waitForFunction(()=>!!VocVocData.getWordByText('au revoir'));
   assert.deepEqual(await p.evaluate(()=>{const word=VocVocData.getWordByText('au revoir');return [word.meaning,word.examples[0].phonetic,word.examples[0].translation];}),['hoşça kal; görüşürüz','o rövuar, a dömen','Hoşça kal, yarın görüşürüz!']);   // meaning, respelling and translation in Turkish with the interface in English
   await c.close();
-  record('language: changing the interface language in Settings redraws the bar, the menu and the open page at once (Turkish, English, a language without screen texts); the original language and the pronunciation guides stay the same');
+  record('language: changing the interface language in Settings redraws the bar, the menu and the open page at once (Turkish, English, French, German, Spanish, Italian: every page without English left over); the original language and the pronunciation guides stay the same');
  }
  // ===== New interface: no scrollbar anywhere, and everything still scrolls =====
  {
