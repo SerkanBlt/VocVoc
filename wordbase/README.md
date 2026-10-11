@@ -17,6 +17,7 @@ wordbase/
 node tools/wordbase.js check [çift]   kaynakları denetler (yapı, içerik kuralları, lemmas.tsv ile örtüşme); hata varsa 1 döner
 node tools/wordbase.js build [çift]   packs/<çift>/ altına parçaları ve order.json'ı yazar, packs/index.json'ı yeniler
 node tools/wordbase.js stats [çift]   seviye başına kelime, eş/zıt anlam ve kalıp kapsamı, bayt
+node tools/wordbase.js sample <çift> [seviye] [sayı]   gözden geçirmek için okunur bir örnek (Markdown): yazılmış kelimelere eşit aralıkla dağılmış N kart
 npm run packs                         packs/ altındaki her şeyi doğrular ve index.json'ı yazar
 ```
 

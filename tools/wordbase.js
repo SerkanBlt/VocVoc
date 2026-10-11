@@ -39,12 +39,101 @@ function expand(raw){
 }
 
 // Does the sentence use the word? Inflected forms count: a verb is looked for by its stem, any word by its first letters.
+// The forms of verbs whose stem changes: a stem rule cannot find them. (Accents are ignored, like everywhere in the check.)
+const IRREGULAR_FORMS={
+  'œil':'yeux oeil œil',
+  nouveau:'nouvel nouvelle nouveaux nouvelles',
+  vieux:'vieil vieille vieilles',
+  beau:'bel belle beaux belles',
+  blanc:'blanche blanches blancs',
+  long:'longue longues longs',
+  doux:'douce douces',
+  faux:'fausse fausses',
+  frais:'fraiche fraiches',
+  gros:'grosse grosses',
+  heureux:'heureuse heureuses',
+  fou:'folle folles fous',
+  cheveu:'cheveux',
+  cheval:'chevaux',
+  animal:'animaux',
+  journal:'journaux',
+  travail:'travaux',
+  jeu:'jeux',
+  neveu:'neveux',
+  oeuf:'oeufs œufs œuf',
+  'œuf':'oeuf oeufs œufs',
+  ciel:'cieux',
+  monsieur:'messieurs',
+  madame:'mesdames',
+  mademoiselle:'mesdemoiselles',
+  etre:'suis es est sommes etes sont etais etait etions etiez etaient ete serai sera seras serons serez seront serais serait soit soient sois soyez etant fut furent',
+  avoir:'ai as a avons avez ont avais avait avions aviez avaient eu aura aurai auras aurons aurez auront aurais aurait ait aie ayez ayant',
+  aller:'vais vas va allons allez vont allais allait allions alliez allaient irai ira iras irons irez iront irais irait aille ailles',
+  faire:'fais fait faisons faites font faisais faisait faisions faisaient ferai fera feras ferons ferez feront ferais ferait fasse fassent faisant',
+  vouloir:'veux veut voulons voulez veulent voulais voulait voulaient voulu voudrai voudra voudras voudrais voudrait voudriez veuille veuillez',
+  pouvoir:'peux peut pouvons pouvez peuvent pouvais pouvait pouvaient pu pourrai pourra pourras pourrais pourrait pourriez puisse',
+  devoir:'dois doit devons devez doivent devais devait devaient du devra devrai devras devrais devrait devriez doive',
+  savoir:'sais sait savons savez savent savais savait savaient su saurai saura saurais saurait sache sachez',
+  voir:'vois voit voyons voyez voient voyais voyait vu verrai verra verras verrais verrait voie',
+  venir:'viens vient venons venez viennent venais venait venu viendrai viendra viendras viendrais viendrait vienne',
+  prendre:'prends prend prenons prenez prennent prenais prenait pris prendrai prendra prendras prendrais prendrait prenne',
+  dire:'dis dit disons dites disent disais disait dirai dira diras dirais dirait dise',
+  mettre:'mets met mettons mettez mettent mettais mettait mis mettrai mettra mettrais mette',
+  connaitre:'connais connait connaissons connaissez connaissent connaissais connaissait connu connaitrai',
+  croire:'crois croit croyons croyez croient croyais croyait cru croirai croirais',
+  partir:'pars part partons partez partent partais partait parti partirai partira',
+  sortir:'sors sort sortons sortez sortent sortais sortait sorti sortirai sortira',
+  dormir:'dors dort dormons dormez dorment dormais dormait dormi',
+  ecrire:'ecris ecrit ecrivons ecrivez ecrivent ecrivais ecrivait ecrirai',
+  lire:'lis lit lisons lisez lisent lisais lisait lu lirai',
+  boire:'bois boit buvons buvez boivent buvais buvait bu boirai',
+  ouvrir:'ouvre ouvres ouvrons ouvrez ouvrent ouvrais ouvrait ouvert ouvrirai',
+  courir:'cours court courons courez courent courais courait couru courrai',
+  vivre:'vis vit vivons vivez vivent vivais vivait vecu vivrai',
+  suivre:'suis suit suivons suivez suivent suivais suivait suivi suivrai',
+  mourir:'meurs meurt mourons mourez meurent mourais mourait mort mourrai',
+  naitre:'nais nait naissons naissez naissent naissait ne nee nes nees',
+  recevoir:'recois recoit recevons recevez recoivent recevais recevait recu recevrai',
+  tenir:'tiens tient tenons tenez tiennent tenais tenait tenu tiendrai',
+  offrir:'offre offres offrons offrez offrent offrais offrait offert',
+  conduire:'conduis conduit conduisons conduisez conduisent conduisais conduisait',
+  rire:'ris rit rions riez rient riais riait ri',
+  plaire:'plais plait plaisons plaisez plaisent plaisait plu',
+  falloir:'faut fallait fallu faudra faudrait',
+  asseoir:'assieds assied assois assoit asseyons asseyez assis assise',
+  envoyer:'envoie envoies envoient envoyons envoyez envoyais envoyait enverrai enverra',
+  payer:'paie paies paient paye payes payent payons payez payais payait',
+  acheter:'achete achetes achetent achetons achetez achetais achetait achetai',
+  appeler:'appelle appelles appellent appelons appelez appelais appelait appellerai',
+  comprendre:'comprends comprend comprenons comprenez comprennent comprenais comprenait compris comprendrai',
+  apprendre:'apprends apprend apprenons apprenez apprennent apprenais apprenait appris apprendrai',
+  attendre:'attends attend attendons attendez attendent attendais attendait attendu attendrai',
+  repondre:'reponds repond repondons repondez repondent repondais repondait repondu repondrai',
+  vendre:'vends vend vendons vendez vendent vendais vendait vendu vendrai',
+  perdre:'perds perd perdons perdez perdent perdais perdait perdu perdrai',
+  descendre:'descends descend descendons descendez descendent descendais descendait descendu',
+  entendre:'entends entend entendons entendez entendent entendais entendait entendu',
+  devenir:'deviens devient devenons devenez deviennent devenait devenu deviendra',
+  revenir:'reviens revient revenons revenez reviennent revenait revenu reviendra',
+  apercevoir:'apercois apercoit apercevons apercu',
+  se_souvenir:'souviens souvient souvenons souvenez souviennent souvenu',
+  finir:'finis finit finissons finissez finissent finissais finissait fini finirai',
+  choisir:'choisis choisit choisissons choisissez choisissent choisi',
+  reussir:'reussis reussit reussissons reussissent reussi',
+};
+const irregularStem=word=>{
+  const plainWord=plain(word).replace(/^(se|s) /,'').replace(/^s'/,'');
+  return IRREGULAR_FORMS[plainWord]?IRREGULAR_FORMS[plainWord].split(' '):null;
+};
 function usesWord(sentence,word){
   const tokens=wordsOfText(sentence);
+  const forms=irregularStem(word);
+  if(forms&&tokens.some(token=>forms.includes(token)||token===plain(word)))return true;
   return wordsOfText(word).some(part=>{
-    if(part.length<=2)return tokens.includes(part);
+    if(part.length<=2)return tokens.includes(part)||tokens.includes(part+'s');
     const stem=part.replace(/(er|ir|re|oir)$/,'');
     const size=Math.max(3,Math.min(stem.length,part.length-1));
+    if(/yer$/.test(part)&&tokens.some(token=>token.startsWith(stem.slice(0,-1)+'i')))return true;     // nettoyer: nettoie, nettoient
     return tokens.some(token=>token.startsWith(stem.slice(0,size)));
   });
 }
@@ -78,7 +167,7 @@ function lintWord(raw,{native='tr'}={}){
       if(!Array.isArray(item)||item.length!==6||item.some(part=>!isLine(part))){errors.push(`${where}: [phrase, respelling, meaning, sentence, sentence respelling, sentence translation]`);return;}
       respelling(item[1],`${where} phrase`);respelling(item[4],`${where} sentence`);
       const parts=wordsOfText(item[0]).filter(part=>part.length>=3);
-      if(parts.length&&!parts.some(part=>plain(item[3]).includes(part.slice(0,Math.max(3,part.length-2)))))warnings.push(`${where}: the sentence does not seem to use "${item[0]}"`);
+      if(parts.length&&!parts.some(part=>usesWord(item[3],part)))warnings.push(`${where}: the sentence does not seem to use "${item[0]}"`);
     });
   }
   const own=plain(raw.w),seen=new Set();
@@ -215,14 +304,33 @@ function pairsIn(root,only){
   return fs.existsSync(dir)?fs.readdirSync(dir).filter(name=>Packs.pairOf(name)&&fs.statSync(path.join(dir,name)).isDirectory()).sort():[];
 }
 
-module.exports={expand,usesWord,lintWord,checkCourse,chunkSizes,planCourse,buildCourse,statsOf,readLemmas,TYPE_PATTERN,RESPELLING};
+// A readable sample for a person to proofread: `count` words spread evenly over the written words of a level (or of all levels), as Markdown.
+function sampleOf(root,pair,{level=null,count=50}={}){
+  const result=checkCourse(root,pair),pool=result.entries.filter(entry=>!level||entry.level===level);
+  const step=pool.length/Math.min(count,pool.length||1),chosen=Array.from({length:Math.min(count,pool.length)},(_,index)=>pool[Math.floor(index*step)]);
+  const lines=[`# ${pair}: ${chosen.length} words to proofread (${level||'all levels'}, spread evenly over ${pool.length} written words)`,'',
+    'For each card check: the meaning, the gender and kind, that the sentences are natural, that every respelling reads like the French when read with Turkish letters, and the translations.',''];
+  chosen.forEach((entry,index)=>{
+    const word=entry.record;
+    lines.push(`## ${index+1}. ${word.word} (${word.type}) [${entry.level}]`,'',`- Anlam: ${word.meaning}`);
+    if(word.synonyms)lines.push(`- Eş anlamlı: ${word.synonyms.join(', ')}`);
+    if(word.antonyms)lines.push(`- Zıt anlamlı: ${word.antonyms.join(', ')}`);
+    word.examples.forEach(example=>lines.push(`- ${example.text} — okunuş: *${example.phonetic}* — ${example.translation}`));
+    for(const item of word.expressions||[])lines.push(`- Kalıp: **${item.text}** (*${item.phonetic}*) = ${item.translation}; ${item.exampleText} — *${item.examplePhonetic}* — ${item.exampleTranslation}`);
+    lines.push('');
+  });
+  return lines.join('\n');
+}
+
+module.exports={expand,usesWord,lintWord,checkCourse,chunkSizes,planCourse,buildCourse,statsOf,sampleOf,readLemmas,TYPE_PATTERN,RESPELLING};
 
 if(require.main===module){
-  const [command,only]=process.argv.slice(2),pairs=pairsIn(repoRoot,only);
-  if(!['check','build','stats'].includes(command)){console.error('usage: node tools/wordbase.js check|build|stats [pair]');process.exit(2);}
+  const [command,only,levelArg,countArg]=process.argv.slice(2),pairs=pairsIn(repoRoot,only);
+  if(!['check','build','stats','sample'].includes(command)){console.error('usage: node tools/wordbase.js check|build|stats [pair]   or   sample <pair> [level] [count]');process.exit(2);}
   if(!pairs.length){console.log('No course sources in wordbase/ yet.');process.exit(0);}
   let failed=false;
   for(const pair of pairs){
+    if(command==='sample'){console.log(sampleOf(repoRoot,pair,{level:levelArg&&levelArg!=='all'?levelArg:null,count:+countArg||50}));continue;}
     if(command==='stats'){
       const {rows,errors}=statsOf(repoRoot,pair);
       console.log(`${pair}`);

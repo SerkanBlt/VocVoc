@@ -146,7 +146,8 @@ describe('The compact form and its content rules',()=>{
     assert(lint(compact('chat',{e:[['Il dort.','il dor','Uyuyor.'],compact('chat').e[1]]})).warnings.some(message=>/does not seem to use/.test(message)));
   });
   it('knows an inflected word in a sentence (verb stems, plural, feminine)',()=>{
-    for(const [sentence,word] of [['Nous mangeons du pain.','manger'],['Elles sont grandes.','grand'],['Les enfants jouent.','enfant'],['Il allait au marché.','aller'],["S'il vous plaît, madame.","s'il vous plaît"],['Vous avez raison.','avoir']])
+    for(const [sentence,word] of [['Nous mangeons du pain.','manger'],['Elles sont grandes.','grand'],['Les enfants jouent.','enfant'],['Il allait au marché.','aller'],["S'il vous plaît, madame.","s'il vous plaît"],['Vous avez raison.','avoir'],
+      ["J'ai vingt ans.",'an'],['Je viens de manger.','venir'],['Il nettoie la voiture.','nettoyer'],['Mon père a un nouvel ordinateur.','nouveau'],['Les chevaux courent vite.','cheval'],['Elle a de grands yeux.','œil'],['Je vais au lit.','aller'],['Je ne peux pas.','pouvoir']])
       assert(Wordbase.usesWord(sentence,word),`${sentence} / ${word}`);
     assert(!Wordbase.usesWord('Il dort.','chat'));
   });
@@ -220,6 +221,14 @@ describe('Building a course from its sources',()=>{
     fs.rmSync(path.join(root,'wordbase','fr-tr','src','A1-001.jsonl'));
     assert(Wordbase.buildCourse(root,'fr-tr').errors.some(message=>/no words yet/.test(message)));
   });
+  it('makes a readable sample to proofread: words spread evenly over the written ones, with their respellings and phrases',()=>{
+    root=makeRoot([['bonjour','A1'],['merci','A1'],['oui','A1'],['lire','A2']],{'A1-001.jsonl':[compact('bonjour',{a:['au revoir'],x:[['dire bonjour','dir bonjur','merhaba demek','Il dit bonjour.','il di bonjur','Merhaba der.']]}),compact('merci'),compact('oui')]});
+    const text=Wordbase.sampleOf(root,'fr-tr',{level:'A1',count:2});
+    assert(text.startsWith('# fr-tr: 2 words to proofread (A1, spread evenly over 3 written words)'));
+    assert(/## 1\. bonjour \(isim \(eril\)\) \[A1\]/.test(text)&&/## 2\. merci/.test(text)&&!/oui/.test(text.split('## 2.')[1].split('## 3.')[0].replace('Où','')) ,'two of three, evenly spaced: the first and the second');
+    assert(text.includes('Zıt anlamlı: au revoir')&&text.includes('Kalıp: **dire bonjour**')&&text.includes('okunuş: *vuasi lö kelime*'));
+    assert.equal(Wordbase.sampleOf(root,'fr-tr',{level:'B1',count:5}).split('\n')[0],'# fr-tr: 0 words to proofread (B1, spread evenly over 0 written words)');
+  });
   it('reports each level: words planned and written, how many have synonyms, antonyms and phrases, the size',()=>{
     root=makeRoot(lemmas,{'A1-001.jsonl':[compact('bonjour',{s:['salut']}),compact('merci'),compact('oui',{a:['non']})]});
     const {rows}=Wordbase.statsOf(root,'fr-tr');
@@ -282,6 +291,11 @@ describe('The courses that ship with the app',()=>{
       const result=Wordbase.checkCourse(root,pair);
       assert.deepEqual(result.errors,[],pair);
       if(!result.entries.length)continue;
+      // A course that is written but not built yet (the app does not use it) has no folder in packs/ and is not in the index; a built one must match its sources exactly.
+      if(!fs.existsSync(path.join(root,'packs',pair))){
+        assert(!JSON.parse(fs.readFileSync(path.join(root,'packs','index.json'),'utf8')).courses.some(course=>course.id===pair),`${pair} is in the index but has no folder`);
+        continue;
+      }
       const courseFile=path.join(dir,pair,'course.json'),version=fs.existsSync(courseFile)?JSON.parse(fs.readFileSync(courseFile,'utf8')).version:1;
       const files=Wordbase.planCourse(pair,version,result.entries);
       for(const file of files)assert.equal(fs.readFileSync(path.join(root,'packs',pair,file.name),'utf8').replace(/\r\n/g,'\n'),file.text,`${pair}/${file.name} is not what the sources build (run: node tools/wordbase.js build)`);
