@@ -1,5 +1,5 @@
 {
-  "format": 1,
+  "format": 2,
   "packs": [
     {
       "id": "de-tr",
@@ -46,5 +46,6 @@
       "words": 40,
       "bytes": 25802
     }
-  ]
+  ],
+  "courses": []
 }
