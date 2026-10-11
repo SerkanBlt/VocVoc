@@ -1746,8 +1746,8 @@ async function main(){
   {
    const {c,p,seen}=await openPage({course:true});
    await p.waitForFunction(()=>/kelime eklendi/.test(document.querySelector('.v2-pack .v2-pack-text')?.textContent||''));
-   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'B1-B2'}));
-   await p.waitForFunction(()=>document.querySelector('.v2-pack .v2-goal-label')?.textContent==='Hazır kelimeler · Orta (B1-B2)');
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'C1-C2'}));
+   await p.waitForFunction(()=>document.querySelector('.v2-pack .v2-goal-label')?.textContent==='Hazır kelimeler · İleri (C1-C2)');
    assert.match(await packText(p),/henüz hazırlanıyor/);
    assert.equal(await p.locator('.v2-pack .v2-bar').count(),0);                                         // nothing to count: no bar
    const words=await p.evaluate(()=>getHistory().length);
