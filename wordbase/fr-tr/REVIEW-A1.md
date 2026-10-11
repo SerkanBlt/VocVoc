@@ -5,6 +5,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 ## 1. bonjour (ünlem) [A1]
 
 - Anlam: merhaba; günaydın
+- Eş anlamlı: salut
 - Zıt anlamlı: au revoir
 - Bonjour, madame. — okunuş: *bonjur, madam* — Günaydın, hanımefendi.
 - Bonjour, comment allez-vous ? — okunuş: *bonjur, koman tale vu* — Günaydın, nasılsınız?
@@ -13,6 +14,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 ## 2. oui (zarf) [A1]
 
 - Anlam: evet
+- Eş anlamlı: ouais
 - Zıt anlamlı: non
 - Oui, je comprends. — okunuş: *ui, jö kompran* — Evet, anlıyorum.
 - Tu viens ? — Oui, j'arrive. — okunuş: *tü viyen? — ui, jariv* — Geliyor musun? — Evet, geliyorum.
@@ -24,6 +26,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - J'ai deux frères. — okunuş: *je dö frer* — İki erkek kardeşim var.
 - Tu veux avoir un chien ? — okunuş: *tü vö avuar en şiyen* — Bir köpeğin olsun ister misin?
 - Kalıp: **avoir faim** (*avuar fen*) = acıkmak; J'ai faim. — *je fen* — Acıktım.
+- Kalıp: **avoir ... ans** (*avuar ... an*) = ... yaşında olmak; Il a dix ans. — *il a diz an* — On yaşında.
 
 ## 4. dix (sayı) [A1]
 
@@ -40,6 +43,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 ## 6. tout (sıfat) [A1]
 
 - Anlam: bütün; her şey; hepsi
+- Zıt anlamlı: rien
 - Tout est prêt. — okunuş: *tu e pre* — Her şey hazır.
 - Il mange tout le pain. — okunuş: *il manj tu lö pen* — Bütün ekmeği yiyor.
 - Kalıp: **tout le monde** (*tu lö mond*) = herkes; Bonjour, tout le monde ! — *bonjur, tu lö mond* — Herkese merhaba!
@@ -50,6 +54,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: ici
 - Le café est là. — okunuş: *lö kafe e la* — Kafe orada.
 - Attends-moi là ! — okunuş: *atan mua la* — Beni orada bekle!
+- Kalıp: **c'est là** (*se la*) = işte orada; Le café ? C'est là ! — *lö kafe? se la* — Kafe mi? İşte orada!
 
 ## 8. est-ce que (kalıp) [A1]
 
@@ -74,6 +79,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 ## 11. an (isim (eril)) [A1]
 
 - Anlam: yıl; yaş
+- Eş anlamlı: année
 - J'ai vingt ans. — okunuş: *je ven tan* — Yirmi yaşındayım.
 - Il y a un an, j'étais à Paris. — okunuş: *il i a en an, jete a pari* — Bir yıl önce Paris'teydim.
 - Kalıp: **le nouvel an** (*lö nuvel an*) = yılbaşı; Nous fêtons le nouvel an ensemble. — *nu fetson lö nuvel an ansambl* — Yılbaşını birlikte kutluyoruz.
@@ -88,8 +94,10 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 ## 13. attendre (fiil) [A1]
 
 - Anlam: beklemek
+- Eş anlamlı: patienter
 - J'attends le bus. — okunuş: *jatan lö büs* — Otobüsü bekliyorum.
 - Attendez un moment, s'il vous plaît. — okunuş: *atande en moman, sil vu ple* — Bir dakika bekleyin, lütfen.
+- Kalıp: **attendre le bus** (*atandr lö büs*) = otobüs beklemek; J'attends le bus depuis dix minutes. — *jatan lö büs dö püi di minüt* — On dakikadır otobüs bekliyorum.
 
 ## 14. heure (isim (dişil)) [A1]
 
@@ -118,6 +126,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: bon
 - Il fait mauvais aujourd'hui. — okunuş: *il fe move ojurdüi* — Bugün hava kötü.
 - C'est une mauvaise idée. — okunuş: *set ün movez ide* — Bu kötü bir fikir.
+- Kalıp: **mauvais temps** (*move tan*) = kötü hava; Il fait mauvais temps aujourd'hui. — *il fe move tan ojurdüi* — Bugün hava kötü.
 
 ## 18. cahier (isim (eril)) [A1]
 
@@ -134,6 +143,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 ## 20. mince (sıfat) [A1]
 
 - Anlam: ince; zayıf
+- Eş anlamlı: maigre
 - Zıt anlamlı: gros
 - Elle est grande et mince. — okunuş: *el e grand e mens* — O uzun boylu ve ince.
 - Le livre est mince. — okunuş: *lö livr e mens* — Kitap ince.
@@ -161,6 +171,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 ## 24. il pleut (kalıp) [A1]
 
 - Anlam: yağmur yağıyor
+- Zıt anlamlı: il fait beau
 - Il pleut beaucoup aujourd'hui. — okunuş: *il plö boku ojurdüi* — Bugün çok yağmur yağıyor.
 - Il pleut sur la ville. — okunuş: *il plö sür la vil* — Şehre yağmur yağıyor.
 
@@ -213,6 +224,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 ## 32. restaurant (isim (eril)) [A1]
 
 - Anlam: restoran
+- Eş anlamlı: resto
 - Ce restaurant est très bon. — okunuş: *sö restoran e tre bon* — Bu restoran çok iyi.
 - Je réserve une table au restaurant. — okunuş: *jö rezerv ün tabl o restoran* — Restoranda bir masa ayırtıyorum.
 
@@ -275,6 +287,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Anlam: salata
 - Je mange une salade avec du poulet. — okunuş: *jö manj ün salad avek dü pule* — Tavuklu bir salata yiyorum.
 - La salade est fraîche. — okunuş: *la salad e freş* — Salata taze.
+- Kalıp: **salade de fruits** (*salad dö früi*) = meyve salatası; Je prends une salade de fruits. — *jö pran ün salad dö früi* — Bir meyve salatası alıyorum.
 
 ## 43. quatrième (sıfat) [A1]
 
@@ -291,6 +304,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 ## 45. ticket (isim (eril)) [A1]
 
 - Anlam: bilet; fiş
+- Eş anlamlı: billet
 - Je garde le ticket. — okunuş: *jö gard lö tike* — Fişi saklıyorum.
 - Un ticket de métro, s'il vous plaît. — okunuş: *en tike dö metro, sil vu ple* — Bir metro bileti, lütfen.
 
@@ -303,6 +317,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 ## 47. frite (isim (dişil)) [A1]
 
 - Anlam: patates kızartması
+- Eş anlamlı: pommes frites
 - Je mange des frites avec du poulet. — okunuş: *jö manj de frit avek dü pule* — Tavukla patates kızartması yiyorum.
 - Les enfants aiment les frites. — okunuş: *le zanfan zem le frit* — Çocuklar patates kızartmasını sever.
 
