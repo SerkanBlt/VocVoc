@@ -43,13 +43,13 @@
       "id": "fr-tr",
       "target": "fr",
       "native": "tr",
-      "version": 1,
-      "words": 1445,
+      "version": 2,
+      "words": 1602,
       "levels": {
         "A1": 695,
-        "A2": 750
+        "A2": 907
       },
-      "orderBytes": 14110,
+      "orderBytes": 15697,
       "chunks": [
         {
           "id": "A1-01",
@@ -66,14 +66,14 @@
         {
           "id": "A2-01",
           "level": "A2",
-          "words": 375,
-          "bytes": 187480
+          "words": 454,
+          "bytes": 220657
         },
         {
           "id": "A2-02",
           "level": "A2",
-          "words": 375,
-          "bytes": 141492
+          "words": 453,
+          "bytes": 162618
         }
       ]
     }
