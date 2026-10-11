@@ -120,6 +120,11 @@ const IRREGULAR_FORMS={
   finir:'finis finit finissons finissez finissent finissais finissait fini finirai',
   choisir:'choisis choisit choisissons choisissez choisissent choisi',
   reussir:'reussis reussit reussissons reussissent reussi',
+  sentir:'sens sent sentons sentez sentent sentais sentait senti sentirai',
+  servir:'sers sert servons servez servent servais servait servi servirai',
+  eteindre:'eteins eteint eteignons eteignez eteignent eteignais eteignait eteindrai',
+  endormir:'endors endort endormons endormez endorment endormais endormait endormi endormirai',
+  peindre:'peins peint peignons peignez peignent peignais peignait peindrai',
 };
 const irregularStem=word=>{
   const plainWord=plain(word).replace(/^(se|s) /,'').replace(/^s'/,'');
