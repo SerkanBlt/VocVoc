@@ -64,9 +64,9 @@
       b_words50:'Koleksiyoncu',bd_words50:'Listene 50 kelime ekle.',b_test1:'İlk test',bd_test1:'Bir test tamamla.',b_test10:'Düzenli çalışan',bd_test10:'10 test tamamla.',b_perfect:'Kusursuz',bd_perfect:'Bir testi 10/10 bitir.',b_recall8:'Güçlü hafıza',bd_recall8:'Hatırla testinde en az 8/10 yap.',
       b_streak3:'Isınma',bd_streak3:'3 gün üst üste çalış.',b_streak7:'Bir hafta',bd_streak7:'7 gün üst üste çalış.',b_streak30:'Bir ay',bd_streak30:'30 gün üst üste çalış.',b_goal1:'Hedef tamam',bd_goal1:'Günlük kelime hedefine ulaş.',
       packTitle:'Hazır kelimeler',packLevel:'Başlangıç (A1-A2)',packProgress:'{n} / {m} kelime eklendi',packLoading:'Paket indiriliyor…',packOffline:'Paket indirilemedi. İnternete bağlanınca yeniden denenir.',
-      packNone:'Bu dil çifti için hazır paket henüz yok. Kendi API anahtarınla yeni kelime ekleyebilirsin.',packDone:'Paketteki tüm kelimeleri ekledin. Yeni kelime için kendi API anahtarını kullanabilirsin.',packAdded:'{n} kelime eklendi.',
+      packNone:'Bu dil çifti için hazır paket henüz yok. Kendi API anahtarınla yeni kelime ekleyebilirsin.',packDone:'Paketteki tüm kelimeleri ekledin. Yeni kelime için kendi API anahtarını kullanabilirsin.',packAdded:'{n} kelime eklendi.',packLevelB:'Orta (B1-B2)',packLevelC:'İleri (C1-C2)',courseDone:'Bu seviyedeki hazır kelimelerin hepsini ekledin. Ayarlar’dan bir sonraki seviyeyi seçebilir veya kendi API anahtarını kullanabilirsin.',courseSoon:'Bu seviyenin hazır kelimeleri henüz hazırlanıyor. Ayarlar’dan başka bir seviye seçebilir veya kendi API anahtarını kullanabilirsin.',
       speakLabel:'Sesli oku: {text}',speakLocked:'Sesli okuma Premium ile açılır.',speakLockedLabel:'Sesli oku (Premium)',speakNoVoice:'Bu cihazda {language} sesi yok.',speakNone:'Bu tarayıcı sesli okumayı desteklemiyor.',speedNormal:'normal',speedSlow:'yavaş',speedFast:'hızlı',speakSpeed:'{text} ({speed})',
-      aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
+      aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutWords:'Hazır kelimelerin sırası, hermitdave/FrequencyWords sıklık listesinden (CC BY-SA 4.0) yararlanılarak belirlendi.',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
     },
     en:{
       nav:'Main navigation',today:'Today',words:'Words',study:'Study',stats:'Stats',profile:'Profile',back:'Back',menu:'Menu',menuClose:'Close menu',addedWords:'Added words',photoAdd:'Add a photo',photoChange:'Change photo',photoRemove:'Remove photo',photoView:'Enlarge the profile photo',photoRemoveTitle:'Remove the photo?',photoRemoveText:'Your profile photo is deleted from this device. You can add it again later.',photoRemoveYes:'Remove',photoTitle:'Profile photo',photoHelp:'Drag to place it, pinch or use the slider to zoom. The part inside the circle is used.',photoZoom:'Zoom',photoStage:'Photo area: arrow keys move it, + and - zoom',photoSave:'Save',photoCancel:'Cancel',photoBad:'This file could not be opened as a picture. Choose a picture of up to 15 MB.',photoSaveFailed:'The photo could not be saved: there is not enough room on this device.',dayWordsLabel:'{day}, {kind}: {n} words. Show the words',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} words',dayWordsMore:'and {n} more',
@@ -98,9 +98,9 @@
       b_words50:'Collector',bd_words50:'Add 50 words to your list.',b_test1:'First test',bd_test1:'Complete a test.',b_test10:'Regular',bd_test10:'Complete 10 tests.',b_perfect:'Flawless',bd_perfect:'Finish a test 10/10.',b_recall8:'Strong memory',bd_recall8:'Score at least 8/10 in a Recall test.',
       b_streak3:'Warm-up',bd_streak3:'Study 3 days in a row.',b_streak7:'One week',bd_streak7:'Study 7 days in a row.',b_streak30:'One month',bd_streak30:'Study 30 days in a row.',b_goal1:'Goal reached',bd_goal1:'Reach your daily word goal.',
       packTitle:'Ready-made words',packLevel:'Beginner (A1-A2)',packProgress:'{n} / {m} words added',packLoading:'Downloading the pack…',packOffline:'The pack could not be downloaded. It is tried again when you are online.',
-      packNone:'There is no ready-made pack for this language pair yet. You can add new words with your own API key.',packDone:'You have added every word of the pack. You can use your own API key for new words.',packAdded:'{n} words added.',
+      packNone:'There is no ready-made pack for this language pair yet. You can add new words with your own API key.',packDone:'You have added every word of the pack. You can use your own API key for new words.',packAdded:'{n} words added.',packLevelB:'Intermediate (B1-B2)',packLevelC:'Advanced (C1-C2)',courseDone:'You have added all the ready-made words of this level. Choose the next level in Settings or use your own API key.',courseSoon:'The ready-made words of this level are still being prepared. Choose another level in Settings or use your own API key.',
       speakLabel:'Read aloud: {text}',speakLocked:'Read-aloud comes with Premium.',speakLockedLabel:'Read aloud (Premium)',speakNoVoice:'There is no {language} voice on this device.',speakNone:'This browser does not support read-aloud.',speedNormal:'normal',speedSlow:'slow',speedFast:'fast',speakSpeed:'{text} ({speed})',
-      aboutTitle:'About',version:'Version',uiMode:'Interface',uiProto:'New interface (prototype)',aboutSim:'Sign-in, Premium and payment in this version are simulations: there is no real account, server or payment.'
+      aboutTitle:'About',version:'Version',uiMode:'Interface',uiProto:'New interface (prototype)',aboutWords:'The order of the ready-made words is based on the frequency list hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Sign-in, Premium and payment in this version are simulations: there is no real account, server or payment.'
     },
     fr:{
       nav:'Navigation principale',today:'Aujourd’hui',words:'Mots',study:'Étudier',stats:'Statistiques',profile:'Profil',back:'Retour',menu:'Menu',menuClose:'Fermer le menu',addedWords:'Mots ajoutés',photoAdd:'Ajouter une photo',photoChange:'Changer la photo',photoRemove:'Supprimer la photo',photoView:'Agrandir la photo de profil',photoRemoveTitle:'Supprimer la photo ?',photoRemoveText:'Votre photo de profil est effacée de cet appareil. Vous pourrez la rajouter plus tard.',photoRemoveYes:'Supprimer',photoTitle:'Photo de profil',photoHelp:'Faites glisser pour la placer, pincez ou utilisez le curseur pour zoomer. La partie à l’intérieur du cercle est utilisée.',photoZoom:'Zoom',photoStage:'Zone de la photo : les flèches la déplacent, + et - zooment',photoSave:'Enregistrer',photoCancel:'Annuler',photoBad:'Ce fichier n’a pas pu être ouvert comme image. Choisissez une image de 15 Mo maximum.',photoSaveFailed:'La photo n’a pas pu être enregistrée : il n’y a pas assez de place sur cet appareil.',dayWordsLabel:'{day}, {kind} : {n} mots. Afficher les mots',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} mots',dayWordsMore:'et {n} de plus',
@@ -132,9 +132,9 @@
       b_words50:'Collectionneur',bd_words50:'Ajoutez 50 mots à votre liste.',b_test1:'Premier test',bd_test1:'Terminez un test.',b_test10:'Assidu',bd_test10:'Terminez 10 tests.',b_perfect:'Sans faute',bd_perfect:'Terminez un test avec 10/10.',b_recall8:'Mémoire solide',bd_recall8:'Obtenez au moins 8/10 à un test de révision.',
       b_streak3:'Échauffement',bd_streak3:'Étudiez 3 jours de suite.',b_streak7:'Une semaine',bd_streak7:'Étudiez 7 jours de suite.',b_streak30:'Un mois',bd_streak30:'Étudiez 30 jours de suite.',b_goal1:'Objectif atteint',bd_goal1:'Atteignez votre objectif quotidien de mots.',
       packTitle:'Mots prêts à l’emploi',packLevel:'Débutant (A1-A2)',packProgress:'{n} / {m} mots ajoutés',packLoading:'Téléchargement du pack…',packOffline:'Le pack n’a pas pu être téléchargé. Une nouvelle tentative a lieu dès que vous êtes en ligne.',
-      packNone:'Il n’y a pas encore de pack prêt à l’emploi pour cette paire de langues. Vous pouvez ajouter de nouveaux mots avec votre propre clé API.',packDone:'Vous avez ajouté tous les mots du pack. Vous pouvez utiliser votre propre clé API pour de nouveaux mots.',packAdded:'{n} mots ajoutés.',
+      packNone:'Il n’y a pas encore de pack prêt à l’emploi pour cette paire de langues. Vous pouvez ajouter de nouveaux mots avec votre propre clé API.',packDone:'Vous avez ajouté tous les mots du pack. Vous pouvez utiliser votre propre clé API pour de nouveaux mots.',packAdded:'{n} mots ajoutés.',packLevelB:'Intermédiaire (B1-B2)',packLevelC:'Avancé (C1-C2)',courseDone:'Vous avez ajouté tous les mots prêts à l’emploi de ce niveau. Choisissez le niveau suivant dans les réglages ou utilisez votre propre clé API.',courseSoon:'Les mots prêts à l’emploi de ce niveau sont encore en préparation. Choisissez un autre niveau dans les réglages ou utilisez votre propre clé API.',
       speakLabel:'Lire à voix haute : {text}',speakLocked:'La lecture à voix haute est réservée à Premium.',speakLockedLabel:'Lire à voix haute (Premium)',speakNoVoice:'Aucune voix {language} sur cet appareil.',speakNone:'Ce navigateur ne prend pas en charge la lecture à voix haute.',speedNormal:'normale',speedSlow:'lente',speedFast:'rapide',speakSpeed:'{text} ({speed})',
-      aboutTitle:'À propos',version:'Version',uiMode:'Interface',uiProto:'Nouvelle interface (prototype)',aboutSim:'La connexion, Premium et le paiement de cette version sont des simulations : il n’y a ni vrai compte, ni serveur, ni paiement.'
+      aboutTitle:'À propos',version:'Version',uiMode:'Interface',uiProto:'Nouvelle interface (prototype)',aboutWords:'L’ordre des mots prêts à l’emploi s’appuie sur la liste de fréquence hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'La connexion, Premium et le paiement de cette version sont des simulations : il n’y a ni vrai compte, ni serveur, ni paiement.'
     },
     de:{
       nav:'Hauptnavigation',today:'Heute',words:'Wörter',study:'Lernen',stats:'Statistik',profile:'Profil',back:'Zurück',menu:'Menü',menuClose:'Menü schließen',addedWords:'Hinzugefügte Wörter',photoAdd:'Foto hinzufügen',photoChange:'Foto ändern',photoRemove:'Foto entfernen',photoView:'Profilfoto vergrößern',photoRemoveTitle:'Foto entfernen?',photoRemoveText:'Ihr Profilfoto wird von diesem Gerät gelöscht. Sie können es später wieder hinzufügen.',photoRemoveYes:'Entfernen',photoTitle:'Profilfoto',photoHelp:'Zum Platzieren ziehen, zum Zoomen zwei Finger oder den Regler verwenden. Der Teil im Kreis wird verwendet.',photoZoom:'Zoom',photoStage:'Fotobereich: Pfeiltasten verschieben, + und - zoomen',photoSave:'Speichern',photoCancel:'Abbrechen',photoBad:'Diese Datei konnte nicht als Bild geöffnet werden. Wählen Sie ein Bild bis 15 MB.',photoSaveFailed:'Das Foto konnte nicht gespeichert werden: Auf diesem Gerät ist nicht genug Platz.',dayWordsLabel:'{day}, {kind}: {n} Wörter. Wörter anzeigen',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} Wörter',dayWordsMore:'und {n} weitere',
@@ -166,9 +166,9 @@
       b_words50:'Sammler',bd_words50:'Fügen Sie Ihrer Liste 50 Wörter hinzu.',b_test1:'Erster Test',bd_test1:'Schließen Sie einen Test ab.',b_test10:'Regelmäßig',bd_test10:'Schließen Sie 10 Tests ab.',b_perfect:'Makellos',bd_perfect:'Beenden Sie einen Test mit 10/10.',b_recall8:'Starkes Gedächtnis',bd_recall8:'Erreichen Sie in einem Wiederholen-Test mindestens 8/10.',
       b_streak3:'Aufwärmen',bd_streak3:'Lernen Sie 3 Tage in Folge.',b_streak7:'Eine Woche',bd_streak7:'Lernen Sie 7 Tage in Folge.',b_streak30:'Ein Monat',bd_streak30:'Lernen Sie 30 Tage in Folge.',b_goal1:'Ziel erreicht',bd_goal1:'Erreichen Sie Ihr tägliches Wortziel.',
       packTitle:'Fertige Wörter',packLevel:'Einsteiger (A1-A2)',packProgress:'{n} / {m} Wörter hinzugefügt',packLoading:'Paket wird heruntergeladen…',packOffline:'Das Paket konnte nicht heruntergeladen werden. Es wird erneut versucht, sobald Sie online sind.',
-      packNone:'Für dieses Sprachpaar gibt es noch kein fertiges Paket. Sie können neue Wörter mit Ihrem eigenen API-Schlüssel hinzufügen.',packDone:'Sie haben alle Wörter des Pakets hinzugefügt. Für neue Wörter können Sie Ihren eigenen API-Schlüssel verwenden.',packAdded:'{n} Wörter hinzugefügt.',
+      packNone:'Für dieses Sprachpaar gibt es noch kein fertiges Paket. Sie können neue Wörter mit Ihrem eigenen API-Schlüssel hinzufügen.',packDone:'Sie haben alle Wörter des Pakets hinzugefügt. Für neue Wörter können Sie Ihren eigenen API-Schlüssel verwenden.',packAdded:'{n} Wörter hinzugefügt.',packLevelB:'Mittelstufe (B1-B2)',packLevelC:'Fortgeschritten (C1-C2)',courseDone:'Sie haben alle fertigen Wörter dieser Stufe hinzugefügt. Wählen Sie in den Einstellungen die nächste Stufe oder verwenden Sie Ihren eigenen API-Schlüssel.',courseSoon:'Die fertigen Wörter dieser Stufe sind noch in Arbeit. Wählen Sie in den Einstellungen eine andere Stufe oder verwenden Sie Ihren eigenen API-Schlüssel.',
       speakLabel:'Vorlesen: {text}',speakLocked:'Vorlesen gibt es mit Premium.',speakLockedLabel:'Vorlesen (Premium)',speakNoVoice:'Auf diesem Gerät gibt es keine {language}-Stimme.',speakNone:'Dieser Browser unterstützt kein Vorlesen.',speedNormal:'normal',speedSlow:'langsam',speedFast:'schnell',speakSpeed:'{text} ({speed})',
-      aboutTitle:'Über',version:'Version',uiMode:'Oberfläche',uiProto:'Neue Oberfläche (Prototyp)',aboutSim:'Anmeldung, Premium und Zahlung in dieser Version sind Simulationen: Es gibt kein echtes Konto, keinen Server und keine Zahlung.'
+      aboutTitle:'Über',version:'Version',uiMode:'Oberfläche',uiProto:'Neue Oberfläche (Prototyp)',aboutWords:'Die Reihenfolge der fertigen Wörter beruht auf der Häufigkeitsliste hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Anmeldung, Premium und Zahlung in dieser Version sind Simulationen: Es gibt kein echtes Konto, keinen Server und keine Zahlung.'
     },
     es:{
       nav:'Navegación principal',today:'Hoy',words:'Palabras',study:'Estudiar',stats:'Estadísticas',profile:'Perfil',back:'Atrás',menu:'Menú',menuClose:'Cerrar menú',addedWords:'Palabras añadidas',photoAdd:'Añadir foto',photoChange:'Cambiar foto',photoRemove:'Quitar foto',photoView:'Ampliar la foto de perfil',photoRemoveTitle:'¿Quitar la foto?',photoRemoveText:'Tu foto de perfil se borra de este dispositivo. Puedes volver a añadirla más tarde.',photoRemoveYes:'Quitar',photoTitle:'Foto de perfil',photoHelp:'Arrastra para colocarla; pellizca o usa el control deslizante para ampliar. Se usa la parte que queda dentro del círculo.',photoZoom:'Zoom',photoStage:'Zona de la foto: las flechas la mueven, + y - amplían',photoSave:'Guardar',photoCancel:'Cancelar',photoBad:'Este archivo no se pudo abrir como imagen. Elige una imagen de hasta 15 MB.',photoSaveFailed:'No se pudo guardar la foto: no hay espacio suficiente en este dispositivo.',dayWordsLabel:'{day}, {kind}: {n} palabras. Mostrar las palabras',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} palabras',dayWordsMore:'y {n} más',
@@ -200,9 +200,9 @@
       b_words50:'Coleccionista',bd_words50:'Añade 50 palabras a tu lista.',b_test1:'Primer test',bd_test1:'Completa un test.',b_test10:'Constante',bd_test10:'Completa 10 tests.',b_perfect:'Impecable',bd_perfect:'Termina un test con 10/10.',b_recall8:'Memoria fuerte',bd_recall8:'Consigue al menos 8/10 en un test de repaso.',
       b_streak3:'Calentamiento',bd_streak3:'Estudia 3 días seguidos.',b_streak7:'Una semana',bd_streak7:'Estudia 7 días seguidos.',b_streak30:'Un mes',bd_streak30:'Estudia 30 días seguidos.',b_goal1:'Objetivo cumplido',bd_goal1:'Alcanza tu objetivo diario de palabras.',
       packTitle:'Palabras listas',packLevel:'Principiante (A1-A2)',packProgress:'{n} / {m} palabras añadidas',packLoading:'Descargando el paquete…',packOffline:'No se pudo descargar el paquete. Se vuelve a intentar cuando tengas conexión.',
-      packNone:'Todavía no hay un paquete listo para este par de idiomas. Puedes añadir palabras nuevas con tu propia clave API.',packDone:'Has añadido todas las palabras del paquete. Puedes usar tu propia clave API para palabras nuevas.',packAdded:'{n} palabras añadidas.',
+      packNone:'Todavía no hay un paquete listo para este par de idiomas. Puedes añadir palabras nuevas con tu propia clave API.',packDone:'Has añadido todas las palabras del paquete. Puedes usar tu propia clave API para palabras nuevas.',packAdded:'{n} palabras añadidas.',packLevelB:'Intermedio (B1-B2)',packLevelC:'Avanzado (C1-C2)',courseDone:'Has añadido todas las palabras listas de este nivel. Elige el siguiente nivel en Ajustes o usa tu propia clave API.',courseSoon:'Las palabras listas de este nivel aún se están preparando. Elige otro nivel en Ajustes o usa tu propia clave API.',
       speakLabel:'Leer en voz alta: {text}',speakLocked:'La lectura en voz alta llega con Premium.',speakLockedLabel:'Leer en voz alta (Premium)',speakNoVoice:'No hay voz de {language} en este dispositivo.',speakNone:'Este navegador no admite la lectura en voz alta.',speedNormal:'normal',speedSlow:'lenta',speedFast:'rápida',speakSpeed:'{text} ({speed})',
-      aboutTitle:'Acerca de',version:'Versión',uiMode:'Interfaz',uiProto:'Interfaz nueva (prototipo)',aboutSim:'El inicio de sesión, Premium y el pago de esta versión son simulaciones: no hay cuenta, servidor ni pago reales.'
+      aboutTitle:'Acerca de',version:'Versión',uiMode:'Interfaz',uiProto:'Interfaz nueva (prototipo)',aboutWords:'El orden de las palabras listas se basa en la lista de frecuencia hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'El inicio de sesión, Premium y el pago de esta versión son simulaciones: no hay cuenta, servidor ni pago reales.'
     },
     it:{
       nav:'Navigazione principale',today:'Oggi',words:'Parole',study:'Studia',stats:'Statistiche',profile:'Profilo',back:'Indietro',menu:'Menu',menuClose:'Chiudi il menu',addedWords:'Parole aggiunte',photoAdd:'Aggiungi una foto',photoChange:'Cambia foto',photoRemove:'Rimuovi foto',photoView:'Ingrandisci la foto del profilo',photoRemoveTitle:'Rimuovere la foto?',photoRemoveText:'La tua foto del profilo viene eliminata da questo dispositivo. Potrai aggiungerla di nuovo più tardi.',photoRemoveYes:'Rimuovi',photoTitle:'Foto del profilo',photoHelp:'Trascina per posizionarla, pizzica o usa il cursore per ingrandire. Viene usata la parte dentro il cerchio.',photoZoom:'Zoom',photoStage:'Area della foto: le frecce la spostano, + e - ingrandiscono',photoSave:'Salva',photoCancel:'Annulla',photoBad:'Questo file non si può aprire come immagine. Scegli un’immagine fino a 15 MB.',photoSaveFailed:'Non è stato possibile salvare la foto: su questo dispositivo non c’è abbastanza spazio.',dayWordsLabel:'{day}, {kind}: {n} parole. Mostra le parole',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} parole',dayWordsMore:'e altre {n}',
@@ -234,9 +234,9 @@
       b_words50:'Collezionista',bd_words50:'Aggiungi 50 parole alla tua lista.',b_test1:'Primo test',bd_test1:'Completa un test.',b_test10:'Costante',bd_test10:'Completa 10 test.',b_perfect:'Impeccabile',bd_perfect:'Finisci un test con 10/10.',b_recall8:'Memoria forte',bd_recall8:'Ottieni almeno 8/10 in un test di ripasso.',
       b_streak3:'Riscaldamento',bd_streak3:'Studia 3 giorni di fila.',b_streak7:'Una settimana',bd_streak7:'Studia 7 giorni di fila.',b_streak30:'Un mese',bd_streak30:'Studia 30 giorni di fila.',b_goal1:'Obiettivo raggiunto',bd_goal1:'Raggiungi il tuo obiettivo giornaliero di parole.',
       packTitle:'Parole già pronte',packLevel:'Principiante (A1-A2)',packProgress:'{n} / {m} parole aggiunte',packLoading:'Download del pacchetto…',packOffline:'Non è stato possibile scaricare il pacchetto. Si riprova quando sei online.',
-      packNone:'Per questa coppia di lingue non c’è ancora un pacchetto pronto. Puoi aggiungere nuove parole con la tua chiave API.',packDone:'Hai aggiunto tutte le parole del pacchetto. Per nuove parole puoi usare la tua chiave API.',packAdded:'{n} parole aggiunte.',
+      packNone:'Per questa coppia di lingue non c’è ancora un pacchetto pronto. Puoi aggiungere nuove parole con la tua chiave API.',packDone:'Hai aggiunto tutte le parole del pacchetto. Per nuove parole puoi usare la tua chiave API.',packAdded:'{n} parole aggiunte.',packLevelB:'Intermedio (B1-B2)',packLevelC:'Avanzato (C1-C2)',courseDone:'Hai aggiunto tutte le parole pronte di questo livello. Scegli il livello successivo nelle impostazioni o usa la tua chiave API.',courseSoon:'Le parole pronte di questo livello sono ancora in preparazione. Scegli un altro livello nelle impostazioni o usa la tua chiave API.',
       speakLabel:'Leggi ad alta voce: {text}',speakLocked:'La lettura ad alta voce è inclusa in Premium.',speakLockedLabel:'Leggi ad alta voce (Premium)',speakNoVoice:'Su questo dispositivo non c’è una voce {language}.',speakNone:'Questo browser non supporta la lettura ad alta voce.',speedNormal:'normale',speedSlow:'lenta',speedFast:'veloce',speakSpeed:'{text} ({speed})',
-      aboutTitle:'Informazioni',version:'Versione',uiMode:'Interfaccia',uiProto:'Nuova interfaccia (prototipo)',aboutSim:'Accesso, Premium e pagamento in questa versione sono simulazioni: non esistono un account, un server o un pagamento reali.'
+      aboutTitle:'Informazioni',version:'Versione',uiMode:'Interfaccia',uiProto:'Nuova interfaccia (prototipo)',aboutWords:'L’ordine delle parole pronte si basa sull’elenco di frequenza hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Accesso, Premium e pagamento in questa versione sono simulazioni: non esistono un account, un server o un pagamento reali.'
     }
   };
   // Long texts. They describe what the app does today and are DRAFTS: contact details, controller name, age limit and a legal review are still missing.
@@ -491,11 +491,12 @@
 
 
   /* ---------- ready-made word packs (free) ---------- */
-  // The pack of the user's language pair (packs/<target>-<native>.json) is fetched once, kept in the browser's cache for offline use and checked before use.
-  // The Daily button takes its next words from the pack: no API key needed. The service worker does not touch packs (they are not part of the shell).
+  // The words of the user's language pair come as one pack (packs/<target>-<native>.json) or, where there is a course, as packs/<pair>/order.json plus chunk files
+  // (A1-01.json …) that are downloaded one at a time, only when the Daily button needs them. Everything is kept in the browser's cache for offline use and checked before use.
+  // The Daily button takes its next words from there: no API key needed. The service worker does not touch packs (they are not part of the shell).
   const PACK_CACHE='vocvoc-packs-v1';
   const legacyText=key=>window.t(key);                                   // the app's own translations (the t of this file is a different table)
-  const packState={pair:'',status:'idle',entry:null,pack:null};            // status: idle | loading | ready | none | offline
+  const packState={pair:'',status:'idle',entry:null,pack:null,course:null};            // status: idle | loading | ready | none | offline; course: the order.json of a course (then there is no pack)
   let packLoad=null,packBusy=false;
   async function packJson(url,{network=false}={}){
     const cache='caches' in window?await caches.open(PACK_CACHE):null;
@@ -508,15 +509,44 @@
     throw new Error('offline');
   }
   const currentPair=()=>{const settings=VocVocData.getSettings();return VocVocPacks.pairId(settings.targetLanguage,settings.nativeLanguage);};
+  const bandOf=()=>{const level=VocVocData.getSettings().difficulty;return VocVocPacks.BANDS[level]?level:'A1-A2';};   // the difficulty setting names the band of levels the Daily button draws from
+  const BAND_TEXT={'A1-A2':'packLevel','B1-B2':'packLevelB','C1-C2':'packLevelC'};
+  // order.json of a course: the copy on this device when it is as new as the index says, else a fresh download.
+  async function courseOrder(pair,course){
+    const url='./packs/'+pair+'/order.json',usable=order=>!!order&&order.id===pair&&!VocVocPacks.validateOrder(order).length;
+    let order=null;try{order=await packJson(url);}catch(_){}
+    if(!usable(order)||(course&&order.version<course.version))order=await packJson(url,{network:true});
+    if(!usable(order))throw new Error('unusable course');
+    return order;
+  }
+  // One chunk of the course (A1-01 …), the same way: the device's copy when it belongs to this version of the course, else a fresh download.
+  async function courseChunk(order,id){
+    const url='./packs/'+order.id+'/'+id+'.json',usable=chunk=>!!chunk&&chunk.id===order.id&&chunk.chunk===id&&chunk.version===order.version&&!VocVocPacks.validateChunk(chunk).length;
+    let chunk=null;try{chunk=await packJson(url);}catch(_){}
+    if(!usable(chunk))chunk=await packJson(url,{network:true});
+    if(!usable(chunk))throw new Error('unusable chunk');
+    return chunk;
+  }
+  async function nextFromCourse(count){                                          // the next unknown words of the band the user chose; only the chunks that are needed are downloaded
+    const ids=VocVocPacks.pickChunks(packState.course,bandOf(),knownWord,count),chunks=[];
+    for(const id of ids)chunks.push(await courseChunk(packState.course,id));
+    return VocVocPacks.nextFromChunks(chunks,knownWord,count);
+  }
   function refreshPack(){
     const pair=currentPair();
     packLoad=(async()=>{
-      Object.assign(packState,{pair,status:'loading',entry:null,pack:null});refreshDashboard();
+      Object.assign(packState,{pair,status:'loading',entry:null,pack:null,course:null});refreshDashboard();
       try{
         let index=null;try{index=await packJson('./packs/index.json',{network:true});}catch(_){}
-        const entry=index?.packs?.find(item=>item.id===pair)||null;
+        const course=index?.courses?.find(item=>item.id===pair)||null;
+        const entry=course||index?.packs?.find(item=>item.id===pair)||null;
         if(packState.pair!==pair)return;
         if(index&&!entry){packState.status='none';return;}
+        if(course||!index){                                                                          // a course; or no index at all (offline): a course kept on this device, else the single pack
+          let order=null;try{order=await courseOrder(pair,course);}catch(_){}
+          if(order){if(packState.pair===pair)Object.assign(packState,{status:'ready',entry:course||{id:pair,words:order.chunks.reduce((sum,chunk)=>sum+chunk.words.length,0)},course:order});return;}
+          if(course)throw new Error('unusable course');
+        }
         let pack=null;try{pack=await packJson('./packs/'+pair+'.json');}catch(_){}                     // the copy kept on this device, if it is usable
         if(entry&&(!pack||pack.version<entry.version||VocVocPacks.validatePack(pack).length))pack=await packJson('./packs/'+pair+'.json',{network:true});
         if(!pack||pack.id!==pair||VocVocPacks.validatePack(pack).length)throw new Error('unusable pack');
@@ -533,10 +563,13 @@
   async function addFromPack(){
     const remaining=getDailyLimit()-getDailyUsage().count;
     if(remaining<=0){showError(legacyText('dailyLimitReached'));return true;}
-    const words=VocVocPacks.nextWords(packState.pack,knownWord,Math.min(10,remaining));
+    const count=Math.min(10,remaining);
+    let words;
+    try{words=packState.course?await nextFromCourse(count):VocVocPacks.nextWords(packState.pack,knownWord,count);}
+    catch(_){toast(t('packOffline'));return true;}                                                     // a chunk of the course could not be had (offline): nothing is added
     if(!words.length){
       if(VocVocSecrets.getApiKey())return false;                                                       // the pack is used up: carry on with the key (the built-in AI of Premium does not exist yet, so the Premium simulation uses the key too)
-      toast(t('packDone'));return true;
+      toast(t(packState.course?courseEnd():'packDone'));return true;
     }
     try{await VocVocData.addWordBatch(words,{dailyCount:words.length});}catch(error){reportStorageError(error);return true;}
     quizSession=null;loadSavedWords();renderHistory();renderAllLocal();
@@ -564,16 +597,20 @@
   }
   // A word as a pill: the app's own delegated handler opens its panel, like a chip of the History list.
   const wordPill=(word,extra)=>h('button',{type:'button',class:'history-chip ui-pill v2-wordpill','data-history-word':encodeDomText(word)},h('span',{lang:getTargetLanguageCode(),text:word}),extra?[' ',extra]:null);
+  // What a course says when the chosen band gives no more words: nothing is written for it yet, or the user has them all.
+  const courseEnd=()=>VocVocPacks.courseProgress(packState.course,bandOf(),()=>false).total?'courseDone':'courseSoon';
   function packCard(){
     if(packState.status==='idle')return null;
     let text,bar=null;
     if(packState.status==='ready'){
-      const {total,used}=VocVocPacks.progress(packState.pack,knownWord);
-      text=used>=total?t('packDone'):fill(t('packProgress'),{n:used,m:total});
-      bar=h('div',{class:'v2-bar v2-bar-thin',role:'progressbar','aria-label':t('packTitle'),'aria-valuemin':'0','aria-valuemax':String(total),'aria-valuenow':String(used)},h('span'));
-      bar.style.setProperty('--p',Math.round(used/total*100)+'%');
+      const {total,used}=packState.course?VocVocPacks.courseProgress(packState.course,bandOf(),knownWord):VocVocPacks.progress(packState.pack,knownWord);
+      text=!total?t('courseSoon'):used>=total?t(packState.course?'courseDone':'packDone'):fill(t('packProgress'),{n:used,m:total});
+      if(total){
+        bar=h('div',{class:'v2-bar v2-bar-thin',role:'progressbar','aria-label':t('packTitle'),'aria-valuemin':'0','aria-valuemax':String(total),'aria-valuenow':String(used)},h('span'));
+        bar.style.setProperty('--p',Math.round(used/total*100)+'%');
+      }
     }else text=t({loading:'packLoading',none:'packNone',offline:'packOffline'}[packState.status]);
-    return h('div',{class:'v2-card v2-pack'},h('p',{class:'v2-goal-label',text:t('packTitle')+' · '+t('packLevel')}),h('p',{class:'v2-pack-text',text}),bar);
+    return h('div',{class:'v2-card v2-pack'},h('p',{class:'v2-goal-label',text:t('packTitle')+' · '+t(packState.course?BAND_TEXT[bandOf()]:'packLevel')}),h('p',{class:'v2-pack-text',text}),bar);
   }
 
   /* ---------- read-aloud (Premium) ---------- */
@@ -999,6 +1036,7 @@
     return page(backButton(),heading(t('aboutTitle')),
       h('div',{class:'v2-card'},h('p',{},h('strong',{text:'VocVoc'})),h('p',{text:t('version')+': '+version}),h('p',{text:t('uiMode')+': '+t('uiProto')})),
       h('p',{class:'v2-note',text:t('aboutSim')}),
+      h('p',{class:'v2-note',text:t('aboutWords')}),
       h('ul',{class:'v2-rows'},[['rowHelp','help'],['rowPrivacy','privacy'],['rowTerms','terms']].map(([key,route])=>
         h('li',{},h('button',{type:'button',class:'v2-row',onclick:()=>navigate(route)},h('span',{text:t(key)}),h('span',{class:'v2-row-end',text:'›'}))))));
   }

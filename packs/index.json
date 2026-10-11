@@ -29,15 +29,6 @@
       "bytes": 24316
     },
     {
-      "id": "fr-tr",
-      "target": "fr",
-      "native": "tr",
-      "level": "A1-A2",
-      "version": 2,
-      "words": 40,
-      "bytes": 25625
-    },
-    {
       "id": "it-tr",
       "target": "it",
       "native": "tr",
@@ -47,5 +38,44 @@
       "bytes": 25802
     }
   ],
-  "courses": []
+  "courses": [
+    {
+      "id": "fr-tr",
+      "target": "fr",
+      "native": "tr",
+      "version": 1,
+      "words": 1445,
+      "levels": {
+        "A1": 695,
+        "A2": 750
+      },
+      "orderBytes": 14110,
+      "chunks": [
+        {
+          "id": "A1-01",
+          "level": "A1",
+          "words": 348,
+          "bytes": 148268
+        },
+        {
+          "id": "A1-02",
+          "level": "A1",
+          "words": 347,
+          "bytes": 121774
+        },
+        {
+          "id": "A2-01",
+          "level": "A2",
+          "words": 375,
+          "bytes": 187480
+        },
+        {
+          "id": "A2-02",
+          "level": "A2",
+          "words": 375,
+          "bytes": 141492
+        }
+      ]
+    }
+  ]
 }

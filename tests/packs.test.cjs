@@ -82,8 +82,14 @@ describe('Choosing the next words',()=>{
 describe('The packs that ship with the app',()=>{
   const files=fs.readdirSync(dir).filter(name=>/\.json$/.test(name)&&name!=='index.json').sort();
   const load=name=>JSON.parse(fs.readFileSync(path.join(dir,name),'utf8').replace(/\r\n/g,'\n'));
-  it('there is a pack for each target language of a Turkish speaker',()=>{
-    assert.deepEqual(files,['de-tr.json','en-tr.json','es-tr.json','fr-tr.json','it-tr.json']);
+  it('there is a pack for each target language of a Turkish speaker that has no course (French has one)',()=>{
+    assert.deepEqual(files,['de-tr.json','en-tr.json','es-tr.json','it-tr.json']);
+  });
+  it('French has a course instead of a single pack: A1 is complete, the index lists the chunks and every chunk is where the index says',()=>{
+    const index=JSON.parse(fs.readFileSync(path.join(dir,'index.json'),'utf8')),course=index.courses.find(item=>item.id==='fr-tr');
+    assert(course,'the index lists the course');assert.equal(course.levels.A1,695);assert(course.words>=1445);
+    assert(!index.packs.some(entry=>entry.id==='fr-tr'),'a pair is either a pack or a course');
+    for(const chunk of course.chunks)assert(fs.existsSync(path.join(dir,'fr-tr',chunk.id+'.json')),chunk.id);
   });
   it('every pack is valid, is named after its pair and has 40 words in a beginner level',()=>{
     for(const name of files){
@@ -111,7 +117,7 @@ describe('The packs that ship with the app',()=>{
         assert(words.some(word=>item.exampleText.toLowerCase().includes(word)),`${name}: the sentence of "${item.text}" does not use it`);
       }
     }
-    assert(count>=100,'a good share of the words has idioms: '+count);
+    assert(count>=75,'a good share of the words has idioms: '+count);
   });
   it('a pack word with expressions still validates when an expression lacks its sentence translation (the checker names it)',()=>{
     const bad=sample({words:[{word:'x',meaning:'y',expressions:[{text:'t',translation:'m',exampleText:'e'}]}]});

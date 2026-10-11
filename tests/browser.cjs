@@ -1479,7 +1479,9 @@ async function main(){
   assert.deepEqual(await p.evaluate(()=>[getNativeLanguageCode(),getTargetLanguageCode(),VocVocData.getSettings().appLanguage]),['tr','fr','en']);
   await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
   await p.getByRole('button',{name:'Add daily words'}).click();await p.waitForFunction(()=>!!VocVocData.getWordByText('au revoir'));
-  assert.deepEqual(await p.evaluate(()=>{const word=VocVocData.getWordByText('au revoir');return [word.meaning,word.examples[0].phonetic,word.examples[0].translation];}),['hoşça kal; görüşürüz','o rövuar, a dömen','Hoşça kal, yarın görüşürüz!']);   // meaning, respelling and translation in Turkish with the interface in English
+  const auRevoir=JSON.parse(fs.readFileSync(path.join(root,'packs','fr-tr','A1-01.json'),'utf8')).words.find(entry=>entry.word==='au revoir');   // the course the Daily button draws from
+  assert.deepEqual(await p.evaluate(()=>{const word=VocVocData.getWordByText('au revoir');return [word.meaning,word.examples[0].phonetic,word.examples[0].translation];}),[auRevoir.meaning,auRevoir.examples[0].phonetic,auRevoir.examples[0].translation]);   // meaning, respelling and translation in Turkish with the interface in English
+  assert.match(auRevoir.meaning,/hoşça kal/);
   await c.close();
   record('language: changing the interface language in Settings redraws the bar, the menu and the open page at once (Turkish, English, French, German, Spanish, Italian: every page without English left over); the original language and the pronunciation guides stay the same');
  }
@@ -1576,11 +1578,25 @@ async function main(){
  // ===== New interface: ready-made word packs and read-aloud =====
  {
   const signedIn=()=>{localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'}));};
+  // French is a course now (chunk files); the four other pairs are still single 40-word packs. The scenarios of the single-pack code run on French served as such a pack (a fixture);
+  // openPage({course:true}) leaves the real files alone, so the course scenarios run on what ships.
+  const legacyPack=fs.readFileSync(path.join(root,'tests/fixtures/fr-tr-pack.json'),'utf8');
+  const asSinglePack=async p=>{
+   await p.route('**/packs/index.json',async route=>{
+    let index;try{index=await (await route.fetch()).json();}catch(_){await route.abort();return;}           // offline: the request fails, as it would without the route
+    index.courses=index.courses.filter(course=>course.id!=='fr-tr');
+    index.packs.push({id:'fr-tr',target:'fr',native:'tr',level:'A1-A2',version:2,words:40,bytes:Buffer.byteLength(legacyPack)});
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(index)});
+   });
+   await p.route('**/packs/fr-tr.json',route=>route.fulfill({status:200,contentType:'application/json',body:legacyPack}));
+  };
   const openPage=async(options={})=>{
    const c=await browser.newContext({viewport:{width:390,height:844},...options.context}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
    const seen={gemini:0,pack:0,index:0};
    await p.route('https://generativelanguage.googleapis.com/**',r=>{seen.gemini++;r.abort();});
-   p.on('request',r=>{if(r.url().endsWith('/packs/fr-tr.json'))seen.pack++;if(r.url().endsWith('/packs/index.json'))seen.index++;});
+   if(!options.course)await asSinglePack(p);
+   seen.chunks=[];                                                                                         // order.json and the chunk files of the French course, in the order they were asked for
+   p.on('request',r=>{if(r.url().endsWith('/packs/fr-tr.json'))seen.pack++;if(r.url().endsWith('/packs/index.json'))seen.index++;const part=/\/packs\/fr-tr\/(order|[A-C][12]-\d\d)\.json$/.exec(r.url());if(part)seen.chunks.push(part[1]);});
    await c.addInitScript(signedIn);if(options.init)await c.addInitScript(options.init,options.initArg);
    await p.goto(url+'?ui=v2');await ready(p);
    return {c,p,seen};
@@ -1688,6 +1704,87 @@ async function main(){
    await c.close();
   }
   record('word packs: when the pack is used up the Daily button goes on with the AI if there is a key (also with the Premium simulation on) and says so without one; the words the AI added are pills too');
+
+  // the French course (what ships): the Daily button draws from the band of the difficulty setting and downloads only the chunks it needs
+  const courseOrder=JSON.parse(fs.readFileSync(path.join(root,'packs','fr-tr','order.json'),'utf8'));
+  const bandWords=levels=>courseOrder.chunks.filter(chunk=>levels.includes(chunk.level)).flatMap(chunk=>chunk.words);
+  const dailyButton=p=>p.getByRole('button',{name:'Günlük kelimeler ekle'});
+  const haveOf=(p,words)=>p.evaluate(list=>list.filter(word=>!!VocVocData.getWordProgress(word)),words);
+  {
+   const {c,p,seen}=await openPage({course:true});
+   const words=bandWords(['A1','A2']),total=words.length;
+   const known=await haveOf(p,words);
+   await waitPack(p,`${known.length} / ${total} kelime eklendi`);
+   assert.equal(await p.locator('.v2-pack .v2-goal-label').textContent(),'Hazır kelimeler · Başlangıç (A1-A2)');
+   assert.deepEqual(seen.chunks,['order']);                                                           // the order counts the progress: no chunk is downloaded yet
+   await dailyButton(p).click();
+   await p.waitForFunction(()=>document.querySelector('.v2-goal-value')?.textContent==='10 / 10 kelime');
+   const expected=words.filter(word=>!known.includes(word)).slice(0,10);                              // the next ten words of the course, in its order
+   assert.deepEqual((await p.evaluate(()=>[...document.querySelectorAll('.v2-added .history-chip')].map(node=>node.textContent))),expected);
+   assert.deepEqual(seen.chunks,['order','A1-01']);                                                   // only the first chunk
+   await waitPack(p,`${known.length+10} / ${total} kelime eklendi`);
+   const first=await p.evaluate(word=>VocVocData.getWordByText(word),expected[0]);                    // a full card: two examples with respelling, meaning, kind
+   assert.deepEqual([first.examples.length,!!first.examples[0].phonetic,!!first.meaning,!!first.type],[2,true,true,true]);
+   assert.equal(seen.gemini,0);
+   // the chunk is on the device now: it keeps working offline; a chunk that was never downloaded cannot be had, and nothing is added then
+   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+   await p.evaluate(async()=>{const chunk=await (await fetch('./packs/fr-tr/A1-01.json')).json();await VocVocData.addWordBatch(chunk.words.filter(entry=>!VocVocData.getWordProgress(entry.word)));});   // all of the first chunk is known now
+   const count=await p.evaluate(()=>getHistory().length);
+   await c.setOffline(true);
+   await dailyButton(p).click();
+   await p.waitForFunction(()=>/Paket indirilemedi/.test(document.getElementById('v2Toast')?.textContent||''));
+   assert.equal(await p.evaluate(()=>getHistory().length),count);
+   await c.setOffline(false);
+   await dailyButton(p).click();
+   await p.waitForFunction(n=>getHistory().length===n+10,count);
+   assert.deepEqual([...new Set(seen.chunks.filter(id=>id!=='order'))],['A1-01','A1-02']);              // never a chunk of a later level
+   await c.close();
+  }
+  record('French course: the Daily button takes the next ten words in the course order from the first chunk, counts them towards the goal, downloads one chunk at a time, and adds nothing when the next chunk cannot be had offline');
+
+  // a level that has no words yet says so (and the AI goes on with a key); the card follows the difficulty setting
+  {
+   const {c,p,seen}=await openPage({course:true});
+   await p.waitForFunction(()=>/kelime eklendi/.test(document.querySelector('.v2-pack .v2-pack-text')?.textContent||''));
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'B1-B2'}));
+   await p.waitForFunction(()=>document.querySelector('.v2-pack .v2-goal-label')?.textContent==='Hazır kelimeler · Orta (B1-B2)');
+   assert.match(await packText(p),/henüz hazırlanıyor/);
+   assert.equal(await p.locator('.v2-pack .v2-bar').count(),0);                                         // nothing to count: no bar
+   const words=await p.evaluate(()=>getHistory().length);
+   await dailyButton(p).click();
+   await p.waitForFunction(()=>/henüz hazırlanıyor/.test(document.getElementById('v2Toast')?.textContent||''));
+   assert.deepEqual([await p.evaluate(()=>getHistory().length),seen.gemini,seen.chunks],[words,0,['order']]);
+   await p.evaluate(()=>VocVocSecrets.setApiKey('AIzaTestKey1234567890'));                              // with a key the AI goes on
+   await dailyButton(p).click();
+   for(let waited=0;waited<60&&!seen.gemini;waited++)await pause(100);
+   assert(seen.gemini>=1,'the AI must be asked when the chosen level has no ready-made words and there is a key');
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'A1-A2'}));
+   await p.waitForFunction(()=>document.querySelector('.v2-pack .v2-goal-label')?.textContent==='Hazır kelimeler · Başlangıç (A1-A2)');
+   await c.close();
+  }
+  record('French course: a level without ready-made words says so and goes on with the AI when there is a key; the card follows the difficulty setting');
+
+  // a damaged chunk on the device is downloaded again; a newer course version in the index makes the device fetch order.json again
+  {
+   const {c,p,seen}=await openPage({course:true});
+   await p.waitForFunction(()=>/kelime eklendi/.test(document.querySelector('.v2-pack .v2-pack-text')?.textContent||''));
+   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+   await dailyButton(p).click();
+   await p.waitForFunction(()=>document.querySelectorAll('.v2-added .history-chip').length===10);
+   await p.evaluate(async()=>{const cache=await caches.open('vocvoc-packs-v1');await cache.put(new URL('./packs/fr-tr/A1-01.json',location.href).href,new Response('{ this is not json'));});
+   await dailyButton(p).click();
+   await p.waitForFunction(()=>document.querySelectorAll('.v2-added .history-chip').length===10&&getHistory().length>=23);
+   assert.deepEqual(seen.chunks.filter(id=>id==='A1-01'),['A1-01','A1-01']);                            // the second copy replaced the damaged one
+   assert.equal(seen.chunks.filter(id=>id==='order').length,1);
+   await p.route('**/packs/index.json',async route=>{
+    const index=await (await route.fetch()).json();index.courses.find(course=>course.id==='fr-tr').version=99;
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(index)});
+   });
+   await p.reload();await ready(p);await p.waitForFunction(()=>/kelime eklendi/.test(document.querySelector('.v2-pack .v2-pack-text')?.textContent||''));
+   assert.equal(seen.chunks.filter(id=>id==='order').length,2);                                        // a copy older than the index says is fetched again
+   await c.close();
+  }
+  record('French course: a damaged chunk on the device is replaced, and a newer course version in the index makes the device fetch order.json again');
 
   // read-aloud: the device's voice, Premium only; the app's own markup stays as it is
   const speechMock=([voices])=>{
