@@ -43,13 +43,14 @@
       "id": "fr-tr",
       "target": "fr",
       "native": "tr",
-      "version": 2,
-      "words": 1602,
+      "version": 3,
+      "words": 3181,
       "levels": {
         "A1": 695,
-        "A2": 907
+        "A2": 907,
+        "B1": 1579
       },
-      "orderBytes": 15697,
+      "orderBytes": 32831,
       "chunks": [
         {
           "id": "A1-01",
@@ -74,6 +75,30 @@
           "level": "A2",
           "words": 453,
           "bytes": 162618
+        },
+        {
+          "id": "B1-01",
+          "level": "B1",
+          "words": 395,
+          "bytes": 215062
+        },
+        {
+          "id": "B1-02",
+          "level": "B1",
+          "words": 395,
+          "bytes": 168245
+        },
+        {
+          "id": "B1-03",
+          "level": "B1",
+          "words": 395,
+          "bytes": 141542
+        },
+        {
+          "id": "B1-04",
+          "level": "B1",
+          "words": 394,
+          "bytes": 136033
         }
       ]
     }
