@@ -43,14 +43,15 @@
       "id": "fr-tr",
       "target": "fr",
       "native": "tr",
-      "version": 3,
-      "words": 3181,
+      "version": 5,
+      "words": 5226,
       "levels": {
         "A1": 695,
         "A2": 907,
-        "B1": 1579
+        "B1": 1577,
+        "B2": 2047
       },
-      "orderBytes": 32831,
+      "orderBytes": 55611,
       "chunks": [
         {
           "id": "A1-01",
@@ -80,25 +81,55 @@
           "id": "B1-01",
           "level": "B1",
           "words": 395,
-          "bytes": 215062
+          "bytes": 222461
         },
         {
           "id": "B1-02",
           "level": "B1",
-          "words": 395,
-          "bytes": 168245
+          "words": 394,
+          "bytes": 176961
         },
         {
           "id": "B1-03",
           "level": "B1",
-          "words": 395,
-          "bytes": 141542
+          "words": 394,
+          "bytes": 150348
         },
         {
           "id": "B1-04",
           "level": "B1",
           "words": 394,
-          "bytes": 136033
+          "bytes": 143562
+        },
+        {
+          "id": "B2-01",
+          "level": "B2",
+          "words": 410,
+          "bytes": 165860
+        },
+        {
+          "id": "B2-02",
+          "level": "B2",
+          "words": 410,
+          "bytes": 161168
+        },
+        {
+          "id": "B2-03",
+          "level": "B2",
+          "words": 409,
+          "bytes": 157577
+        },
+        {
+          "id": "B2-04",
+          "level": "B2",
+          "words": 409,
+          "bytes": 160592
+        },
+        {
+          "id": "B2-05",
+          "level": "B2",
+          "words": 409,
+          "bytes": 161077
         }
       ]
     }

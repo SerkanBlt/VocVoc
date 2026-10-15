@@ -54,11 +54,11 @@ Parçalar `packs/fr-tr/A1-01.json` gibi adlanır, her biri ~500 kelime (seviye k
 
 ## Kelime listesi nereden geldi
 
-`wordbase/fr/lemmas.tsv` (A1–B1: 3.181 köklü kelime) bir **aday havuzundan** seçildi: Hermit Dave'in *FrequencyWords* projesindeki OpenSubtitles tabanlı
+`wordbase/fr/lemmas.tsv` (A1–B2: 5.226 köklü kelime) bir **aday havuzundan** seçildi: Hermit Dave'in *FrequencyWords* projesindeki OpenSubtitles tabanlı
 Fransızca sıklık listesi (`fr_50k`, içerik **CC BY-SA 4.0**, kod MIT; https://github.com/hermitdave/FrequencyWords). Ham liste depoya **eklenmedi**.
 Havuzdaki çekimli biçimler köke indirildi; özel isimler, İngilizce sızıntılar, argo/küfür ve kısaltmalar çıkarıldı; her kelimenin türü ve **A1–C2 seviyesi**
 (ve seviye içindeki sırası) elle atandı. A1/A2 için altyazı dilinin yanlı bıraktığı gündelik konular (sayılar, aylar, giyim, yiyecek, ev, kalıplar) tematik olarak eklendi.
 Seviyeler **yaklaşık**tır; resmî bir sınav listesiyle (DELF, Oxford, Cambridge…) birebir örtüşmez ve onlardan kopyalanmamıştır.
 Yayınlanan içeriğin Hakkında sayfasında bu kaynağa atıf verilmelidir (kurs içeriği uygulamada yayımlanırken eklenir).
 
-B2, C1 ve C2 listeleri henüz yazılmadı; o seviyeler yazılmadan önce aynı yöntemle çıkarılır (`lemmas.tsv`'ye eklenir, `check` sıra ve tekrar kurallarını denetler).
+C1 ve C2 listeleri henüz yazılmadı; o seviyeler yazılmadan önce aynı yöntemle çıkarılır (`lemmas.tsv`'ye eklenir, `check` sıra ve tekrar kurallarını denetler).
