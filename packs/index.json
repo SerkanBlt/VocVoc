@@ -43,15 +43,16 @@
       "id": "fr-tr",
       "target": "fr",
       "native": "tr",
-      "version": 5,
-      "words": 5226,
+      "version": 6,
+      "words": 7726,
       "levels": {
         "A1": 695,
         "A2": 907,
         "B1": 1577,
-        "B2": 2047
+        "B2": 2047,
+        "C1": 2500
       },
-      "orderBytes": 55611,
+      "orderBytes": 84887,
       "chunks": [
         {
           "id": "A1-01",
@@ -130,6 +131,36 @@
           "level": "B2",
           "words": 409,
           "bytes": 161077
+        },
+        {
+          "id": "C1-01",
+          "level": "C1",
+          "words": 500,
+          "bytes": 199342
+        },
+        {
+          "id": "C1-02",
+          "level": "C1",
+          "words": 500,
+          "bytes": 196205
+        },
+        {
+          "id": "C1-03",
+          "level": "C1",
+          "words": 500,
+          "bytes": 193132
+        },
+        {
+          "id": "C1-04",
+          "level": "C1",
+          "words": 500,
+          "bytes": 192679
+        },
+        {
+          "id": "C1-05",
+          "level": "C1",
+          "words": 500,
+          "bytes": 189328
         }
       ]
     }

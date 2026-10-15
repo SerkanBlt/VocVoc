@@ -1595,6 +1595,11 @@ async function main(){
    const seen={gemini:0,pack:0,index:0};
    await p.route('https://generativelanguage.googleapis.com/**',r=>{seen.gemini++;r.abort();});
    if(!options.course)await asSinglePack(p);
+   if(options.withoutLevels)await p.route('**/packs/fr-tr/order.json',async route=>{                       // the course as it was before these levels were written
+    let order;try{order=await (await route.fetch()).json();}catch(_){await route.abort();return;}
+    order.chunks=order.chunks.filter(chunk=>!options.withoutLevels.includes(chunk.level));
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(order)});
+   });
    seen.chunks=[];                                                                                         // order.json and the chunk files of the French course, in the order they were asked for
    p.on('request',r=>{if(r.url().endsWith('/packs/fr-tr.json'))seen.pack++;if(r.url().endsWith('/packs/index.json'))seen.index++;const part=/\/packs\/fr-tr\/(order|[A-C][12]-\d\d)\.json$/.exec(r.url());if(part)seen.chunks.push(part[1]);});
    await c.addInitScript(signedIn);if(options.init)await c.addInitScript(options.init,options.initArg);
@@ -1742,9 +1747,10 @@ async function main(){
   }
   record('French course: the Daily button takes the next ten words in the course order from the first chunk, counts them towards the goal, downloads one chunk at a time, and adds nothing when the next chunk cannot be had offline');
 
-  // a level that has no words yet says so (and the AI goes on with a key); the card follows the difficulty setting
+  // a level that has no words yet says so (and the AI goes on with a key); the card follows the difficulty setting.
+  // The course is served without its C1 and C2 chunks, so this keeps holding as those levels are written.
   {
-   const {c,p,seen}=await openPage({course:true});
+   const {c,p,seen}=await openPage({course:true,withoutLevels:['C1','C2']});
    await p.waitForFunction(()=>/kelime eklendi/.test(document.querySelector('.v2-pack .v2-pack-text')?.textContent||''));
    await p.evaluate(()=>VocVocData.updateSettings({difficulty:'C1-C2'}));
    await p.waitForFunction(()=>document.querySelector('.v2-pack .v2-goal-label')?.textContent==='Hazır kelimeler · İleri (C1-C2)');

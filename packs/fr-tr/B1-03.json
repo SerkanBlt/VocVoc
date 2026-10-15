@@ -1,4 +1,4 @@
-{"format":2,"id":"fr-tr","chunk":"B1-03","level":"B1","version":5,"words":[
+{"format":2,"id":"fr-tr","chunk":"B1-03","level":"B1","version":6,"words":[
 {"word":"renseignement","type":"isim (eril)","meaning":"bilgi","synonyms":["information"],"examples":[{"text":"Je demande un renseignement.","phonetic":"jö dömand en ransenyman","translation":"Bir bilgi istiyorum."},{"text":"Il donne des renseignements aux touristes.","phonetic":"il don de ransenyman o turist","translation":"Turistlere bilgi veriyor."}]},
 {"word":"bêtise","type":"isim (dişil)","meaning":"aptallık; saçmalık","synonyms":["idiotie","sottise"],"antonyms":["intelligence"],"examples":[{"text":"Il fait une bêtise.","phonetic":"il fe ün betiz","translation":"Bir aptallık yapıyor."},{"text":"Ne dis pas de bêtises.","phonetic":"nö di pa dö betiz","translation":"Saçma sapan konuşma."}]},
 {"word":"commissariat","type":"isim (eril)","meaning":"karakol","examples":[{"text":"Il va au commissariat.","phonetic":"il va o komisarya","translation":"Karakola gidiyor."},{"text":"Le commissariat est près de la gare.","phonetic":"lö komisarya e pre dö la gar","translation":"Karakol istasyona yakın."}]},
