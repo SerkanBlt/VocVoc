@@ -17,7 +17,8 @@
   /* ---------- plan (simulated) ---------- */
   // 'premium' features are locked on the free plan. The user's own API key works only on the free plan: while Premium is active the
   // built-in AI is used and the stored key is kept but not used (ownKeyActive); when Premium ends the key is active again.
-  const FEATURES=Object.freeze({freeWords:'free',ownKeyAi:'free',badges:'free',stats:'premium',historyAnalysis:'premium',builtInAi:'premium',sentenceBuilder:'premium',speech:'premium'});
+  const FEATURES=Object.freeze({freeWords:'free',ownKeyAi:'free',badges:'free',stats:'premium',historyAnalysis:'premium',builtInAi:'premium',sentenceBuilder:'premium',speech:'premium',dailyGoalOver20:'premium'});
+  const FREE_DAILY_LIMIT=20;                                                       // a daily goal above this is a Premium feature
   const planNow=()=>store.get(PLAN_KEY)==='premium'?'premium':'free';
   const VocVocPlan=Object.freeze({
     features:FEATURES,
@@ -28,7 +29,9 @@
       window.dispatchEvent(new CustomEvent('vocvoc-plan-changed',{detail:{plan:next}}));
     },
     has(feature){const need=FEATURES[feature];return need==='free'||(need==='premium'&&planNow()==='premium');},
-    ownKeyActive(){return planNow()!=='premium';}
+    ownKeyActive(){return planNow()!=='premium';},
+    FREE_DAILY_LIMIT,
+    dailyLimitMax(){return planNow()==='premium'?Infinity:FREE_DAILY_LIMIT;}
   });
   window.VocVocPlan=VocVocPlan;
 
@@ -50,7 +53,7 @@
       keyRule:'Premium aktifken kendi API anahtarın devre dışı kalır. Abonelik bitince anahtarın yeniden etkin olur.',
       simulate:"Premium'u simüle et",backToFree:'Ücretsiz plana dön',simNote:'Simülasyon: gerçek ödeme alınmaz, hiçbir şey satın alınmaz.',
       free1:'Seçtiğin dil çifti için hazır başlangıç kelimeleri',free2:'Kartlar, ezberleme, arşiv ve History',free3:'Test, Hatırla ve Flip',free4:'Kendi API anahtarınla yeni kelime ekleme',free5:'Yedekleme, tema ve 6 arayüz dili',free6:'Rozetler',
-      prem1:'Dahili yapay zekâ (anahtar gerekmez)',prem2:"History'den seçtiğin kelimelerle cümle kurma ve anlamını görme",prem3:'Sesli okuma',prem4:'İlerleme istatistikleri ve geçmiş analizi',
+      prem1:'Dahili yapay zekâ (anahtar gerekmez)',prem2:"History'den seçtiğin kelimelerle cümle kurma ve anlamını görme",prem3:'Sesli okuma',prem4:'İlerleme istatistikleri ve geçmiş analizi',prem5:'Günlük hedefi 20 kelimenin üzerine çıkarma',
       goalTitle:'Günlük hedef',goalValue:'{n} / {m} kelime',goalUnlimited:'Bugün {n} kelime eklendi',addDaily:'Günlük kelimeler ekle',statActive:'Aktif',statMemorized:'Ezberlenen',statToday:'Bugün ezberlenen',
       quizClose:'Kapat',quizProgress:'Soru {n}/{total}',quizDone:'Tamamlandı',quizProgressLabel:'Test ilerlemesi',quizNeedActive:'Test için en az 10 aktif kelime gerekir. Şu an {n} var.',quizNeedRecall:'Hatırla için en az 10 ezberlenmiş kelime gerekir. Şu an {n} var.',quizNeedCloze:'Boşluk Doldurma için cümlesi olan en az 10 kelime gerekir. Şu an {n} var.',backToToday:'Bugün ekranına dön',
       statsSummaryTotal:'Toplam kelime',statsMemorized:'Ezberlenen',statsStreak:'Seri (gün)',statsLongest:'En uzun seri',
@@ -65,7 +68,7 @@
       b_streak3:'Isınma',bd_streak3:'3 gün üst üste çalış.',b_streak7:'Bir hafta',bd_streak7:'7 gün üst üste çalış.',b_streak30:'Bir ay',bd_streak30:'30 gün üst üste çalış.',b_goal1:'Hedef tamam',bd_goal1:'Günlük kelime hedefine ulaş.',
       packTitle:'Hazır kelimeler',packLevel:'Başlangıç (A1-A2)',packProgress:'{n} / {m} kelime eklendi',packLoading:'Paket indiriliyor…',packOffline:'Paket indirilemedi. İnternete bağlanınca yeniden denenir.',
       packNone:'Bu dil çifti için hazır paket henüz yok. Kendi API anahtarınla yeni kelime ekleyebilirsin.',packDone:'Paketteki tüm kelimeleri ekledin. Yeni kelime için kendi API anahtarını kullanabilirsin.',packAdded:'{n} kelime eklendi.',packLevelB:'Orta (B1-B2)',packLevelC:'İleri (C1-C2)',courseDone:'Bu seviyedeki hazır kelimelerin hepsini ekledin. Ayarlar’dan bir sonraki seviyeyi seçebilir veya kendi API anahtarını kullanabilirsin.',courseSoon:'Bu seviyenin hazır kelimeleri henüz hazırlanıyor. Ayarlar’dan başka bir seviye seçebilir veya kendi API anahtarını kullanabilirsin.',
-      speakLabel:'Sesli oku: {text}',speakLocked:'Sesli okuma Premium ile açılır.',speakLockedLabel:'Sesli oku (Premium)',speakNoVoice:'Bu cihazda {language} sesi yok.',speakNone:'Bu tarayıcı sesli okumayı desteklemiyor.',speedNormal:'normal',speedSlow:'yavaş',speedFast:'hızlı',speakSpeed:'{text} ({speed})',
+      speakLabel:'Sesli oku: {text}',speakLocked:'Sesli okuma Premium ile açılır.',speakLockedLabel:'Sesli oku (Premium)',speakNoVoice:'Bu cihazda {language} sesi yok.',speakNone:'Bu tarayıcı sesli okumayı desteklemiyor.',speedNormal:'normal',speedSlow:'yavaş',speakSpeed:'{text} ({speed})',
       aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutWords:'Hazır kelimelerin sırası, hermitdave/FrequencyWords sıklık listesinden (CC BY-SA 4.0) yararlanılarak belirlendi.',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
     },
     en:{
@@ -84,7 +87,7 @@
       keyRule:'While Premium is active your own API key is inactive. When the subscription ends your key is active again.',
       simulate:'Simulate Premium',backToFree:'Back to the free plan',simNote:'Simulation: no real payment is taken and nothing is purchased.',
       free1:'Ready-made beginner words for your language pair',free2:'Cards, memorizing, archive and History',free3:'Test, Recall and Flip',free4:'Adding new words with your own API key',free5:'Backup, themes and 6 interface languages',free6:'Badges',
-      prem1:'Built-in AI (no key needed)',prem2:'Build sentences from words you pick in History and see their meaning',prem3:'Read-aloud',prem4:'Progress statistics and history analysis',
+      prem1:'Built-in AI (no key needed)',prem2:'Build sentences from words you pick in History and see their meaning',prem3:'Read-aloud',prem4:'Progress statistics and history analysis',prem5:'Daily goal above 20 words',
       goalTitle:'Daily goal',goalValue:'{n} / {m} words',goalUnlimited:'{n} words added today',addDaily:'Add daily words',statActive:'Active',statMemorized:'Memorized',statToday:'Memorized today',
       quizClose:'Close',quizProgress:'Question {n}/{total}',quizDone:'Finished',quizProgressLabel:'Test progress',quizNeedActive:'A Test needs at least 10 active words. You have {n}.',quizNeedRecall:'Recall needs at least 10 memorized words. You have {n}.',quizNeedCloze:'Fill in the blank needs at least 10 words that have an example sentence. You have {n}.',backToToday:'Back to Today',
       statsSummaryTotal:'Total words',statsMemorized:'Memorized',statsStreak:'Streak (days)',statsLongest:'Longest streak',
@@ -99,7 +102,7 @@
       b_streak3:'Warm-up',bd_streak3:'Study 3 days in a row.',b_streak7:'One week',bd_streak7:'Study 7 days in a row.',b_streak30:'One month',bd_streak30:'Study 30 days in a row.',b_goal1:'Goal reached',bd_goal1:'Reach your daily word goal.',
       packTitle:'Ready-made words',packLevel:'Beginner (A1-A2)',packProgress:'{n} / {m} words added',packLoading:'Downloading the pack…',packOffline:'The pack could not be downloaded. It is tried again when you are online.',
       packNone:'There is no ready-made pack for this language pair yet. You can add new words with your own API key.',packDone:'You have added every word of the pack. You can use your own API key for new words.',packAdded:'{n} words added.',packLevelB:'Intermediate (B1-B2)',packLevelC:'Advanced (C1-C2)',courseDone:'You have added all the ready-made words of this level. Choose the next level in Settings or use your own API key.',courseSoon:'The ready-made words of this level are still being prepared. Choose another level in Settings or use your own API key.',
-      speakLabel:'Read aloud: {text}',speakLocked:'Read-aloud comes with Premium.',speakLockedLabel:'Read aloud (Premium)',speakNoVoice:'There is no {language} voice on this device.',speakNone:'This browser does not support read-aloud.',speedNormal:'normal',speedSlow:'slow',speedFast:'fast',speakSpeed:'{text} ({speed})',
+      speakLabel:'Read aloud: {text}',speakLocked:'Read-aloud comes with Premium.',speakLockedLabel:'Read aloud (Premium)',speakNoVoice:'There is no {language} voice on this device.',speakNone:'This browser does not support read-aloud.',speedNormal:'normal',speedSlow:'slow',speakSpeed:'{text} ({speed})',
       aboutTitle:'About',version:'Version',uiMode:'Interface',uiProto:'New interface (prototype)',aboutWords:'The order of the ready-made words is based on the frequency list hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Sign-in, Premium and payment in this version are simulations: there is no real account, server or payment.'
     },
     fr:{
@@ -118,7 +121,7 @@
       keyRule:'Tant que Premium est actif, votre propre clé API est inactive. À la fin de l’abonnement, votre clé redevient active.',
       simulate:'Simuler Premium',backToFree:'Revenir à l’offre gratuite',simNote:'Simulation : aucun vrai paiement n’est prélevé et rien n’est acheté.',
       free1:'Mots de départ prêts à l’emploi pour votre paire de langues',free2:'Cartes, mémorisation, archive et History',free3:'Test, Réviser et Flip',free4:'Ajout de nouveaux mots avec votre propre clé API',free5:'Sauvegarde, thèmes et 6 langues d’interface',free6:'Badges',
-      prem1:'IA intégrée (aucune clé nécessaire)',prem2:'Construire des phrases avec des mots choisis dans History et voir leur sens',prem3:'Lecture à voix haute',prem4:'Statistiques de progression et analyse de l’historique',
+      prem1:'IA intégrée (aucune clé nécessaire)',prem2:'Construire des phrases avec des mots choisis dans History et voir leur sens',prem3:'Lecture à voix haute',prem4:'Statistiques de progression et analyse de l’historique',prem5:'Objectif du jour au-delà de 20 mots',
       goalTitle:'Objectif du jour',goalValue:'{n} / {m} mots',goalUnlimited:'{n} mots ajoutés aujourd’hui',addDaily:'Ajouter les mots du jour',statActive:'Actifs',statMemorized:'Mémorisés',statToday:'Mémorisés aujourd’hui',
       quizClose:'Fermer',quizProgress:'Question {n}/{total}',quizDone:'Terminé',quizProgressLabel:'Progression du test',quizNeedActive:'Un test demande au moins 10 mots actifs. Vous en avez {n}.',quizNeedRecall:'Réviser demande au moins 10 mots mémorisés. Vous en avez {n}.',quizNeedCloze:'Texte à trous demande au moins 10 mots ayant une phrase d’exemple. Vous en avez {n}.',backToToday:'Retour à Aujourd’hui',
       statsSummaryTotal:'Total des mots',statsMemorized:'Mémorisés',statsStreak:'Série (jours)',statsLongest:'Plus longue série',
@@ -133,7 +136,7 @@
       b_streak3:'Échauffement',bd_streak3:'Étudiez 3 jours de suite.',b_streak7:'Une semaine',bd_streak7:'Étudiez 7 jours de suite.',b_streak30:'Un mois',bd_streak30:'Étudiez 30 jours de suite.',b_goal1:'Objectif atteint',bd_goal1:'Atteignez votre objectif quotidien de mots.',
       packTitle:'Mots prêts à l’emploi',packLevel:'Débutant (A1-A2)',packProgress:'{n} / {m} mots ajoutés',packLoading:'Téléchargement du pack…',packOffline:'Le pack n’a pas pu être téléchargé. Une nouvelle tentative a lieu dès que vous êtes en ligne.',
       packNone:'Il n’y a pas encore de pack prêt à l’emploi pour cette paire de langues. Vous pouvez ajouter de nouveaux mots avec votre propre clé API.',packDone:'Vous avez ajouté tous les mots du pack. Vous pouvez utiliser votre propre clé API pour de nouveaux mots.',packAdded:'{n} mots ajoutés.',packLevelB:'Intermédiaire (B1-B2)',packLevelC:'Avancé (C1-C2)',courseDone:'Vous avez ajouté tous les mots prêts à l’emploi de ce niveau. Choisissez le niveau suivant dans les réglages ou utilisez votre propre clé API.',courseSoon:'Les mots prêts à l’emploi de ce niveau sont encore en préparation. Choisissez un autre niveau dans les réglages ou utilisez votre propre clé API.',
-      speakLabel:'Lire à voix haute : {text}',speakLocked:'La lecture à voix haute est réservée à Premium.',speakLockedLabel:'Lire à voix haute (Premium)',speakNoVoice:'Aucune voix {language} sur cet appareil.',speakNone:'Ce navigateur ne prend pas en charge la lecture à voix haute.',speedNormal:'normale',speedSlow:'lente',speedFast:'rapide',speakSpeed:'{text} ({speed})',
+      speakLabel:'Lire à voix haute : {text}',speakLocked:'La lecture à voix haute est réservée à Premium.',speakLockedLabel:'Lire à voix haute (Premium)',speakNoVoice:'Aucune voix {language} sur cet appareil.',speakNone:'Ce navigateur ne prend pas en charge la lecture à voix haute.',speedNormal:'normale',speedSlow:'lente',speakSpeed:'{text} ({speed})',
       aboutTitle:'À propos',version:'Version',uiMode:'Interface',uiProto:'Nouvelle interface (prototype)',aboutWords:'L’ordre des mots prêts à l’emploi s’appuie sur la liste de fréquence hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'La connexion, Premium et le paiement de cette version sont des simulations : il n’y a ni vrai compte, ni serveur, ni paiement.'
     },
     de:{
@@ -152,7 +155,7 @@
       keyRule:'Solange Premium aktiv ist, ist Ihr eigener API-Schlüssel inaktiv. Wenn das Abo endet, ist Ihr Schlüssel wieder aktiv.',
       simulate:'Premium simulieren',backToFree:'Zurück zum kostenlosen Tarif',simNote:'Simulation: Es wird keine echte Zahlung abgebucht und nichts gekauft.',
       free1:'Fertige Einsteigerwörter für Ihr Sprachpaar',free2:'Karten, Lernen, Archiv und History',free3:'Test, Wiederholen und Flip',free4:'Neue Wörter mit Ihrem eigenen API-Schlüssel hinzufügen',free5:'Sicherung, Designs und 6 Oberflächensprachen',free6:'Abzeichen',
-      prem1:'Integrierte KI (kein Schlüssel nötig)',prem2:'Sätze aus Wörtern bilden, die Sie in History auswählen, und ihre Bedeutung sehen',prem3:'Vorlesen',prem4:'Fortschrittsstatistiken und Verlaufsanalyse',
+      prem1:'Integrierte KI (kein Schlüssel nötig)',prem2:'Sätze aus Wörtern bilden, die Sie in History auswählen, und ihre Bedeutung sehen',prem3:'Vorlesen',prem4:'Fortschrittsstatistiken und Verlaufsanalyse',prem5:'Tagesziel über 20 Wörter',
       goalTitle:'Tagesziel',goalValue:'{n} / {m} Wörter',goalUnlimited:'Heute {n} Wörter hinzugefügt',addDaily:'Tägliche Wörter hinzufügen',statActive:'Aktiv',statMemorized:'Gelernt',statToday:'Heute gelernt',
       quizClose:'Schließen',quizProgress:'Frage {n}/{total}',quizDone:'Fertig',quizProgressLabel:'Testfortschritt',quizNeedActive:'Ein Test braucht mindestens 10 aktive Wörter. Sie haben {n}.',quizNeedRecall:'Wiederholen braucht mindestens 10 gelernte Wörter. Sie haben {n}.',quizNeedCloze:'Lückentext braucht mindestens 10 Wörter mit einem Beispielsatz. Sie haben {n}.',backToToday:'Zurück zu Heute',
       statsSummaryTotal:'Wörter gesamt',statsMemorized:'Gelernt',statsStreak:'Serie (Tage)',statsLongest:'Längste Serie',
@@ -167,7 +170,7 @@
       b_streak3:'Aufwärmen',bd_streak3:'Lernen Sie 3 Tage in Folge.',b_streak7:'Eine Woche',bd_streak7:'Lernen Sie 7 Tage in Folge.',b_streak30:'Ein Monat',bd_streak30:'Lernen Sie 30 Tage in Folge.',b_goal1:'Ziel erreicht',bd_goal1:'Erreichen Sie Ihr tägliches Wortziel.',
       packTitle:'Fertige Wörter',packLevel:'Einsteiger (A1-A2)',packProgress:'{n} / {m} Wörter hinzugefügt',packLoading:'Paket wird heruntergeladen…',packOffline:'Das Paket konnte nicht heruntergeladen werden. Es wird erneut versucht, sobald Sie online sind.',
       packNone:'Für dieses Sprachpaar gibt es noch kein fertiges Paket. Sie können neue Wörter mit Ihrem eigenen API-Schlüssel hinzufügen.',packDone:'Sie haben alle Wörter des Pakets hinzugefügt. Für neue Wörter können Sie Ihren eigenen API-Schlüssel verwenden.',packAdded:'{n} Wörter hinzugefügt.',packLevelB:'Mittelstufe (B1-B2)',packLevelC:'Fortgeschritten (C1-C2)',courseDone:'Sie haben alle fertigen Wörter dieser Stufe hinzugefügt. Wählen Sie in den Einstellungen die nächste Stufe oder verwenden Sie Ihren eigenen API-Schlüssel.',courseSoon:'Die fertigen Wörter dieser Stufe sind noch in Arbeit. Wählen Sie in den Einstellungen eine andere Stufe oder verwenden Sie Ihren eigenen API-Schlüssel.',
-      speakLabel:'Vorlesen: {text}',speakLocked:'Vorlesen gibt es mit Premium.',speakLockedLabel:'Vorlesen (Premium)',speakNoVoice:'Auf diesem Gerät gibt es keine {language}-Stimme.',speakNone:'Dieser Browser unterstützt kein Vorlesen.',speedNormal:'normal',speedSlow:'langsam',speedFast:'schnell',speakSpeed:'{text} ({speed})',
+      speakLabel:'Vorlesen: {text}',speakLocked:'Vorlesen gibt es mit Premium.',speakLockedLabel:'Vorlesen (Premium)',speakNoVoice:'Auf diesem Gerät gibt es keine {language}-Stimme.',speakNone:'Dieser Browser unterstützt kein Vorlesen.',speedNormal:'normal',speedSlow:'langsam',speakSpeed:'{text} ({speed})',
       aboutTitle:'Über',version:'Version',uiMode:'Oberfläche',uiProto:'Neue Oberfläche (Prototyp)',aboutWords:'Die Reihenfolge der fertigen Wörter beruht auf der Häufigkeitsliste hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Anmeldung, Premium und Zahlung in dieser Version sind Simulationen: Es gibt kein echtes Konto, keinen Server und keine Zahlung.'
     },
     es:{
@@ -186,7 +189,7 @@
       keyRule:'Mientras Premium esté activo, tu propia clave API está inactiva. Cuando termine la suscripción, tu clave vuelve a estar activa.',
       simulate:'Simular Premium',backToFree:'Volver al plan gratuito',simNote:'Simulación: no se cobra ningún pago real y no se compra nada.',
       free1:'Palabras iniciales listas para tu par de idiomas',free2:'Tarjetas, memorizar, archivo e History',free3:'Test, Repasar y Flip',free4:'Añadir palabras nuevas con tu propia clave API',free5:'Copia de seguridad, temas y 6 idiomas de interfaz',free6:'Insignias',
-      prem1:'IA integrada (sin clave)',prem2:'Formar frases con palabras que eliges en History y ver su significado',prem3:'Lectura en voz alta',prem4:'Estadísticas de progreso y análisis del historial',
+      prem1:'IA integrada (sin clave)',prem2:'Formar frases con palabras que eliges en History y ver su significado',prem3:'Lectura en voz alta',prem4:'Estadísticas de progreso y análisis del historial',prem5:'Objetivo diario de más de 20 palabras',
       goalTitle:'Objetivo diario',goalValue:'{n} / {m} palabras',goalUnlimited:'{n} palabras añadidas hoy',addDaily:'Añadir palabras diarias',statActive:'Activas',statMemorized:'Memorizadas',statToday:'Memorizadas hoy',
       quizClose:'Cerrar',quizProgress:'Pregunta {n}/{total}',quizDone:'Terminado',quizProgressLabel:'Progreso del test',quizNeedActive:'Un test necesita al menos 10 palabras activas. Tienes {n}.',quizNeedRecall:'Repasar necesita al menos 10 palabras memorizadas. Tienes {n}.',quizNeedCloze:'Rellenar huecos necesita al menos 10 palabras con una frase de ejemplo. Tienes {n}.',backToToday:'Volver a Hoy',
       statsSummaryTotal:'Palabras en total',statsMemorized:'Memorizadas',statsStreak:'Racha (días)',statsLongest:'Racha más larga',
@@ -201,7 +204,7 @@
       b_streak3:'Calentamiento',bd_streak3:'Estudia 3 días seguidos.',b_streak7:'Una semana',bd_streak7:'Estudia 7 días seguidos.',b_streak30:'Un mes',bd_streak30:'Estudia 30 días seguidos.',b_goal1:'Objetivo cumplido',bd_goal1:'Alcanza tu objetivo diario de palabras.',
       packTitle:'Palabras listas',packLevel:'Principiante (A1-A2)',packProgress:'{n} / {m} palabras añadidas',packLoading:'Descargando el paquete…',packOffline:'No se pudo descargar el paquete. Se vuelve a intentar cuando tengas conexión.',
       packNone:'Todavía no hay un paquete listo para este par de idiomas. Puedes añadir palabras nuevas con tu propia clave API.',packDone:'Has añadido todas las palabras del paquete. Puedes usar tu propia clave API para palabras nuevas.',packAdded:'{n} palabras añadidas.',packLevelB:'Intermedio (B1-B2)',packLevelC:'Avanzado (C1-C2)',courseDone:'Has añadido todas las palabras listas de este nivel. Elige el siguiente nivel en Ajustes o usa tu propia clave API.',courseSoon:'Las palabras listas de este nivel aún se están preparando. Elige otro nivel en Ajustes o usa tu propia clave API.',
-      speakLabel:'Leer en voz alta: {text}',speakLocked:'La lectura en voz alta llega con Premium.',speakLockedLabel:'Leer en voz alta (Premium)',speakNoVoice:'No hay voz de {language} en este dispositivo.',speakNone:'Este navegador no admite la lectura en voz alta.',speedNormal:'normal',speedSlow:'lenta',speedFast:'rápida',speakSpeed:'{text} ({speed})',
+      speakLabel:'Leer en voz alta: {text}',speakLocked:'La lectura en voz alta llega con Premium.',speakLockedLabel:'Leer en voz alta (Premium)',speakNoVoice:'No hay voz de {language} en este dispositivo.',speakNone:'Este navegador no admite la lectura en voz alta.',speedNormal:'normal',speedSlow:'lenta',speakSpeed:'{text} ({speed})',
       aboutTitle:'Acerca de',version:'Versión',uiMode:'Interfaz',uiProto:'Interfaz nueva (prototipo)',aboutWords:'El orden de las palabras listas se basa en la lista de frecuencia hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'El inicio de sesión, Premium y el pago de esta versión son simulaciones: no hay cuenta, servidor ni pago reales.'
     },
     it:{
@@ -220,7 +223,7 @@
       keyRule:'Finché Premium è attivo, la tua chiave API è non attiva. Quando l’abbonamento finisce, la chiave torna attiva.',
       simulate:'Simula Premium',backToFree:'Torna al piano gratuito',simNote:'Simulazione: nessun pagamento reale viene addebitato e non si acquista nulla.',
       free1:'Parole iniziali già pronte per la tua coppia di lingue',free2:'Carte, memorizzazione, archivio e History',free3:'Test, Ripassa e Flip',free4:'Aggiungere nuove parole con la tua chiave API',free5:'Backup, temi e 6 lingue dell’interfaccia',free6:'Badge',
-      prem1:'IA integrata (nessuna chiave necessaria)',prem2:'Costruire frasi con le parole scelte in History e vederne il significato',prem3:'Lettura ad alta voce',prem4:'Statistiche sui progressi e analisi della cronologia',
+      prem1:'IA integrata (nessuna chiave necessaria)',prem2:'Costruire frasi con le parole scelte in History e vederne il significato',prem3:'Lettura ad alta voce',prem4:'Statistiche sui progressi e analisi della cronologia',prem5:'Obiettivo giornaliero oltre 20 parole',
       goalTitle:'Obiettivo giornaliero',goalValue:'{n} / {m} parole',goalUnlimited:'{n} parole aggiunte oggi',addDaily:'Aggiungi parole giornaliere',statActive:'Attive',statMemorized:'Memorizzate',statToday:'Memorizzate oggi',
       quizClose:'Chiudi',quizProgress:'Domanda {n}/{total}',quizDone:'Terminato',quizProgressLabel:'Avanzamento del test',quizNeedActive:'Un test richiede almeno 10 parole attive. Ne hai {n}.',quizNeedRecall:'Ripassa richiede almeno 10 parole memorizzate. Ne hai {n}.',quizNeedCloze:'Completa la frase richiede almeno 10 parole con una frase di esempio. Ne hai {n}.',backToToday:'Torna a Oggi',
       statsSummaryTotal:'Parole totali',statsMemorized:'Memorizzate',statsStreak:'Serie (giorni)',statsLongest:'Serie più lunga',
@@ -235,7 +238,7 @@
       b_streak3:'Riscaldamento',bd_streak3:'Studia 3 giorni di fila.',b_streak7:'Una settimana',bd_streak7:'Studia 7 giorni di fila.',b_streak30:'Un mese',bd_streak30:'Studia 30 giorni di fila.',b_goal1:'Obiettivo raggiunto',bd_goal1:'Raggiungi il tuo obiettivo giornaliero di parole.',
       packTitle:'Parole già pronte',packLevel:'Principiante (A1-A2)',packProgress:'{n} / {m} parole aggiunte',packLoading:'Download del pacchetto…',packOffline:'Non è stato possibile scaricare il pacchetto. Si riprova quando sei online.',
       packNone:'Per questa coppia di lingue non c’è ancora un pacchetto pronto. Puoi aggiungere nuove parole con la tua chiave API.',packDone:'Hai aggiunto tutte le parole del pacchetto. Per nuove parole puoi usare la tua chiave API.',packAdded:'{n} parole aggiunte.',packLevelB:'Intermedio (B1-B2)',packLevelC:'Avanzato (C1-C2)',courseDone:'Hai aggiunto tutte le parole pronte di questo livello. Scegli il livello successivo nelle impostazioni o usa la tua chiave API.',courseSoon:'Le parole pronte di questo livello sono ancora in preparazione. Scegli un altro livello nelle impostazioni o usa la tua chiave API.',
-      speakLabel:'Leggi ad alta voce: {text}',speakLocked:'La lettura ad alta voce è inclusa in Premium.',speakLockedLabel:'Leggi ad alta voce (Premium)',speakNoVoice:'Su questo dispositivo non c’è una voce {language}.',speakNone:'Questo browser non supporta la lettura ad alta voce.',speedNormal:'normale',speedSlow:'lenta',speedFast:'veloce',speakSpeed:'{text} ({speed})',
+      speakLabel:'Leggi ad alta voce: {text}',speakLocked:'La lettura ad alta voce è inclusa in Premium.',speakLockedLabel:'Leggi ad alta voce (Premium)',speakNoVoice:'Su questo dispositivo non c’è una voce {language}.',speakNone:'Questo browser non supporta la lettura ad alta voce.',speedNormal:'normale',speedSlow:'lenta',speakSpeed:'{text} ({speed})',
       aboutTitle:'Informazioni',version:'Versione',uiMode:'Interfaccia',uiProto:'Nuova interfaccia (prototipo)',aboutWords:'L’ordine delle parole pronte si basa sull’elenco di frequenza hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Accesso, Premium e pagamento in questa versione sono simulazioni: non esistono un account, un server o un pagamento reali.'
     }
   };
@@ -596,7 +599,7 @@
       h('ul',{class:'v2-pills','aria-label':t('addedWords')},words.map(word=>h('li',{},wordPill(word)))));
   }
   // A word as a pill: the app's own delegated handler opens its panel, like a chip of the History list.
-  const wordPill=(word,extra)=>h('button',{type:'button',class:'history-chip ui-pill v2-wordpill','data-history-word':encodeDomText(word)},h('span',{lang:getTargetLanguageCode(),text:word}),extra?[' ',extra]:null);
+  const wordPill=(word,extra,faded)=>h('button',{type:'button',class:'history-chip ui-pill v2-wordpill'+(faded?' v2-faded':''),'data-history-word':encodeDomText(word)},h('span',{lang:getTargetLanguageCode(),text:word}),extra?[' ',extra]:null);
   // What a course says when the chosen band gives no more words: nothing is written for it yet, or the user has them all.
   const courseEnd=()=>VocVocPacks.courseProgress(packState.course,bandOf(),()=>false).total?'courseDone':'courseSoon';
   function packCard(){
@@ -620,7 +623,7 @@
   const LANGUAGE_NAMES={tr:{tr:'Türkçe',en:'İngilizce',fr:'Fransızca',de:'Almanca',es:'İspanyolca',it:'İtalyanca'},en:{tr:'Turkish',en:'English',fr:'French',de:'German',es:'Spanish',it:'Italian'},
     fr:{tr:'turc',en:'anglais',fr:'français',de:'allemand',es:'espagnol',it:'italien'},de:{tr:'Türkisch',en:'Englisch',fr:'Französisch',de:'Deutsch',es:'Spanisch',it:'Italienisch'},
     es:{tr:'turco',en:'inglés',fr:'francés',de:'alemán',es:'español',it:'italiano'},it:{tr:'turco',en:'inglese',fr:'francese',de:'tedesco',es:'spagnolo',it:'italiano'}};
-  const SPEEDS={normal:1,slow:0.6,fast:1.3},SPEED_TEXT={normal:'speedNormal',slow:'speedSlow',fast:'speedFast'};
+  const SPEEDS={normal:1,slow:0.5},SPEED_TEXT={normal:'speedNormal',slow:'speedSlow'};
   let speakingButton=null,speakToken=0,lastSpoken={text:'',step:-1};
   const speakText=button=>String(typeof button.speakText==='function'?button.speakText():'').trim();
   function syncSpeakButton(button){
@@ -641,11 +644,11 @@
     if(button){button.setAttribute('aria-pressed','true');button.classList.add('v2-speaking');}
   }
   function stopSpeaking(){speakToken++;if(speakingButton){try{window.speechSynthesis?.cancel();}catch(_){}setSpeaking(null);}}
-  // The same text pressed again is read at the next speed: normal, then slow, then fast, slow, fast ... A different text starts at normal again.
+  // The same text pressed again is read at the other speed: normal (1.0), then slow (0.5), then normal again ... A different text starts at normal again.
   function nextSpeed(text){
     const step=lastSpoken.text===text?lastSpoken.step+1:0;
     lastSpoken={text,step};
-    return step===0?'normal':(step%2===1?'slow':'fast');
+    return step%2===0?'normal':'slow';
   }
   function speak(button,text){
     const synth=window.speechSynthesis;
@@ -779,7 +782,9 @@
         h('p',{class:'v2-goal-label',text:t('goalTitle')}),
         h('p',{class:'v2-goal-value',text:unlimited?fill(t('goalUnlimited'),{n:used}):fill(t('goalValue'),{n:used,m:limit})}),
         bar,
-        h('button',{type:'button',class:'ui-button ui-button-success','data-v2-focus':'daily',onclick:()=>{addDailyFromPackOrAi();}},t('addDaily')),
+        h('div',{class:'v2-goal-actions'},
+          h('button',{type:'button',class:'ui-button ui-button-success','data-v2-focus':'daily',onclick:()=>{addDailyFromPackOrAi();}},t('addDaily')),
+          h('button',{type:'button',class:'ui-button ui-button-secondary','data-v2-focus':'words',onclick:()=>navigate('words')},t('words'))),
         addedPills()),
       packCard(),
       h('ul',{class:'v2-statline'},tile(active,t('statActive')),tile(memorized,t('statMemorized')),tile(memorizedToday,t('statToday'))),
@@ -803,9 +808,9 @@
     const kind={recall:{pool:getRecallQuizPool,title:'studyRecall',need:'quizNeedRecall'},cloze:{pool:getClozePool,title:'studyCloze',need:'quizNeedCloze'}}[route]||{pool:getQuizPool,title:'studyTest',need:'quizNeedActive'};
     const poolSize=kind.pool().length;
     const bar=h('div',{class:'v2-study-bar'},
-      h('button',{type:'button',class:'v2-close','aria-label':t('quizClose'),onclick:()=>goBack('study')},'×'),
       h('h1',{tabindex:'-1',text:t(kind.title)}),
-      h('span',{id:'v2QuizCount',class:'v2-muted'}));
+      h('span',{id:'v2QuizCount',class:'v2-muted'}),
+      h('button',{type:'button',class:'v2-close','aria-label':t('quizClose'),onclick:()=>goBack('study')},'×'));
     if(poolSize<10)return page(bar,h('div',{class:'v2-card'},h('p',{text:fill(t(kind.need),{n:poolSize})}),
       h('div',{class:'v2-actions'},h('button',{type:'button',class:'ui-button ui-button-secondary',onclick:()=>navigate('today')},t('backToToday')))));
     return page(bar,
@@ -869,6 +874,7 @@
     if(dayPopup&&dayPopup.day===day.day&&dayPopup.kind===kind)return;
     closeDayWords(false);
     const words=(kind==='added'?day.addedWords:day.memorizedWords)||[],count=kind==='added'?day.added:day.memorized;
+    const memorized=kind==='added'?new Set(getMemorizedWords().map(normalizeHistoryKey)):new Set();                 // what was added that day and is memorized by now looks faded, as in the History list
     const node=h('div',{id:'v2DayWords',class:'v2-popup',role:'dialog','aria-modal':'true','aria-labelledby':'v2DayWordsTitle',lang:lang()},
       h('div',{class:'v2-scrim',onclick:()=>closeDayWords()}),
       h('div',{class:'v2-popup-card'},
@@ -876,7 +882,7 @@
           h('h2',{id:'v2DayWordsTitle',text:fill(t('dayWordsTitle'),{day:formatDay(day.day,DAY_LONG),kind:t(kind==='added'?'legendAdded':'legendMemorized')})}),
           h('button',{type:'button',class:'v2-popup-close','aria-label':t('quizClose'),onclick:()=>closeDayWords()},'×')),
         h('p',{class:'v2-muted',text:fill(t('dayWordsCount'),{n:count})}),
-        h('ul',{class:'v2-pills'},words.map(word=>h('li',{},knownWord(word)&&!isArchivedWord(word)?wordPill(word):h('span',{class:'ui-pill v2-wordpill v2-wordplain',lang:getTargetLanguageCode(),text:word})))),
+        h('ul',{class:'v2-pills'},words.map(word=>h('li',{},knownWord(word)&&!isArchivedWord(word)?wordPill(word,null,memorized.has(normalizeHistoryKey(word))):h('span',{class:'ui-pill v2-wordpill v2-wordplain',lang:getTargetLanguageCode(),text:word})))),
         count>words.length?h('p',{class:'v2-muted',text:fill(t('dayWordsMore'),{n:count-words.length})}):null));
     document.body.append(node);
     screen.inert=true;bar.inert=true;
@@ -1023,7 +1029,7 @@
           :h('button',{type:'button',class:'ui-button ui-button-success',onclick:()=>VocVocPlan.set('premium')},t('simulate'))),
         h('p',{class:'v2-muted',text:t('simNote')})),
       h('h2',{text:t('freeIncludes')}),list(['free1','free2','free3','free4','free5','free6']),
-      h('h2',{text:t('premiumIncludes')}),list(['prem1','prem2','prem3','prem4'],'v2-premium-list'),
+      h('h2',{text:t('premiumIncludes')}),list(['prem1','prem2','prem3','prem4','prem5'],'v2-premium-list'),
       h('p',{class:'v2-note',text:t('keyRule')}),h('p',{class:'v2-muted',text:t('priceNote')}));
   }
   function textPage(kind){

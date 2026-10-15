@@ -195,9 +195,11 @@ describe('New interface (prototype)',()=>{
   it('the plan rules match the agreed product: Free by default, stats/AI/sentences/speech are Premium, the own key is off while Premium is on',()=>{
     const {win,events,storage}=load(),plan=win.VocVocPlan;
     assert.deepEqual([plan.get(),plan.has('stats'),plan.has('badges'),plan.has('ownKeyAi'),plan.has('freeWords'),plan.ownKeyActive()],['free',false,true,true,true,true]);
-    assert.deepEqual(Object.entries(plan.features).filter(([,need])=>need==='premium').map(([name])=>name).sort(),['builtInAi','historyAnalysis','sentenceBuilder','speech','stats']);
+    assert.deepEqual(Object.entries(plan.features).filter(([,need])=>need==='premium').map(([name])=>name).sort(),['builtInAi','dailyGoalOver20','historyAnalysis','sentenceBuilder','speech','stats']);
+    assert.deepEqual([plan.FREE_DAILY_LIMIT,plan.dailyLimitMax()],[20,20],'the free plan keeps the daily goal at 20 words');
     assert.equal(plan.has('somethingUnknown'),false);
     plan.set('premium');
+    assert.equal(plan.dailyLimitMax(),Infinity,'Premium has no limit on the daily goal');
     assert.deepEqual([plan.get(),plan.has('stats'),plan.has('sentenceBuilder'),plan.has('speech'),plan.has('builtInAi'),plan.ownKeyActive(),storage.VOCVOC_SIM_PLAN,events.length],['premium',true,true,true,true,false,'premium',1]);
     plan.set('premium');assert.equal(events.length,1,'setting the same plan again is not a change');
     plan.set('free');assert.deepEqual([plan.get(),plan.ownKeyActive(),'VOCVOC_SIM_PLAN' in storage,events.length],['free',true,false,2]);

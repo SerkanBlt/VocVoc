@@ -43,7 +43,7 @@
       "id": "fr-tr",
       "target": "fr",
       "native": "tr",
-      "version": 6,
+      "version": 7,
       "words": 7726,
       "levels": {
         "A1": 695,
@@ -106,61 +106,61 @@
           "id": "B2-01",
           "level": "B2",
           "words": 410,
-          "bytes": 165860
+          "bytes": 188115
         },
         {
           "id": "B2-02",
           "level": "B2",
           "words": 410,
-          "bytes": 161168
+          "bytes": 192790
         },
         {
           "id": "B2-03",
           "level": "B2",
           "words": 409,
-          "bytes": 157577
+          "bytes": 189277
         },
         {
           "id": "B2-04",
           "level": "B2",
           "words": 409,
-          "bytes": 160592
+          "bytes": 193448
         },
         {
           "id": "B2-05",
           "level": "B2",
           "words": 409,
-          "bytes": 161077
+          "bytes": 175884
         },
         {
           "id": "C1-01",
           "level": "C1",
           "words": 500,
-          "bytes": 199342
+          "bytes": 228427
         },
         {
           "id": "C1-02",
           "level": "C1",
           "words": 500,
-          "bytes": 196205
+          "bytes": 231501
         },
         {
           "id": "C1-03",
           "level": "C1",
           "words": 500,
-          "bytes": 193132
+          "bytes": 220168
         },
         {
           "id": "C1-04",
           "level": "C1",
           "words": 500,
-          "bytes": 192679
+          "bytes": 221811
         },
         {
           "id": "C1-05",
           "level": "C1",
           "words": 500,
-          "bytes": 189328
+          "bytes": 208502
         }
       ]
     }

@@ -95,6 +95,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: s'installer
 - Il erre dans les rues de la ville. — okunuş: *il er dan le rü dö la vil* — Şehrin sokaklarında başıboş dolaşıyor.
 - Son regard erre sur la mer. — okunuş: *son rögar er sür la mer* — Bakışları denizin üzerinde geziniyor.
+- Kalıp: **errer comme une âme en peine** (*ere kom ün am an pen*) = kaybolmuş ruh gibi dolaşmak; Il erre comme une âme en peine dans la maison. — *il er kom ün am an pen dan la mezon* — Evde kaybolmuş bir ruh gibi dolaşıyor.
 
 ## 13. politiquement (zarf) [C1]
 
@@ -124,6 +125,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: tropical
 - Il fait un froid polaire. — okunuş: *il fe en frua poler* — Kutup soğuğu var.
 - L'ours polaire vit sur la glace. — okunuş: *lurs poler viv sür la glas* — Kutup ayısı buzda yaşıyor.
+- Kalıp: **cercle polaire** (*serkl poler*) = kutup dairesi; Ils voyagent au-delà du cercle polaire. — *il vuayaj o dela dü serkl poler* — Kutup dairesinin ötesinde seyahat ediyorlar.
 
 ## 17. composant (isim (eril)) [C1]
 
@@ -169,6 +171,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: ménager
 - La foule bouscule les passants. — okunuş: *la ful buskül le pasan* — Kalabalık yoldan geçenleri itip kakıyor.
 - Il bouscule son emploi du temps. — okunuş: *il buskül son anplüa dü tan* — Zaman çizelgesini alt üst ediyor.
+- Kalıp: **bousculer les habitudes** (*busküle le zabitüd*) = alışkanlıkları sarsmak; Ce film bouscule les habitudes. — *sö film buskül le zabitüd* — Bu film alışkanlıkları sarsıyor.
 
 ## 23. mœurs (isim (dişil)) [C1]
 
@@ -184,6 +187,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: liberté
 - Il vit en captivité depuis trois ans. — okunuş: *il viv an kaptivite döpüi trua zan* — Üç yıldır esaret altında yaşıyor.
 - Les animaux souffrent en captivité. — okunuş: *le zanimo süfr an kaptivite* — Hayvanlar esaret altında acı çekiyor.
+- Kalıp: **en captivité** (*an kaptivite*) = esaret altında; L'animal vit en captivité. — *lanimal viv an kaptivite* — Hayvan esaret altında yaşıyor.
 
 ## 25. portion (isim (dişil)) [C1]
 
@@ -205,6 +209,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Eş anlamlı: revoir, revérifier
 - Il relit son devoir avant de le rendre. — okunuş: *il röli son dövuar avan dö lö randr* — Ödevini teslim etmeden önce yeniden okuyor.
 - Je relis ce roman chaque été. — okunuş: *jö röli sö roman şak ete* — Bu romanı her yaz yeniden okuyorum.
+- Kalıp: **relire un texte** (*rölir en tekst*) = bir metni yeniden okumak; Il relit son texte avant de l'envoyer. — *il röli son tekst avan dö lanvuaye* — Göndermeden önce metnini yeniden okuyor.
 
 ## 28. déshonneur (isim (eril)) [C1]
 
@@ -236,6 +241,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Eş anlamlı: niveau, degré
 - Il monte d'un échelon dans l'entreprise. — okunuş: *il mont den eşlon dan lantröpriz* — Şirkette bir kademe yükseliyor.
 - Elle atteint le dernier échelon. — okunuş: *el atent lö dernye eşlon* — Son basamağa ulaşıyor.
+- Kalıp: **grimper les échelons** (*grenpe le zeşlon*) = kademeleri tırmanmak; Elle grimpe les échelons de l'entreprise. — *el grenp le zeşlon dö lantröpriz* — Şirkette kademeleri tırmanıyor.
 
 ## 32. grimace (isim (dişil)) [C1]
 
@@ -244,6 +250,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: sourire
 - L'enfant fait une grimace. — okunuş: *lanfan fe ün grimas* — Çocuk yüzünü buruşturuyor.
 - Il fait la grimace devant le médicament. — okunuş: *il fe la grimas dövan lö medikaman* — İlacın karşısında yüzünü buruşturuyor.
+- Kalıp: **faire la grimace** (*fer la grimas*) = yüzünü buruşturmak; L'enfant fait la grimace devant les légumes. — *lanfan fe la grimas dövan le legüm* — Çocuk sebzelerin karşısında yüzünü buruşturuyor.
 
 ## 33. physicien (isim (eril)) [C1]
 
@@ -273,6 +280,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: redresser
 - Le camion bascule dans le fossé. — okunuş: *lö kamyon baskül dan lö fose* — Kamyon hendeğe devriliyor.
 - Le pays bascule dans la guerre. — okunuş: *lö pei baskül dan la ger* — Ülke savaşa sürükleniyor.
+- Kalıp: **faire basculer** (*fer baskule*) = dengeyi değiştirmek; Ce vote fait basculer le résultat. — *sö vot fe baskül lö rezülta* — Bu oy sonucu tersine çeviriyor.
 
 ## 37. ressentiment (isim (eril)) [C1]
 
@@ -304,6 +312,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Eş anlamlı: diffusé
 - Le débat télévisé attire des millions. — okunuş: *lö deba televize atir de milyon* — Televizyondaki tartışma milyonları çekiyor.
 - Il fait un discours télévisé. — okunuş: *il fe en diskur televize* — Televizyonda bir konuşma yapıyor.
+- Kalıp: **débat télévisé** (*deba televize*) = televizyon tartışması; Le débat télévisé attire des millions de gens. — *lö deba televize atir de milyon dö jan* — Televizyon tartışması milyonlarca insanı çekiyor.
 
 ## 41. escadrille (isim (dişil)) [C1]
 

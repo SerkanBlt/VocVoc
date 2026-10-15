@@ -33,6 +33,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: détaché
 - Il est très attaché à sa famille. — okunuş: *il e tre zataşe a sa famiy* — Ailesine çok bağlı.
 - Le fichier attaché est trop lourd. — okunuş: *lö fişye ataşe e tro lur* — Ekli dosya çok ağır.
+- Kalıp: **être attaché à** (*etr ataşe a*) = …e bağlı olmak; Il est très attaché à sa famille. — *il e tre ataşe a sa famiy* — Ailesine çok bağlı.
 
 ## 5. demoiselle (isim (dişil)) [B2]
 
@@ -71,6 +72,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Eş anlamlı: cul-de-sac, blocage
 - La voiture entre dans une impasse. — okunuş: *la vuatür antr dan zün enpas* — Araba çıkmaz sokağa giriyor.
 - Les négociations sont dans l'impasse. — okunuş: *le negosyasyon son dan lenpas* — Müzakereler çıkmazda.
+- Kalıp: **dans l'impasse** (*dan lenpas*) = çıkmazda; Les négociations sont dans l'impasse. — *le negosyasyon son dan lenpas* — Müzakereler çıkmazda.
 
 ## 10. karma (isim (eril)) [B2]
 
@@ -100,6 +102,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: incompétent, amateur
 - Il cherche un ouvrier qualifié. — okunuş: *il şerş en nuvrye kalifye* — Nitelikli bir işçi arıyor.
 - L'équipe est qualifiée pour la finale. — okunuş: *lekip e kalifye pur la final* — Takım finale yükselmiş.
+- Kalıp: **main-d'œuvre qualifiée** (*men dövr kalifye*) = nitelikli işgücü; Le pays manque de main-d'œuvre qualifiée. — *lö pei mank dö men dövr kalifye* — Ülkede nitelikli işgücü eksik.
 
 ## 14. démolir (fiil) [B2]
 
@@ -115,6 +118,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Eş anlamlı: frissonner, vibrer
 - Il tremble de froid. — okunuş: *il tranbl dö frua* — Soğuktan titriyor.
 - La terre tremble. — okunuş: *la ter tranbl* — Yer sallanıyor.
+- Kalıp: **trembler de peur** (*tranble dö pör*) = korkudan titremek; Il tremble de peur. — *il tranbl dö pör* — Korkudan titriyor.
 
 ## 16. insigne (isim (eril)) [B2]
 
@@ -138,6 +142,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: nettoyer, laver
 - L'enfant salit sa chemise. — okunuş: *lanfan sali sa şömiz* — Çocuk gömleğini kirletiyor.
 - Ne salis pas mon nom ! — okunuş: *nö sali pa mon non* — Adımı lekeleme!
+- Kalıp: **se salir les mains** (*sö salir le men*) = ellerini kirletmek; Il ne veut pas se salir les mains. — *il nö vö pa sö salir le men* — Ellerini kirletmek istemiyor.
 
 ## 19. infini (sıfat) [B2]
 
@@ -146,6 +151,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: fini, limité
 - L'univers est infini. — okunuş: *lünivers e tenfini* — Evren sonsuz.
 - Il a une patience infinie. — okunuş: *il a ün pasyans enfini* — Sonsuz bir sabrı var.
+- Kalıp: **à l'infini** (*a lenfini*) = sonsuza kadar; La route semble se prolonger à l'infini. — *la rut sanbl sö prolonje a lenfini* — Yol sonsuza kadar uzuyor gibi.
 
 ## 20. municipal (sıfat) [B2]
 
@@ -162,6 +168,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: désaccord, chaos
 - Ils vivent en harmonie. — okunuş: *il viv an armoni* — Uyum içinde yaşıyorlar.
 - L'harmonie des couleurs est belle. — okunuş: *larmoni de kulör e bel* — Renklerin uyumu güzel.
+- Kalıp: **vivre en harmonie** (*vivr an armoni*) = uyum içinde yaşamak; Ils vivent en harmonie avec la nature. — *il viv an armoni avek la natür* — Doğayla uyum içinde yaşıyorlar.
 
 ## 22. enfreindre (fiil) [B2]
 
@@ -170,6 +177,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: respecter, obéir
 - Il enfreint la loi. — okunuş: *il anfren la lua* — Yasayı çiğniyor.
 - N'enfreins pas les règles ! — okunuş: *nanfren pa le regl* — Kuralları çiğneme!
+- Kalıp: **enfreindre la loi** (*anfrendr la lua*) = yasayı çiğnemek; Il enfreint la loi en conduisant vite. — *il anfren la lua an kondüizan vit* — Hızlı sürerek yasayı çiğniyor.
 
 ## 23. tranche (isim (dişil)) [B2]
 
@@ -177,6 +185,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Eş anlamlı: part, portion
 - Il coupe une tranche de pain. — okunuş: *il kup ün tranş dö pen* — Bir dilim ekmek kesiyor.
 - Cette tranche d'âge aime le sport. — okunuş: *set tranş daj em lö spor* — Bu yaş grubu sporu seviyor.
+- Kalıp: **tranche d'âge** (*tranş daj*) = yaş grubu; Ce jeu s'adresse à toutes les tranches d'âge. — *sö jö sadres a tut le tranş daj* — Bu oyun her yaş grubuna hitap ediyor.
 
 ## 24. affirmatif (sıfat) [B2]
 
@@ -193,6 +202,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: négliger
 - Il pratique le tennis depuis dix ans. — okunuş: *il pratik lö tenis döpüi di zan* — On yıldır tenis oynuyor.
 - Elle pratique sa religion avec ferveur. — okunuş: *el pratik sa rölijyon avek fervör* — Dinini hararetle uyguluyor.
+- Kalıp: **pratiquer un sport** (*pratike en spor*) = spor yapmak; Il pratique un sport chaque semaine. — *il pratik en spor şak sömen* — Her hafta bir spor yapıyor.
 
 ## 26. astronaute (isim (eril/dişil)) [B2]
 
@@ -242,6 +252,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: mépris
 - Il prend votre demande en considération. — okunuş: *il pran votr dömand an konsiderasyon* — İsteğinizi dikkate alıyor.
 - Elle mérite de la considération. — okunuş: *el merit dö la konsiderasyon* — Saygıyı hak ediyor.
+- Kalıp: **prendre en considération** (*prandr an konsiderasyon*) = dikkate almak; Il prend ton avis en considération. — *il pran ton avi an konsiderasyon* — Görüşünü dikkate alıyor.
 
 ## 33. annuaire (isim (eril)) [B2]
 
@@ -249,6 +260,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Eş anlamlı: répertoire, liste
 - Il cherche son nom dans l'annuaire. — okunuş: *il şerş son non dan lanüer* — Adını rehberde arıyor.
 - L'annuaire de l'école est en ligne. — okunuş: *lanüer dö lekol e tan liny* — Okulun rehberi çevrimiçi.
+- Kalıp: **annuaire téléphonique** (*anüer telefonik*) = telefon rehberi; Il cherche son nom dans l'annuaire téléphonique. — *il şerş son nom dan lanüer telefonik* — Adını telefon rehberinde arıyor.
 
 ## 34. fabrication (isim (dişil)) [B2]
 
@@ -288,6 +300,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: se dresser
 - Le mur s'écroule. — okunuş: *lö mür sekrul* — Duvar çöküyor.
 - Il s'écroule de fatigue. — okunuş: *il sekrul dö fatig* — Yorgunluktan yığılıyor.
+- Kalıp: **s'écrouler de fatigue** (*sekrule dö fatig*) = yorgunluktan yığılmak; Il s'écroule de fatigue sur le canapé. — *il sekrul dö fatig sür lö kanape* — Yorgunluktan kanepeye yığılıyor.
 
 ## 39. émotionnellement (zarf) [B2]
 
@@ -326,6 +339,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: partie, fraction
 - Il lit la totalité du livre. — okunuş: *il li la totalite dü livr* — Kitabın tamamını okuyor.
 - La totalité des élèves est présente. — okunuş: *la totalite de zelev e prezant* — Öğrencilerin tamamı burada.
+- Kalıp: **en totalité** (*an totalite*) = tamamen; Le prix est payé en totalité. — *lö pri e peye an totalite* — Fiyat tamamen ödenmiş.
 
 ## 44. antique (sıfat) [B2]
 
@@ -349,6 +363,7 @@ For each card check: the meaning, the gender and kind, that the sentences are na
 - Zıt anlamlı: réparer
 - Il abîme sa voiture. — okunuş: *il abim sa vuatür* — Arabasına zarar veriyor.
 - L'eau abîme le bois. — okunuş: *lo abim lö bua* — Su ahşabı bozuyor.
+- Kalıp: **s'abîmer les yeux** (*sabime le zyö*) = gözlerini yormak; Il s'abîme les yeux devant l'écran. — *il sabim le zyö dövan lekran* — Ekran karşısında gözlerini yoruyor.
 
 ## 47. leurre (isim (eril)) [B2]
 

@@ -105,6 +105,9 @@ body.v2 .top-chrome header{display:none}
 body.v2 .study-actions{display:none}
 .v2-goal-label{color:var(--text-muted);font-size:.85rem;font-weight:600;margin:0 0 2px}
 .v2-goal-value{font-size:1.35rem;font-weight:700;margin:0 0 10px}
+.v2-goal-actions{display:flex;gap:10px;align-items:stretch}
+.v2-goal-actions .ui-button{flex:1 1 0;min-width:0;white-space:normal}
+.v2-goal-actions .ui-button:first-child{flex:2 1 0}
 .v2-bar{height:10px;border-radius:999px;background:var(--accent-bg);border:1px solid var(--border);overflow:hidden;margin:0 0 14px}
 .v2-bar>span{display:block;height:100%;width:var(--p,0%);background:var(--primary);border-radius:999px;transition:width .3s}
 .v2-statline{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;list-style:none;margin:0 0 12px;padding:0}
@@ -239,6 +242,9 @@ body.v2 #relatedWordPopup.open{z-index:620}
 .v2-page .v2-pills{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
 .v2-page .v2-pills li{margin:0}
 .v2-wordpill{font:inherit;font-size:.95rem;cursor:pointer}
+/* a memorized word in a list of words looks faded, as the chips of the History list do */
+.v2-wordpill.v2-faded.history-chip{opacity:.43;color:var(--text-muted);background:transparent;border-color:var(--border)}
+.v2-wordpill.v2-faded.history-chip:hover,.v2-wordpill.v2-faded.history-chip:active{opacity:.58;border-color:var(--border)}
 
 /* Badges in three tabs */
 .v2-subtabs{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 12px;padding:4px;background:var(--accent-bg);border:1px solid var(--border);border-radius:24px}   /* when the labels do not fit in one row (wider letters, a larger system font) the tabs go to a second row instead of being cut off */

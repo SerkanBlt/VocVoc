@@ -68,7 +68,7 @@ async function main(){
  {
   const seen=[],pattern='https://generativelanguage.googleapis.com/**';
   await page.route(pattern,route=>{const req=route.request();let prompt='';try{prompt=JSON.parse(req.postData()).contents[0].parts[0].text;}catch(_){}seen.push({url:req.url(),key:req.headers()['x-goog-api-key'],prompt});return route.fulfill({status:400,contentType:'application/json',body:'{"error":{"message":"stub"}}'});});
-  await page.evaluate(async()=>{VocVocSecrets.setApiKey('TEST-KEY');await VocVocData.updateSettings({dailyLimit:'unlimited'});await VocVocData.addWordBatch(Array.from({length:120},(_,i)=>({word:'w'+String(i).padStart(3,'0'),meaning:'m'})));await new Promise(r=>setTimeout(r,20));await VocVocData.touchWord('w119');await addDailyWords();});
+  await page.evaluate(async()=>{VocVocSecrets.setApiKey('TEST-KEY');VocVocPlan.set('premium');await VocVocData.updateSettings({dailyLimit:'unlimited'});await VocVocData.addWordBatch(Array.from({length:120},(_,i)=>({word:'w'+String(i).padStart(3,'0'),meaning:'m'})));await new Promise(r=>setTimeout(r,20));await VocVocData.touchWord('w119');await addDailyWords();});
   await page.unroute(pattern);
   assert(seen.length>0);assert.equal(seen[0].key,'TEST-KEY');assert(!seen[0].url.includes('key='));
   const forbidden=(seen[0].prompt.match(/blocked list: ([^.]*)\. Do not/)||[])[1].split(', ');assert.equal(forbidden.length,100);assert.equal(forbidden[0],'w119');
@@ -363,7 +363,7 @@ async function main(){
    assert.deepEqual(await page.evaluate(()=>[document.documentElement.getAttribute('data-theme'),VocVocData.getSettings().theme]),['dark','dark']);
    record('offline UI: Settings saved and restored after an offline reload');
    // Everything that needs Gemini fails gracefully and changes nothing
-   await page.evaluate(()=>{VocVocSecrets.setApiKey('offline-test-key');return VocVocData.updateSettings({dailyLimit:'unlimited'});});const snapshot=await page.evaluate(()=>JSON.stringify(VocVocData.getDb()));
+   await page.evaluate(()=>{VocVocSecrets.setApiKey('offline-test-key');VocVocPlan.set('premium');return VocVocData.updateSettings({dailyLimit:'unlimited'});});const snapshot=await page.evaluate(()=>JSON.stringify(VocVocData.getDb()));
    const failsGracefully=async(label,action)=>{await action();await page.waitForSelector('.app-alert');assert.match(await page.locator('#appAlertLayer').innerText(),/İnternet/,label);
     assert.equal(await page.locator('#loader').evaluate(el=>getComputedStyle(el).display),'none',label);assert.equal(await page.locator('#dailyLoadingOverlay.show').count(),0,label);
     assert.equal(await page.evaluate(()=>JSON.stringify(VocVocData.getDb())),snapshot,label);await page.evaluate(()=>showError(''));await page.waitForFunction(()=>!document.querySelector('.app-alert'));};
@@ -398,7 +398,7 @@ async function main(){
   context=await browser.newContext();page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   const logged=[];page.on('console',m=>logged.push(m.text()));
   await page.goto(url);await ready();
-  await page.evaluate(k=>{VocVocSecrets.setApiKey(k);return VocVocData.updateSettings({dailyLimit:'unlimited'});},KEY);
+  await page.evaluate(k=>{VocVocSecrets.setApiKey(k);VocVocPlan.set('premium');return VocVocData.updateSettings({dailyLimit:'unlimited'});},KEY);
   const calls=[],allCalls=[];let plan=null;
   const wordCard=word=>({word,type:'n',meaning:'bir anlam',synonyms:[],antonyms:[],examples:[],expressions:[]});
   const ok=payload=>({status:200,contentType:'application/json',body:JSON.stringify({candidates:[{content:{parts:[{text:typeof payload==='string'?payload:JSON.stringify(payload)}]}}]})});
@@ -706,6 +706,7 @@ async function main(){
    no:['','10','unlimit','abc',null,undefined,'0'].map(isUnlimitedText)
   }));
   assert.deepEqual(unlimited,{own:[true,true,true,true,true,true],typed:Array(9).fill(true),no:Array(7).fill(false)});
+  await page.evaluate(()=>VocVocPlan.set('premium'));                                                            // "unlimited" can only be saved on Premium; the free plan is covered by its own scenario
   for(const [lang,word] of [['de','Unbegrenzt'],['es','Ilimitado'],['it','Illimitato'],['fr','Illimité'],['tr','Sınırsız'],['en','Unlimited']]){
    await useLanguage(lang);
    const result=await page.evaluate(async typed=>{
@@ -963,6 +964,16 @@ async function main(){
    await page.waitForFunction(count=>quizSession.index>count,question);
   }
   await page.waitForSelector('#v2QuizHost .quiz-result-card');
+  // the close button is at the right of the bar (after the title and the count), not at the left
+  assert.equal(await page.evaluate(()=>{const bar=document.querySelector('.v2-study-bar'),close=bar.querySelector('.v2-close').getBoundingClientRect(),title=bar.querySelector('h1').getBoundingClientRect();return close.left>title.right&&Math.abs(close.right-bar.getBoundingClientRect().right)<2;}),true);
+  // 10/10: the confetti flies slowly (2.5 s or more) from the middle in random directions, and a second look is not the same as the first
+  const confetti=()=>page.evaluate(()=>[...document.querySelectorAll('.quiz-confetti i')].map(piece=>({dx:Number(piece.style.getPropertyValue('--dx').replace('px','')),dy:Number(piece.style.getPropertyValue('--dy').replace('px','')),seconds:parseFloat(piece.style.getPropertyValue('--duration')),name:getComputedStyle(piece).animationName})));
+  const pieces=await confetti();
+  assert.equal(pieces.length>=30,true);
+  assert.equal(pieces.every(piece=>piece.seconds>=2.5&&piece.name==='confettiDrift'),true);
+  assert.deepEqual([pieces.some(piece=>piece.dx>40),pieces.some(piece=>piece.dx<-40),pieces.some(piece=>piece.dy>20),pieces.some(piece=>piece.dy<-20)],[true,true,true,true]);   // every direction, not only down
+  await page.evaluate(()=>{renderQuizQuestion();});
+  assert.notDeepEqual((await confetti()).map(piece=>piece.dx),pieces.map(piece=>piece.dx));
   const todayDay=await page.evaluate(()=>VocVocStats.localDay(new Date().toISOString()));
   const saved=await activity();
   assert.deepEqual([saved.testsTaken,saved.quizzes.length,saved.quizzes[0].mode,saved.quizzes[0].score,saved.quizzes[0].total,saved.quizzes[0].wrong],[1,1,'active',10,10,[]]);
@@ -1321,6 +1332,26 @@ async function main(){
    await p.locator('#v2Screen .v2-slot-btn').last().click();assert.equal(await p.locator('#v2DayWords .v2-pills li').count()>0,true);
    await c.close();
   }
+  // in the Added panel a memorized word looks faded, as it does in the History list; in the Memorized panel nothing is
+  {
+   const {c,p}=await openSeeded();
+   const faded=[],plain=[];
+   const bars=await p.locator('.v2-slot-btn').count();
+   for(let index=0;index<bars;index++){
+    const bar=p.locator('.v2-slot-btn').nth(index),added=/Eklenen/.test(await bar.getAttribute('aria-label'));
+    await bar.click();
+    const pills=await p.evaluate(()=>{const memorized=new Set(getMemorizedWords());return [...document.querySelectorAll('#v2DayWords .v2-pills li > button')].map(pill=>({word:pill.textContent,faded:pill.classList.contains('v2-faded'),memorized:memorized.has(pill.textContent),opacity:getComputedStyle(pill).opacity}));});
+    for(const pill of pills){
+     assert.equal(pill.faded,added&&pill.memorized,(added?'added':'memorized')+' panel, '+pill.word);
+     if(pill.faded)faded.push(pill);else if(added)plain.push(pill);
+    }
+    await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.getElementById('v2DayWords'));
+   }
+   assert.equal(faded.length>0&&plain.length>0,true,'the seeded days must have both kinds of word in the Added panel');
+   assert.equal(faded.every(pill=>pill.opacity==='0.43')&&plain.every(pill=>pill.opacity==='1'),true);
+   await c.close();
+  }
+  record('new interface: in the Added panel of the last seven days a memorized word is faded like in the History list, in the Memorized panel none is');
   {
    const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
    await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'guest',name:''})));
@@ -1747,6 +1778,52 @@ async function main(){
   }
   record('French course: the Daily button takes the next ten words in the course order from the first chunk, counts them towards the goal, downloads one chunk at a time, and adds nothing when the next chunk cannot be had offline');
 
+  // the Today card has a Words button next to the Daily button; a daily goal above 20 words is a Premium feature
+  {
+   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+   await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'guest',name:''})));
+   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-goal-actions');
+   assert.deepEqual(await p.locator('.v2-goal-actions button').allTextContents(),['Günlük kelimeler ekle','Kelimeler']);
+   assert.equal(await p.evaluate(()=>{const [daily,words]=[...document.querySelectorAll('.v2-goal-actions button')].map(node=>node.getBoundingClientRect());return words.left>daily.right&&Math.abs(words.top-daily.top)<2;}),true);   // side by side
+   await p.getByRole('button',{name:'Kelimeler',exact:true}).click();
+   await p.waitForFunction(()=>location.hash==='#/words'&&document.getElementById('v2Screen').hidden);                    // the Words page is the app's own home screen: the page of the new interface steps aside
+   await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] .v2-goal-actions');
+   // free plan: whatever is stored, the goal stops at 20
+   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+   assert.equal(await p.evaluate(()=>getDailyLimit()),20);
+   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'50'}));
+   assert.equal(await p.evaluate(()=>getDailyLimit()),20);
+   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'15'}));
+   assert.equal(await p.evaluate(()=>getDailyLimit()),15);
+   // Settings: the options above 20 are tagged Premium and only say so; a typed number above 20 is kept at 20 when saved
+   await p.evaluate(async()=>{await VocVocData.updateSettings({dailyLimit:'50'});openModal();});
+   await p.waitForFunction(()=>document.getElementById('dailyLimitInput').value==='20');                 // the field shows what is in force
+   assert.deepEqual(await p.locator('.daily-limit-menu .ui-dropdown-option.locked').evaluateAll(nodes=>nodes.map(node=>[node.dataset.value,node.dataset.lock])),[['30','Premium'],['50','Premium'],['100','Premium'],['unlimited','Premium']]);
+   await p.evaluate(()=>toggleDailyLimitMenu());
+   await p.locator('.daily-limit-menu .ui-dropdown-option[data-value="100"]').click();
+   assert.match(await p.locator('.app-alert-text').textContent(),/^20 kelimenin üzerindeki günlük hedef Premium ile açılır.$/);
+   assert.equal(await p.evaluate(()=>document.getElementById('dailyLimitInput').value),'20');
+   await p.evaluate(()=>toggleDailyLimitMenu());await p.locator('.daily-limit-menu .ui-dropdown-option[data-value="20"]').click();   // 20 itself is free
+   assert.equal(await p.evaluate(()=>document.getElementById('dailyLimitInput').value),'20');
+   await p.evaluate(()=>{showError('');document.getElementById('dailyLimitInput').value='75';return saveApiKey();});
+   assert.equal(await p.evaluate(()=>VocVocData.getSettings().dailyLimit),'20');
+   assert.match(await p.locator('.app-alert-text').textContent(),/Premium ile açılır/);
+   // Premium: nothing is tagged, any limit can be chosen and kept
+   await p.evaluate(()=>{showError('');VocVocPlan.set('premium');openModal();});
+   await p.waitForFunction(()=>document.querySelectorAll('.daily-limit-menu .ui-dropdown-option.locked').length===0&&document.getElementById('modalOverlay').style.display==='flex');
+   await p.evaluate(()=>toggleDailyLimitMenu());await p.locator('.daily-limit-menu .ui-dropdown-option[data-value="100"]').click();
+   assert.equal(await p.evaluate(()=>document.getElementById('dailyLimitInput').value),'100');
+   await p.evaluate(()=>saveApiKey());
+   assert.deepEqual(await p.evaluate(()=>[VocVocData.getSettings().dailyLimit,getDailyLimit()]),['100',100]);
+   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+   assert.equal(await p.evaluate(()=>getDailyLimit()),Infinity);
+   // and when the plan ends the stored 'unlimited' is held at 20 again
+   await p.evaluate(()=>VocVocPlan.set('free'));
+   assert.equal(await p.evaluate(()=>getDailyLimit()),20);
+   await c.close();
+  }
+  record('new interface: the Today card has a Words button beside the Daily button; a daily goal above 20 words is Premium (tagged options, kept at 20 when saved, held at 20 when the plan ends)');
+
   // a level that has no words yet says so (and the AI goes on with a key); the card follows the difficulty setting.
   // The course is served without its C1 and C2 chunks, so this keeps holding as those levels are written.
   {
@@ -1813,7 +1890,7 @@ async function main(){
    await p.locator('#historyDetails .v2-speak').first().click();
    assert.deepEqual((await calls()).filter(call=>!call.cancel),[{text:'Bonjour',lang:'fr-FR',voice:'Fake French',rate:1}]);
    await p.waitForFunction(()=>document.querySelector('#historyDetails .v2-speak').getAttribute('aria-pressed')==='false');   // ended
-   // an example sentence is read as written; the same sentence pressed again is read slower, then faster, then slower ...
+   // an example sentence is read as written; the same sentence pressed again is read at 0.5, then at 1.0 again, then at 0.5 ...
    await p.evaluate(()=>{for(const details of document.querySelectorAll('#historyDetails details.fold'))details.open=true;});
    const sentence=await p.locator('#historyDetails .example-item .fr-text').first().evaluate(node=>node.firstChild.textContent.trim());
    await p.evaluate(()=>{window.__speech.length=0;window.__utterances=[];window.speechSynthesis.speak=function(utterance){window.__utterances.push(utterance);window.__speech.push({text:utterance.text,lang:utterance.lang,rate:utterance.rate});};});   // it never ends by itself now
@@ -1821,8 +1898,8 @@ async function main(){
    const spoken=async()=>(await calls()).filter(call=>call.text);
    await example.click();assert.deepEqual([(await spoken())[0].text,await example.getAttribute('aria-pressed'),await example.getAttribute('data-rate')],[sentence,'true','1×']);
    for(let press=0;press<4;press++)await example.click();
-   assert.deepEqual((await spoken()).map(call=>call.rate),[1,0.6,1.3,0.6,1.3]);                      // normal, slow, fast, slow, fast
-   assert.deepEqual([await example.getAttribute('data-rate'),await example.getAttribute('aria-label')],['1.3×',`Sesli oku: ${sentence} (hızlı)`]);
+   assert.deepEqual((await spoken()).map(call=>call.rate),[1,0.5,1,0.5,1]);                          // normal, slow, normal, slow, normal
+   assert.deepEqual([await example.getAttribute('data-rate'),await example.getAttribute('aria-label')],['1×',`Sesli oku: ${sentence} (normal)`]);
    // pressing while it is being read does not stop it, it starts again at the next speed; an older reading that ends late does not switch the new one off
    await p.evaluate(()=>window.__utterances[0].onend());
    assert.equal(await example.getAttribute('aria-pressed'),'true');

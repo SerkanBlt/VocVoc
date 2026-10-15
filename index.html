@@ -6,7 +6,7 @@
   <!-- The only network destination besides this origin is the Gemini API. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.10.0">
+  <meta name="vocvoc-shell" content="1.11.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -751,6 +751,8 @@ input.ui-input:focus{
 }
 .ui-dropdown-option:hover,.ui-dropdown-option.selected{background:var(--ui-control-bg-hover)}
 .ui-dropdown-option.selected{font-weight:600}
+.ui-dropdown-option.locked{color:var(--text-muted)}
+.ui-dropdown-option.locked::after{content:attr(data-lock);margin-inline-start:auto;padding:1px 8px;border:1px solid var(--border);border-radius:999px;font-size:.72rem;font-weight:600}
 .ui-dropdown > input[type="hidden"]{display:none}
 
 /* Editable Daily Limit uses the same selection surface. */
@@ -1200,17 +1202,19 @@ textarea{
 }
 .quiz-perfect-sub{position:relative;z-index:2;margin-top:4px;color:var(--text-muted);font-weight:700}
 .quiz-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+/* The pieces start in the middle and drift slowly in random directions (the script gives each one its own --dx, --dy, --rotate and timing). */
 .quiz-confetti i{
-  position:absolute;left:var(--x);top:-18px;
-  width:8px;height:14px;border-radius:2px;
+  position:absolute;left:50%;top:50%;
+  width:8px;height:14px;margin:-7px 0 0 -4px;border-radius:2px;
   background:hsl(calc(var(--rotate) + 25deg) 78% 56%);
-  transform:translateX(0) rotate(var(--rotate));
-  animation:confettiFall var(--duration) cubic-bezier(.18,.72,.35,1) var(--delay) both;
+  opacity:0;
+  animation:confettiDrift var(--duration) cubic-bezier(.12,.6,.3,1) var(--delay) both;
 }
-@keyframes confettiFall{
-  0%{opacity:0;transform:translate(0,-14px) rotate(var(--rotate))}
-  10%{opacity:1}
-  100%{opacity:1;transform:translate(var(--drift),clamp(190px,28vmin,260px)) rotate(calc(var(--rotate) + 540deg))}
+@keyframes confettiDrift{
+  0%{opacity:0;transform:translate(0,0) rotate(var(--rotate))}
+  8%{opacity:1}
+  75%{opacity:1}
+  100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(calc(var(--rotate) + var(--spin)))}
 }
 @keyframes bravoPop{
   0%{opacity:0;transform:scale(.55)}
@@ -2486,7 +2490,7 @@ const I18N={
     testDone:"Test complete",correct:"correct",wrong:"wrong",bravo:"Bravo!",testNeed:"A 10-question Test needs at least 10 active, non-memorized words with details.",
     recallNeed:"Recall needs at least 10 active memorized words.",
     clozeNeed:"Fill in the blank needs at least 10 words that have an example sentence.",archivedWord:"This word is archived. Reactivate it from Settings → Show archive.",
-    apiNeeded:"Add a Gemini API key in Settings to query new words.",dailyError:"Daily words could not be added",dailyLimitReached:"Daily limit reached. Change it in Settings.",
+    apiNeeded:"Add a Gemini API key in Settings to query new words.",dailyError:"Daily words could not be added",dailyLimitReached:"Daily limit reached. Change it in Settings.",dailyLimitPremium:"A daily goal above 20 words comes with Premium.",
     difficultyA:"Beginner",difficultyB:"Intermediate",difficultyC:"Advanced",system:"System",light:"Light",dark:"Dark",newTest:"New 10-question test",wordLabel:"Word",chooseWord:"Choose the correct word",wrongSelected:"Incorrect answers",unlimited:"Unlimited",dailyPreparing:"Preparing daily words",dailyAction:"Daily — add 10 words",settingsAction:"Settings",randomAction:"Random word",aiPreparing:"AI response is being prepared, please wait...",openDetails:"Open details",memorizedOpenDetails:"Memorized — open details",rememberCue:"Memorized",forgetCue:"Remove memorized",archiveCue:"↓ Archive",archiveToast:"Archived",undo:"Undo",wordFallback:"Word",detailsLoadError:"Word details could not be loaded.",unknownError:"An unknown error occurred.",dailyUniqueError:"Only {count}/10 unique new words could be prepared. Please try again.",dailyPartial:"Only {count} of {total} words could be fetched, and they were added. Press Daily again for the rest.",alertClose:"Close alert",optionShow:"Show options",close:"Close",searchAction:"Search",testAction:"Test active words",recallAction:"Test memorized words",limitPlaceholder:"Enter a limit",connectionError:"Gemini connection failed. Check your internet connection and try again.",noGeminiResponse:"Gemini did not return a response.",noWordGenerated:"No word was generated.",randomError:"Random word could not be generated.",apiKeyHint:"Stored only in this browser. In Google AI Studio, restrict the key to this site's address (HTTP referrer) and to the Gemini API.",statusFilter:"Status filter",sortOrder:"Sort order",apiKeyLabel:"Gemini API key",swipeActions:"Swipe actions",fontSmall:"Small",fontNormal:"Normal",fontLarge:"Large",fontXLarge:"Extra large",showMore:"Show more ({count})"
   },
   tr:{
@@ -2504,7 +2508,7 @@ const I18N={
     testDone:"Test tamamlandı",correct:"doğru",wrong:"yanlış",bravo:"Bravo!",testNeed:"10 soruluk Test için aktif, Ezberimde olmayan ve detay verisi bulunan en az 10 kelime gerekli.",
     recallNeed:"Hatırla testi için Ezberimde en az 10 aktif kelime gerekli.",
     clozeNeed:"Boşluk Doldurma için cümlesi olan en az 10 kelime gerekli.",archivedWord:"Bu kelime arşivde. Ayarlar → Arşivi göster bölümünden tekrar aktif hale getirebilirsiniz.",
-    apiNeeded:"Yeni kelime sorgulamak için Ayarlar bölümünden Gemini API anahtarı ekleyin.",dailyError:"Günlük kelimeler eklenemedi",dailyLimitReached:"Günlük limite ulaşıldı. Ayarlardaki limiti değiştirin.",
+    apiNeeded:"Yeni kelime sorgulamak için Ayarlar bölümünden Gemini API anahtarı ekleyin.",dailyError:"Günlük kelimeler eklenemedi",dailyLimitReached:"Günlük limite ulaşıldı. Ayarlardaki limiti değiştirin.",dailyLimitPremium:"20 kelimenin üzerindeki günlük hedef Premium ile açılır.",
     difficultyA:"Başlangıç",difficultyB:"Orta",difficultyC:"İleri",system:"Sistem",light:"Açık",dark:"Koyu",newTest:"Yeni 10 Soruluk Test",wordLabel:"Kelime",chooseWord:"Doğru kelimeyi seç",wrongSelected:"Yanlış işaretlediklerin",unlimited:"Sınırsız",dailyPreparing:"Günlük kelimeler hazırlanıyor",dailyAction:"Günlük — 10 kelime ekle",settingsAction:"Ayarlar",randomAction:"Rastgele kelime",aiPreparing:"AI yanıtı hazırlanıyor, lütfen bekleyin...",openDetails:"Detayı aç",memorizedOpenDetails:"Ezberimde — detayı aç",rememberCue:"Ezberimde",forgetCue:"Ezberimden Çıkar",archiveCue:"↓ Arşivle",archiveToast:"Arşivlendi",undo:"Geri al",wordFallback:"Kelime",detailsLoadError:"Kelime detayı alınamadı.",unknownError:"Bilinmeyen bir hata oluştu.",dailyUniqueError:"Yalnızca {count}/10 benzersiz yeni kelime hazırlanabildi. Lütfen tekrar deneyin.",dailyPartial:"{total} kelimeden yalnızca {count} tanesi alınabildi ve eklendi. Kalanlar için Günlük'e yeniden bas.",alertClose:"Uyarıyı kapat",optionShow:"Seçenekleri göster",close:"Kapat",searchAction:"Ara",testAction:"Aktif kelimelerden test",recallAction:"Ezberimdeki kelimelerden test",limitPlaceholder:"Limit girin",connectionError:"Gemini bağlantısı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",noGeminiResponse:"Gemini yanıt vermedi.",noWordGenerated:"Kelime üretilemedi.",randomError:"Rastgele kelime üretilemedi.",apiKeyHint:"Yalnızca bu tarayıcıda saklanır. Google AI Studio'da anahtarı bu sitenin adresiyle (HTTP referrer) ve Gemini API ile sınırlayın.",statusFilter:"Durum filtresi",sortOrder:"Sıralama",apiKeyLabel:"Gemini API anahtarı",swipeActions:"Kaydırma eylemleri",fontSmall:"Küçük",fontNormal:"Normal",fontLarge:"Büyük",fontXLarge:"Çok büyük",showMore:"Daha fazla göster ({count})"
   },
   fr:{
@@ -2522,7 +2526,7 @@ const I18N={
     testDone:"Test terminé",correct:"correct",wrong:"incorrect",bravo:"Bravo !",testNeed:"Le test de 10 questions nécessite au moins 10 mots actifs non mémorisés avec leurs détails.",
     recallNeed:"La révision nécessite au moins 10 mots mémorisés actifs.",
     clozeNeed:"Compléter la phrase nécessite au moins 10 mots avec une phrase d'exemple.",archivedWord:"Ce mot est archivé. Réactivez-le via Réglages → Afficher l’archive.",
-    apiNeeded:"Ajoutez une clé API Gemini dans Réglages pour rechercher de nouveaux mots.",dailyError:"Impossible d’ajouter les mots du jour",dailyLimitReached:"Limite quotidienne atteinte. Modifiez-la dans Réglages.",
+    apiNeeded:"Ajoutez une clé API Gemini dans Réglages pour rechercher de nouveaux mots.",dailyError:"Impossible d’ajouter les mots du jour",dailyLimitReached:"Limite quotidienne atteinte. Modifiez-la dans Réglages.",dailyLimitPremium:"Un objectif du jour au-delà de 20 mots est réservé à Premium.",
     difficultyA:"Débutant",difficultyB:"Intermédiaire",difficultyC:"Avancé",system:"Système",light:"Clair",dark:"Sombre",newTest:"Nouveau test de 10 questions",wordLabel:"Mot",chooseWord:"Choisissez le bon mot",wrongSelected:"Réponses incorrectes",unlimited:"Illimité",dailyPreparing:"Préparation des mots du jour",dailyAction:"Quotidien — ajouter 10 mots",settingsAction:"Réglages",randomAction:"Mot aléatoire",aiPreparing:"La réponse de l’IA est en préparation, veuillez patienter...",openDetails:"Ouvrir les détails",memorizedOpenDetails:"Mémorisé — ouvrir les détails",rememberCue:"Mémorisé",forgetCue:"Retirer des mémorisés",archiveCue:"↓ Archiver",archiveToast:"Archivé",undo:"Annuler",wordFallback:"Mot",detailsLoadError:"Impossible de charger les détails du mot.",unknownError:"Une erreur inconnue s’est produite.",dailyUniqueError:"Seulement {count}/10 nouveaux mots uniques ont pu être préparés. Veuillez réessayer.",dailyPartial:"Seulement {count} mots sur {total} ont pu être récupérés, et ils ont été ajoutés. Appuyez de nouveau sur Quotidien pour le reste.",alertClose:"Fermer l’alerte",optionShow:"Afficher les options",close:"Fermer",searchAction:"Rechercher",testAction:"Tester les mots actifs",recallAction:"Tester les mots mémorisés",limitPlaceholder:"Saisir une limite",connectionError:"Connexion à Gemini impossible. Vérifiez votre connexion Internet et réessayez.",noGeminiResponse:"Gemini n’a pas répondu.",noWordGenerated:"Aucun mot n’a été généré.",randomError:"Impossible de générer un mot aléatoire.",apiKeyHint:"Stockée uniquement dans ce navigateur. Dans Google AI Studio, limitez la clé à l’adresse de ce site (référent HTTP) et à l’API Gemini.",statusFilter:"Filtre de statut",sortOrder:"Ordre de tri",apiKeyLabel:"Clé API Gemini",swipeActions:"Actions par glissement",fontSmall:"Petit",fontNormal:"Normal",fontLarge:"Grand",fontXLarge:"Très grand",showMore:"Afficher plus ({count})"
   },
   de:{
@@ -2540,7 +2544,7 @@ const I18N={
     testDone:"Test abgeschlossen",correct:"richtig",wrong:"falsch",bravo:"Bravo!",testNeed:"Für den 10-Fragen-Test werden mindestens 10 aktive, nicht gelernte Wörter mit Details benötigt.",
     recallNeed:"Für Wiederholen werden mindestens 10 aktive gelernte Wörter benötigt.",
     clozeNeed:"Lückentext braucht mindestens 10 Wörter mit einem Beispielsatz.",archivedWord:"Dieses Wort ist archiviert. Reaktivieren Sie es unter Einstellungen → Archiv anzeigen.",
-    apiNeeded:"Fügen Sie in den Einstellungen einen Gemini-API-Schlüssel hinzu, um neue Wörter abzufragen.",dailyError:"Tägliche Wörter konnten nicht hinzugefügt werden",dailyLimitReached:"Tageslimit erreicht. Ändern Sie es in den Einstellungen.",
+    apiNeeded:"Fügen Sie in den Einstellungen einen Gemini-API-Schlüssel hinzu, um neue Wörter abzufragen.",dailyError:"Tägliche Wörter konnten nicht hinzugefügt werden",dailyLimitReached:"Tageslimit erreicht. Ändern Sie es in den Einstellungen.",dailyLimitPremium:"Ein Tagesziel über 20 Wörter gibt es mit Premium.",
     difficultyA:"Anfänger",difficultyB:"Mittelstufe",difficultyC:"Fortgeschritten",system:"System",light:"Hell",dark:"Dunkel",newTest:"Neuer Test mit 10 Fragen",wordLabel:"Wort",chooseWord:"Wählen Sie das richtige Wort",wrongSelected:"Falsche Antworten",
     unlimited:"Unbegrenzt",dailyPreparing:"Tägliche Wörter werden vorbereitet",dailyAction:"Täglich — 10 Wörter hinzufügen",settingsAction:"Einstellungen",randomAction:"Zufälliges Wort",aiPreparing:"KI-Antwort wird vorbereitet, bitte warten...",openDetails:"Details öffnen",memorizedOpenDetails:"Gelernt — Details öffnen",rememberCue:"Gelernt",forgetCue:"Aus Gelernt entfernen",archiveCue:"↓ Archivieren",archiveToast:"Archiviert",undo:"Rückgängig",wordFallback:"Wort",detailsLoadError:"Wortdetails konnten nicht geladen werden.",unknownError:"Ein unbekannter Fehler ist aufgetreten.",dailyUniqueError:"Nur {count}/10 eindeutige neue Wörter konnten vorbereitet werden. Bitte erneut versuchen.",dailyPartial:"Nur {count} von {total} Wörtern konnten geholt werden; sie wurden hinzugefügt. Tippen Sie erneut auf Täglich für den Rest.",alertClose:"Warnung schließen",optionShow:"Optionen anzeigen",close:"Schließen",searchAction:"Suchen",testAction:"Aktive Wörter testen",recallAction:"Gelernte Wörter testen",limitPlaceholder:"Limit eingeben",connectionError:"Verbindung zu Gemini fehlgeschlagen. Internetverbindung prüfen und erneut versuchen.",noGeminiResponse:"Gemini hat nicht geantwortet.",noWordGenerated:"Es wurde kein Wort erzeugt.",randomError:"Zufälliges Wort konnte nicht erzeugt werden.",apiKeyHint:"Wird nur in diesem Browser gespeichert. Beschränken Sie den Schlüssel in Google AI Studio auf die Adresse dieser Seite (HTTP-Referrer) und die Gemini-API.",statusFilter:"Statusfilter",sortOrder:"Sortierung",apiKeyLabel:"Gemini-API-Schlüssel",swipeActions:"Wischaktionen",fontSmall:"Klein",fontNormal:"Normal",fontLarge:"Groß",fontXLarge:"Sehr groß",showMore:"Mehr anzeigen ({count})"
   },
@@ -2559,7 +2563,7 @@ const I18N={
     testDone:"Test terminado",correct:"correctas",wrong:"incorrectas",bravo:"¡Bravo!",testNeed:"El test de 10 preguntas necesita al menos 10 palabras activas no memorizadas con detalles.",
     recallNeed:"Repasar necesita al menos 10 palabras memorizadas activas.",
     clozeNeed:"Completar la frase necesita al menos 10 palabras con una frase de ejemplo.",archivedWord:"Esta palabra está archivada. Reactívala en Ajustes → Mostrar archivo.",
-    apiNeeded:"Añade una clave API de Gemini en Ajustes para consultar palabras nuevas.",dailyError:"No se pudieron añadir las palabras diarias",dailyLimitReached:"Se alcanzó el límite diario. Cámbialo en Ajustes.",
+    apiNeeded:"Añade una clave API de Gemini en Ajustes para consultar palabras nuevas.",dailyError:"No se pudieron añadir las palabras diarias",dailyLimitReached:"Se alcanzó el límite diario. Cámbialo en Ajustes.",dailyLimitPremium:"Un objetivo diario de más de 20 palabras llega con Premium.",
     difficultyA:"Principiante",difficultyB:"Intermedio",difficultyC:"Avanzado",system:"Sistema",light:"Claro",dark:"Oscuro",newTest:"Nuevo test de 10 preguntas",wordLabel:"Palabra",chooseWord:"Elige la palabra correcta",wrongSelected:"Respuestas incorrectas",
     unlimited:"Ilimitado",dailyPreparing:"Preparando palabras diarias",dailyAction:"Diario — añadir 10 palabras",settingsAction:"Ajustes",randomAction:"Palabra aleatoria",aiPreparing:"Preparando la respuesta de IA, espera...",openDetails:"Abrir detalles",memorizedOpenDetails:"Memorizado — abrir detalles",rememberCue:"Memorizado",forgetCue:"Quitar de memorizados",archiveCue:"↓ Archivar",archiveToast:"Archivado",undo:"Deshacer",wordFallback:"Palabra",detailsLoadError:"No se pudieron cargar los detalles de la palabra.",unknownError:"Ocurrió un error desconocido.",dailyUniqueError:"Solo se pudieron preparar {count}/10 palabras nuevas únicas. Inténtalo de nuevo.",dailyPartial:"Solo se pudieron obtener {count} de {total} palabras y se añadieron. Pulsa Diario otra vez para el resto.",alertClose:"Cerrar aviso",optionShow:"Mostrar opciones",close:"Cerrar",searchAction:"Buscar",testAction:"Probar palabras activas",recallAction:"Probar palabras memorizadas",limitPlaceholder:"Introduce un límite",connectionError:"No se pudo conectar con Gemini. Comprueba Internet e inténtalo de nuevo.",noGeminiResponse:"Gemini no respondió.",noWordGenerated:"No se generó ninguna palabra.",randomError:"No se pudo generar una palabra aleatoria.",apiKeyHint:"Se guarda solo en este navegador. En Google AI Studio, restringe la clave a la dirección de este sitio (referente HTTP) y a la API de Gemini.",statusFilter:"Filtro de estado",sortOrder:"Orden",apiKeyLabel:"Clave API de Gemini",swipeActions:"Acciones de deslizamiento",fontSmall:"Pequeño",fontNormal:"Normal",fontLarge:"Grande",fontXLarge:"Muy grande",showMore:"Mostrar más ({count})"
   },
@@ -2578,7 +2582,7 @@ const I18N={
     testDone:"Test completato",correct:"corrette",wrong:"errate",bravo:"Bravo!",testNeed:"Il test da 10 domande richiede almeno 10 parole attive non memorizzate con dettagli.",
     recallNeed:"Ripassa richiede almeno 10 parole memorizzate attive.",
     clozeNeed:"Completa la frase richiede almeno 10 parole con una frase di esempio.",archivedWord:"Questa parola è archiviata. Riattivala da Impostazioni → Mostra archivio.",
-    apiNeeded:"Aggiungi una chiave API Gemini nelle Impostazioni per cercare nuove parole.",dailyError:"Impossibile aggiungere le parole giornaliere",dailyLimitReached:"Limite giornaliero raggiunto. Modificalo nelle Impostazioni.",
+    apiNeeded:"Aggiungi una chiave API Gemini nelle Impostazioni per cercare nuove parole.",dailyError:"Impossibile aggiungere le parole giornaliere",dailyLimitReached:"Limite giornaliero raggiunto. Modificalo nelle Impostazioni.",dailyLimitPremium:"Un obiettivo giornaliero oltre 20 parole è incluso in Premium.",
     difficultyA:"Principiante",difficultyB:"Intermedio",difficultyC:"Avanzato",system:"Sistema",light:"Chiaro",dark:"Scuro",newTest:"Nuovo test di 10 domande",wordLabel:"Parola",chooseWord:"Scegli la parola corretta",wrongSelected:"Risposte errate",
     unlimited:"Illimitato",dailyPreparing:"Preparazione delle parole giornaliere",dailyAction:"Giornaliero — aggiungi 10 parole",settingsAction:"Impostazioni",randomAction:"Parola casuale",aiPreparing:"Preparazione della risposta AI, attendi...",openDetails:"Apri dettagli",memorizedOpenDetails:"Memorizzato — apri dettagli",rememberCue:"Memorizzato",forgetCue:"Rimuovi dai memorizzati",archiveCue:"↓ Archivia",archiveToast:"Archiviato",undo:"Annulla",wordFallback:"Parola",detailsLoadError:"Impossibile caricare i dettagli della parola.",unknownError:"Si è verificato un errore sconosciuto.",dailyUniqueError:"È stato possibile preparare solo {count}/10 nuove parole uniche. Riprova.",dailyPartial:"Sono state recuperate solo {count} parole su {total} e sono state aggiunte. Tocca di nuovo Giornaliero per le altre.",alertClose:"Chiudi avviso",optionShow:"Mostra opzioni",close:"Chiudi",searchAction:"Cerca",testAction:"Testa parole attive",recallAction:"Testa parole memorizzate",limitPlaceholder:"Inserisci un limite",connectionError:"Connessione a Gemini non riuscita. Controlla Internet e riprova.",noGeminiResponse:"Gemini non ha risposto.",noWordGenerated:"Nessuna parola generata.",randomError:"Impossibile generare una parola casuale.",apiKeyHint:"Salvata solo in questo browser. In Google AI Studio, limita la chiave all’indirizzo di questo sito (referrer HTTP) e all’API Gemini.",statusFilter:"Filtro di stato",sortOrder:"Ordinamento",apiKeyLabel:"Chiave API Gemini",swipeActions:"Azioni di scorrimento",fontSmall:"Piccolo",fontNormal:"Normale",fontLarge:"Grande",fontXLarge:"Molto grande",showMore:"Mostra altri ({count})"
   }
@@ -3249,7 +3253,7 @@ async function adoptExternalChange(){
   const settings=VocVocData.getSettings(),settingsChanged=JSON.stringify(settings)!==settingsBefore;
   if(settingsChanged){                                   // the same assignments as start-up
     document.getElementById("difficultySelect").value=settings.difficulty||"A1-A2";
-    document.getElementById("dailyLimitInput").value=(settings.dailyLimit==="unlimited"?t("unlimited"):(settings.dailyLimit||"10"));
+    document.getElementById("dailyLimitInput").value=shownDailyLimit(settings.dailyLimit||"10");
     document.getElementById("themeSelect").value=settings.theme||"system";
     document.getElementById("fontSizeSelect").value=normalizeFontSizePreference(settings.fontSize);
     document.getElementById("nativeLanguageSelect").value=settings.nativeLanguage||"tr";
@@ -3421,7 +3425,32 @@ function syncDailyLimitSelection(){
     b.classList.toggle("selected",isUnlimited?b.dataset.value==="unlimited":b.dataset.value===raw);
   });
 }
+// What the settings field shows for a stored limit: the limit that is really in force.
+function shownDailyLimit(stored){
+  const value=stored==="unlimited"?Infinity:Math.max(1,parseInt(stored,10)||10),cap=dailyLimitCap();
+  if(value===Infinity&&cap===Infinity)return t("unlimited");
+  return String(Math.min(value,cap));
+}
+// The options above the free limit carry a "Premium" tag; choosing one on the free plan only says so.
+function dailyOptionLocked(value){
+  const cap=dailyLimitCap();
+  if(cap===Infinity)return false;
+  return value==="unlimited"||(parseInt(value,10)||0)>cap;
+}
+function syncDailyLimitLocks(){
+  document.querySelectorAll(".daily-limit-menu .ui-dropdown-option").forEach(button=>{
+    const locked=dailyOptionLocked(button.dataset.value);
+    button.classList.toggle("locked",locked);
+    if(locked)button.dataset.lock="Premium";else delete button.dataset.lock;
+  });
+}
+window.addEventListener("vocvoc-plan-changed",()=>{
+  syncDailyLimitLocks();
+  const input=document.getElementById("dailyLimitInput");
+  if(input&&document.getElementById("modalOverlay")?.style.display==="flex")input.value=shownDailyLimit(VocVocData.getSettings().dailyLimit);   // the plan changed with Settings open
+});
 function chooseDailyLimit(value){
+  if(dailyOptionLocked(value)){closeDailyLimitMenu();showError(t("dailyLimitPremium"));return;}
   const i=document.getElementById("dailyLimitInput");
   if(i)i.value=value==="unlimited"?t("unlimited"):value;
   syncDailyLimitSelection();
@@ -3477,7 +3506,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   if(savedKey)document.getElementById('apiKeyInput').value=savedKey;
 
   document.getElementById('difficultySelect').value=settings.difficulty||'A1-A2';
-  document.getElementById('dailyLimitInput').value=(settings.dailyLimit==='unlimited'?t('unlimited'):(settings.dailyLimit||'10'));
+  document.getElementById('dailyLimitInput').value=shownDailyLimit(settings.dailyLimit||'10');
   document.getElementById('themeSelect').value=settings.theme||'system';
   document.getElementById('fontSizeSelect').value=normalizeFontSizePreference(settings.fontSize);
   document.getElementById('nativeLanguageSelect').value=settings.nativeLanguage||'tr';
@@ -3533,6 +3562,8 @@ function openModal(){
     syncUiDropdown("difficultyDropdown",document.getElementById("difficultySelect").value);
     syncUiDropdown("themeDropdown",document.getElementById("themeSelect").value);
     syncUiDropdown("fontSizeDropdown",document.getElementById("fontSizeSelect").value);
+    document.getElementById("dailyLimitInput").value=shownDailyLimit(VocVocData.getSettings().dailyLimit||"10");
+    syncDailyLimitLocks();
     syncDailyLimitSelection();
     refreshArchiveButtonState();
   });
@@ -3546,7 +3577,9 @@ async function saveApiKey(){
   const rawLimit=String(document.getElementById('dailyLimitInput')?.value||'10').trim();
   const unlimited=isUnlimitedText(rawLimit);
   const n=parseInt(rawLimit,10);
-  const lim=unlimited?'unlimited':String(Number.isFinite(n)&&n>0?n:10);
+  let lim=unlimited?'unlimited':String(Number.isFinite(n)&&n>0?n:10);
+  const clamped=dailyOptionLocked(lim);
+  if(clamped)lim=String(dailyLimitCap());                                  // above the free limit: kept at it, and the user is told why
   const difficulty=document.getElementById('difficultySelect').value||'A1-A2';
   const theme=document.getElementById('themeSelect')?.value||'system';
   const fontSize=normalizeFontSizePreference(document.getElementById('fontSizeSelect')?.value);
@@ -3556,6 +3589,7 @@ async function saveApiKey(){
   applyTheme(theme);
   applyFontSize(fontSize);
   closeModal();
+  if(clamped)showError(t("dailyLimitPremium"));
 }
 let appAlertDismissTimer=null;
 let appAlertCleanupTimer=null;
@@ -4232,9 +4266,15 @@ function getDailyUsage(){
 function addDailyUsage(n){
   return VocVocData.addDailyUsage(n);
 }
+// A daily goal above 20 words is a Premium feature (VocVocPlan, screens.js): on the free plan the goal stops at 20 whatever is stored.
+function dailyLimitCap(){
+  const plan=window.VocVocPlan;
+  return plan&&typeof plan.dailyLimitMax==='function'?plan.dailyLimitMax():Infinity;
+}
 function getDailyLimit(){
   const v=VocVocData.getSettings().dailyLimit||'10';
-  return v==='unlimited'?Infinity:Math.max(1,parseInt(v,10)||10);
+  const wanted=v==='unlimited'?Infinity:Math.max(1,parseInt(v,10)||10);
+  return Math.min(wanted,dailyLimitCap());
 }
 // Daily asks for its words in parts of at most this many, all at once (see addDailyWords). 10 words -> 4 + 3 + 3.
 const DAILY_PART=4;
@@ -4786,9 +4826,12 @@ function renderQuizResult(){
   if(!quizSession)return "";
   const score=Math.max(0,Math.min(10,Number(quizSession.score)||0));
   if(score===10){
-    const pieces=Array.from({length:36},(_,i)=>{
-      const x=((i*37)%96)+2,delay=(i%9)*.055,duration=.9+(i%7)*.08,drift=((i%7)-3)*18,rotate=(i*47)%360;
-      return `<i style="--x:${x}%;--delay:${delay}s;--duration:${duration}s;--drift:${drift}px;--rotate:${rotate}deg"></i>`;
+    // Every piece goes its own way: a random direction and distance, slowly (about 2.5 to 4.5 seconds), and turns as it goes.
+    const pieces=Array.from({length:40},()=>{
+      const angle=Math.random()*Math.PI*2,reach=.35+Math.random()*.65;
+      const dx=Math.round(Math.cos(angle)*reach*320),dy=Math.round(Math.sin(angle)*reach*140+Math.random()*20);
+      const delay=(Math.random()*.4).toFixed(2),duration=(2.5+Math.random()*2).toFixed(2),rotate=Math.floor(Math.random()*360),spin=Math.floor(180+Math.random()*540)*(Math.random()<.5?-1:1);
+      return `<i style="--dx:${dx}px;--dy:${dy}px;--delay:${delay}s;--duration:${duration}s;--rotate:${rotate}deg;--spin:${spin}deg"></i>`;
     }).join("");
     return `<div class="quiz-perfect">
       <div class="quiz-confetti" aria-hidden="true">${pieces}</div>
