@@ -85,7 +85,9 @@ async function main(){
   assert(await page.locator('.app-alert').count()>0);
   record('failed language change leaves data, dropdown and dialog consistent');
   const recoveryCount=()=>page.evaluate(async()=>Object.keys((await VocVocData.recoveryExport()).words).length);
+  await page.evaluate(()=>localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify({v:1,seeded:true,testsTaken:3,badges:{test1:'2026-01-01'},quizzes:[]})));   // finished tests and badges of the new interface
   await page.evaluate(()=>resetAllProgress());await ready();assert.equal(await wordCount(),0);assert.equal(await recoveryCount(),before);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('VOCVOC_ACTIVITY_V1')),null,'the reset deleted the tests and badges too');
   await page.evaluate(()=>resetAllProgress());await ready();assert.equal(await recoveryCount(),before);
   record('reset keeps a recovery copy; an empty reset does not overwrite it');
 
@@ -173,6 +175,100 @@ async function main(){
   await page.reload();await ready();assert(await page.evaluate(word=>VocVocData.getHistoryWords().includes(word),other));assert.equal((await listed()).length,known);
  }
  record('Search / Random / synonym tags show the word database in the word window without adding; Add new words is one atomic batch; Add keeps what was shown; persistence');await context.close();
+ // Tags: a word of the list can be labelled; the labels are found by the History filter and by "#tag" in the search box
+ {
+  context=await browser.newContext({viewport:{width:1000,height:850}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
+  const tagsOf=word=>page.evaluate(w=>VocVocData.getWordByText(w).tags||[],word);
+  const listed=()=>page.locator('#historyArea .history-chip span').allTextContents();
+  const openDetails=async word=>{await page.evaluate(w=>toggleHistoryDetail(w),word);await page.waitForSelector('#historyDetails .tags-section');};
+  await openDetails('Bonjour');
+  assert.equal(await page.locator('#historyDetails .tags-section .tag-empty').count(),1);
+  // typed with a # and capital letters, added with Enter: stored clean, and the field is ready for the next tag
+  await page.locator('#historyDetails .tag-input').fill('  #Selam ');await page.keyboard.press('Enter');
+  await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').tags?.[0]==='selam');
+  assert.deepEqual(await page.locator('#historyDetails .tag-chip-main').allTextContents(),['#selam']);
+  assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('tag-input')),true);
+  await page.locator('#historyDetails .tag-input').fill('günlük');await page.locator('#historyDetails .tag-add-btn').click();
+  await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').tags?.length===2);
+  assert.deepEqual(await tagsOf('Bonjour'),['selam','günlük']);
+  // the same tag again changes nothing; an empty field adds nothing
+  await page.locator('#historyDetails .tag-input').fill('SELAM');await page.keyboard.press('Enter');await pause(200);
+  assert.deepEqual(await tagsOf('Bonjour'),['selam','günlük']);
+  // another word: the tags in use are offered, most used first, and one press adds it
+  await page.evaluate(()=>closeHistoryDetail());await openDetails('Merci');
+  assert.deepEqual(await page.locator('#historyDetails .tag-suggest').allTextContents(),['#günlük','#selam']);
+  await page.locator('#historyDetails .tag-suggest',{hasText:'#selam'}).click();
+  await page.waitForFunction(()=>VocVocData.getWordByText('Merci').tags?.[0]==='selam');
+  assert.deepEqual(await page.locator('#historyDetails .tag-suggest').allTextContents(),['#günlük']);
+  // a word that is not in the list has no tags section; the keyboard reaches every control of the section
+  await page.evaluate(()=>openRelatedWordPopup('maison'));await page.waitForSelector('#relatedWordPopup [data-add-related-word]');
+  assert.equal(await page.locator('#relatedWordPopup .tags-section').count(),0);
+  await page.evaluate(()=>closeRelatedWordPopup());
+  // tapping a tag shows the words that carry it: the details close, the History filter reads #selam
+  await page.locator('#historyDetails .tag-chip-main').first().click();
+  assert.equal(await page.locator('#historyDetails.open').count(),0);
+  assert.equal(await page.inputValue('#historyFilterInput'),'#selam');
+  assert.deepEqual((await listed()).sort(),['Bonjour','Merci']);
+  // the History filter finds tags too, also without the # and without accents or case
+  await page.fill('#historyFilterInput','gunluk');assert.deepEqual(await listed(),['Bonjour']);
+  await page.fill('#historyFilterInput','JE');assert.deepEqual(await listed(),['Je']);                  // a word, not a tag
+  await page.fill('#historyFilterInput','#');assert.deepEqual((await listed()).sort(),['Bonjour','Merci']);   // # alone: every word that has a tag
+  // the search box: #tag opens the list, a tag nobody has says so, and nothing is looked up in the word database
+  await page.fill('#historyFilterInput','');
+  await page.evaluate(()=>{document.getElementById('searchInput').value='#günlük';return handleSearch();});
+  assert.equal(await page.inputValue('#historyFilterInput'),'#günlük');assert.deepEqual(await listed(),['Bonjour']);
+  assert.equal(await page.locator('#relatedWordPopup.open').count(),0);
+  await page.evaluate(()=>{document.getElementById('searchInput').value='#yok';return handleSearch();});
+  await page.waitForFunction(()=>/“yok” etiketli kelime yok/.test(document.querySelector('.app-alert .app-alert-text')?.textContent||''));
+  await page.evaluate(()=>{showError('');document.getElementById('historyFilterInput').value='';renderHistory();});
+  // removing a tag; the tags survive a reload and are part of the backup
+  await openDetails('Bonjour');
+  await page.locator('#historyDetails [data-tag-remove]').first().click();
+  await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').tags?.join()==='günlük');
+  const exported=await page.evaluate(()=>VocVocData.export());
+  assert.deepEqual(Object.values(exported.words).find(word=>word.word==='Bonjour').tags,['günlük']);
+  await page.reload();await ready();assert.deepEqual(await tagsOf('Bonjour'),['günlük']);assert.deepEqual(await tagsOf('Merci'),['selam']);
+  // a word keeps at most 12 tags: the field is replaced by a note
+  await page.evaluate(()=>VocVocData.setWordTags('Je',Array.from({length:12},(_,i)=>'etiket'+i)));
+  await openDetails('Je');
+  assert.equal(await page.locator('#historyDetails .tag-input').count(),0);assert.match(await page.locator('#historyDetails .tag-note').textContent(),/en çok 12 etiket/);
+  await page.evaluate(()=>closeHistoryDetail());
+  // removing a tag from a word with 12 gives the field back; the controls have names
+  await openDetails('Je');await page.locator('#historyDetails [data-tag-remove]').first().click();
+  await page.waitForSelector('#historyDetails .tag-input');
+  assert.equal(await page.evaluate(()=>[...document.querySelectorAll('#historyDetails .tags-section button,#historyDetails .tags-section input')].filter(el=>!(el.getAttribute('aria-label')||el.textContent||'').trim()).length),0);
+  await context.close();
+ }
+ record('Tags: added with Enter or the button (clean, no duplicates), offered from the tags in use, removed, found by the History filter and by #tag in the search box, kept in the backup, at most 12 a word, none on a word that is not in the list');
+ // The word window for a word that is already in the list has no second Close button, and search finds words typed with Turkish letters and suggests words that look alike
+ {
+  context=await browser.newContext({viewport:{width:1000,height:850}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
+  const search=text=>page.evaluate(value=>{document.getElementById('searchInput').value=value;return handleSearch();},text);
+  const title=()=>page.locator('#relatedWordPopup .word-title').first().textContent();
+  // already in the list: the note and the × only
+  await search('bonjour');await page.waitForSelector('#relatedWordPopup .related-listed');
+  assert.equal(await page.locator('#relatedWordPopup .related-listed').textContent(),'Bu kelime zaten listende.');
+  assert.equal(await page.locator('#relatedWordPopup .related-actions button').count(),0);
+  assert.equal(await page.locator('#relatedWordPopup .word-popup-close').count(),1);
+  await page.locator('#relatedWordPopup .word-popup-close').click();assert.equal(await page.locator('#relatedWordPopup.open').count(),0);
+  // a Turkish keyboard has no î: ı, I and i all find île
+  for(const typed of ['ıle','ILE','ile','İle']){await search(typed);await page.waitForSelector('#relatedWordPopup [data-add-related-word]');assert.equal(await title(),'île',typed);}
+  // a typo: not in the database, but the words that look like it are offered, and one opens its word window (still not added)
+  await search('maisson');await page.waitForSelector('#relatedWordPopup .error-box');
+  assert.match(await page.locator('#relatedWordPopup .error-box').textContent(),/“maisson” kelime veritabanında yok/);
+  assert.equal(await page.locator('#relatedWordPopup .similar-words .section-title').textContent(),'Benzer kelimeler');
+  assert.equal(await page.locator('#relatedWordPopup .similar-words .clickable-badge').first().textContent(),'maison');
+  const before=await page.evaluate(()=>getHistory().length);
+  await page.locator('#relatedWordPopup .similar-words .clickable-badge').first().click();
+  await page.waitForSelector('#relatedWordPopup [data-add-related-word]');assert.equal(await title(),'maison');assert.equal(await page.evaluate(()=>getHistory().length),before);
+  // a found word brings its spelling variants: ou - où
+  await search('ou');await page.waitForSelector('#relatedWordPopup [data-add-related-word]');
+  assert.equal(await title(),'ou');assert(await page.locator('#relatedWordPopup .similar-words .clickable-badge',{hasText:'où'}).count()>0);
+  // nonsense has nothing to suggest
+  await search('zzzxqjk');await page.waitForSelector('#relatedWordPopup .error-box');assert.equal(await page.locator('#relatedWordPopup .similar-words').count(),0);
+  await context.close();
+ }
+ record('Search: a word already in the list shows only the note (no second Close button); ı, İ and i find île; a typo shows the words that look like it; a found word shows its spelling variants');
  // Actual pointer drags execute the async commit callbacks on every card family.
  context=await browser.newContext({viewport:{width:1000,height:850}});page=await context.newPage();await page.goto(url);await ready();
  const drag=async(selector,amount)=>{const box=await page.locator(selector).first().boundingBox(),x=box.x+box.width/2,y=box.y+box.height/2;await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+amount,y+5,{steps:8});await page.mouse.up();};
@@ -904,14 +1000,16 @@ async function main(){
    if(/Gizlilik|Kullanım/.test(row))assert.match(await page.locator('#v2Screen .v2-note').first().textContent(),/Taslak/);
    await page.goBack();
   }
-  // signing out only asks again; the learning data stays. "Back to the old interface" removes the new one.
+  // signing out only asks again; the learning data stays. The Profile page has no way back to the old interface (?ui=v1 still turns the new one off).
   const wordCount=await page.evaluate(()=>VocVocData.getWords().length);
   await page.getByRole('button',{name:/Çıkış yap/}).click();await page.waitForSelector('#v2Auth.v2-open');
   assert.equal(await page.evaluate(()=>VocVocData.getWords().length),wordCount);
   await page.getByRole('button',{name:/Misafir olarak/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
-  await page.evaluate(()=>{location.hash='#/profile';});await Promise.all([page.waitForNavigation(),page.getByRole('button',{name:/Eski arayüze dön/}).click()]);await ready();
+  await page.evaluate(()=>{location.hash='#/profile';});await page.waitForSelector('#v2Screen[data-route="profile"] .v2-rows');
+  assert.equal(await page.getByRole('button',{name:/Eski arayüze dön/}).count(),0);assert.equal(await page.locator('#v2Screen').getByText(/eski arayüz/i).count(),0);
+  await page.goto(url+'?ui=v1');await ready();
   assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),localStorage.getItem('VOCVOC_UI')]),[false,null]);
-  record('new interface: draft policy/terms/help/about pages, sign-out keeps the data, "old interface" turns the new one off');
+  record('new interface: draft policy/terms/help/about pages, sign-out keeps the data, no "old interface" row on the Profile page, ?ui=v1 turns the new one off');
   await context.close();
  }
  // ===== New interface: finished tests are recorded, badges are earned, statistics and badges screens =====
@@ -950,8 +1048,16 @@ async function main(){
   await page.evaluate(()=>{renderQuizQuestion();renderQuizQuestion();});assert.equal((await activity()).testsTaken,1);
   await page.reload();await ready();
   assert.deepEqual(await page.evaluate(()=>[JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).testsTaken,document.getElementById('v2Celebrate')?.classList.contains('v2-on')||false]),[1,false]);   // remembered, not announced again
+  // resetting the progress deletes the finished tests and the badges as well, and the pages follow
+  await page.evaluate(()=>{location.hash='#/today';});await page.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
+  assert.match(await page.locator('#v2Screen').textContent(),/[1-9]\d* \/ 14 rozet kazanıldı/);
+  await page.evaluate(()=>resetAllProgress());
+  await page.waitForFunction(()=>/0 \/ 14 rozet kazanıldı/.test(document.getElementById('v2Screen').textContent));
+  assert.deepEqual(await page.evaluate(()=>{const record=JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')||'null');return record?[record.testsTaken,record.quizzes.length,Object.keys(record.badges).length]:[0,0,0];}),[0,0,0]);
+  await page.evaluate(()=>{location.hash='#/study';});await page.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
+  assert.equal(await page.locator('#v2Screen .v2-testlist li').count(),0,'no finished test is listed after the reset');
   await context.close();
-  record('new interface: a finished Test is recorded once, a perfect one earns badges that are announced once, the first look is silent');
+  record('new interface: a finished Test is recorded once, a perfect one earns badges that are announced once, the first look is silent; resetting the progress deletes the tests and badges too');
  }
  {
   // seeded history: 30 words (12 memorized on days 0..9, two days after being added), 3 finished tests, a signed-in profile, Premium
@@ -1736,12 +1842,14 @@ async function main(){
    await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'guest',name:''})));
    await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-goal-actions');
    assert.deepEqual(await p.locator('.v2-goal-actions button').allTextContents(),['Yeni Kelime Ekle','Kelimelerime Git']);
-   // the two buttons are the same size, and wear the two gradients: Add New Words green to purple, Go to My Words blue to purple
+   // the two buttons are the same size, and wear the two gradients: Add New Words green to purple, Go to My Words orange to purple, both from the lower left to the upper right
    const look=await p.evaluate(()=>[...document.querySelectorAll('.v2-goal-actions button')].map(node=>{const box=node.getBoundingClientRect();return {w:box.width,h:box.height,image:getComputedStyle(node).backgroundImage,color:getComputedStyle(node).color};}));
    assert(Math.abs(look[0].w-look[1].w)<=1&&Math.abs(look[0].h-look[1].h)<=1,'the two buttons are the same size: '+JSON.stringify(look));
    assert(look.every(item=>/^linear-gradient/.test(item.image)&&item.color==='rgb(255, 255, 255)'));
    assert(look[0].image.includes('rgb(21, 128, 61)')&&look[0].image.includes('rgb(109, 40, 217)'),'green to purple: '+look[0].image);
-   assert(look[1].image.includes('rgb(29, 78, 216)')&&look[1].image.includes('rgb(109, 40, 217)'),'blue to purple: '+look[1].image);
+   assert(look[1].image.includes('rgb(194, 65, 12)')&&look[1].image.includes('rgb(109, 40, 217)'),'orange to purple: '+look[1].image);
+   assert(look.every(item=>item.image.startsWith('linear-gradient(to right top,')),'from the lower left corner to the upper right one: '+look.map(item=>item.image));
+   assert(look[0].image.indexOf('rgb(21, 128, 61)')<look[0].image.indexOf('rgb(109, 40, 217)')&&look[1].image.indexOf('rgb(194, 65, 12)')<look[1].image.indexOf('rgb(109, 40, 217)'),'green and orange at the start (lower left), purple at the end (upper right)');
    assert.equal(await p.evaluate(()=>{const [daily,words]=[...document.querySelectorAll('.v2-goal-actions button')].map(node=>node.getBoundingClientRect());return words.left>daily.right&&Math.abs(words.top-daily.top)<2;}),true);   // side by side
    await p.getByRole('button',{name:'Kelimelerime Git'}).click();
    await p.waitForFunction(()=>location.hash==='#/words'&&document.getElementById('v2Screen').hidden);                    // the Words page is the app's own home screen: the page of the new interface steps aside
@@ -1780,7 +1888,7 @@ async function main(){
    assert.equal(await p.evaluate(()=>getDailyLimit()),20);
    await c.close();
   }
-  record('new interface: the Today card has two equal gradient buttons, Add New Words and Go to My Words; a daily goal above 20 words is Premium (tagged options, kept at 20 when saved, held at 20 when the plan ends)');
+  record('new interface: the Today card has two equal gradient buttons (green-purple and orange-purple, lower left to upper right), Add New Words and Go to My Words; a daily goal above 20 words is Premium (tagged options, kept at 20 when saved, held at 20 when the plan ends)');
 
   // a level that has no words yet says so; the card follows the difficulty setting.
   // The course is served without its C1 and C2 chunks, so this keeps holding as long as some level could be missing

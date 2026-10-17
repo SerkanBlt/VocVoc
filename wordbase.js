@@ -12,28 +12,34 @@
 
   /* ---------- keys a word is looked up by ---------- */
   // "École", "ecole" and "l'école" are the same word to the user: letters without accents, no case, no leading article.
+  // A Turkish keyboard has no î, û or ç: the dotless ı (and İ) the user types instead is an i, ş is s, ğ is g (the accents come off with the marks).
   const ARTICLES=/^(?:l['’]|d['’]|le |la |les |un |une |des |du |de la |de l['’]|au |aux )/;
   function foldText(text,language){
     return String(text??'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/œ/gi,'oe').replace(/æ/gi,'ae')
-      .replace(/[’‘`´]/g,"'").replace(/\s+/g,' ').trim().toLocaleLowerCase(language||'en');
+      .replace(/[’‘`´]/g,"'").replace(/\s+/g,' ').trim().toLocaleLowerCase(language||'en').replace(/ı/g,'i');
   }
+  // The loosest key: also a hyphen, an apostrophe and a space are the same ("s'il-vous-plaît" = "s il vous plait").
+  const looseKey=(text,language)=>foldText(text,language).replace(/['-]/g,' ').replace(/\s+/g,' ').trim();
   function withoutArticle(text){
     const key=String(text).replace(/\s+/g,' ').trim();
     const match=ARTICLES.exec(key.toLocaleLowerCase('fr'));
     return match&&key.length>match[0].length?key.slice(match[0].length):key;
   }
-  // The index of a course: every headword with the chunk it is in, by exact key and by folded key.
+  // The index of a course: every headword with the chunk it is in, by exact key and by folded key (and a plain list of loose keys for similar words).
   function buildIndex(order,target){
-    const exact=new Map(),folded=new Map();
+    const exact=new Map(),folded=new Map(),loose=new Map(),list=[];
     for(const chunk of order.chunks){
       for(const word of chunk.words){
         const entry={word,chunk:chunk.id,level:chunk.level};
         exact.set(String(word).normalize('NFC').toLocaleLowerCase(target),entry);
         const key=foldText(word,target);
         if(!folded.has(key))folded.set(key,entry);
+        const looser=looseKey(word,target);
+        if(!loose.has(looser))loose.set(looser,entry);
+        list.push({word,key:looser});
       }
     }
-    return {exact,folded};
+    return {exact,folded,loose,list};
   }
   // Candidate keys for what the user typed, most exact first.
   function lookupKeys(text,target){
@@ -51,7 +57,54 @@
       const hit=index.folded.get(foldText(candidate,target));
       if(hit)return hit;
     }
+    for(const candidate of lookupKeys(text,target)){                                         // last: hyphens, apostrophes and spaces count the same
+      const hit=index.loose?.get(looseKey(candidate,target));
+      if(hit)return hit;
+    }
     return null;
+  }
+  // Edit distance where swapping two neighbouring letters is one edit; gives up (max+1) as soon as it must be larger than max.
+  function editDistance(a,b,max){
+    if(a===b)return 0;
+    if(Math.abs(a.length-b.length)>max)return max+1;
+    let before=null,row=Array.from({length:b.length+1},(_,i)=>i);
+    for(let i=1;i<=a.length;i++){
+      const next=[i];let low=i;
+      for(let j=1;j<=b.length;j++){
+        let value=Math.min(row[j]+1,next[j-1]+1,row[j-1]+(a[i-1]===b[j-1]?0:1));
+        if(before&&i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])value=Math.min(value,before[j-2]+1);
+        next.push(value);if(value<low)low=value;
+      }
+      if(low>max)return max+1;
+      before=row;row=next;
+    }
+    return row[b.length];
+  }
+  // Words that look like what was typed, best first: the same word spelled differently (accents, hyphen, Turkish letters), a typo away, or
+  // the beginning of a longer word. `found` is the word that was matched (kept out of the list); a matched word only gets its spelling variants and a one-letter-away
+  // neighbour of a longer word, a word that was not found gets everything.
+  function similarWords(index,text,target,{limit=8,found=''}={}){
+    const keys=[...new Set(lookupKeys(text,target).map(candidate=>looseKey(candidate,target)).filter(Boolean))];
+    if(!keys.length)return [];
+    const skip=new Set([String(found).normalize('NFC').toLocaleLowerCase(target)]),seen=new Set(skip),out=[];
+    const add=item=>{const id=String(item.word).normalize('NFC').toLocaleLowerCase(target);if(seen.has(id))return false;seen.add(id);out.push(item.word);return true;};
+    const list=index.list||[];
+    for(const item of list)if(keys.includes(item.key))add(item);                              // the same word, spelled another way
+    const key=keys[keys.length-1],longest=key.length,max=longest<=3?0:longest<=6?1:2;
+    const near=[];
+    if(max>0&&(!found||longest>=5)){
+      for(const item of list){
+        const distance=editDistance(key,item.key,found?1:max);
+        if(distance>0&&distance<=(found?1:max)&&!seen.has(String(item.word).normalize('NFC').toLocaleLowerCase(target)))near.push({item,distance});
+      }
+      near.sort((a,b)=>a.distance-b.distance||a.item.key.length-b.item.key.length||a.item.word.localeCompare(b.item.word,target));
+      for(const {item} of near)if(out.length<limit)add(item);
+    }
+    if(!found&&key.length>=2){
+      const longer=list.filter(item=>item.key!==key&&item.key.startsWith(key)).sort((a,b)=>a.key.length-b.key.length||a.word.localeCompare(b.word,target));
+      for(const item of longer)if(out.length<limit)add(item);
+    }
+    return out.slice(0,limit);
   }
   const nextBand=band=>{const at=BAND_ORDER.indexOf(band);return at>=0&&at<BAND_ORDER.length-1?BAND_ORDER[at+1]:null;};
   const copyEntry=entry=>JSON.parse(JSON.stringify({synonyms:[],antonyms:[],examples:[],expressions:[],...entry}));
@@ -133,22 +186,20 @@
     }
     // What to answer when the words are not there: no words for this language pair at all, or they cannot be had right now.
     const unready=()=>({status:state.status==='none'?'none':'unavailable'});
-    // A word the user typed (or a related word): {status:'found',entry,level} | {status:'missing'} | {status:'none'} | {status:'unavailable'}.
+    // A word the user typed (or a related word): {status:'found',entry,level,similar} | {status:'missing',similar} | {status:'none'} | {status:'unavailable'}.
+    // `similar` lists headwords that look like what was typed (another spelling of the word, a typo away, the start of a longer word).
     async function find(text){
       if(await ready()!=='ready')return unready();
       const target=settings().targetLanguage;
       try{
-        if(state.course){
-          const hit=lookupInIndex(state.index,text,target);
-          if(!hit)return {status:'missing'};
-          const chunk=await courseChunk(state.course,hit.chunk);
-          const entry=chunk.words.find(item=>item.word===hit.word);
-          return entry?{status:'found',entry:copyEntry(entry),level:hit.level}:{status:'missing'};
-        }
-        const index=buildIndex({chunks:[{id:'pack',level:state.pack.level||'',words:state.pack.words.map(item=>item.word)}]},target);
+        const index=state.course?state.index:buildIndex({chunks:[{id:'pack',level:state.pack.level||'',words:state.pack.words.map(item=>item.word)}]},target);
         const hit=lookupInIndex(index,text,target);
-        const entry=hit&&state.pack.words.find(item=>item.word===hit.word);
-        return entry?{status:'found',entry:copyEntry(entry),level:hit.level}:{status:'missing'};
+        if(!hit)return {status:'missing',similar:similarWords(index,text,target,{limit:8})};
+        const entry=state.course
+          ?(await courseChunk(state.course,hit.chunk)).words.find(item=>item.word===hit.word)
+          :state.pack.words.find(item=>item.word===hit.word);
+        if(!entry)return {status:'missing',similar:[]};
+        return {status:'found',entry:copyEntry(entry),level:hit.level,similar:similarWords(index,text,target,{limit:5,found:hit.word})};
       }catch(_){return {status:'unavailable'};}
     }
     // A random word of the chosen level, one the user does not have yet when there is one.
@@ -188,7 +239,7 @@
     if(cache){const hit=await cache.match(url);if(hit)return hit.json();}
     throw new Error('offline');
   }
-  const api={PACK_CACHE,BAND_ORDER,foldText,withoutArticle,buildIndex,lookupKeys,lookupInIndex,nextBand,create};
+  const api={PACK_CACHE,BAND_ORDER,foldText,looseKey,withoutArticle,buildIndex,lookupKeys,lookupInIndex,editDistance,similarWords,nextBand,create};
   if(typeof module==='object'&&module.exports)module.exports=api;
   // VocVocData is a top-level const of the page's own script: visible here by name, not as a property of window.
   if(typeof VocVocData!=='undefined'&&root.VocVocPacks){

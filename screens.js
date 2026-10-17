@@ -1,10 +1,13 @@
 'use strict';
 /* New interface (prototype): tab bar, screens, simulated sign-in and simulated Free/Premium plan.
-   Opt-in: open the app with ?ui=v2 (remembered; ?ui=v1 or "Eski arayüze dön" turns it off). Without it this file only defines VocVocPlan
+   Opt-in: open the app with ?ui=v2 (remembered; ?ui=v1 turns it off). Without it this file only defines VocVocPlan
    and does nothing else, so the default interface and its tests are unaffected. Nothing here is real: there is no account, server or payment.
    The existing home screen (search, word cards, the list) is the "Words" tab; the other tabs, Today included, are full-screen pages drawn over it. No inline handlers, no innerHTML with data. */
 (function(){
   const UI_KEY='VOCVOC_UI',PLAN_KEY='VOCVOC_SIM_PLAN',PROFILE_KEY='VOCVOC_SIM_PROFILE';
+  // The record keeps what the app's data cannot say: finished tests and the day each badge was earned. It is small, bounded and lives only
+  // in this browser (not in the backup); a progress reset deletes it too (resetActivity).
+  const ACTIVITY_KEY='VOCVOC_ACTIVITY_V1';
   const store={
     get(key){try{return localStorage.getItem(key);}catch(_){return null;}},
     set(key,value){try{localStorage.setItem(key,value);}catch(_){}},
@@ -48,7 +51,7 @@
       lockedTitle:'Premium özelliği',lockedStats:'Günlük etkinlik, test başarısı, öğrenme eğrisi ve seri gibi istatistikler Premium ile açılır.',goPremium:"Premium'a geç",
       profileTitle:'Profil',guest:'Misafir',modeGoogle:'Google (simülasyon)',modeGuest:'Bu cihazda',planFree:'Ücretsiz',planPremium:'Premium (simülasyon)',
       rowPremium:'Premium',rowSettings:'Ayarlar',rowHelp:'Yardım',rowPrivacy:'Gizlilik Politikası',rowTerms:'Kullanım Şartları',rowAbout:'Hakkında',
-      signOut:'Çıkış yap (simülasyon)',signOutNote:'Çıkış, kelimelerini ve ilerlemeni silmez.',oldUi:'Eski arayüze dön',
+      signOut:'Çıkış yap (simülasyon)',signOutNote:'Çıkış, kelimelerini ve ilerlemeni silmez.',
       premiumTitle:'Premium',planLabel:'Mevcut plan',freeIncludes:'Ücretsiz',premiumIncludes:'Premium (ücretsiz olanların hepsine ek olarak)',
       priceNote:'Aylık ve yıllık abonelik olacak. Fiyatlar henüz belirlenmedi.',
       simulate:"Premium'u simüle et",backToFree:'Ücretsiz plana dön',simNote:'Simülasyon: gerçek ödeme alınmaz, hiçbir şey satın alınmaz.',
@@ -80,7 +83,7 @@
       lockedTitle:'Premium feature',lockedStats:'Statistics such as daily activity, test accuracy, the learning curve and streaks come with Premium.',goPremium:'Go Premium',
       profileTitle:'Profile',guest:'Guest',modeGoogle:'Google (simulation)',modeGuest:'On this device',planFree:'Free',planPremium:'Premium (simulation)',
       rowPremium:'Premium',rowSettings:'Settings',rowHelp:'Help',rowPrivacy:'Privacy Policy',rowTerms:'Terms of Use',rowAbout:'About',
-      signOut:'Sign out (simulation)',signOutNote:'Signing out does not delete your words or progress.',oldUi:'Back to the old interface',
+      signOut:'Sign out (simulation)',signOutNote:'Signing out does not delete your words or progress.',
       premiumTitle:'Premium',planLabel:'Current plan',freeIncludes:'Free',premiumIncludes:'Premium (in addition to everything free)',
       priceNote:'It will be a monthly and a yearly subscription. Prices are not set yet.',
       simulate:'Simulate Premium',backToFree:'Back to the free plan',simNote:'Simulation: no real payment is taken and nothing is purchased.',
@@ -112,7 +115,7 @@
       lockedTitle:'Fonction Premium',lockedStats:'Les statistiques comme l’activité quotidienne, la réussite aux tests, la courbe d’apprentissage et les séries sont réservées à Premium.',goPremium:'Passer à Premium',
       profileTitle:'Profil',guest:'Invité',modeGoogle:'Google (simulation)',modeGuest:'Sur cet appareil',planFree:'Gratuit',planPremium:'Premium (simulation)',
       rowPremium:'Premium',rowSettings:'Réglages',rowHelp:'Aide',rowPrivacy:'Politique de confidentialité',rowTerms:'Conditions d’utilisation',rowAbout:'À propos',
-      signOut:'Se déconnecter (simulation)',signOutNote:'Se déconnecter ne supprime ni vos mots ni votre progression.',oldUi:'Revenir à l’ancienne interface',
+      signOut:'Se déconnecter (simulation)',signOutNote:'Se déconnecter ne supprime ni vos mots ni votre progression.',
       premiumTitle:'Premium',planLabel:'Offre actuelle',freeIncludes:'Gratuit',premiumIncludes:'Premium (en plus de tout ce qui est gratuit)',
       priceNote:'Ce sera un abonnement mensuel et annuel. Les prix ne sont pas encore fixés.',
       simulate:'Simuler Premium',backToFree:'Revenir à l’offre gratuite',simNote:'Simulation : aucun vrai paiement n’est prélevé et rien n’est acheté.',
@@ -144,7 +147,7 @@
       lockedTitle:'Premium-Funktion',lockedStats:'Statistiken wie tägliche Aktivität, Testergebnisse, Lernkurve und Serien gibt es mit Premium.',goPremium:'Premium holen',
       profileTitle:'Profil',guest:'Gast',modeGoogle:'Google (Simulation)',modeGuest:'Auf diesem Gerät',planFree:'Kostenlos',planPremium:'Premium (Simulation)',
       rowPremium:'Premium',rowSettings:'Einstellungen',rowHelp:'Hilfe',rowPrivacy:'Datenschutzerklärung',rowTerms:'Nutzungsbedingungen',rowAbout:'Über',
-      signOut:'Abmelden (Simulation)',signOutNote:'Beim Abmelden werden Ihre Wörter und Ihr Fortschritt nicht gelöscht.',oldUi:'Zurück zur alten Oberfläche',
+      signOut:'Abmelden (Simulation)',signOutNote:'Beim Abmelden werden Ihre Wörter und Ihr Fortschritt nicht gelöscht.',
       premiumTitle:'Premium',planLabel:'Aktueller Tarif',freeIncludes:'Kostenlos',premiumIncludes:'Premium (zusätzlich zu allem Kostenlosen)',
       priceNote:'Es wird ein Monats- und ein Jahresabo geben. Die Preise stehen noch nicht fest.',
       simulate:'Premium simulieren',backToFree:'Zurück zum kostenlosen Tarif',simNote:'Simulation: Es wird keine echte Zahlung abgebucht und nichts gekauft.',
@@ -176,7 +179,7 @@
       lockedTitle:'Función Premium',lockedStats:'Las estadísticas, como la actividad diaria, el acierto en los tests, la curva de aprendizaje y las rachas, llegan con Premium.',goPremium:'Pasar a Premium',
       profileTitle:'Perfil',guest:'Invitado',modeGoogle:'Google (simulación)',modeGuest:'En este dispositivo',planFree:'Gratis',planPremium:'Premium (simulación)',
       rowPremium:'Premium',rowSettings:'Ajustes',rowHelp:'Ayuda',rowPrivacy:'Política de privacidad',rowTerms:'Condiciones de uso',rowAbout:'Acerca de',
-      signOut:'Cerrar sesión (simulación)',signOutNote:'Cerrar sesión no borra tus palabras ni tu progreso.',oldUi:'Volver a la interfaz antigua',
+      signOut:'Cerrar sesión (simulación)',signOutNote:'Cerrar sesión no borra tus palabras ni tu progreso.',
       premiumTitle:'Premium',planLabel:'Plan actual',freeIncludes:'Gratis',premiumIncludes:'Premium (además de todo lo gratuito)',
       priceNote:'Habrá una suscripción mensual y otra anual. Los precios aún no están fijados.',
       simulate:'Simular Premium',backToFree:'Volver al plan gratuito',simNote:'Simulación: no se cobra ningún pago real y no se compra nada.',
@@ -208,7 +211,7 @@
       lockedTitle:'Funzione Premium',lockedStats:'Statistiche come attività giornaliera, risultati dei test, curva di apprendimento e serie sono incluse in Premium.',goPremium:'Passa a Premium',
       profileTitle:'Profilo',guest:'Ospite',modeGoogle:'Google (simulazione)',modeGuest:'Su questo dispositivo',planFree:'Gratuito',planPremium:'Premium (simulazione)',
       rowPremium:'Premium',rowSettings:'Impostazioni',rowHelp:'Aiuto',rowPrivacy:'Informativa sulla privacy',rowTerms:'Termini d’uso',rowAbout:'Informazioni',
-      signOut:'Esci (simulazione)',signOutNote:'Uscire non cancella le tue parole né i tuoi progressi.',oldUi:'Torna alla vecchia interfaccia',
+      signOut:'Esci (simulazione)',signOutNote:'Uscire non cancella le tue parole né i tuoi progressi.',
       premiumTitle:'Premium',planLabel:'Piano attuale',freeIncludes:'Gratuito',premiumIncludes:'Premium (in più rispetto a tutto ciò che è gratuito)',
       priceNote:'Sarà un abbonamento mensile e annuale. I prezzi non sono ancora stabiliti.',
       simulate:'Simula Premium',backToFree:'Torna al piano gratuito',simNote:'Simulazione: nessun pagamento reale viene addebitato e non si acquista nulla.',
@@ -373,7 +376,9 @@
         {h:'Supporto',p:['[l’e-mail di supporto sarà aggiunta]']}]}
     }
   };
-  window.VocVocScreens=Object.freeze({TEXT,PAGES});
+  // "Reset progress" (and a change of language) wipes the words, so the finished tests and the earned badges go with them. Works whether or not the new interface is on.
+  function resetActivity(){store.remove(ACTIVITY_KEY);window.dispatchEvent(new CustomEvent('vocvoc-activity-reset'));}
+  window.VocVocScreens=Object.freeze({TEXT,PAGES,resetActivity});
 
   if(!enabled)return;
 
@@ -415,9 +420,7 @@
 
 
   /* ---------- activity record and statistics (the numbers come from stats.js) ---------- */
-  // The record keeps what the app's data cannot say: finished tests and the day each badge was earned. It is small, bounded and lives only
-  // in this browser (not in the backup). The rest of the statistics is worked out from when words were added and memorized.
-  const ACTIVITY_KEY='VOCVOC_ACTIVITY_V1';
+  // The rest of the statistics is worked out from when words were added and memorized.
   const parseJson=text=>{try{return JSON.parse(text);}catch(_){return null;}};
   const readActivity=()=>VocVocStats.normalizeRecord(parseJson(store.get(ACTIVITY_KEY)));
   const writeActivity=record=>store.set(ACTIVITY_KEY,JSON.stringify(record));
@@ -918,7 +921,7 @@
       h('ul',{class:'v2-rows'},
         row(t('rowHelp'),()=>navigate('help'),'›'),row(t('rowPrivacy'),()=>navigate('privacy'),'›'),row(t('rowTerms'),()=>navigate('terms'),'›'),row(t('rowAbout'),()=>navigate('about'),'›')),
       h('ul',{class:'v2-rows'},
-        row(t('signOut'),signOut,'',true),row(t('oldUi'),oldInterface,'')),
+        row(t('signOut'),signOut,'',true)),
       h('p',{class:'v2-muted',text:t('signOutNote')}));
   }
   function premiumScreen(){
@@ -1160,7 +1163,6 @@
     navigate('today');
   }
   function signOut(){store.remove(PROFILE_KEY);store.remove(PHOTO_KEY);photo=null;openAuth();}
-  function oldInterface(){store.remove(UI_KEY);location.hash='';location.reload();}
 
   /* ---------- start ---------- */
   function start(){
@@ -1193,6 +1195,7 @@
     evaluateBadges();
     wordbase?.refresh();
     window.addEventListener('vocvoc-wordbase-changed',refreshDashboard);
+    window.addEventListener('vocvoc-activity-reset',()=>{dailyWords=[];refreshDashboard();});
     window.addEventListener('vocvoc-storage-committed',refreshDashboard);
     window.addEventListener('vocvoc-data-adopted',refreshDashboard);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshDashboard();});

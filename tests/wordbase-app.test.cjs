@@ -110,7 +110,7 @@ describe('The course of the app',()=>{
     assert.notEqual((await wordbase.find(c2)).entry.meaning,'changed','the next answer is not affected');
     const accented=order.chunks.flatMap(chunk=>chunk.words).find(word=>word!==Wordbase.foldText(word,'fr')&&!/[ '-]/.test(word));
     assert.equal((await wordbase.find(Wordbase.foldText(accented,'fr'))).entry.word,accented,'a word typed without its accents is found');
-    assert.deepEqual(await wordbase.find('zzzxqj'),{status:'missing'});
+    assert.deepEqual(await wordbase.find('zzzxqj'),{status:'missing',similar:[]});
   });
   it('a random word comes from the chosen level, one the user does not have when there is one',async()=>{
     const a1=wordsOf('A1-A2'),known=a1.slice(0,a1.length-3);
@@ -153,5 +153,42 @@ describe('The course of the app',()=>{
     env.onChange=()=>{throw new Error('page bug');};
     const again=Wordbase.create(env);
     assert.equal(await again.ready(),'ready');
+  });
+});
+
+describe('Words typed with Turkish letters, and words that look alike',()=>{
+  const index=Wordbase.buildIndex(order,'fr');
+  const hit=text=>Wordbase.lookupInIndex(index,text,'fr')?.word;
+  it('the dotless ı and the dotted İ of a Turkish keyboard are an i, ş is s, ğ is g; hyphens, apostrophes and spaces count the same',()=>{
+    assert.equal(Wordbase.foldText('ÎLE ıle İle Île','fr'),'ile ile ile ile');
+    assert.equal(Wordbase.foldText('şğüöç','fr'),'sguoc');
+    assert.equal(Wordbase.looseKey("S'il-vous-plaît",'fr'),'s il vous plait');
+    for(const typed of ['ıle','ILE','île','İle','ile'])assert.equal(hit(typed),'île',typed);
+    assert.equal(hit("s'il-vous-plaît"),"s'il vous plaît");assert.equal(hit('s il vous plait'),"s'il vous plaît");
+  });
+  it('edit distance counts a swap of two neighbouring letters as one edit and gives up beyond the limit',()=>{
+    assert.deepEqual([['maison','maison'],['maisson','maison'],['chta','chat'],['abc','xyz'],['abc','abcdef']].map(([a,b])=>Wordbase.editDistance(a,b,2)),[0,1,1,3,3]);
+  });
+  it('a word that is not there brings the words that look like it: a typo away, the same word with other accents, the beginning of a longer word; nothing for nonsense',()=>{
+    const near=text=>Wordbase.similarWords(index,text,'fr',{limit:8});
+    assert.equal(near('maisson')[0],'maison');
+    assert.equal(near('chta')[0],'chat');
+    assert(near('ecol').includes('école')&&near('ecol').includes('écolier'));
+    assert.equal(near('sil vous plait')[0],"s'il vous plaît");
+    assert.deepEqual(near('zzzxqj'),[]);
+    assert(near('maisson').length<=8&&new Set(near('maisson')).size===near('maisson').length);
+  });
+  it('a word that was found only lists spelling variants of it (ou - où), never itself',()=>{
+    const variants=Wordbase.similarWords(index,'ou','fr',{limit:5,found:'ou'});
+    assert(variants.includes('où')&&!variants.includes('ou'));
+    assert.deepEqual(Wordbase.similarWords(index,'bonjour','fr',{limit:5,found:'bonjour'}).filter(word=>word==='bonjour'),[]);
+  });
+  it('find hands the similar words along, found or not',async()=>{
+    const {wordbase}=makeEnv();
+    const found=await wordbase.find('ıle');
+    assert.equal(found.status,'found');assert.equal(found.entry.word,'île');assert.equal(Array.isArray(found.similar),true);
+    const missing=await wordbase.find('maisson');
+    assert.equal(missing.status,'missing');assert.equal(missing.similar[0],'maison');
+    assert.deepEqual((await wordbase.find('zzzxqj')),{status:'missing',similar:[]});
   });
 });

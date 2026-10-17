@@ -234,3 +234,41 @@ describe('Failed writes',()=>{
     app.adapter.write=write;await app.data.setStatus('Merci','active');assert.equal(status(app,'Merci'),'active');
   });
 });
+
+describe('Tags on words',()=>{
+  const wordRecord=(app,word)=>plain(app.data.getWordByText(word));
+  it('a tag is cleaned (no #, no markup characters, trimmed, lower case), duplicates and empty ones go, a word keeps at most 12 tags of at most 24 characters',async()=>{
+    const app=await start(),limits=plain(app.data.TAG_LIMITS);
+    assert.deepEqual(limits,{perWord:12,length:24});
+    const result=plain(await app.data.setWordTags('Bonjour',['  #Fiil ','fiil','','   ','a<b>','Ders  notu','x'.repeat(40),...Array.from({length:20},(_,i)=>'t'+i)]));
+    assert.deepEqual(result.slice(0,4),['fiil','ab','ders notu','x'.repeat(24)]);
+    assert.equal(result.length,12);assert.equal(new Set(result).size,12);
+    assert.deepEqual(wordRecord(app,'Bonjour').tags,result);
+    assert.equal(app.data.normalizeTag('  ##Ünite '),'ünite');
+  });
+  it('tags are saved with the word (restart, export, import) and stay when the word is saved again; no tags means no field',async()=>{
+    const profile=newProfile(legacySpa()),app=await start(profile);
+    await app.data.setWordTags('Merci',['fiil','günlük']);
+    await app.data.saveAndTouch({word:'Merci',meaning:'teşekkürler (yeni)',synonyms:[],antonyms:[],examples:[],expressions:[]},'merci');   // saved again with fresh data
+    assert.equal(wordRecord(app,'Merci').meaning,'teşekkürler (yeni)');assert.deepEqual(wordRecord(app,'Merci').tags,['fiil','günlük']);
+    const again=await start(profile);assert.deepEqual(wordRecord(again,'Merci').tags,['fiil','günlük']);
+    const exported=await app.data.export();
+    const other=await start(newProfile(legacySpa()));await other.data.import(exported);
+    assert.deepEqual(wordRecord(other,'Merci').tags,['fiil','günlük']);
+    await app.data.setWordTags('Merci',[]);assert.equal('tags' in wordRecord(app,'Merci'),false);
+  });
+  it('counts the tags in use, the most used first; an unknown word cannot be tagged',async()=>{
+    const app=await start();
+    await app.data.setWordTags('Bonjour',['fiil','selam']);await app.data.setWordTags('Merci',['selam']);await app.data.setWordTags('Je',['selam','zamir']);
+    assert.deepEqual(plain(app.data.getTagCounts()),[{tag:'selam',count:3},{tag:'fiil',count:1},{tag:'zamir',count:1}]);
+    assert.equal(await app.data.setWordTags('olmayankelime',['x']),null);
+  });
+  it('a backup with a damaged tags list is rejected, and nothing changes',async()=>{
+    const app=await start(),exported=await app.data.export(),id=Object.keys(exported.words)[0],before=plain(app.data.getDb());
+    for(const bad of ['fiil',[1],[''],{a:1},Array.from({length:51},(_,i)=>'t'+i),['x'.repeat(65)]]){
+      const copy=JSON.parse(JSON.stringify(exported));copy.words[id].tags=bad;
+      await assert.rejects(app.data.import(copy),error=>error.storageCode==='invalidData',JSON.stringify(bad).slice(0,40));
+    }
+    assert.deepEqual(plain(app.data.getDb()),before);
+  });
+});

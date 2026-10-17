@@ -186,6 +186,38 @@ describe('No AI and no API key (static guards)',()=>{
   });
 });
 
+describe('Tags, similar words, reset and the Profile page (static guards)',()=>{
+  const screensJs=read('screens.js');
+  it('a word of the list can be tagged: the tags are saved on the word record, validated in every backup, shown at the end of the word details and found by the History filter and by "#tag" in the search box',()=>{
+    assert(/setWordTags:asynchronous\(setWordTags\)/.test(html)&&html.includes('const TAG_LIMITS=Object.freeze({perWord:12,length:24});'));
+    assert(storage.includes("w.tags!=null&&(!Array.isArray(w.tags)"),'Schema v1 validates the optional tags list');
+    assert(/\$\{renderTagsSection\(data\)\}\s*`;\s*\}/.test(html),'the tags come last in the details, so the tab order of the rest does not change');
+    assert(/function renderTagsSection\(data\)\{[^]*?progress\.status==="archived"/.test(html),'only a word that is in the list (not the archive) can be tagged');
+    assert(/if\(query\.startsWith\("#"\)\)\{showWordsWithTag\(query\.slice\(1\)\);return;\}/.test(html),'"#tag" in the search box shows the words with that tag');
+    assert(html.includes('byTag=rawFilter.startsWith("#")')&&html.includes('tagHit'),'the History filter reads tags');
+    assert(!/<form\b/.test(html),'tags are added with a field and a button, not a form');
+  });
+  it('the word window shows the words that look like what was typed: for a word that is not in the database and for one that was found',()=>{
+    assert(/error\.similar=found\.similar\|\|\[\]/.test(html)&&html.includes('similarWordsHtml(popupSimilar.word===entry.word?popupSimilar.list:[])'));
+    assert(html.includes('renderPopupStatus(area,word,e.message||t("detailsLoadError"),{error:true,similar:e.similar||[]})'));
+    assert(read('wordbase.js').includes(".replace(/ı/g,'i')"),'a Turkish ı is an i');
+  });
+  it('a word that is already in the list shows only the note in the word window: the × closes it, there is no second Close button',()=>{
+    const start=html.indexOf('const listed=!!VocVocData.getWordProgress(entry.word)'),listed=html.slice(start,html.indexOf('const card=renderWordPanel(area,entry,{',start));
+    const [whenListed,whenNot]=listed.split(':`<div class="related-actions ui-panel-actions">');
+    assert(whenListed.includes('related-listed')&&!/<button/.test(whenListed),'the listed word has no button at all');
+    assert(whenNot.includes('related-add')&&whenNot.includes('related-cancel'),'a word that can be added keeps Add and Cancel');
+  });
+  it('resetting progress (or changing the language) also deletes the finished tests and the earned badges, with or without the new interface',()=>{
+    assert(/function clearWordProgressOnly[^]*?VocVocScreens\?\.resetActivity\?\.\(\)/.test(html));
+    assert(/function resetActivity\(\)\{store\.remove\(ACTIVITY_KEY\);window\.dispatchEvent\(new CustomEvent\('vocvoc-activity-reset'\)\);\}/.test(screensJs)&&/window\.VocVocScreens=Object\.freeze\(\{TEXT,PAGES,resetActivity\}\)/.test(screensJs));
+    assert(screensJs.indexOf('function resetActivity()')<screensJs.indexOf('if(!enabled)return;'),'defined before the new interface switch');
+  });
+  it('the Profile page has no "back to the old interface" row any more',()=>{
+    assert(!/oldUi|oldInterface/.test(screensJs));
+  });
+});
+
 describe('New interface (prototype)',()=>{
   const screensJs=read('screens.js'),screensCss=read('screens.css'),screensCode=screensJs.replace(/\/\*[^]*?\*\//g,'');   // code without the comments
   // Run screens.js on its own, as a page that did not ask for the new interface would: it must only define the plan helper.
@@ -291,7 +323,7 @@ describe('New interface (prototype)',()=>{
     assert(/class:'ui-button v2-goal-add'[^]*?onclick:\(\)=>\{addNewFromToday\(\);\}\},t\('addNew'\)/.test(screensJs)&&/class:'ui-button v2-goal-words'[^]*?onclick:\(\)=>navigate\('words'\)\},t\('goWords'\)/.test(screensJs));
     assert(/const result=await addNewWords\(\);\s*if\(result\.status==='added'\)/.test(screensJs));
     assert(/\.v2-goal-actions \.ui-button\{flex:1 1 0;/.test(screensCss)&&!/\.v2-goal-actions \.ui-button:first-child/.test(screensCss),'both buttons share the width');
-    assert(/\.v2-goal-add\{background:linear-gradient\(135deg,var\(--v2-grad-green\),var\(--v2-grad-purple\)\)\}/.test(screensCss)&&/\.v2-goal-words\{background:linear-gradient\(135deg,var\(--v2-grad-blue\),var\(--v2-grad-purple\)\)\}/.test(screensCss));
+    assert(/\.v2-goal-add\{background:linear-gradient\(to top right,var\(--v2-grad-green\),var\(--v2-grad-purple\)\)\}/.test(screensCss)&&/\.v2-goal-words\{background:linear-gradient\(to top right,var\(--v2-grad-orange\),var\(--v2-grad-purple\)\)\}/.test(screensCss),'both gradients run from the lower left to the upper right: green-purple and orange-purple');
     const {TEXT}=load().win.VocVocScreens;
     assert.deepEqual([TEXT.tr.addNew,TEXT.tr.goWords],['Yeni Kelime Ekle','Kelimelerime Git']);
   });
