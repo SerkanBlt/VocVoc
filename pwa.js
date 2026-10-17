@@ -38,7 +38,7 @@ function exportLegacyBackup(){
 // A Test whose result is on screen has nothing left to lose: only a running one counts as an open operation.
 function quizRunning(){return !!quizSession&&quizSession.index<quizSession.questions.length;}
 function operationBusy(){
-  return VocVocData.pending>0||dailyBusy||geminiControllers.size>0||quizRunning()||!!pendingArchiveUndo||!!flipSession||
+  return VocVocData.pending>0||dailyBusy||quizRunning()||!!pendingArchiveUndo||!!flipSession||
     [...document.querySelectorAll('.modal-overlay,.word-popup-overlay,#archiveOverlay')].some(el=>getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden');
 }
 async function importVocVocData(input){
@@ -47,7 +47,7 @@ async function importVocVocData(input){
     if(file.size>VocVocStorage.maxImportBytes)throw VocVocStorage.fail('invalidData');
     const {backup:data}=VocVocStorage.parseBackup(await file.text(),file.size);
     if(!confirm(pwaText('restore')))return;
-    if(dailyBusy||geminiControllers.size||VocVocData.pending){showError(pwaText('busy'));return;}
+    if(dailyBusy||VocVocData.pending){showError(pwaText('busy'));return;}
     // Prevent actions from crossing the restore boundary; publish only after commit.
     document.querySelector('.container').inert=true;document.getElementById('modalOverlay').inert=true;
     invalidateAsyncWork();await VocVocData.import(data);location.reload();

@@ -1,5 +1,5 @@
 /* New interface (prototype). Everything here applies only when screens.js adds body.v2 (opt-in with ?ui=v2); the default interface is untouched. */
-:root{--v2-bar-h:56px;--v2-danger:#b91c1c;--v2-orange:#c2410c;--v2-blue:#1d4ed8;--v2-green:#15803d}
+:root{--v2-bar-h:56px;--v2-danger:#b91c1c;--v2-orange:#c2410c;--v2-blue:#1d4ed8;--v2-green:#15803d;--v2-grad-blue:#1d4ed8;--v2-grad-green:#15803d;--v2-grad-purple:#6d28d9}
 :root[data-theme="dark"]{--v2-danger:#f87171;--v2-orange:#fb923c;--v2-blue:#60a5fa;--v2-green:#4ade80}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--v2-danger:#f87171;--v2-orange:#fb923c;--v2-blue:#60a5fa;--v2-green:#4ade80}}
 .v2-root,.v2-auth{display:none}
@@ -106,8 +106,12 @@ body.v2 .study-actions{display:none}
 .v2-goal-label{color:var(--text-muted);font-size:.85rem;font-weight:600;margin:0 0 2px}
 .v2-goal-value{font-size:1.35rem;font-weight:700;margin:0 0 10px}
 .v2-goal-actions{display:flex;gap:10px;align-items:stretch}
-.v2-goal-actions .ui-button{flex:1 1 0;min-width:0;white-space:normal}
-.v2-goal-actions .ui-button:first-child{flex:2 1 0}
+/* The two buttons of the goal card are the same size; white text on the dark ends of the gradients keeps its contrast in both themes. */
+.v2-goal-actions .ui-button{flex:1 1 0;min-width:0;height:auto;min-height:var(--ui-control-h);padding-top:8px;padding-bottom:8px;border-color:transparent;color:#fff;white-space:normal;text-align:center;line-height:1.2}
+.v2-goal-add{background:linear-gradient(135deg,var(--v2-grad-green),var(--v2-grad-purple))}
+.v2-goal-words{background:linear-gradient(135deg,var(--v2-grad-blue),var(--v2-grad-purple))}
+.v2-goal-actions .ui-button:hover{filter:brightness(1.12);border-color:transparent}
+.v2-goal-actions .ui-button:focus-visible{outline:2px solid var(--text);outline-offset:2px}
 .v2-bar{height:10px;border-radius:999px;background:var(--accent-bg);border:1px solid var(--border);overflow:hidden;margin:0 0 14px}
 .v2-bar>span{display:block;height:100%;width:var(--p,0%);background:var(--primary);border-radius:999px;transition:width .3s}
 .v2-statline{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;list-style:none;margin:0 0 12px;padding:0}

@@ -4,7 +4,7 @@
 #              (JavaScript syntax, manifest, Service Worker precache + VERSION guard, API-key guards,
 #               data layer: migration idempotency, archive/restore, backups, recovery copies, rollback)
 #   browser  : Chrome regression suite   -> `npm run test:browser`
-#              (offline/cold start, update lifecycle, IndexedDB persistence, Gemini errors, accessibility, i18n, large lists)
+#              (offline/cold start, update lifecycle, IndexedDB persistence, word-database errors and limits, accessibility, i18n, large lists)
 #
 # The app itself has no build step and no runtime dependencies; npm is only used for the test tools (tests/package.json).
 

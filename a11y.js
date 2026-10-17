@@ -156,7 +156,6 @@
       trigger.setAttribute('aria-labelledby',`${caption(`${dropdown}Caption`,text(key))} ${value.id}`);
     }
     for(const trigger of document.querySelectorAll('.ui-dropdown-trigger,.daily-limit-toggle'))trigger.setAttribute('aria-haspopup','true');
-    document.getElementById('apiToggleBtn')?.setAttribute('aria-controls','apiKeyInput');
     named=true;
   }
 

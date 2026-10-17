@@ -15,10 +15,11 @@
   const enabled=store.get(UI_KEY)==='v2';
 
   /* ---------- plan (simulated) ---------- */
-  // 'premium' features are locked on the free plan. The user's own API key works only on the free plan: while Premium is active the
-  // built-in AI is used and the stored key is kept but not used (ownKeyActive); when Premium ends the key is active again.
-  const FEATURES=Object.freeze({freeWords:'free',ownKeyAi:'free',badges:'free',stats:'premium',historyAnalysis:'premium',builtInAi:'premium',sentenceBuilder:'premium',speech:'premium',dailyGoalOver20:'premium'});
+  // 'premium' features are locked on the free plan. There is no AI and no API key: every word comes from the word database (wordbase.js). The free plan holds
+  // up to FREE_WORD_LIMIT words in the list (archived ones count, the 300 are counted from the first word); Premium has no limit.
+  const FEATURES=Object.freeze({freeWords:'free',badges:'free',stats:'premium',historyAnalysis:'premium',unlimitedWords:'premium',sentenceBuilder:'premium',speech:'premium',dailyGoalOver20:'premium'});
   const FREE_DAILY_LIMIT=20;                                                       // a daily goal above this is a Premium feature
+  const FREE_WORD_LIMIT=300;                                                       // words in the list on the free plan; the index.html side reads wordLimit()
   const planNow=()=>store.get(PLAN_KEY)==='premium'?'premium':'free';
   const VocVocPlan=Object.freeze({
     features:FEATURES,
@@ -29,9 +30,10 @@
       window.dispatchEvent(new CustomEvent('vocvoc-plan-changed',{detail:{plan:next}}));
     },
     has(feature){const need=FEATURES[feature];return need==='free'||(need==='premium'&&planNow()==='premium');},
-    ownKeyActive(){return planNow()!=='premium';},
     FREE_DAILY_LIMIT,
-    dailyLimitMax(){return planNow()==='premium'?Infinity:FREE_DAILY_LIMIT;}
+    dailyLimitMax(){return planNow()==='premium'?Infinity:FREE_DAILY_LIMIT;},
+    FREE_WORD_LIMIT,
+    wordLimit(){return planNow()==='premium'?Infinity:FREE_WORD_LIMIT;}
   });
   window.VocVocPlan=VocVocPlan;
 
@@ -49,12 +51,10 @@
       signOut:'Çıkış yap (simülasyon)',signOutNote:'Çıkış, kelimelerini ve ilerlemeni silmez.',oldUi:'Eski arayüze dön',
       premiumTitle:'Premium',planLabel:'Mevcut plan',freeIncludes:'Ücretsiz',premiumIncludes:'Premium (ücretsiz olanların hepsine ek olarak)',
       priceNote:'Aylık ve yıllık abonelik olacak. Fiyatlar henüz belirlenmedi.',
-      keyActive:'API anahtarı: etkin (kendi anahtarınla yeni kelime ekleyebilirsin).',keyOff:'API anahtarı: devre dışı. Premium aktif olduğu için dahili yapay zekâ kullanılır; anahtarın silinmez.',
-      keyRule:'Premium aktifken kendi API anahtarın devre dışı kalır. Abonelik bitince anahtarın yeniden etkin olur.',
       simulate:"Premium'u simüle et",backToFree:'Ücretsiz plana dön',simNote:'Simülasyon: gerçek ödeme alınmaz, hiçbir şey satın alınmaz.',
-      free1:'Seçtiğin dil çifti için hazır başlangıç kelimeleri',free2:'Kartlar, ezberleme, arşiv ve History',free3:'Test, Hatırla ve Flip',free4:'Kendi API anahtarınla yeni kelime ekleme',free5:'Yedekleme, tema ve 6 arayüz dili',free6:'Rozetler',
-      prem1:'Dahili yapay zekâ (anahtar gerekmez)',prem2:"History'den seçtiğin kelimelerle cümle kurma ve anlamını görme",prem3:'Sesli okuma',prem4:'İlerleme istatistikleri ve geçmiş analizi',prem5:'Günlük hedefi 20 kelimenin üzerine çıkarma',
-      goalTitle:'Günlük hedef',goalValue:'{n} / {m} kelime',goalUnlimited:'Bugün {n} kelime eklendi',addDaily:'Günlük kelimeler ekle',statActive:'Aktif',statMemorized:'Ezberlenen',statToday:'Bugün ezberlenen',
+      free1:'Kelime veritabanından 300 kelimeye kadar (A1-A2 seviyesinden başlayarak)',free2:'Kartlar, ezberleme, arşiv ve History',free3:'Test, Hatırla ve Flip',free4:'Arama, rastgele kelime ve eş/zıt anlam etiketlerinden kelime ekleme',free5:'Yedekleme, tema ve 6 arayüz dili',free6:'Rozetler',
+      prem1:'300. kelimeden sonrası: kelime veritabanının tamamı (A1’den C2’ye)',prem2:"History'den seçtiğin kelimelerle cümle kurma ve anlamını görme",prem3:'Sesli okuma',prem4:'İlerleme istatistikleri ve geçmiş analizi',prem5:'Günlük hedefi 20 kelimenin üzerine çıkarma',
+      goalTitle:'Günlük hedef',goalValue:'{n} / {m} kelime',goalUnlimited:'Bugün {n} kelime eklendi',addNew:'Yeni Kelime Ekle',goWords:'Kelimelerime Git',statActive:'Aktif',statMemorized:'Ezberlenen',statToday:'Bugün ezberlenen',
       quizClose:'Kapat',quizProgress:'Soru {n}/{total}',quizDone:'Tamamlandı',quizProgressLabel:'Test ilerlemesi',quizNeedActive:'Test için en az 10 aktif kelime gerekir. Şu an {n} var.',quizNeedRecall:'Hatırla için en az 10 ezberlenmiş kelime gerekir. Şu an {n} var.',quizNeedCloze:'Boşluk Doldurma için cümlesi olan en az 10 kelime gerekir. Şu an {n} var.',backToToday:'Bugün ekranına dön',
       statsSummaryTotal:'Toplam kelime',statsMemorized:'Ezberlenen',statsStreak:'Seri (gün)',statsLongest:'En uzun seri',
       statsWeek:'Son 7 gün',legendAdded:'Eklenen',legendMemorized:'Ezberlenen',dayLabel:'{day}: {added} eklendi, {memorized} ezberlendi, {tests} test',
@@ -67,7 +67,7 @@
       b_words50:'Koleksiyoncu',bd_words50:'Listene 50 kelime ekle.',b_test1:'İlk test',bd_test1:'Bir test tamamla.',b_test10:'Düzenli çalışan',bd_test10:'10 test tamamla.',b_perfect:'Kusursuz',bd_perfect:'Bir testi 10/10 bitir.',b_recall8:'Güçlü hafıza',bd_recall8:'Hatırla testinde en az 8/10 yap.',
       b_streak3:'Isınma',bd_streak3:'3 gün üst üste çalış.',b_streak7:'Bir hafta',bd_streak7:'7 gün üst üste çalış.',b_streak30:'Bir ay',bd_streak30:'30 gün üst üste çalış.',b_goal1:'Hedef tamam',bd_goal1:'Günlük kelime hedefine ulaş.',
       packTitle:'Hazır kelimeler',packLevel:'Başlangıç (A1-A2)',packProgress:'{n} / {m} kelime eklendi',packLoading:'Paket indiriliyor…',packOffline:'Paket indirilemedi. İnternete bağlanınca yeniden denenir.',
-      packNone:'Bu dil çifti için hazır paket henüz yok. Kendi API anahtarınla yeni kelime ekleyebilirsin.',packDone:'Paketteki tüm kelimeleri ekledin. Yeni kelime için kendi API anahtarını kullanabilirsin.',packAdded:'{n} kelime eklendi.',packLevelB:'Orta (B1-B2)',packLevelC:'İleri (C1-C2)',courseDone:'Bu seviyedeki hazır kelimelerin hepsini ekledin. Ayarlar’dan bir sonraki seviyeyi seçebilir veya kendi API anahtarını kullanabilirsin.',courseSoon:'Bu seviyenin hazır kelimeleri henüz hazırlanıyor. Ayarlar’dan başka bir seviye seçebilir veya kendi API anahtarını kullanabilirsin.',
+      packNone:'Bu dil çifti için kelime veritabanı henüz yok.',packDone:'Paketteki tüm kelimeleri ekledin.',packLevelB:'Orta (B1-B2)',packLevelC:'İleri (C1-C2)',courseDone:'Bu seviyedeki tüm kelimeleri listene aldın. Yeni Kelime Ekle’ye basınca bir sonraki seviyeye geçmek isteyip istemediğin sorulur.',courseSoon:'Bu seviyenin kelimeleri henüz hazırlanıyor. Ayarlar’dan başka bir seviye seçebilirsin.',
       speakLabel:'Sesli oku: {text}',speakLocked:'Sesli okuma Premium ile açılır.',speakLockedLabel:'Sesli oku (Premium)',speakNoVoice:'Bu cihazda {language} sesi yok.',speakNone:'Bu tarayıcı sesli okumayı desteklemiyor.',speedNormal:'normal',speedSlow:'yavaş',speakSpeed:'{text} ({speed})',
       aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutWords:'Hazır kelimelerin sırası, hermitdave/FrequencyWords sıklık listesinden (CC BY-SA 4.0) yararlanılarak belirlendi.',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
     },
@@ -83,12 +83,10 @@
       signOut:'Sign out (simulation)',signOutNote:'Signing out does not delete your words or progress.',oldUi:'Back to the old interface',
       premiumTitle:'Premium',planLabel:'Current plan',freeIncludes:'Free',premiumIncludes:'Premium (in addition to everything free)',
       priceNote:'It will be a monthly and a yearly subscription. Prices are not set yet.',
-      keyActive:'API key: active (you can add new words with your own key).',keyOff:'API key: inactive. Premium is on, so the built-in AI is used; your key is kept.',
-      keyRule:'While Premium is active your own API key is inactive. When the subscription ends your key is active again.',
       simulate:'Simulate Premium',backToFree:'Back to the free plan',simNote:'Simulation: no real payment is taken and nothing is purchased.',
-      free1:'Ready-made beginner words for your language pair',free2:'Cards, memorizing, archive and History',free3:'Test, Recall and Flip',free4:'Adding new words with your own API key',free5:'Backup, themes and 6 interface languages',free6:'Badges',
-      prem1:'Built-in AI (no key needed)',prem2:'Build sentences from words you pick in History and see their meaning',prem3:'Read-aloud',prem4:'Progress statistics and history analysis',prem5:'Daily goal above 20 words',
-      goalTitle:'Daily goal',goalValue:'{n} / {m} words',goalUnlimited:'{n} words added today',addDaily:'Add daily words',statActive:'Active',statMemorized:'Memorized',statToday:'Memorized today',
+      free1:'Up to 300 words from the word database (starting at A1-A2)',free2:'Cards, memorizing, archive and History',free3:'Test, Recall and Flip',free4:'Adding words by search, random word and synonym/antonym tags',free5:'Backup, themes and 6 interface languages',free6:'Badges',
+      prem1:'Everything after the 300th word: the whole word database (A1 to C2)',prem2:'Build sentences from words you pick in History and see their meaning',prem3:'Read-aloud',prem4:'Progress statistics and history analysis',prem5:'Daily goal above 20 words',
+      goalTitle:'Daily goal',goalValue:'{n} / {m} words',goalUnlimited:'{n} words added today',addNew:'Add New Words',goWords:'Go to My Words',statActive:'Active',statMemorized:'Memorized',statToday:'Memorized today',
       quizClose:'Close',quizProgress:'Question {n}/{total}',quizDone:'Finished',quizProgressLabel:'Test progress',quizNeedActive:'A Test needs at least 10 active words. You have {n}.',quizNeedRecall:'Recall needs at least 10 memorized words. You have {n}.',quizNeedCloze:'Fill in the blank needs at least 10 words that have an example sentence. You have {n}.',backToToday:'Back to Today',
       statsSummaryTotal:'Total words',statsMemorized:'Memorized',statsStreak:'Streak (days)',statsLongest:'Longest streak',
       statsWeek:'Last 7 days',legendAdded:'Added',legendMemorized:'Memorized',dayLabel:'{day}: {added} added, {memorized} memorized, {tests} tests',
@@ -101,7 +99,7 @@
       b_words50:'Collector',bd_words50:'Add 50 words to your list.',b_test1:'First test',bd_test1:'Complete a test.',b_test10:'Regular',bd_test10:'Complete 10 tests.',b_perfect:'Flawless',bd_perfect:'Finish a test 10/10.',b_recall8:'Strong memory',bd_recall8:'Score at least 8/10 in a Recall test.',
       b_streak3:'Warm-up',bd_streak3:'Study 3 days in a row.',b_streak7:'One week',bd_streak7:'Study 7 days in a row.',b_streak30:'One month',bd_streak30:'Study 30 days in a row.',b_goal1:'Goal reached',bd_goal1:'Reach your daily word goal.',
       packTitle:'Ready-made words',packLevel:'Beginner (A1-A2)',packProgress:'{n} / {m} words added',packLoading:'Downloading the pack…',packOffline:'The pack could not be downloaded. It is tried again when you are online.',
-      packNone:'There is no ready-made pack for this language pair yet. You can add new words with your own API key.',packDone:'You have added every word of the pack. You can use your own API key for new words.',packAdded:'{n} words added.',packLevelB:'Intermediate (B1-B2)',packLevelC:'Advanced (C1-C2)',courseDone:'You have added all the ready-made words of this level. Choose the next level in Settings or use your own API key.',courseSoon:'The ready-made words of this level are still being prepared. Choose another level in Settings or use your own API key.',
+      packNone:'There is no word database for this language pair yet.',packDone:'You have added every word of the pack.',packLevelB:'Intermediate (B1-B2)',packLevelC:'Advanced (C1-C2)',courseDone:'You have added all the words of this level. Press Add New Words and you will be asked whether to move to the next level.',courseSoon:'The words of this level are still being prepared. You can choose another level in Settings.',
       speakLabel:'Read aloud: {text}',speakLocked:'Read-aloud comes with Premium.',speakLockedLabel:'Read aloud (Premium)',speakNoVoice:'There is no {language} voice on this device.',speakNone:'This browser does not support read-aloud.',speedNormal:'normal',speedSlow:'slow',speakSpeed:'{text} ({speed})',
       aboutTitle:'About',version:'Version',uiMode:'Interface',uiProto:'New interface (prototype)',aboutWords:'The order of the ready-made words is based on the frequency list hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Sign-in, Premium and payment in this version are simulations: there is no real account, server or payment.'
     },
@@ -117,12 +115,10 @@
       signOut:'Se déconnecter (simulation)',signOutNote:'Se déconnecter ne supprime ni vos mots ni votre progression.',oldUi:'Revenir à l’ancienne interface',
       premiumTitle:'Premium',planLabel:'Offre actuelle',freeIncludes:'Gratuit',premiumIncludes:'Premium (en plus de tout ce qui est gratuit)',
       priceNote:'Ce sera un abonnement mensuel et annuel. Les prix ne sont pas encore fixés.',
-      keyActive:'Clé API : active (vous pouvez ajouter de nouveaux mots avec votre propre clé).',keyOff:'Clé API : inactive. Premium est actif, l’IA intégrée est donc utilisée ; votre clé est conservée.',
-      keyRule:'Tant que Premium est actif, votre propre clé API est inactive. À la fin de l’abonnement, votre clé redevient active.',
       simulate:'Simuler Premium',backToFree:'Revenir à l’offre gratuite',simNote:'Simulation : aucun vrai paiement n’est prélevé et rien n’est acheté.',
-      free1:'Mots de départ prêts à l’emploi pour votre paire de langues',free2:'Cartes, mémorisation, archive et History',free3:'Test, Réviser et Flip',free4:'Ajout de nouveaux mots avec votre propre clé API',free5:'Sauvegarde, thèmes et 6 langues d’interface',free6:'Badges',
-      prem1:'IA intégrée (aucune clé nécessaire)',prem2:'Construire des phrases avec des mots choisis dans History et voir leur sens',prem3:'Lecture à voix haute',prem4:'Statistiques de progression et analyse de l’historique',prem5:'Objectif du jour au-delà de 20 mots',
-      goalTitle:'Objectif du jour',goalValue:'{n} / {m} mots',goalUnlimited:'{n} mots ajoutés aujourd’hui',addDaily:'Ajouter les mots du jour',statActive:'Actifs',statMemorized:'Mémorisés',statToday:'Mémorisés aujourd’hui',
+      free1:'Jusqu’à 300 mots de la base de mots (à partir de A1-A2)',free2:'Cartes, mémorisation, archive et History',free3:'Test, Réviser et Flip',free4:'Ajout de mots par la recherche, le mot au hasard et les étiquettes de synonymes/contraires',free5:'Sauvegarde, thèmes et 6 langues d’interface',free6:'Badges',
+      prem1:'Tout ce qui suit le 300e mot : toute la base de mots (de A1 à C2)',prem2:'Construire des phrases avec des mots choisis dans History et voir leur sens',prem3:'Lecture à voix haute',prem4:'Statistiques de progression et analyse de l’historique',prem5:'Objectif du jour au-delà de 20 mots',
+      goalTitle:'Objectif du jour',goalValue:'{n} / {m} mots',goalUnlimited:'{n} mots ajoutés aujourd’hui',addNew:'Ajouter de nouveaux mots',goWords:'Aller à mes mots',statActive:'Actifs',statMemorized:'Mémorisés',statToday:'Mémorisés aujourd’hui',
       quizClose:'Fermer',quizProgress:'Question {n}/{total}',quizDone:'Terminé',quizProgressLabel:'Progression du test',quizNeedActive:'Un test demande au moins 10 mots actifs. Vous en avez {n}.',quizNeedRecall:'Réviser demande au moins 10 mots mémorisés. Vous en avez {n}.',quizNeedCloze:'Texte à trous demande au moins 10 mots ayant une phrase d’exemple. Vous en avez {n}.',backToToday:'Retour à Aujourd’hui',
       statsSummaryTotal:'Total des mots',statsMemorized:'Mémorisés',statsStreak:'Série (jours)',statsLongest:'Plus longue série',
       statsWeek:'7 derniers jours',legendAdded:'Ajoutés',legendMemorized:'Mémorisés',dayLabel:'{day} : {added} ajoutés, {memorized} mémorisés, {tests} tests',
@@ -135,7 +131,7 @@
       b_words50:'Collectionneur',bd_words50:'Ajoutez 50 mots à votre liste.',b_test1:'Premier test',bd_test1:'Terminez un test.',b_test10:'Assidu',bd_test10:'Terminez 10 tests.',b_perfect:'Sans faute',bd_perfect:'Terminez un test avec 10/10.',b_recall8:'Mémoire solide',bd_recall8:'Obtenez au moins 8/10 à un test de révision.',
       b_streak3:'Échauffement',bd_streak3:'Étudiez 3 jours de suite.',b_streak7:'Une semaine',bd_streak7:'Étudiez 7 jours de suite.',b_streak30:'Un mois',bd_streak30:'Étudiez 30 jours de suite.',b_goal1:'Objectif atteint',bd_goal1:'Atteignez votre objectif quotidien de mots.',
       packTitle:'Mots prêts à l’emploi',packLevel:'Débutant (A1-A2)',packProgress:'{n} / {m} mots ajoutés',packLoading:'Téléchargement du pack…',packOffline:'Le pack n’a pas pu être téléchargé. Une nouvelle tentative a lieu dès que vous êtes en ligne.',
-      packNone:'Il n’y a pas encore de pack prêt à l’emploi pour cette paire de langues. Vous pouvez ajouter de nouveaux mots avec votre propre clé API.',packDone:'Vous avez ajouté tous les mots du pack. Vous pouvez utiliser votre propre clé API pour de nouveaux mots.',packAdded:'{n} mots ajoutés.',packLevelB:'Intermédiaire (B1-B2)',packLevelC:'Avancé (C1-C2)',courseDone:'Vous avez ajouté tous les mots prêts à l’emploi de ce niveau. Choisissez le niveau suivant dans les réglages ou utilisez votre propre clé API.',courseSoon:'Les mots prêts à l’emploi de ce niveau sont encore en préparation. Choisissez un autre niveau dans les réglages ou utilisez votre propre clé API.',
+      packNone:'Il n’y a pas encore de base de mots pour cette paire de langues.',packDone:'Vous avez ajouté tous les mots du pack.',packLevelB:'Intermédiaire (B1-B2)',packLevelC:'Avancé (C1-C2)',courseDone:'Vous avez ajouté tous les mots de ce niveau. En appuyant sur Ajouter de nouveaux mots, on vous demandera si vous voulez passer au niveau suivant.',courseSoon:'Les mots de ce niveau sont encore en préparation. Vous pouvez choisir un autre niveau dans les Réglages.',
       speakLabel:'Lire à voix haute : {text}',speakLocked:'La lecture à voix haute est réservée à Premium.',speakLockedLabel:'Lire à voix haute (Premium)',speakNoVoice:'Aucune voix {language} sur cet appareil.',speakNone:'Ce navigateur ne prend pas en charge la lecture à voix haute.',speedNormal:'normale',speedSlow:'lente',speakSpeed:'{text} ({speed})',
       aboutTitle:'À propos',version:'Version',uiMode:'Interface',uiProto:'Nouvelle interface (prototype)',aboutWords:'L’ordre des mots prêts à l’emploi s’appuie sur la liste de fréquence hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'La connexion, Premium et le paiement de cette version sont des simulations : il n’y a ni vrai compte, ni serveur, ni paiement.'
     },
@@ -151,12 +147,10 @@
       signOut:'Abmelden (Simulation)',signOutNote:'Beim Abmelden werden Ihre Wörter und Ihr Fortschritt nicht gelöscht.',oldUi:'Zurück zur alten Oberfläche',
       premiumTitle:'Premium',planLabel:'Aktueller Tarif',freeIncludes:'Kostenlos',premiumIncludes:'Premium (zusätzlich zu allem Kostenlosen)',
       priceNote:'Es wird ein Monats- und ein Jahresabo geben. Die Preise stehen noch nicht fest.',
-      keyActive:'API-Schlüssel: aktiv (Sie können mit Ihrem eigenen Schlüssel neue Wörter hinzufügen).',keyOff:'API-Schlüssel: inaktiv. Premium ist aktiv, daher wird die integrierte KI verwendet; Ihr Schlüssel bleibt gespeichert.',
-      keyRule:'Solange Premium aktiv ist, ist Ihr eigener API-Schlüssel inaktiv. Wenn das Abo endet, ist Ihr Schlüssel wieder aktiv.',
       simulate:'Premium simulieren',backToFree:'Zurück zum kostenlosen Tarif',simNote:'Simulation: Es wird keine echte Zahlung abgebucht und nichts gekauft.',
-      free1:'Fertige Einsteigerwörter für Ihr Sprachpaar',free2:'Karten, Lernen, Archiv und History',free3:'Test, Wiederholen und Flip',free4:'Neue Wörter mit Ihrem eigenen API-Schlüssel hinzufügen',free5:'Sicherung, Designs und 6 Oberflächensprachen',free6:'Abzeichen',
-      prem1:'Integrierte KI (kein Schlüssel nötig)',prem2:'Sätze aus Wörtern bilden, die Sie in History auswählen, und ihre Bedeutung sehen',prem3:'Vorlesen',prem4:'Fortschrittsstatistiken und Verlaufsanalyse',prem5:'Tagesziel über 20 Wörter',
-      goalTitle:'Tagesziel',goalValue:'{n} / {m} Wörter',goalUnlimited:'Heute {n} Wörter hinzugefügt',addDaily:'Tägliche Wörter hinzufügen',statActive:'Aktiv',statMemorized:'Gelernt',statToday:'Heute gelernt',
+      free1:'Bis zu 300 Wörter aus der Wortdatenbank (ab A1-A2)',free2:'Karten, Lernen, Archiv und History',free3:'Test, Wiederholen und Flip',free4:'Wörter per Suche, Zufallswort und Synonym-/Antonym-Chips hinzufügen',free5:'Sicherung, Designs und 6 Oberflächensprachen',free6:'Abzeichen',
+      prem1:'Alles nach dem 300. Wort: die ganze Wortdatenbank (A1 bis C2)',prem2:'Sätze aus Wörtern bilden, die Sie in History auswählen, und ihre Bedeutung sehen',prem3:'Vorlesen',prem4:'Fortschrittsstatistiken und Verlaufsanalyse',prem5:'Tagesziel über 20 Wörter',
+      goalTitle:'Tagesziel',goalValue:'{n} / {m} Wörter',goalUnlimited:'Heute {n} Wörter hinzugefügt',addNew:'Neue Wörter hinzufügen',goWords:'Zu meinen Wörtern',statActive:'Aktiv',statMemorized:'Gelernt',statToday:'Heute gelernt',
       quizClose:'Schließen',quizProgress:'Frage {n}/{total}',quizDone:'Fertig',quizProgressLabel:'Testfortschritt',quizNeedActive:'Ein Test braucht mindestens 10 aktive Wörter. Sie haben {n}.',quizNeedRecall:'Wiederholen braucht mindestens 10 gelernte Wörter. Sie haben {n}.',quizNeedCloze:'Lückentext braucht mindestens 10 Wörter mit einem Beispielsatz. Sie haben {n}.',backToToday:'Zurück zu Heute',
       statsSummaryTotal:'Wörter gesamt',statsMemorized:'Gelernt',statsStreak:'Serie (Tage)',statsLongest:'Längste Serie',
       statsWeek:'Letzte 7 Tage',legendAdded:'Hinzugefügt',legendMemorized:'Gelernt',dayLabel:'{day}: {added} hinzugefügt, {memorized} gelernt, {tests} Tests',
@@ -169,7 +163,7 @@
       b_words50:'Sammler',bd_words50:'Fügen Sie Ihrer Liste 50 Wörter hinzu.',b_test1:'Erster Test',bd_test1:'Schließen Sie einen Test ab.',b_test10:'Regelmäßig',bd_test10:'Schließen Sie 10 Tests ab.',b_perfect:'Makellos',bd_perfect:'Beenden Sie einen Test mit 10/10.',b_recall8:'Starkes Gedächtnis',bd_recall8:'Erreichen Sie in einem Wiederholen-Test mindestens 8/10.',
       b_streak3:'Aufwärmen',bd_streak3:'Lernen Sie 3 Tage in Folge.',b_streak7:'Eine Woche',bd_streak7:'Lernen Sie 7 Tage in Folge.',b_streak30:'Ein Monat',bd_streak30:'Lernen Sie 30 Tage in Folge.',b_goal1:'Ziel erreicht',bd_goal1:'Erreichen Sie Ihr tägliches Wortziel.',
       packTitle:'Fertige Wörter',packLevel:'Einsteiger (A1-A2)',packProgress:'{n} / {m} Wörter hinzugefügt',packLoading:'Paket wird heruntergeladen…',packOffline:'Das Paket konnte nicht heruntergeladen werden. Es wird erneut versucht, sobald Sie online sind.',
-      packNone:'Für dieses Sprachpaar gibt es noch kein fertiges Paket. Sie können neue Wörter mit Ihrem eigenen API-Schlüssel hinzufügen.',packDone:'Sie haben alle Wörter des Pakets hinzugefügt. Für neue Wörter können Sie Ihren eigenen API-Schlüssel verwenden.',packAdded:'{n} Wörter hinzugefügt.',packLevelB:'Mittelstufe (B1-B2)',packLevelC:'Fortgeschritten (C1-C2)',courseDone:'Sie haben alle fertigen Wörter dieser Stufe hinzugefügt. Wählen Sie in den Einstellungen die nächste Stufe oder verwenden Sie Ihren eigenen API-Schlüssel.',courseSoon:'Die fertigen Wörter dieser Stufe sind noch in Arbeit. Wählen Sie in den Einstellungen eine andere Stufe oder verwenden Sie Ihren eigenen API-Schlüssel.',
+      packNone:'Für dieses Sprachpaar gibt es noch keine Wortdatenbank.',packDone:'Sie haben alle Wörter des Pakets hinzugefügt.',packLevelB:'Mittelstufe (B1-B2)',packLevelC:'Fortgeschritten (C1-C2)',courseDone:'Sie haben alle Wörter dieser Stufe hinzugefügt. Bei „Neue Wörter hinzufügen“ werden Sie gefragt, ob Sie zur nächsten Stufe wechseln möchten.',courseSoon:'Die Wörter dieser Stufe werden noch vorbereitet. Wählen Sie in den Einstellungen eine andere Stufe.',
       speakLabel:'Vorlesen: {text}',speakLocked:'Vorlesen gibt es mit Premium.',speakLockedLabel:'Vorlesen (Premium)',speakNoVoice:'Auf diesem Gerät gibt es keine {language}-Stimme.',speakNone:'Dieser Browser unterstützt kein Vorlesen.',speedNormal:'normal',speedSlow:'langsam',speakSpeed:'{text} ({speed})',
       aboutTitle:'Über',version:'Version',uiMode:'Oberfläche',uiProto:'Neue Oberfläche (Prototyp)',aboutWords:'Die Reihenfolge der fertigen Wörter beruht auf der Häufigkeitsliste hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Anmeldung, Premium und Zahlung in dieser Version sind Simulationen: Es gibt kein echtes Konto, keinen Server und keine Zahlung.'
     },
@@ -185,12 +179,10 @@
       signOut:'Cerrar sesión (simulación)',signOutNote:'Cerrar sesión no borra tus palabras ni tu progreso.',oldUi:'Volver a la interfaz antigua',
       premiumTitle:'Premium',planLabel:'Plan actual',freeIncludes:'Gratis',premiumIncludes:'Premium (además de todo lo gratuito)',
       priceNote:'Habrá una suscripción mensual y otra anual. Los precios aún no están fijados.',
-      keyActive:'Clave API: activa (puedes añadir palabras nuevas con tu propia clave).',keyOff:'Clave API: inactiva. Premium está activo, así que se usa la IA integrada; tu clave se conserva.',
-      keyRule:'Mientras Premium esté activo, tu propia clave API está inactiva. Cuando termine la suscripción, tu clave vuelve a estar activa.',
       simulate:'Simular Premium',backToFree:'Volver al plan gratuito',simNote:'Simulación: no se cobra ningún pago real y no se compra nada.',
-      free1:'Palabras iniciales listas para tu par de idiomas',free2:'Tarjetas, memorizar, archivo e History',free3:'Test, Repasar y Flip',free4:'Añadir palabras nuevas con tu propia clave API',free5:'Copia de seguridad, temas y 6 idiomas de interfaz',free6:'Insignias',
-      prem1:'IA integrada (sin clave)',prem2:'Formar frases con palabras que eliges en History y ver su significado',prem3:'Lectura en voz alta',prem4:'Estadísticas de progreso y análisis del historial',prem5:'Objetivo diario de más de 20 palabras',
-      goalTitle:'Objetivo diario',goalValue:'{n} / {m} palabras',goalUnlimited:'{n} palabras añadidas hoy',addDaily:'Añadir palabras diarias',statActive:'Activas',statMemorized:'Memorizadas',statToday:'Memorizadas hoy',
+      free1:'Hasta 300 palabras de la base de palabras (desde A1-A2)',free2:'Tarjetas, memorizar, archivo e History',free3:'Test, Repasar y Flip',free4:'Añadir palabras con la búsqueda, la palabra al azar y las etiquetas de sinónimos/antónimos',free5:'Copia de seguridad, temas y 6 idiomas de interfaz',free6:'Insignias',
+      prem1:'Todo lo que viene después de la palabra 300: toda la base de palabras (de A1 a C2)',prem2:'Formar frases con palabras que eliges en History y ver su significado',prem3:'Lectura en voz alta',prem4:'Estadísticas de progreso y análisis del historial',prem5:'Objetivo diario de más de 20 palabras',
+      goalTitle:'Objetivo diario',goalValue:'{n} / {m} palabras',goalUnlimited:'{n} palabras añadidas hoy',addNew:'Añadir palabras nuevas',goWords:'Ir a mis palabras',statActive:'Activas',statMemorized:'Memorizadas',statToday:'Memorizadas hoy',
       quizClose:'Cerrar',quizProgress:'Pregunta {n}/{total}',quizDone:'Terminado',quizProgressLabel:'Progreso del test',quizNeedActive:'Un test necesita al menos 10 palabras activas. Tienes {n}.',quizNeedRecall:'Repasar necesita al menos 10 palabras memorizadas. Tienes {n}.',quizNeedCloze:'Rellenar huecos necesita al menos 10 palabras con una frase de ejemplo. Tienes {n}.',backToToday:'Volver a Hoy',
       statsSummaryTotal:'Palabras en total',statsMemorized:'Memorizadas',statsStreak:'Racha (días)',statsLongest:'Racha más larga',
       statsWeek:'Últimos 7 días',legendAdded:'Añadidas',legendMemorized:'Memorizadas',dayLabel:'{day}: {added} añadidas, {memorized} memorizadas, {tests} tests',
@@ -203,7 +195,7 @@
       b_words50:'Coleccionista',bd_words50:'Añade 50 palabras a tu lista.',b_test1:'Primer test',bd_test1:'Completa un test.',b_test10:'Constante',bd_test10:'Completa 10 tests.',b_perfect:'Impecable',bd_perfect:'Termina un test con 10/10.',b_recall8:'Memoria fuerte',bd_recall8:'Consigue al menos 8/10 en un test de repaso.',
       b_streak3:'Calentamiento',bd_streak3:'Estudia 3 días seguidos.',b_streak7:'Una semana',bd_streak7:'Estudia 7 días seguidos.',b_streak30:'Un mes',bd_streak30:'Estudia 30 días seguidos.',b_goal1:'Objetivo cumplido',bd_goal1:'Alcanza tu objetivo diario de palabras.',
       packTitle:'Palabras listas',packLevel:'Principiante (A1-A2)',packProgress:'{n} / {m} palabras añadidas',packLoading:'Descargando el paquete…',packOffline:'No se pudo descargar el paquete. Se vuelve a intentar cuando tengas conexión.',
-      packNone:'Todavía no hay un paquete listo para este par de idiomas. Puedes añadir palabras nuevas con tu propia clave API.',packDone:'Has añadido todas las palabras del paquete. Puedes usar tu propia clave API para palabras nuevas.',packAdded:'{n} palabras añadidas.',packLevelB:'Intermedio (B1-B2)',packLevelC:'Avanzado (C1-C2)',courseDone:'Has añadido todas las palabras listas de este nivel. Elige el siguiente nivel en Ajustes o usa tu propia clave API.',courseSoon:'Las palabras listas de este nivel aún se están preparando. Elige otro nivel en Ajustes o usa tu propia clave API.',
+      packNone:'Todavía no hay base de palabras para este par de idiomas.',packDone:'Has añadido todas las palabras del paquete.',packLevelB:'Intermedio (B1-B2)',packLevelC:'Avanzado (C1-C2)',courseDone:'Has añadido todas las palabras de este nivel. Al pulsar Añadir palabras nuevas se te preguntará si quieres pasar al siguiente nivel.',courseSoon:'Las palabras de este nivel aún se están preparando. Puedes elegir otro nivel en Ajustes.',
       speakLabel:'Leer en voz alta: {text}',speakLocked:'La lectura en voz alta llega con Premium.',speakLockedLabel:'Leer en voz alta (Premium)',speakNoVoice:'No hay voz de {language} en este dispositivo.',speakNone:'Este navegador no admite la lectura en voz alta.',speedNormal:'normal',speedSlow:'lenta',speakSpeed:'{text} ({speed})',
       aboutTitle:'Acerca de',version:'Versión',uiMode:'Interfaz',uiProto:'Interfaz nueva (prototipo)',aboutWords:'El orden de las palabras listas se basa en la lista de frecuencia hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'El inicio de sesión, Premium y el pago de esta versión son simulaciones: no hay cuenta, servidor ni pago reales.'
     },
@@ -219,12 +211,10 @@
       signOut:'Esci (simulazione)',signOutNote:'Uscire non cancella le tue parole né i tuoi progressi.',oldUi:'Torna alla vecchia interfaccia',
       premiumTitle:'Premium',planLabel:'Piano attuale',freeIncludes:'Gratuito',premiumIncludes:'Premium (in più rispetto a tutto ciò che è gratuito)',
       priceNote:'Sarà un abbonamento mensile e annuale. I prezzi non sono ancora stabiliti.',
-      keyActive:'Chiave API: attiva (puoi aggiungere nuove parole con la tua chiave).',keyOff:'Chiave API: non attiva. Premium è attivo, quindi si usa l’IA integrata; la tua chiave resta salvata.',
-      keyRule:'Finché Premium è attivo, la tua chiave API è non attiva. Quando l’abbonamento finisce, la chiave torna attiva.',
       simulate:'Simula Premium',backToFree:'Torna al piano gratuito',simNote:'Simulazione: nessun pagamento reale viene addebitato e non si acquista nulla.',
-      free1:'Parole iniziali già pronte per la tua coppia di lingue',free2:'Carte, memorizzazione, archivio e History',free3:'Test, Ripassa e Flip',free4:'Aggiungere nuove parole con la tua chiave API',free5:'Backup, temi e 6 lingue dell’interfaccia',free6:'Badge',
-      prem1:'IA integrata (nessuna chiave necessaria)',prem2:'Costruire frasi con le parole scelte in History e vederne il significato',prem3:'Lettura ad alta voce',prem4:'Statistiche sui progressi e analisi della cronologia',prem5:'Obiettivo giornaliero oltre 20 parole',
-      goalTitle:'Obiettivo giornaliero',goalValue:'{n} / {m} parole',goalUnlimited:'{n} parole aggiunte oggi',addDaily:'Aggiungi parole giornaliere',statActive:'Attive',statMemorized:'Memorizzate',statToday:'Memorizzate oggi',
+      free1:'Fino a 300 parole dal database di parole (a partire da A1-A2)',free2:'Carte, memorizzazione, archivio e History',free3:'Test, Ripassa e Flip',free4:'Aggiungere parole con la ricerca, la parola casuale e le etichette di sinonimi/contrari',free5:'Backup, temi e 6 lingue dell’interfaccia',free6:'Badge',
+      prem1:'Tutto ciò che viene dopo la 300ª parola: l’intero database di parole (da A1 a C2)',prem2:'Costruire frasi con le parole scelte in History e vederne il significato',prem3:'Lettura ad alta voce',prem4:'Statistiche sui progressi e analisi della cronologia',prem5:'Obiettivo giornaliero oltre 20 parole',
+      goalTitle:'Obiettivo giornaliero',goalValue:'{n} / {m} parole',goalUnlimited:'{n} parole aggiunte oggi',addNew:'Aggiungi parole nuove',goWords:'Vai alle mie parole',statActive:'Attive',statMemorized:'Memorizzate',statToday:'Memorizzate oggi',
       quizClose:'Chiudi',quizProgress:'Domanda {n}/{total}',quizDone:'Terminato',quizProgressLabel:'Avanzamento del test',quizNeedActive:'Un test richiede almeno 10 parole attive. Ne hai {n}.',quizNeedRecall:'Ripassa richiede almeno 10 parole memorizzate. Ne hai {n}.',quizNeedCloze:'Completa la frase richiede almeno 10 parole con una frase di esempio. Ne hai {n}.',backToToday:'Torna a Oggi',
       statsSummaryTotal:'Parole totali',statsMemorized:'Memorizzate',statsStreak:'Serie (giorni)',statsLongest:'Serie più lunga',
       statsWeek:'Ultimi 7 giorni',legendAdded:'Aggiunte',legendMemorized:'Memorizzate',dayLabel:'{day}: {added} aggiunte, {memorized} memorizzate, {tests} test',
@@ -237,7 +227,7 @@
       b_words50:'Collezionista',bd_words50:'Aggiungi 50 parole alla tua lista.',b_test1:'Primo test',bd_test1:'Completa un test.',b_test10:'Costante',bd_test10:'Completa 10 test.',b_perfect:'Impeccabile',bd_perfect:'Finisci un test con 10/10.',b_recall8:'Memoria forte',bd_recall8:'Ottieni almeno 8/10 in un test di ripasso.',
       b_streak3:'Riscaldamento',bd_streak3:'Studia 3 giorni di fila.',b_streak7:'Una settimana',bd_streak7:'Studia 7 giorni di fila.',b_streak30:'Un mese',bd_streak30:'Studia 30 giorni di fila.',b_goal1:'Obiettivo raggiunto',bd_goal1:'Raggiungi il tuo obiettivo giornaliero di parole.',
       packTitle:'Parole già pronte',packLevel:'Principiante (A1-A2)',packProgress:'{n} / {m} parole aggiunte',packLoading:'Download del pacchetto…',packOffline:'Non è stato possibile scaricare il pacchetto. Si riprova quando sei online.',
-      packNone:'Per questa coppia di lingue non c’è ancora un pacchetto pronto. Puoi aggiungere nuove parole con la tua chiave API.',packDone:'Hai aggiunto tutte le parole del pacchetto. Per nuove parole puoi usare la tua chiave API.',packAdded:'{n} parole aggiunte.',packLevelB:'Intermedio (B1-B2)',packLevelC:'Avanzato (C1-C2)',courseDone:'Hai aggiunto tutte le parole pronte di questo livello. Scegli il livello successivo nelle impostazioni o usa la tua chiave API.',courseSoon:'Le parole pronte di questo livello sono ancora in preparazione. Scegli un altro livello nelle impostazioni o usa la tua chiave API.',
+      packNone:'Non c’è ancora un database di parole per questa coppia di lingue.',packDone:'Hai aggiunto tutte le parole del pacchetto.',packLevelB:'Intermedio (B1-B2)',packLevelC:'Avanzato (C1-C2)',courseDone:'Hai aggiunto tutte le parole di questo livello. Premendo Aggiungi parole nuove ti verrà chiesto se vuoi passare al livello successivo.',courseSoon:'Le parole di questo livello sono ancora in preparazione. Puoi scegliere un altro livello nelle Impostazioni.',
       speakLabel:'Leggi ad alta voce: {text}',speakLocked:'La lettura ad alta voce è inclusa in Premium.',speakLockedLabel:'Leggi ad alta voce (Premium)',speakNoVoice:'Su questo dispositivo non c’è una voce {language}.',speakNone:'Questo browser non supporta la lettura ad alta voce.',speedNormal:'normale',speedSlow:'lenta',speakSpeed:'{text} ({speed})',
       aboutTitle:'Informazioni',version:'Versione',uiMode:'Interfaccia',uiProto:'Nuova interfaccia (prototipo)',aboutWords:'L’ordine delle parole pronte si basa sull’elenco di frequenza hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Accesso, Premium e pagamento in questa versione sono simulazioni: non esistono un account, un server o un pagamento reali.'
     }
@@ -248,136 +238,136 @@
       tr:{title:'Gizlilik Politikası',banner:'Taslak. Yayınlamadan önce iletişim bilgileri, veri sorumlusu, yaş sınırı ve hukuki gözden geçirme eklenmelidir.',sections:[
         {h:'Kısaca',p:["VocVoc'ta hesap, reklam, izleme veya analiz yoktur. Kelimelerin, ilerlemen ve ayarların yalnızca bu cihazda saklanır."]},
         {h:'Cihazında saklananlar',p:['Kelime listen, ezber ve arşiv durumun, ayarların ve (eklediysen) profil fotoğrafın tarayıcının yerel depolamasında (IndexedDB ve localStorage) tutulur ve bize gönderilmez.','Yedeği sen dışa aktarırsın; dosya senin kontrolündedir. Verileri silmek için Ayarlar\'daki "İlerlemeyi sıfırla"yı kullan ya da uygulamanın/tarayıcının verilerini temizle.']},
-        {h:'Yapay zekâ (kendi anahtarınla)',p:['Yeni bir kelime aradığında veya günlük kelime istediğinde, yazdığın kelime ve istem Google\'ın Gemini API\'sine gönderilir. Bu istek senin kendi API anahtarınla yapılır ve Google\'ın koşullarına tabidir.','API anahtarın yalnızca bu cihazda saklanır, yalnızca Google\'a giden istekte kullanılır ve dışa aktarılan yedeklere girmez.']},
-        {h:'Premium (planlanan)',p:['Premium abonelik Google Play üzerinden satın alınır; ödeme bilgilerini biz görmeyiz. Dahili yapay zekâ kullanıldığında istekler bizim sunucumuz üzerinden Google\'a iletilecektir. Bu bölüm Premium yayınlanmadan önce güncellenecektir. Bu sürümde gerçek ödeme ve sunucu yoktur (simülasyon).']},
+        {h:'Kelime veritabanı',p:['Kelimeler, uygulamanın kendi sunucusundan indirilen dosyalardan gelir ve cihazında saklanır. Arama kutusuna yazdığın veya dokunduğun kelime hiçbir yere gönderilmez; arama cihazında yapılır.','Dosyaları indirmek, uygulamayı barındıran sunucuya yapılan sıradan bir web isteğidir; bu istekte kelimelerin ya da listen yer almaz.']},
+        {h:'Premium (planlanan)',p:['Premium abonelik Google Play üzerinden satın alınır; ödeme bilgilerini biz görmeyiz. Bu bölüm Premium yayınlanmadan önce güncellenecektir. Bu sürümde gerçek ödeme ve sunucu yoktur (simülasyon).']},
         {h:'İletişim',p:['[destek e-postası eklenecek]']}]},
       en:{title:'Privacy Policy',banner:'Draft. Contact details, the data controller, an age limit and a legal review must be added before release.',sections:[
         {h:'In short',p:['VocVoc has no accounts, ads, tracking or analytics. Your words, progress and settings are stored only on this device.']},
         {h:'What stays on your device',p:["Your word list, memorized and archive status, settings and (if you added one) profile photo are kept in the browser's local storage (IndexedDB and localStorage) and are not sent to us.",'You export backups yourself; the file is under your control. To delete your data use "Reset progress" in Settings or clear the app\'s or browser\'s data.']},
-        {h:'AI (with your own key)',p:["When you search for a new word or ask for daily words, the word you typed and the prompt are sent to Google's Gemini API. The request is made with your own API key and is subject to Google's terms.",'Your API key is stored only on this device, is used only in the request to Google, and is never part of an exported backup.']},
-        {h:'Premium (planned)',p:['A Premium subscription is bought through Google Play; we do not see your payment details. When the built-in AI is used, requests will be passed to Google through our server. This section will be updated before Premium is released. This version has no real payment or server (simulation).']},
+        {h:'Word database',p:['The words come from files that the app downloads from its own server and keeps on your device. A word you type in the search box or tap is not sent anywhere: the lookup happens on your device.','Downloading the files is an ordinary web request to the server that hosts the app; it does not include your words or your list.']},
+        {h:'Premium (planned)',p:['A Premium subscription is bought through Google Play; we do not see your payment details. This section will be updated before Premium is released. This version has no real payment or server (simulation).']},
         {h:'Contact',p:['[support e-mail to be added]']}]},
       fr:{title:'Politique de confidentialité',banner:'Brouillon. Les coordonnées, le responsable du traitement, une limite d’âge et une relecture juridique doivent être ajoutés avant la publication.',sections:[
         {h:'En bref',p:['VocVoc n’a ni comptes, ni publicité, ni suivi, ni analyses. Vos mots, votre progression et vos réglages sont stockés uniquement sur cet appareil.']},
         {h:'Ce qui reste sur votre appareil',p:['Votre liste de mots, l’état mémorisé et archivé, vos réglages et (si vous en avez ajouté une) votre photo de profil sont conservés dans le stockage local du navigateur (IndexedDB et localStorage) et ne nous sont pas envoyés.','Vous exportez vous-même les sauvegardes ; le fichier reste sous votre contrôle. Pour supprimer vos données, utilisez « Réinitialiser la progression » dans les Réglages ou effacez les données de l’application ou du navigateur.']},
-        {h:'IA (avec votre propre clé)',p:['Quand vous recherchez un nouveau mot ou demandez les mots du jour, le mot saisi et la requête sont envoyés à l’API Gemini de Google. La requête est faite avec votre propre clé API et soumise aux conditions de Google.','Votre clé API est stockée uniquement sur cet appareil, n’est utilisée que dans la requête envoyée à Google et ne fait jamais partie d’une sauvegarde exportée.']},
-        {h:'Premium (prévu)',p:['L’abonnement Premium s’achète via Google Play ; nous ne voyons pas vos informations de paiement. Quand l’IA intégrée est utilisée, les requêtes seront transmises à Google via notre serveur. Cette section sera mise à jour avant la sortie de Premium. Cette version n’a ni vrai paiement ni serveur (simulation).']},
+        {h:'Base de mots',p:['Les mots viennent de fichiers que l’application télécharge depuis son propre serveur et conserve sur votre appareil. Un mot saisi dans la zone de recherche ou touché n’est envoyé nulle part : la recherche se fait sur votre appareil.','Le téléchargement des fichiers est une requête web ordinaire vers le serveur qui héberge l’application ; elle ne contient ni vos mots ni votre liste.']},
+        {h:'Premium (prévu)',p:['L’abonnement Premium s’achète via Google Play ; nous ne voyons pas vos informations de paiement. Cette section sera mise à jour avant la sortie de Premium. Cette version n’a ni vrai paiement ni serveur (simulation).']},
         {h:'Contact',p:['[adresse e-mail d’assistance à ajouter]']}]},
       de:{title:'Datenschutzerklärung',banner:'Entwurf. Kontaktdaten, der Verantwortliche, eine Altersgrenze und eine rechtliche Prüfung müssen vor der Veröffentlichung ergänzt werden.',sections:[
         {h:'Kurz gesagt',p:['VocVoc hat keine Konten, keine Werbung, kein Tracking und keine Analysen. Ihre Wörter, Ihr Fortschritt und Ihre Einstellungen werden nur auf diesem Gerät gespeichert.']},
         {h:'Was auf Ihrem Gerät bleibt',p:['Ihre Wortliste, der Status „gelernt“ und „archiviert“, Ihre Einstellungen und (falls hinzugefügt) Ihr Profilfoto liegen im lokalen Speicher des Browsers (IndexedDB und localStorage) und werden nicht an uns gesendet.','Sicherungen exportieren Sie selbst; die Datei liegt in Ihrer Hand. Zum Löschen Ihrer Daten verwenden Sie „Fortschritt zurücksetzen“ in den Einstellungen oder löschen die Daten der App bzw. des Browsers.']},
-        {h:'KI (mit Ihrem eigenen Schlüssel)',p:['Wenn Sie ein neues Wort suchen oder tägliche Wörter anfordern, werden das eingegebene Wort und die Anfrage an die Gemini-API von Google gesendet. Die Anfrage erfolgt mit Ihrem eigenen API-Schlüssel und unterliegt den Bedingungen von Google.','Ihr API-Schlüssel wird nur auf diesem Gerät gespeichert, nur in der Anfrage an Google verwendet und ist nie Teil einer exportierten Sicherung.']},
-        {h:'Premium (geplant)',p:['Ein Premium-Abo wird über Google Play gekauft; Ihre Zahlungsdaten sehen wir nicht. Wenn die integrierte KI genutzt wird, werden Anfragen über unseren Server an Google weitergeleitet. Dieser Abschnitt wird vor der Veröffentlichung von Premium aktualisiert. Diese Version hat keine echte Zahlung und keinen Server (Simulation).']},
+        {h:'Wortdatenbank',p:['Die Wörter stammen aus Dateien, die die App von ihrem eigenen Server lädt und auf Ihrem Gerät speichert. Ein Wort, das Sie im Suchfeld eingeben oder antippen, wird nirgendwohin gesendet: Die Suche läuft auf Ihrem Gerät.','Das Laden der Dateien ist eine gewöhnliche Webanfrage an den Server, der die App bereitstellt; sie enthält weder Ihre Wörter noch Ihre Liste.']},
+        {h:'Premium (geplant)',p:['Ein Premium-Abo wird über Google Play gekauft; Ihre Zahlungsdaten sehen wir nicht. Dieser Abschnitt wird vor der Veröffentlichung von Premium aktualisiert. Diese Version hat keine echte Zahlung und keinen Server (Simulation).']},
         {h:'Kontakt',p:['[Support-E-Mail wird ergänzt]']}]},
       es:{title:'Política de privacidad',banner:'Borrador. Antes de publicar hay que añadir los datos de contacto, el responsable del tratamiento, un límite de edad y una revisión legal.',sections:[
         {h:'En breve',p:['VocVoc no tiene cuentas, anuncios, seguimiento ni analíticas. Tus palabras, tu progreso y tus ajustes se guardan solo en este dispositivo.']},
         {h:'Lo que se queda en tu dispositivo',p:['Tu lista de palabras, el estado de memorizada y archivada, tus ajustes y (si la añadiste) tu foto de perfil se guardan en el almacenamiento local del navegador (IndexedDB y localStorage) y no se nos envían.','Las copias de seguridad las exportas tú; el archivo queda bajo tu control. Para borrar tus datos usa «Restablecer progreso» en Ajustes o borra los datos de la aplicación o del navegador.']},
-        {h:'IA (con tu propia clave)',p:['Cuando buscas una palabra nueva o pides las palabras diarias, la palabra que escribiste y la petición se envían a la API Gemini de Google. La petición se hace con tu propia clave API y está sujeta a las condiciones de Google.','Tu clave API se guarda solo en este dispositivo, se usa solo en la petición a Google y nunca forma parte de una copia de seguridad exportada.']},
-        {h:'Premium (previsto)',p:['La suscripción Premium se compra a través de Google Play; no vemos tus datos de pago. Cuando se use la IA integrada, las peticiones se enviarán a Google a través de nuestro servidor. Esta sección se actualizará antes de lanzar Premium. Esta versión no tiene pago real ni servidor (simulación).']},
+        {h:'Base de palabras',p:['Las palabras vienen de archivos que la aplicación descarga de su propio servidor y guarda en tu dispositivo. Una palabra que escribes en el cuadro de búsqueda o que tocas no se envía a ningún sitio: la búsqueda se hace en tu dispositivo.','Descargar los archivos es una petición web normal al servidor que aloja la aplicación; no incluye tus palabras ni tu lista.']},
+        {h:'Premium (previsto)',p:['La suscripción Premium se compra a través de Google Play; no vemos tus datos de pago. Esta sección se actualizará antes de lanzar Premium. Esta versión no tiene pago real ni servidor (simulación).']},
         {h:'Contacto',p:['[se añadirá el correo de soporte]']}]},
       it:{title:'Informativa sulla privacy',banner:'Bozza. Prima della pubblicazione vanno aggiunti i recapiti, il titolare del trattamento, un limite di età e una revisione legale.',sections:[
         {h:'In breve',p:['VocVoc non ha account, pubblicità, tracciamento né analisi. Le tue parole, i tuoi progressi e le tue impostazioni sono salvati solo su questo dispositivo.']},
         {h:'Cosa resta sul tuo dispositivo',p:['La tua lista di parole, lo stato memorizzata e archiviata, le impostazioni e (se l’hai aggiunta) la foto del profilo sono conservati nella memoria locale del browser (IndexedDB e localStorage) e non ci vengono inviati.','I backup li esporti tu; il file resta sotto il tuo controllo. Per cancellare i tuoi dati usa «Azzera progressi» nelle Impostazioni oppure cancella i dati dell’app o del browser.']},
-        {h:'IA (con la tua chiave)',p:['Quando cerchi una parola nuova o chiedi le parole giornaliere, la parola digitata e la richiesta vengono inviate all’API Gemini di Google. La richiesta usa la tua chiave API ed è soggetta ai termini di Google.','La tua chiave API è salvata solo su questo dispositivo, è usata solo nella richiesta a Google e non fa mai parte di un backup esportato.']},
-        {h:'Premium (previsto)',p:['L’abbonamento Premium si acquista tramite Google Play; non vediamo i tuoi dati di pagamento. Quando si usa l’IA integrata, le richieste saranno inoltrate a Google tramite il nostro server. Questa sezione sarà aggiornata prima del rilascio di Premium. Questa versione non ha pagamenti reali né server (simulazione).']},
+        {h:'Database di parole',p:['Le parole provengono da file che l’app scarica dal proprio server e conserva sul tuo dispositivo. Una parola che digiti nella casella di ricerca o che tocchi non viene inviata da nessuna parte: la ricerca avviene sul tuo dispositivo.','Scaricare i file è una normale richiesta web al server che ospita l’app; non include le tue parole né la tua lista.']},
+        {h:'Premium (previsto)',p:['L’abbonamento Premium si acquista tramite Google Play; non vediamo i tuoi dati di pagamento. Questa sezione sarà aggiornata prima del rilascio di Premium. Questa versione non ha pagamenti reali né server (simulazione).']},
         {h:'Contatti',p:['[l’e-mail di supporto sarà aggiunta]']}]}
     },
     terms:{
       tr:{title:'Kullanım Şartları',banner:'Taslak. Yayınlamadan önce hukuki gözden geçirme gerekir.',sections:[
-        {h:'Hizmet',p:['VocVoc kelime öğrenmene yardım eden bir uygulamadır ve olduğu gibi sunulur. Hazır kelimeler ve yapay zekâ ile üretilen içerik hatalı veya eksik olabilir.']},
-        {h:'Kendi API anahtarın',p:['Kendi anahtarınla yaptığın istekler ve bunların Google tarafından ücretlendirilmesi senin sorumluluğundadır. Anahtarını başkalarıyla paylaşma.']},
+        {h:'Hizmet',p:['VocVoc kelime öğrenmene yardım eden bir uygulamadır ve olduğu gibi sunulur. Kelime veritabanı yapay zekâ yardımıyla hazırlanmıştır; hazır kelimeler hatalı veya eksik olabilir.']},
+        {h:'Ücretsiz plan',p:['Ücretsiz planda listene en çok 300 kelime ekleyebilirsin; Premium bu sınırı kaldırır.']},
         {h:'Verilerin',p:['Verilerin cihazında tutulur. Düzenli yedek almak senin sorumluluğundadır; tarayıcı verisinin silinmesi kelimelerini kaybettirebilir.']},
-        {h:'Premium abonelik (planlanan)',p:['Abonelik Google Play kurallarına tabidir; iptal ve iade Google Play üzerinden yapılır. Abonelik bittiğinde Premium özellikler kapanır ve kendi API anahtarın yeniden etkin olur.']},
+        {h:'Premium abonelik (planlanan)',p:['Abonelik Google Play kurallarına tabidir; iptal ve iade Google Play üzerinden yapılır. Abonelik bittiğinde Premium özellikler kapanır.']},
         {h:'Değişiklikler',p:['Bu şartlar güncellenebilir; önemli değişiklikler uygulamada duyurulur.']}]},
       en:{title:'Terms of Use',banner:'Draft. A legal review is needed before release.',sections:[
-        {h:'The service',p:['VocVoc helps you learn words and is provided as is. Ready-made words and AI-generated content can be wrong or incomplete.']},
-        {h:'Your own API key',p:['Requests you make with your own key, and any charges Google makes for them, are your responsibility. Do not share your key.']},
+        {h:'The service',p:['VocVoc helps you learn words and is provided as is. The word database was prepared with the help of AI; the ready-made words can be wrong or incomplete.']},
+        {h:'Free plan',p:['The free plan lets you keep up to 300 words in your list; Premium removes this limit.']},
         {h:'Your data',p:["Your data is kept on your device. Taking regular backups is your responsibility; clearing the browser's data can lose your words."]},
-        {h:'Premium subscription (planned)',p:['A subscription is subject to the Google Play rules; cancellation and refunds go through Google Play. When it ends, Premium features stop and your own API key is active again.']},
+        {h:'Premium subscription (planned)',p:['A subscription is subject to the Google Play rules; cancellation and refunds go through Google Play. When it ends, Premium features stop.']},
         {h:'Changes',p:['These terms may be updated; important changes are announced in the app.']}]},
       fr:{title:'Conditions d’utilisation',banner:'Brouillon. Une relecture juridique est nécessaire avant la publication.',sections:[
-        {h:'Le service',p:['VocVoc vous aide à apprendre des mots et est fourni tel quel. Les mots prêts à l’emploi et le contenu généré par l’IA peuvent être erronés ou incomplets.']},
-        {h:'Votre propre clé API',p:['Les requêtes faites avec votre propre clé, et les frais que Google peut facturer pour celles-ci, relèvent de votre responsabilité. Ne partagez pas votre clé.']},
+        {h:'Le service',p:['VocVoc vous aide à apprendre des mots et est fourni tel quel. La base de mots a été préparée avec l’aide de l’IA ; les mots prêts à l’emploi peuvent être erronés ou incomplets.']},
+        {h:'Plan gratuit',p:['Le plan gratuit permet de garder jusqu’à 300 mots dans votre liste ; Premium supprime cette limite.']},
         {h:'Vos données',p:['Vos données sont conservées sur votre appareil. Faire des sauvegardes régulières relève de votre responsabilité ; effacer les données du navigateur peut vous faire perdre vos mots.']},
-        {h:'Abonnement Premium (prévu)',p:['Un abonnement est soumis aux règles de Google Play ; l’annulation et les remboursements passent par Google Play. À sa fin, les fonctions Premium s’arrêtent et votre propre clé API redevient active.']},
+        {h:'Abonnement Premium (prévu)',p:['Un abonnement est soumis aux règles de Google Play ; l’annulation et les remboursements passent par Google Play. À sa fin, les fonctions Premium s’arrêtent.']},
         {h:'Modifications',p:['Ces conditions peuvent être mises à jour ; les changements importants sont annoncés dans l’application.']}]},
       de:{title:'Nutzungsbedingungen',banner:'Entwurf. Vor der Veröffentlichung ist eine rechtliche Prüfung nötig.',sections:[
-        {h:'Der Dienst',p:['VocVoc hilft Ihnen beim Wörterlernen und wird ohne Gewähr bereitgestellt. Fertige Wörter und von der KI erzeugte Inhalte können falsch oder unvollständig sein.']},
-        {h:'Ihr eigener API-Schlüssel',p:['Anfragen mit Ihrem eigenen Schlüssel und die dafür von Google berechneten Kosten liegen in Ihrer Verantwortung. Geben Sie Ihren Schlüssel nicht weiter.']},
+        {h:'Der Dienst',p:['VocVoc hilft Ihnen beim Wörterlernen und wird ohne Gewähr bereitgestellt. Die Wortdatenbank wurde mit Hilfe von KI erstellt; die fertigen Wörter können falsch oder unvollständig sein.']},
+        {h:'Kostenloser Plan',p:['Im kostenlosen Plan können bis zu 300 Wörter in Ihrer Liste stehen; Premium hebt diese Grenze auf.']},
         {h:'Ihre Daten',p:['Ihre Daten bleiben auf Ihrem Gerät. Regelmäßige Sicherungen liegen in Ihrer Verantwortung; das Löschen der Browserdaten kann Ihre Wörter kosten.']},
-        {h:'Premium-Abo (geplant)',p:['Ein Abo unterliegt den Regeln von Google Play; Kündigung und Erstattung laufen über Google Play. Mit seinem Ende enden die Premium-Funktionen und Ihr eigener API-Schlüssel ist wieder aktiv.']},
+        {h:'Premium-Abo (geplant)',p:['Ein Abo unterliegt den Regeln von Google Play; Kündigung und Erstattung laufen über Google Play. Mit seinem Ende enden die Premium-Funktionen.']},
         {h:'Änderungen',p:['Diese Bedingungen können aktualisiert werden; wichtige Änderungen werden in der App angekündigt.']}]},
       es:{title:'Condiciones de uso',banner:'Borrador. Antes de publicar hace falta una revisión legal.',sections:[
-        {h:'El servicio',p:['VocVoc te ayuda a aprender palabras y se ofrece tal cual. Las palabras listas y el contenido generado por IA pueden ser incorrectos o incompletos.']},
-        {h:'Tu propia clave API',p:['Las peticiones que hagas con tu propia clave, y lo que Google cobre por ellas, son responsabilidad tuya. No compartas tu clave.']},
+        {h:'El servicio',p:['VocVoc te ayuda a aprender palabras y se ofrece tal cual. La base de palabras se preparó con ayuda de la IA; las palabras listas pueden ser incorrectas o incompletas.']},
+        {h:'Plan gratuito',p:['El plan gratuito permite tener hasta 300 palabras en tu lista; Premium quita este límite.']},
         {h:'Tus datos',p:['Tus datos se guardan en tu dispositivo. Hacer copias de seguridad con regularidad es responsabilidad tuya; borrar los datos del navegador puede hacerte perder tus palabras.']},
-        {h:'Suscripción Premium (prevista)',p:['Una suscripción está sujeta a las normas de Google Play; la cancelación y los reembolsos se gestionan en Google Play. Cuando termina, las funciones Premium se detienen y tu propia clave API vuelve a estar activa.']},
+        {h:'Suscripción Premium (prevista)',p:['Una suscripción está sujeta a las normas de Google Play; la cancelación y los reembolsos se gestionan en Google Play. Cuando termina, las funciones Premium se detienen.']},
         {h:'Cambios',p:['Estas condiciones pueden actualizarse; los cambios importantes se anuncian en la aplicación.']}]},
       it:{title:'Termini d’uso',banner:'Bozza. Prima della pubblicazione serve una revisione legale.',sections:[
-        {h:'Il servizio',p:['VocVoc ti aiuta a imparare le parole ed è fornita così com’è. Le parole già pronte e i contenuti generati dall’IA possono essere errati o incompleti.']},
-        {h:'La tua chiave API',p:['Le richieste che fai con la tua chiave, e gli eventuali costi che Google addebita per esse, sono una tua responsabilità. Non condividere la tua chiave.']},
+        {h:'Il servizio',p:['VocVoc ti aiuta a imparare le parole ed è fornita così com’è. Il database di parole è stato preparato con l’aiuto dell’IA; le parole già pronte possono essere errate o incomplete.']},
+        {h:'Piano gratuito',p:['Il piano gratuito consente fino a 300 parole nella tua lista; Premium toglie questo limite.']},
         {h:'I tuoi dati',p:['I tuoi dati restano sul tuo dispositivo. Fare backup regolari è una tua responsabilità; cancellare i dati del browser può farti perdere le parole.']},
-        {h:'Abbonamento Premium (previsto)',p:['Un abbonamento è soggetto alle regole di Google Play; disdetta e rimborsi passano da Google Play. Quando termina, le funzioni Premium si fermano e la tua chiave API torna attiva.']},
+        {h:'Abbonamento Premium (previsto)',p:['Un abbonamento è soggetto alle regole di Google Play; disdetta e rimborsi passano da Google Play. Quando termina, le funzioni Premium si fermano.']},
         {h:'Modifiche',p:['Questi termini possono essere aggiornati; le modifiche importanti vengono annunciate nell’app.']}]}
     },
     help:{
       tr:{title:'Yardım',sections:[
-        {h:'Kelime ekleme',p:['Arama kutusuna bir kelime yazıp ara düğmesine bas. Yeni kelime bulmak için kendi Gemini API anahtarına ihtiyacın var: Google AI Studio\'dan alıp Ayarlar\'a yapıştır.','"Günlük" düğmesi tek seferde 10 yeni kelime ekler, rastgele düğmesi bir kelime önerir.']},
+        {h:'Kelime ekleme',p:['Arama kutusuna bir kelime yazıp ara düğmesine bas. Kelime, kelime veritabanından bir pencerede açılır; sen "Listeme ekle"ye basana kadar listene eklenmez. Eş ve zıt anlam etiketlerine dokunduğunda da aynı pencere açılır.','"Yeni Kelime Ekle" düğmesi seçtiğin seviyeden tek seferde 10 yeni kelime ekler; rastgele düğmesi bir kelime gösterir (o da sen eklemedikçe eklenmez). Seviyenin kelimeleri bitince bir sonraki seviyeye geçmek ister misin diye sorulur.']},
         {h:'Kartlar ve kaydırma',p:['Ana ekranda bir kartı sağa kaydırırsan "Ezberimde" olur, sola kaydırırsan kapanır.','History penceresinde ve Flip\'te sağa kaydırmak ezberler, sola kaydırmak ezberden çıkarır.']},
         {h:'Test, Hatırla, Flip',p:['Test: aktif kelimelerinden 10 soru sorar. Hatırla: ezberlediğin kelimelerle test yapar. Flip: kartı çevirir; klavyede F çevirir, ok tuşları kart değiştirir, M ezber durumunu değiştirir.']},
         {h:'History ve Arşiv',p:["History listendeki kelimeleri gösterir; bir kelimeye dokunarak ayrıntısını aç. Arşive aldığın kelime listeden kalkar; Ayarlar'daki Arşiv'den geri alabilir veya kalıcı silebilirsin."]},
-        {h:'Yedekleme',p:["Ayarlar'daki Veri yedeği bölümünden verilerini bir dosyaya aktarıp sonra geri yükleyebilirsin. Tarayıcı verisini silmek kelimelerini kaybettirebilir, düzenli yedek al. API anahtarın yedeğe girmez."]},
-        {h:'İnternetsiz kullanım',p:['Kayıtlı kelimeler, Test, Hatırla ve Flip internetsiz çalışır. Yeni kelime bulmak için internet gerekir.']},
+        {h:'Yedekleme',p:["Ayarlar'daki Veri yedeği bölümünden verilerini bir dosyaya aktarıp sonra geri yükleyebilirsin. Tarayıcı verisini silmek kelimelerini kaybettirebilir, düzenli yedek al."]},
+        {h:'İnternetsiz kullanım',p:['Kayıtlı kelimeler, Test, Hatırla ve Flip internetsiz çalışır. Kelime veritabanının bir bölümü ilk kullanıldığında indirilir; indirilen bölümler internetsiz de kullanılır, henüz indirilmemiş bölümler için internet gerekir.']},
         {h:'Güncelleme uyarısı',p:['"Yeni sürüm hazır" bandında Yenile\'ye basınca "önce açık işlemi tamamlayın" uyarısı çıkarsa devam eden bir Test veya açık bir pencere vardır; onu bitirip tekrar dene.']},
         {h:'Premium (simülasyon)',p:['Bu sürümde Premium bir simülasyondur: Profil, Premium ekranından açıp kapatabilirsin. Gerçek ödeme veya sunucu yoktur.']},
         {h:'Destek',p:['[destek e-postası eklenecek]']}]},
       en:{title:'Help',sections:[
-        {h:'Adding words',p:['Type a word in the search box and press the search button. To find new words you need your own Gemini API key: get it from Google AI Studio and paste it into Settings.','The "Daily" button adds 10 new words at once; the random button suggests one word.']},
+        {h:'Adding words',p:['Type a word in the search box and press the search button. The word opens in a window from the word database; it is not added to your list until you press "Add to my list". Tapping a synonym or antonym tag opens the same window.','The "Add New Words" button adds 10 new words at once from the level you chose; the random button shows one word (it is not added unless you add it). When the words of a level run out you are asked whether to move to the next level.']},
         {h:'Cards and swiping',p:['On the home screen, swipe a card right to mark it memorized, or left to close it.','In the History window and in Flip, swiping right memorizes and swiping left un-memorizes.']},
         {h:'Test, Recall, Flip',p:['Test asks 10 questions from your active words. Recall tests the words you memorized. Flip turns a card over; on a keyboard F flips, the arrow keys change card and M toggles memorized.']},
         {h:'History and Archive',p:['History shows the words in your list; tap one to open its details. An archived word leaves the list; restore or delete it for good from the Archive in Settings.']},
-        {h:'Backup',p:['In the Data backup section of Settings you can export your data to a file and restore it later. Clearing browser data can lose your words, so back up regularly. Your API key is not part of a backup.']},
-        {h:'Offline',p:['Saved words, Test, Recall and Flip work without internet. Finding new words needs internet.']},
+        {h:'Backup',p:['In the Data backup section of Settings you can export your data to a file and restore it later. Clearing browser data can lose your words, so back up regularly.']},
+        {h:'Offline',p:['Saved words, Test, Recall and Flip work without internet. A part of the word database is downloaded the first time it is used; downloaded parts work offline, parts not downloaded yet need internet.']},
         {h:'Update notice',p:['If tapping Reload on the "New version ready" bar says "finish the current operation first", a Test is running or a window is open; finish it and try again.']},
         {h:'Premium (simulation)',p:['In this version Premium is a simulation: switch it on and off in Profile, Premium. There is no real payment or server.']},
         {h:'Support',p:['[support e-mail to be added]']}]},
       fr:{title:'Aide',sections:[
-        {h:'Ajouter des mots',p:['Saisissez un mot dans la zone de recherche et appuyez sur le bouton de recherche. Pour trouver de nouveaux mots, vous avez besoin de votre propre clé API Gemini : obtenez-la dans Google AI Studio et collez-la dans les Réglages.','Le bouton « Quotidien » ajoute 10 nouveaux mots d’un coup ; le bouton aléatoire propose un mot.']},
+        {h:'Ajouter des mots',p:['Saisissez un mot dans la zone de recherche et appuyez sur le bouton de recherche. Le mot s’ouvre dans une fenêtre depuis la base de mots ; il n’est ajouté à votre liste que lorsque vous appuyez sur « Ajouter à ma liste ». Toucher une étiquette de synonyme ou de contraire ouvre la même fenêtre.','Le bouton « Ajouter de nouveaux mots » ajoute d’un coup 10 nouveaux mots du niveau choisi ; le bouton aléatoire montre un mot (il n’est ajouté que si vous l’ajoutez). Quand les mots d’un niveau sont épuisés, on vous demande si vous voulez passer au niveau suivant.']},
         {h:'Cartes et balayage',p:['Sur l’écran d’accueil, balayez une carte vers la droite pour la marquer comme mémorisée, ou vers la gauche pour la fermer.','Dans la fenêtre History et dans Flip, balayer vers la droite mémorise et balayer vers la gauche annule la mémorisation.']},
         {h:'Test, Réviser, Flip',p:['Test pose 10 questions sur vos mots actifs. Réviser teste les mots que vous avez mémorisés. Flip retourne une carte ; au clavier, F retourne, les flèches changent de carte et M bascule l’état mémorisé.']},
         {h:'History et archive',p:['History affiche les mots de votre liste ; touchez-en un pour ouvrir ses détails. Un mot archivé quitte la liste ; restaurez-le ou supprimez-le définitivement depuis l’archive dans les Réglages.']},
-        {h:'Sauvegarde',p:['Dans la section Sauvegarde des données des Réglages, vous pouvez exporter vos données dans un fichier et les restaurer plus tard. Effacer les données du navigateur peut vous faire perdre vos mots, faites donc des sauvegardes régulières. Votre clé API ne fait pas partie d’une sauvegarde.']},
-        {h:'Hors connexion',p:['Les mots enregistrés, Test, Réviser et Flip fonctionnent sans internet. Trouver de nouveaux mots demande internet.']},
+        {h:'Sauvegarde',p:['Dans la section Sauvegarde des données des Réglages, vous pouvez exporter vos données dans un fichier et les restaurer plus tard. Effacer les données du navigateur peut vous faire perdre vos mots, faites donc des sauvegardes régulières.']},
+        {h:'Hors connexion',p:['Les mots enregistrés, Test, Réviser et Flip fonctionnent sans internet. Une partie de la base de mots est téléchargée à sa première utilisation ; les parties téléchargées fonctionnent hors connexion, les autres demandent internet.']},
         {h:'Avis de mise à jour',p:['Si l’appui sur Recharger dans la bannière « Nouvelle version prête » affiche « terminez d’abord l’opération en cours », un test est en cours ou une fenêtre est ouverte ; terminez-le puis réessayez.']},
         {h:'Premium (simulation)',p:['Dans cette version, Premium est une simulation : activez-le ou désactivez-le dans Profil, Premium. Il n’y a ni vrai paiement ni serveur.']},
         {h:'Assistance',p:['[adresse e-mail d’assistance à ajouter]']}]},
       de:{title:'Hilfe',sections:[
-        {h:'Wörter hinzufügen',p:['Geben Sie ein Wort in das Suchfeld ein und tippen Sie auf die Suchtaste. Für neue Wörter brauchen Sie Ihren eigenen Gemini-API-Schlüssel: Holen Sie ihn in Google AI Studio und fügen Sie ihn in den Einstellungen ein.','Die Taste „Täglich“ fügt auf einmal 10 neue Wörter hinzu; die Zufallstaste schlägt ein Wort vor.']},
+        {h:'Wörter hinzufügen',p:['Geben Sie ein Wort in das Suchfeld ein und tippen Sie auf die Suchtaste. Das Wort öffnet sich aus der Wortdatenbank in einem Fenster; es kommt erst in Ihre Liste, wenn Sie auf „Zu meiner Liste“ tippen. Ein Antippen von Synonym- oder Antonym-Chips öffnet dasselbe Fenster.','Die Taste „Neue Wörter hinzufügen“ fügt auf einmal 10 neue Wörter der gewählten Stufe hinzu; die Zufallstaste zeigt ein Wort (es wird nur hinzugefügt, wenn Sie es hinzufügen). Sind die Wörter einer Stufe aufgebraucht, werden Sie gefragt, ob Sie zur nächsten Stufe wechseln möchten.']},
         {h:'Karten und Wischen',p:['Auf dem Startbildschirm wischen Sie eine Karte nach rechts, um sie als gelernt zu markieren, oder nach links, um sie zu schließen.','Im History-Fenster und in Flip lernt Wischen nach rechts das Wort, Wischen nach links nimmt es zurück.']},
         {h:'Test, Wiederholen, Flip',p:['Test stellt 10 Fragen zu Ihren aktiven Wörtern. Wiederholen prüft die Wörter, die Sie gelernt haben. Flip dreht eine Karte um; auf der Tastatur dreht F um, die Pfeiltasten wechseln die Karte und M schaltet „gelernt“ um.']},
         {h:'History und Archiv',p:['History zeigt die Wörter Ihrer Liste; tippen Sie auf eines, um die Details zu öffnen. Ein archiviertes Wort verlässt die Liste; stellen Sie es im Archiv in den Einstellungen wieder her oder löschen Sie es endgültig.']},
-        {h:'Sicherung',p:['Im Bereich Datensicherung der Einstellungen können Sie Ihre Daten in eine Datei exportieren und später wiederherstellen. Das Löschen der Browserdaten kann Ihre Wörter kosten, sichern Sie daher regelmäßig. Ihr API-Schlüssel ist nicht Teil einer Sicherung.']},
-        {h:'Offline',p:['Gespeicherte Wörter, Test, Wiederholen und Flip funktionieren ohne Internet. Für neue Wörter brauchen Sie Internet.']},
+        {h:'Sicherung',p:['Im Bereich Datensicherung der Einstellungen können Sie Ihre Daten in eine Datei exportieren und später wiederherstellen. Das Löschen der Browserdaten kann Ihre Wörter kosten, sichern Sie daher regelmäßig.']},
+        {h:'Offline',p:['Gespeicherte Wörter, Test, Wiederholen und Flip funktionieren ohne Internet. Ein Teil der Wortdatenbank wird bei der ersten Nutzung geladen; geladene Teile funktionieren offline, noch nicht geladene brauchen Internet.']},
         {h:'Update-Hinweis',p:['Wenn nach dem Tippen auf Neu laden in der Leiste „Neue Version bereit“ „zuerst den laufenden Vorgang beenden“ erscheint, läuft ein Test oder ein Fenster ist offen; beenden Sie das und versuchen Sie es erneut.']},
         {h:'Premium (Simulation)',p:['In dieser Version ist Premium eine Simulation: Schalten Sie es unter Profil, Premium ein und aus. Es gibt keine echte Zahlung und keinen Server.']},
         {h:'Support',p:['[Support-E-Mail wird ergänzt]']}]},
       es:{title:'Ayuda',sections:[
-        {h:'Añadir palabras',p:['Escribe una palabra en el cuadro de búsqueda y pulsa el botón de buscar. Para encontrar palabras nuevas necesitas tu propia clave API de Gemini: consíguela en Google AI Studio y pégala en Ajustes.','El botón «Diario» añade 10 palabras nuevas de una vez; el botón aleatorio sugiere una palabra.']},
+        {h:'Añadir palabras',p:['Escribe una palabra en el cuadro de búsqueda y pulsa el botón de buscar. La palabra se abre en una ventana desde la base de palabras; no se añade a tu lista hasta que pulses «Añadir a mi lista». Al tocar una etiqueta de sinónimo o antónimo se abre la misma ventana.','El botón «Añadir palabras nuevas» añade 10 palabras nuevas de una vez del nivel que elegiste; el botón aleatorio muestra una palabra (solo se añade si tú la añades). Cuando se acaban las palabras de un nivel, se te pregunta si quieres pasar al siguiente.']},
         {h:'Tarjetas y deslizar',p:['En la pantalla de inicio, desliza una tarjeta a la derecha para marcarla como memorizada, o a la izquierda para cerrarla.','En la ventana History y en Flip, deslizar a la derecha memoriza y deslizar a la izquierda quita la marca.']},
         {h:'Test, Repasar, Flip',p:['Test hace 10 preguntas con tus palabras activas. Repasar prueba las palabras que memorizaste. Flip da la vuelta a una tarjeta; con el teclado, F la gira, las flechas cambian de tarjeta y M alterna memorizada.']},
         {h:'History y archivo',p:['History muestra las palabras de tu lista; toca una para abrir sus detalles. Una palabra archivada sale de la lista; restáurala o bórrala definitivamente desde el archivo en Ajustes.']},
-        {h:'Copia de seguridad',p:['En la sección Copia de datos de Ajustes puedes exportar tus datos a un archivo y restaurarlos más tarde. Borrar los datos del navegador puede hacerte perder tus palabras, así que haz copias con regularidad. Tu clave API no forma parte de una copia.']},
-        {h:'Sin conexión',p:['Las palabras guardadas, Test, Repasar y Flip funcionan sin internet. Encontrar palabras nuevas necesita internet.']},
+        {h:'Copia de seguridad',p:['En la sección Copia de datos de Ajustes puedes exportar tus datos a un archivo y restaurarlos más tarde. Borrar los datos del navegador puede hacerte perder tus palabras, así que haz copias con regularidad.']},
+        {h:'Sin conexión',p:['Las palabras guardadas, Test, Repasar y Flip funcionan sin internet. Una parte de la base de palabras se descarga la primera vez que se usa; las partes descargadas funcionan sin conexión, las demás necesitan internet.']},
         {h:'Aviso de actualización',p:['Si al pulsar Recargar en la barra «Nueva versión lista» aparece «termina primero la operación en curso», hay un test en marcha o una ventana abierta; termínalo y vuelve a intentarlo.']},
         {h:'Premium (simulación)',p:['En esta versión Premium es una simulación: actívalo y desactívalo en Perfil, Premium. No hay pago real ni servidor.']},
         {h:'Soporte',p:['[se añadirá el correo de soporte]']}]},
       it:{title:'Aiuto',sections:[
-        {h:'Aggiungere parole',p:['Scrivi una parola nella casella di ricerca e tocca il pulsante di ricerca. Per trovare parole nuove ti serve la tua chiave API Gemini: ottienila da Google AI Studio e incollala nelle Impostazioni.','Il pulsante «Giornaliero» aggiunge 10 parole nuove in una volta; il pulsante casuale propone una parola.']},
+        {h:'Aggiungere parole',p:['Scrivi una parola nella casella di ricerca e tocca il pulsante di ricerca. La parola si apre in una finestra dal database di parole; non viene aggiunta alla tua lista finché non tocchi «Aggiungi alla mia lista». Toccando un’etichetta di sinonimo o contrario si apre la stessa finestra.','Il pulsante «Aggiungi parole nuove» aggiunge 10 parole nuove alla volta dal livello scelto; il pulsante casuale mostra una parola (viene aggiunta solo se la aggiungi tu). Quando le parole di un livello finiscono, ti viene chiesto se vuoi passare al livello successivo.']},
         {h:'Carte e scorrimento',p:['Nella schermata iniziale, scorri una carta a destra per segnarla come memorizzata, o a sinistra per chiuderla.','Nella finestra History e in Flip, scorrere a destra memorizza e scorrere a sinistra toglie il segno.']},
         {h:'Test, Ripassa, Flip',p:['Test pone 10 domande sulle tue parole attive. Ripassa mette alla prova le parole che hai memorizzato. Flip gira la carta; con la tastiera F la gira, le frecce cambiano carta e M attiva o disattiva memorizzata.']},
         {h:'History e archivio',p:['History mostra le parole della tua lista; toccane una per aprirne i dettagli. Una parola archiviata esce dalla lista; ripristinala o eliminala definitivamente dall’archivio nelle Impostazioni.']},
-        {h:'Backup',p:['Nella sezione Backup dei dati delle Impostazioni puoi esportare i tuoi dati in un file e ripristinarli più tardi. Cancellare i dati del browser può farti perdere le parole, quindi fai backup regolari. La tua chiave API non fa parte di un backup.']},
-        {h:'Offline',p:['Le parole salvate, Test, Ripassa e Flip funzionano senza internet. Per trovare parole nuove serve internet.']},
+        {h:'Backup',p:['Nella sezione Backup dei dati delle Impostazioni puoi esportare i tuoi dati in un file e ripristinarli più tardi. Cancellare i dati del browser può farti perdere le parole, quindi fai backup regolari.']},
+        {h:'Offline',p:['Le parole salvate, Test, Ripassa e Flip funzionano senza internet. Una parte del database di parole viene scaricata al primo utilizzo; le parti scaricate funzionano offline, quelle non ancora scaricate richiedono internet.']},
         {h:'Avviso di aggiornamento',p:['Se toccando Ricarica nella barra «Nuova versione pronta» compare «prima termina l’operazione in corso», c’è un test in corso o una finestra aperta; terminalo e riprova.']},
         {h:'Premium (simulazione)',p:['In questa versione Premium è una simulazione: attivalo e disattivalo in Profilo, Premium. Non c’è un pagamento reale né un server.']},
         {h:'Supporto',p:['[l’e-mail di supporto sarà aggiunta]']}]}
@@ -493,104 +483,16 @@
   }
 
 
-  /* ---------- ready-made word packs (free) ---------- */
-  // The words of the user's language pair come as one pack (packs/<target>-<native>.json) or, where there is a course, as packs/<pair>/order.json plus chunk files
-  // (A1-01.json …) that are downloaded one at a time, only when the Daily button needs them. Everything is kept in the browser's cache for offline use and checked before use.
-  // The Daily button takes its next words from there: no API key needed. The service worker does not touch packs (they are not part of the shell).
-  const PACK_CACHE='vocvoc-packs-v1';
-  const legacyText=key=>window.t(key);                                   // the app's own translations (the t of this file is a different table)
-  const packState={pair:'',status:'idle',entry:null,pack:null,course:null};            // status: idle | loading | ready | none | offline; course: the order.json of a course (then there is no pack)
-  let packLoad=null,packBusy=false;
-  async function packJson(url,{network=false}={}){
-    const cache='caches' in window?await caches.open(PACK_CACHE):null;
-    if(cache&&!network){const hit=await cache.match(url);if(hit)return hit.json();}
-    try{
-      const response=await fetch(url,{cache:'no-cache'});
-      if(response.ok){if(cache)await cache.put(url,response.clone());return await response.json();}
-    }catch(_){}
-    if(cache){const hit=await cache.match(url);if(hit)return hit.json();}
-    throw new Error('offline');
-  }
-  const currentPair=()=>{const settings=VocVocData.getSettings();return VocVocPacks.pairId(settings.targetLanguage,settings.nativeLanguage);};
-  const bandOf=()=>{const level=VocVocData.getSettings().difficulty;return VocVocPacks.BANDS[level]?level:'A1-A2';};   // the difficulty setting names the band of levels the Daily button draws from
+  /* ---------- ready-made words (free) ---------- */
+  // Every word comes from the word database (wordbase.js, the files in packs/): there is no AI and no API key. This part shows how far the user has come in the
+  // level they chose and what the last press of "Add New Words" added. The adding itself is the app's own addNewWords (index.html), the one the header button runs too.
+  const wordbase=window.VocVocWordbase;
   const BAND_TEXT={'A1-A2':'packLevel','B1-B2':'packLevelB','C1-C2':'packLevelC'};
-  // order.json of a course: the copy on this device when it is as new as the index says, else a fresh download.
-  async function courseOrder(pair,course){
-    const url='./packs/'+pair+'/order.json',usable=order=>!!order&&order.id===pair&&!VocVocPacks.validateOrder(order).length;
-    let order=null;try{order=await packJson(url);}catch(_){}
-    if(!usable(order)||(course&&order.version<course.version))order=await packJson(url,{network:true});
-    if(!usable(order))throw new Error('unusable course');
-    return order;
-  }
-  // One chunk of the course (A1-01 …), the same way: the device's copy when it belongs to this version of the course, else a fresh download.
-  async function courseChunk(order,id){
-    const url='./packs/'+order.id+'/'+id+'.json',usable=chunk=>!!chunk&&chunk.id===order.id&&chunk.chunk===id&&chunk.version===order.version&&!VocVocPacks.validateChunk(chunk).length;
-    let chunk=null;try{chunk=await packJson(url);}catch(_){}
-    if(!usable(chunk))chunk=await packJson(url,{network:true});
-    if(!usable(chunk))throw new Error('unusable chunk');
-    return chunk;
-  }
-  async function nextFromCourse(count){                                          // the next unknown words of the band the user chose; only the chunks that are needed are downloaded
-    const ids=VocVocPacks.pickChunks(packState.course,bandOf(),knownWord,count),chunks=[];
-    for(const id of ids)chunks.push(await courseChunk(packState.course,id));
-    return VocVocPacks.nextFromChunks(chunks,knownWord,count);
-  }
-  function refreshPack(){
-    const pair=currentPair();
-    packLoad=(async()=>{
-      Object.assign(packState,{pair,status:'loading',entry:null,pack:null,course:null});refreshDashboard();
-      try{
-        let index=null;try{index=await packJson('./packs/index.json',{network:true});}catch(_){}
-        const course=index?.courses?.find(item=>item.id===pair)||null;
-        const entry=course||index?.packs?.find(item=>item.id===pair)||null;
-        if(packState.pair!==pair)return;
-        if(index&&!entry){packState.status='none';return;}
-        if(course||!index){                                                                          // a course; or no index at all (offline): a course kept on this device, else the single pack
-          let order=null;try{order=await courseOrder(pair,course);}catch(_){}
-          if(order){if(packState.pair===pair)Object.assign(packState,{status:'ready',entry:course||{id:pair,words:order.chunks.reduce((sum,chunk)=>sum+chunk.words.length,0)},course:order});return;}
-          if(course)throw new Error('unusable course');
-        }
-        let pack=null;try{pack=await packJson('./packs/'+pair+'.json');}catch(_){}                     // the copy kept on this device, if it is usable
-        if(entry&&(!pack||pack.version<entry.version||VocVocPacks.validatePack(pack).length))pack=await packJson('./packs/'+pair+'.json',{network:true});
-        if(!pack||pack.id!==pair||VocVocPacks.validatePack(pack).length)throw new Error('unusable pack');
-        if(packState.pair===pair)Object.assign(packState,{status:'ready',entry:entry||{id:pair,words:pack.words.length},pack});
-      }catch(_){if(packState.pair===pair)packState.status='offline';}
-      finally{if(packState.pair===pair)refreshDashboard();}
-    })();
-    return packLoad;
-  }
-  function syncPack(){try{if(currentPair()!==packState.pair)refreshPack();}catch(_){}}               // the language pair changed
   const knownWord=word=>!!VocVocData.getWordProgress(word);
-  let dailyWords=[];                                                             // what the last press of the Daily button added: shown as pills under it
-  // The next words of the pack, added the way the Daily words are (they count towards the daily goal). Returns false when the AI Daily should go on.
-  async function addFromPack(){
-    const remaining=getDailyLimit()-getDailyUsage().count;
-    if(remaining<=0){showError(legacyText('dailyLimitReached'));return true;}
-    const count=Math.min(10,remaining);
-    let words;
-    try{words=packState.course?await nextFromCourse(count):VocVocPacks.nextWords(packState.pack,knownWord,count);}
-    catch(_){toast(t('packOffline'));return true;}                                                     // a chunk of the course could not be had (offline): nothing is added
-    if(!words.length){
-      if(VocVocSecrets.getApiKey())return false;                                                       // the pack is used up: carry on with the key (the built-in AI of Premium does not exist yet, so the Premium simulation uses the key too)
-      toast(t(packState.course?courseEnd():'packDone'));return true;
-    }
-    try{await VocVocData.addWordBatch(words,{dailyCount:words.length});}catch(error){reportStorageError(error);return true;}
-    quizSession=null;loadSavedWords();renderHistory();renderAllLocal();
-    dailyWords=words.map(entry=>entry.word);refreshDashboard();
-    toast(fill(t('packAdded'),{n:words.length}));
-    return true;
-  }
-  async function addDailyFromPackOrAi(){
-    if(packBusy)return;packBusy=true;
-    try{
-      if(packState.status==='idle'||packState.status==='offline')await refreshPack();                  // first use, or back online
-      else if(packLoad)await packLoad;
-      if(packState.status==='ready'&&await addFromPack())return;
-    }finally{packBusy=false;}
-    const before=new Set(getHistory());
-    await addDailyWords();                                                                             // no pack, or the pack is used up: the app's own Daily (needs the user's API key)
-    const added=getHistory().filter(word=>!before.has(word));
-    if(added.length){dailyWords=added;refreshDashboard();}
+  let dailyWords=[];                                                             // what the last press of the button added: shown as pills under it
+  async function addNewFromToday(){
+    const result=await addNewWords();
+    if(result.status==='added'){dailyWords=result.words.map(entry=>entry.word);refreshDashboard();}
   }
   function addedPills(){
     const words=dailyWords.filter(word=>knownWord(word)&&!isArchivedWord(word));
@@ -600,20 +502,20 @@
   }
   // A word as a pill: the app's own delegated handler opens its panel, like a chip of the History list.
   const wordPill=(word,extra,faded)=>h('button',{type:'button',class:'history-chip ui-pill v2-wordpill'+(faded?' v2-faded':''),'data-history-word':encodeDomText(word)},h('span',{lang:getTargetLanguageCode(),text:word}),extra?[' ',extra]:null);
-  // What a course says when the chosen band gives no more words: nothing is written for it yet, or the user has them all.
-  const courseEnd=()=>VocVocPacks.courseProgress(packState.course,bandOf(),()=>false).total?'courseDone':'courseSoon';
+  // How many words of the chosen level are in the user's list: a word added from another level (search, a synonym, the random word) counts once its level is chosen.
   function packCard(){
-    if(packState.status==='idle')return null;
+    const state=wordbase?.state;
+    if(!state||state.status==='idle')return null;
     let text,bar=null;
-    if(packState.status==='ready'){
-      const {total,used}=packState.course?VocVocPacks.courseProgress(packState.course,bandOf(),knownWord):VocVocPacks.progress(packState.pack,knownWord);
-      text=!total?t('courseSoon'):used>=total?t(packState.course?'courseDone':'packDone'):fill(t('packProgress'),{n:used,m:total});
+    if(state.status==='ready'){
+      const {total,used}=wordbase.progress();
+      text=!total?t('courseSoon'):used>=total?t(wordbase.hasCourse()?'courseDone':'packDone'):fill(t('packProgress'),{n:used,m:total});
       if(total){
         bar=h('div',{class:'v2-bar v2-bar-thin',role:'progressbar','aria-label':t('packTitle'),'aria-valuemin':'0','aria-valuemax':String(total),'aria-valuenow':String(used)},h('span'));
         bar.style.setProperty('--p',Math.round(used/total*100)+'%');
       }
-    }else text=t({loading:'packLoading',none:'packNone',offline:'packOffline'}[packState.status]);
-    return h('div',{class:'v2-card v2-pack'},h('p',{class:'v2-goal-label',text:t('packTitle')+' · '+t(packState.course?BAND_TEXT[bandOf()]:'packLevel')}),h('p',{class:'v2-pack-text',text}),bar);
+    }else text=t({loading:'packLoading',none:'packNone',offline:'packOffline'}[state.status]);
+    return h('div',{class:'v2-card v2-pack'},h('p',{class:'v2-goal-label',text:t('packTitle')+' · '+t(wordbase.hasCourse()?BAND_TEXT[wordbase.bandOf()]:'packLevel')}),h('p',{class:'v2-pack-text',text}),bar);
   }
 
   /* ---------- read-aloud (Premium) ---------- */
@@ -783,8 +685,8 @@
         h('p',{class:'v2-goal-value',text:unlimited?fill(t('goalUnlimited'),{n:used}):fill(t('goalValue'),{n:used,m:limit})}),
         bar,
         h('div',{class:'v2-goal-actions'},
-          h('button',{type:'button',class:'ui-button ui-button-success','data-v2-focus':'daily',onclick:()=>{addDailyFromPackOrAi();}},t('addDaily')),
-          h('button',{type:'button',class:'ui-button ui-button-secondary','data-v2-focus':'words',onclick:()=>navigate('words')},t('words'))),
+          h('button',{type:'button',class:'ui-button v2-goal-add','data-v2-focus':'daily',onclick:()=>{addNewFromToday();}},t('addNew')),
+          h('button',{type:'button',class:'ui-button v2-goal-words','data-v2-focus':'words',onclick:()=>navigate('words')},t('goWords'))),
         addedPills()),
       packCard(),
       h('ul',{class:'v2-statline'},tile(active,t('statActive')),tile(memorized,t('statMemorized')),tile(memorizedToday,t('statToday'))),
@@ -794,7 +696,7 @@
   function refreshDashboard(){                                                   // after any change of the data, once per burst
     clearTimeout(dashboardTimer);
     dashboardTimer=setTimeout(()=>{
-      evaluateBadges();syncPack();
+      evaluateBadges();wordbase?.sync();
       if(shown!=='today'||!screen)return;
       const top=screen.scrollTop,active=document.activeElement,keep=screen.contains(active)?(active.dataset.v2Focus||active.tagName):'';
       screen.replaceChildren(todayScreen());screen.scrollTop=top;
@@ -1023,14 +925,13 @@
     const premium=VocVocPlan.get()==='premium',list=(keys,extra)=>h('ul',{class:'v2-feature-list'+(extra?' '+extra:'')},keys.map(key=>h('li',{text:t(key)})));
     return page(backButton(),heading(t('premiumTitle')),
       h('div',{class:'v2-card'},h('p',{},h('span',{class:'v2-muted',text:t('planLabel')+': '}),chipFor(VocVocPlan.get())),
-        h('p',{text:t(VocVocPlan.ownKeyActive()?'keyActive':'keyOff')}),
         h('div',{class:'v2-actions'},premium
           ?h('button',{type:'button',class:'ui-button ui-button-secondary',onclick:()=>VocVocPlan.set('free')},t('backToFree'))
           :h('button',{type:'button',class:'ui-button ui-button-success',onclick:()=>VocVocPlan.set('premium')},t('simulate'))),
         h('p',{class:'v2-muted',text:t('simNote')})),
       h('h2',{text:t('freeIncludes')}),list(['free1','free2','free3','free4','free5','free6']),
       h('h2',{text:t('premiumIncludes')}),list(['prem1','prem2','prem3','prem4','prem5'],'v2-premium-list'),
-      h('p',{class:'v2-note',text:t('keyRule')}),h('p',{class:'v2-muted',text:t('priceNote')}));
+      h('p',{class:'v2-muted',text:t('priceNote')}));
   }
   function textPage(kind){
     const content=PAGES[kind][lang()]||PAGES[kind].en;
@@ -1290,7 +1191,8 @@
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&dayPopup&&!document.querySelector('.word-popup-overlay.open')){event.preventDefault();closeDayWords();}},true);
     // Today follows every change of the data
     evaluateBadges();
-    refreshPack();
+    wordbase?.refresh();
+    window.addEventListener('vocvoc-wordbase-changed',refreshDashboard);
     window.addEventListener('vocvoc-storage-committed',refreshDashboard);
     window.addEventListener('vocvoc-data-adopted',refreshDashboard);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshDashboard();});
@@ -1309,7 +1211,7 @@
       if(shown==='words'||QUIZ_ROUTES.includes(shown)||shown==='flip')return;
       const top=screen.scrollTop;render(false);screen.scrollTop=top;
     });
-    window.addEventListener('online',()=>{if(packState.status==='offline')refreshPack();});
+    window.addEventListener('online',()=>{if(wordbase?.state.status==='offline')wordbase.refresh();});
     startSpeech();
     render(false);
     if(!readProfile())openAuth();

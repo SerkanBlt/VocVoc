@@ -122,7 +122,7 @@ describe('Archive and restore',()=>{
   });
 });
 
-describe('Word list order (the Gemini prompt keeps the first 100 of a newest-first list)',()=>{
+describe('Word list order (History is newest first)',()=>{
   it('History is newest first: with 150 records the first 100 are exactly the 100 most recent',async()=>{
     const app=await start(newProfile());
     await app.data.import(backupWithWords(150));
@@ -140,17 +140,18 @@ describe('Word list order (the Gemini prompt keeps the first 100 of a newest-fir
   });
 });
 
-describe('API key: never part of data, exports or backups',()=>{
+describe('API key: gone from the app; an old one is deleted and can never be part of data, exports or backups',()=>{
   const KEY='AIza'+'SyDUMMYDUMMYDUMMYDUMMYDUMMYDUMMY123';                                      // split so secret scanners do not mistake this dummy for a real Google key
-  it('is kept in its own storage entry; the legacy entry is removed; the key is trimmed and can be cleared',async()=>{
-    const app=await start(newProfile({...legacySpa(),GEMINI_API_KEY:'old-legacy-key'}));
-    assert.equal(app.secrets.getApiKey(),'old-legacy-key');                                      // legacy value is still readable
-    app.secrets.setApiKey(`  ${KEY}  `);
-    assert.equal(app.secrets.getApiKey(),KEY);assert(!app.store.has('GEMINI_API_KEY'),'legacy entry must be removed');
-    app.secrets.setApiKey('');assert.equal(app.secrets.getApiKey(),'');
+  it('forget() deletes the key an earlier version stored, under both of its names, and there is nothing left to read or set one',async()=>{
+    const app=await start(newProfile({...legacySpa(),GEMINI_API_KEY:'old-legacy-key',VOCVOC_SECRET_GEMINI_API_KEY:JSON.stringify(KEY)}));
+    assert(app.store.has('GEMINI_API_KEY')&&app.store.has('VOCVOC_SECRET_GEMINI_API_KEY'));
+    app.secrets.forget();
+    assert(!app.store.has('GEMINI_API_KEY')&&!app.store.has('VOCVOC_SECRET_GEMINI_API_KEY'),'both entries are gone');
+    assert.deepEqual(plain(Object.keys(app.secrets)),['forget'],'no getApiKey or setApiKey any more');
+    app.secrets.forget();                                                                        // nothing left: asking again is harmless
   });
-  it('is absent from the exported backup, from the recovery copy and from the stored Schema v1 snapshot',async()=>{
-    const app=await start();app.secrets.setApiKey(KEY);
+  it('is absent from the exported backup, from the recovery copy and from the stored Schema v1 snapshot, even while an old key is still in local storage',async()=>{
+    const app=await start(newProfile({...legacySpa(),VOCVOC_SECRET_GEMINI_API_KEY:JSON.stringify(KEY)}));
     const exported=JSON.stringify(await app.data.export());
     assert(!exported.includes(KEY)&&!/GEMINI|SECRET|apiKey/i.test(exported),'export must not contain the key or its names');
     await app.data.clearProgressAndWords();                                                      // creates a recovery copy

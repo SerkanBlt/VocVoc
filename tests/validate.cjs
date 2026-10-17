@@ -126,36 +126,63 @@ describe('Service Worker cache VERSION',()=>{
   });
 });
 
-describe('API key handling (static guards)',()=>{
-  it('the key travels only in the x-goog-api-key header, never in a URL',()=>{
-    assert(!/generateContent\?key=/.test(html)&&html.includes('"x-goog-api-key":apiKey'));
-    assert(!/[?&](?:key|api_key)=/i.test(html.match(/GEMINI_ENDPOINT=[^\n]*/)[0])&&!/\$\{apiKey\}|encodeURIComponent\(apiKey\)/.test(html));
+describe('No AI and no API key (static guards)',()=>{
+  const wordbaseJs=read('wordbase.js');
+  it('nothing talks to an AI service or asks for a key: no Gemini request, key header, key field, key loader or Daily prompt in any shipped file',()=>{
+    for(const file of ['index.html','a11y.js','pwa.js','screens.js','wordbase.js','packs.js','sw.js'])
+      assert(!/generativelanguage|GEMINI_(?!API_KEY)|x-goog-api-key|apiKeyInput|apiToggleBtn|saveApiKey|getApiKey|addDailyWords|geminiControllers|responseSchema|dailyLoading/.test(read(file)),`${file} still has AI or API key code`);
+    assert(!/id="(?:apiKeyInput|apiKeyLabel|apiKeyHint|loader|dailyLoadingOverlay)"/.test(html),'the key row, the AI loader and the Daily orb are gone from the markup');
   });
-  it('no shipped file contains something that looks like an API key, and nothing logs it',()=>{
-    for(const file of ['index.html','a11y.js','pwa.js','screens.js','screens.css','stats.js','packs.js','sw.js','storage.js','manifest.webmanifest','README.md','tools/export-from-spa.js','tools/lock-shell.js','tools/shell-fingerprint.js'])
+  it('no shipped file contains something that looks like an API key, and nothing logs one',()=>{
+    for(const file of ['index.html','a11y.js','pwa.js','screens.js','screens.css','stats.js','packs.js','wordbase.js','sw.js','storage.js','manifest.webmanifest','README.md','tools/export-from-spa.js','tools/lock-shell.js','tools/shell-fingerprint.js'])
       assert(!/AIza[0-9A-Za-z_-]{35}/.test(read(file)),`${file} contains something that looks like an API key`);
     for(const [name,source] of [['index.html',html],['pwa.js',pwa]])assert(!/console\.\w+\([^)]*(apiKey|getApiKey|x-goog-api-key|SECRET_KEY)/i.test(source),`${name} logs the API key`);
   });
-  it('a stored key is not part of Schema v1, so exports and backups cannot contain it',()=>{
+  it('a key that an earlier version stored is deleted at start-up, and a stored key is still no part of Schema v1 (exports and backups cannot contain it)',()=>{
+    assert(/const VocVocSecrets=\{\s*forget\(\)\{[^]*?VOCVOC_SECRET_KEY,"GEMINI_API_KEY"[^]*?remove\(name\)/.test(html));
+    assert(/DOMContentLoaded[^]*?VocVocSecrets\.forget\(\);/.test(html),'the old key is forgotten when the app starts');
     assert.throws(()=>vm.runInNewContext(`${storage};VocVocStorage.validate({schemaVersion:1,apiKey:'x'})`,{structuredClone}),/invalidData/);
   });
-  it('structured output and the Daily time budget are wired in',()=>{
-    assert(html.includes('responseSchema')&&html.includes('GEMINI_SCHEMAS.words')&&html.includes('GEMINI_LIMITS.dailyBudgetMs')&&html.includes('geminiSchemaRefused'));
+  it('"Add new words" takes the next words of the chosen level from the word database, counts them towards the daily goal, respects the free word limit and the daily goal, and asks about the next level when a level is used up',()=>{
+    const add=html.slice(html.indexOf('async function addNewWords()'),html.indexOf('let pendingNextLevel'));
+    assert(add.includes('wordbase.next(Math.min(10,remainingToday,room))'),'ten words at most, fewer when the daily goal or the free plan leaves less room');
+    assert(add.includes('VocVocData.addWordBatch(words,{dailyCount:words.length})'),'the words count towards the daily goal');
+    assert(add.indexOf('dailyLimitReached')<add.indexOf('wordRoom()')&&add.indexOf('wordRoom()')<add.indexOf('wordbase.ready()'),'the limits are checked before anything is downloaded');
+    assert(/offerNextLevel\(\);return \{status:"band-done"/.test(add)&&add.includes('t("levelEmpty")'),'no words left in the level: the level-up question, or the note that nothing is written for the level');
+    const offer=html.slice(html.indexOf('function offerNextLevel()'),html.indexOf('// The random button'));
+    assert(offer.includes('t(next?"levelUpAsk":"levelUpAll")'),'a next level is offered, or the whole course is reported finished');
+    assert(/closeLevelUp\(accepted\)\{[^]*?VocVocData\.updateSettings\(\{difficulty:level\}\)/.test(offer+html.slice(html.indexOf('async function closeLevelUp'),html.indexOf('// The random button'))),'saying yes sets the level the way Settings does');
+    assert(html.includes('onclick="addNewWords()"')&&!html.includes('addDailyWords'),'the header button runs the same function');
   });
-  it('Daily asks for its words in small parts that are in flight together (a card with two examples and two idioms makes ten words too long for one answer), and gives up only when asking again cannot help',()=>{
-    assert(/const DAILY_PART=4;/.test(html)&&/function dailyParts\(count\)/.test(html),'parts of at most four words');
-    const daily=html.slice(html.indexOf('async function addDailyWords()'),html.indexOf('async function randomWord()'));
-    assert(/await Promise\.all\(sizes\.map\(async/.test(daily)&&daily.includes('dailyParts(target-fresh.length)'),'the parts of a round are asked at the same time');
-    assert(daily.includes('accept(r.words,size)'),'a part brings at most the words it was asked for');
-    assert(daily.includes('DAILY_THEMES[')&&daily.includes('keep to your own theme'),'parts get their own theme so they do not repeat each other');
-    assert(/roundError\.terminal\|\|roundError\.kind==="geminiBudget"/.test(daily)&&daily.includes('idleRounds>=2'),'no endless retries: a refused request, the time budget and two empty failed rounds end the run');
-    for(const key of ['apiNeeded','invalidApiKey','connectionError'])assert(new RegExp(`geminiError\\("${key}",\\{terminal:true\\}\\)`).test(html),`${key} must end a Daily run at once`);
-    assert(html.includes('const GEMINI_THINKING=[{thinkingLevel:"low"},{thinkingBudget:0},null];')&&html.includes('generationConfig.thinkingConfig=thinking'),'little thinking is asked for, with older forms and none as fallbacks');
-    assert(html.includes('/thinking/i.test(String(body?.error?.message')&&html.includes('{epoch,deadline,trace,'),'a refused setting is retried; a failed run shows what each request did');
-    assert(daily.includes('maxOutputTokens:size*GEMINI_TOKENS_PER_WORD+800')&&html.includes('generationConfig.maxOutputTokens=maxOutputTokens')&&html.includes('maxOutputTokens:GEMINI_CARD_TOKENS'),'an answer is cut at a token cap: a runaway answer would only run into the time limit');
-    assert(daily.includes('if(epoch!==appDataEpoch||!fresh.length)throw error;')&&daily.includes('t("dailyPartial",{count:fresh.length,total:target})')&&daily.includes('dailyCount:fresh.length'),'a run that stops early keeps and counts the words that arrived');
-    const limits=/const GEMINI_LIMITS=\{timeoutMs:(\d+),dailyBudgetMs:(\d+)/.exec(html);
-    assert(limits&&+limits[1]>=10000&&+limits[1]<=20000&&+limits[2]>=3*+limits[1],'a request that has not answered in 10-20 s is stuck (answers take a few seconds), and the run may try three models in a row');
+  it('search, the random button and the synonym/antonym tags open the word database in the word window and never add by themselves; the user adds with the button',()=>{
+    const search=html.slice(html.indexOf('async function handleSearch()'),html.indexOf('let appDataEpoch'));
+    assert(search.includes('await openRelatedWordPopup(query);')&&!/addHistory|saveAndTouch|touchWord|addWordBatch/.test(search),'search only looks a word up');
+    const random=html.slice(html.indexOf('async function randomWord()'),html.indexOf('function shuffle('));
+    assert(random.includes('VocVocWordbase.random()')&&random.includes('openRelatedWordPopup(')&&!/addHistory|saveAndTouch|touchWord|addWordBatch/.test(random),'the random button only shows a word');
+    const popup=html.slice(html.indexOf('async function getWordDataForPopup'),html.indexOf('function renderPopupStatus'));
+    assert(popup.includes('VocVocWordbase.find(word)')&&!/addHistory|saveAndTouch|touchWord|addWordBatch/.test(popup),'looking a word up adds nothing');
+    assert(/document\.addEventListener\("click",e=>\{\s*const badge=e\.target\.closest\("\.clickable-badge\[data-related-word\]"\);[^]*?openRelatedWordPopup\(word\.trim\(\)\)/.test(html),'a synonym or antonym tag opens the same window');
+    assert(html.includes('data-add-related-word=')&&/async function addRelatedWordToList\(word\)\{[^]*?await addHistory\(word\);/.test(html),'only the Add button adds, with what the user saw (localDictionary)');
+  });
+  it('the word database is read through one module that only fetches files of ./packs/ and is part of the offline shell',()=>{
+    const code=wordbaseJs.replace(/\/\*[^]*?\*\//g,'').replace(/\/\/.*$/gm,'');
+    assert(!/\bdocument\b|\blocalStorage\b|\bindexedDB\b|XMLHttpRequest|WebSocket|sendBeacon/.test(code),'wordbase.js does not touch the page or storage');
+    assert.equal((code.match(/\.fetch\(/g)||[]).length,1,'one network call, in fetchJson');
+    const urls=[...code.matchAll(/env\.fetchJson\(([^,)]*)/g)].map(match=>match[1]);
+    assert(urls.length>=4&&urls.every(argument=>/^'\.\/packs\/|^url$/.test(argument)),`only ./packs/ files are fetched: ${urls}`);
+    assert(html.indexOf('./packs.js')<html.indexOf('./wordbase.js')&&html.indexOf('./wordbase.js')<html.indexOf('./screens.js'),'packs.js, then wordbase.js, then screens.js');
+    assert(precacheList().includes('./wordbase.js')&&!precacheList().some(asset=>/(^|\/)packs\//.test(asset)),'the code is precached, never the pack files');
+    assert(/const PACK_CACHE='vocvoc-packs-v1'/.test(wordbaseJs)&&!/vocvoc-packs/.test(sw),'the pack files live in their own cache that the worker never touches');
+  });
+  it('the language lists keep their choice but only Turkish (original) and French (learned) can be picked; the others are visible and disabled',()=>{
+    assert(html.includes('const OPEN_LANGUAGES=Object.freeze({nativeLanguage:"tr",targetLanguage:"fr"});'));
+    assert(/value!==OPEN_LANGUAGES\[field\]\)\{syncUiDropdown\(dropdownId,current\);return;\}/.test(html),'a language that is not open cannot be chosen even by calling the function');
+    for(const [list,open] of [['nativeLanguageDropdown','tr'],['targetLanguageDropdown','fr']]){
+      const body=html.slice(html.indexOf('id="'+list+'"'),html.indexOf('</div>',html.indexOf('id="'+list+'"')+300));
+      const options=[...body.matchAll(/<button type="button" class="ui-dropdown-option([^"]*)" data-value="(\w+)"([^>]*)>/g)];
+      assert.equal(options.length,6,list);
+      for(const [,classes,value,rest] of options)assert.equal(/disabled/.test(rest)&&/locked/.test(classes),value!==open,`${list}: ${value}`);
+    }
   });
 });
 
@@ -174,11 +201,8 @@ describe('New interface (prototype)',()=>{
     assert(!/\bon(?:click|input|change|keydown)\s*=/.test(screensCode),'screens.js must not use inline handlers');
     assert.equal((screensCode.match(/innerHTML/g)||[]).length,1,'only the icon helper may use innerHTML');
     assert(!/\beval\(|new Function\(/.test(screensCode));
-    // the only network call of the new interface is the pack download, and it only goes to this site's packs/ folder
-    assert.equal((screensCode.match(/\bfetch\(/g)||[]).length,1,'the only network call is the pack download');
-    assert(/async function packJson\(url,\{network=false\}=\{\}\)\{[^]*?await fetch\(url,\{cache:'no-cache'\}\)/.test(screensCode));
-    const packCalls=[...screensCode.matchAll(/packJson\(([^)]*)\)/g)].map(match=>match[1]).filter(argument=>!argument.startsWith('url'));
-    assert(packCalls.length>=3&&packCalls.every(argument=>/^'\.\/packs\//.test(argument)),`packs are fetched only from ./packs/: ${packCalls}`);
+    // the new interface has no network call of its own: the words come through wordbase.js
+    assert.equal((screensCode.match(/\bfetch\(/g)||[]).length,0,'screens.js does not open network connections');
     assert(/body\.v2/.test(screensCss)&&!/^\s*(?:body|html|\.container)\s*\{/m.test(screensCss),'the stylesheet must not restyle the default interface');
   });
   it('the hooks the new interface relies on are in the app: the Test draws into a named host, and it announces drawing and adopted data',()=>{
@@ -192,17 +216,19 @@ describe('New interface (prototype)',()=>{
     const {win}=load();
     assert.deepEqual(Object.keys(win).sort(),['VocVocPlan','VocVocScreens','dispatchEvent']);
   });
-  it('the plan rules match the agreed product: Free by default, stats/AI/sentences/speech are Premium, the own key is off while Premium is on',()=>{
+  it('the plan rules match the agreed product: Free by default with 300 words and a 20-word daily goal, stats/sentences/speech/unlimited words are Premium, no AI and no key anywhere',()=>{
     const {win,events,storage}=load(),plan=win.VocVocPlan;
-    assert.deepEqual([plan.get(),plan.has('stats'),plan.has('badges'),plan.has('ownKeyAi'),plan.has('freeWords'),plan.ownKeyActive()],['free',false,true,true,true,true]);
-    assert.deepEqual(Object.entries(plan.features).filter(([,need])=>need==='premium').map(([name])=>name).sort(),['builtInAi','dailyGoalOver20','historyAnalysis','sentenceBuilder','speech','stats']);
+    assert.deepEqual([plan.get(),plan.has('stats'),plan.has('badges'),plan.has('freeWords'),plan.has('unlimitedWords')],['free',false,true,true,false]);
+    assert.deepEqual(Object.entries(plan.features).filter(([,need])=>need==='premium').map(([name])=>name).sort(),['dailyGoalOver20','historyAnalysis','sentenceBuilder','speech','stats','unlimitedWords']);
+    assert(!('ownKeyActive' in plan)&&!('ownKeyAi' in plan.features)&&!('builtInAi' in plan.features),'the own key and the built-in AI are not part of the plan any more');
     assert.deepEqual([plan.FREE_DAILY_LIMIT,plan.dailyLimitMax()],[20,20],'the free plan keeps the daily goal at 20 words');
+    assert.deepEqual([plan.FREE_WORD_LIMIT,plan.wordLimit()],[300,300],'the free plan holds 300 words');
     assert.equal(plan.has('somethingUnknown'),false);
     plan.set('premium');
-    assert.equal(plan.dailyLimitMax(),Infinity,'Premium has no limit on the daily goal');
-    assert.deepEqual([plan.get(),plan.has('stats'),plan.has('sentenceBuilder'),plan.has('speech'),plan.has('builtInAi'),plan.ownKeyActive(),storage.VOCVOC_SIM_PLAN,events.length],['premium',true,true,true,true,false,'premium',1]);
+    assert.deepEqual([plan.dailyLimitMax(),plan.wordLimit()],[Infinity,Infinity],'Premium has no limit on the daily goal or the word list');
+    assert.deepEqual([plan.get(),plan.has('stats'),plan.has('sentenceBuilder'),plan.has('speech'),plan.has('unlimitedWords'),storage.VOCVOC_SIM_PLAN,events.length],['premium',true,true,true,true,'premium',1]);
     plan.set('premium');assert.equal(events.length,1,'setting the same plan again is not a change');
-    plan.set('free');assert.deepEqual([plan.get(),plan.ownKeyActive(),'VOCVOC_SIM_PLAN' in storage,events.length],['free',true,false,2]);
+    plan.set('free');assert.deepEqual([plan.get(),plan.wordLimit(),'VOCVOC_SIM_PLAN' in storage,events.length],['free',300,false,2]);
     assert.throws(()=>{'use strict';plan.features.stats='free';},TypeError);
     assert.equal(load({VOCVOC_SIM_PLAN:'garbage'}).win.VocVocPlan.get(),'free');
   });
@@ -252,17 +278,26 @@ describe('New interface (prototype)',()=>{
     for(const id of badgeIds)for(const language of ['tr','en','fr','de','es','it'])assert(TEXT[language]['b_'+id]&&TEXT[language]['bd_'+id],`badge ${id} has no ${language} name or description`);
     assert(code.includes("t('b_'+")&&code.includes("t('bd_'+"));
   });
-  it('word packs are pure logic, load before the screens, and stay out of the offline shell (they are downloaded for the chosen pair only)',()=>{
+  it('word packs are pure logic and load before the word module',()=>{
     const packsCode=read('packs.js').replace(/\/\*[^]*?\*\//g,'').replace(/\/\/.*$/gm,'');
     assert(!/\bdocument\b|\blocalStorage\b|\bfetch\(|\bXMLHttpRequest\b|\bindexedDB\b|\bcaches\b/.test(packsCode),'packs.js must not touch the page, storage or the network');
-    assert(html.indexOf('<script src="./packs.js"></script>')>0&&html.indexOf('./packs.js')<html.indexOf('./screens.js'));
-    assert(precacheList().includes('./packs.js')&&!precacheList().some(asset=>/(^|\/)packs\//.test(asset)),'only the code is precached, never the pack files');
-    assert(/const PACK_CACHE='vocvoc-packs-v1'/.test(screensJs)&&!/vocvoc-packs/.test(sw),'packs live in their own cache that the worker never touches');
+    assert(html.indexOf('<script src="./packs.js"></script>')>0&&html.indexOf('./packs.js')<html.indexOf('./wordbase.js'));
   });
-  it('the words of a pack are added the way the Daily words are, and read-aloud is a Premium feature',()=>{
-    assert(/VocVocData\.addWordBatch\(words,\{dailyCount:words\.length\}\)/.test(screensJs),'pack words must count towards the daily goal');
+  it('read-aloud is a Premium feature, and a free user cannot start speech',()=>{
     assert(/FEATURES=Object\.freeze\(\{[^}]*speech:'premium'/.test(screensJs));
     assert(/if\(!VocVocPlan\.has\('speech'\)\)\{toast\(t\('speakLocked'\)\);return;\}/.test(screensJs),'a free user must not be able to start speech');
+  });
+  it('Today has two buttons of the same size, "Add New Words" (green to purple) and "Go to My Words" (blue to purple), and Add New Words runs the app\'s own function',()=>{
+    assert(/class:'ui-button v2-goal-add'[^]*?onclick:\(\)=>\{addNewFromToday\(\);\}\},t\('addNew'\)/.test(screensJs)&&/class:'ui-button v2-goal-words'[^]*?onclick:\(\)=>navigate\('words'\)\},t\('goWords'\)/.test(screensJs));
+    assert(/const result=await addNewWords\(\);\s*if\(result\.status==='added'\)/.test(screensJs));
+    assert(/\.v2-goal-actions \.ui-button\{flex:1 1 0;/.test(screensCss)&&!/\.v2-goal-actions \.ui-button:first-child/.test(screensCss),'both buttons share the width');
+    assert(/\.v2-goal-add\{background:linear-gradient\(135deg,var\(--v2-grad-green\),var\(--v2-grad-purple\)\)\}/.test(screensCss)&&/\.v2-goal-words\{background:linear-gradient\(135deg,var\(--v2-grad-blue\),var\(--v2-grad-purple\)\)\}/.test(screensCss));
+    const {TEXT}=load().win.VocVocScreens;
+    assert.deepEqual([TEXT.tr.addNew,TEXT.tr.goWords],['Yeni Kelime Ekle','Kelimelerime Git']);
+  });
+  it('the ready-made words count a word of the chosen level once it is in the list, however it got there (the progress comes from the list, not from a counter)',()=>{
+    assert(/isKnown:word=>!!VocVocData\.getWordProgress\(word\)/.test(read('wordbase.js')));
+    assert(/const \{total,used\}=wordbase\.progress\(\);/.test(screensJs)&&screensJs.includes("window.addEventListener('vocvoc-storage-committed',refreshDashboard)"));
   });
   it('statistics and badges are pure logic (no page, no storage, no network), loaded before the screens that use them',()=>{
     const statsCode=read('stats.js').replace(/\/\*[^]*?\*\//g,'').replace(/\/\/.*$/gm,'');
@@ -273,15 +308,8 @@ describe('New interface (prototype)',()=>{
 });
 
 describe('Word card content (examples and idioms)',()=>{
-  it('the search, the Daily words and the card detail all ask for exactly two examples and idioms with their own sentence, and the schema holds the model to it',()=>{
-    assert.equal((html.match(/\$\{examplesRule\((?:native|nativeLanguage)\)\}/g)||[]).length,3,'every prompt that makes a word card must use the shared rule');
-    assert(/examples:\{type:"ARRAY",minItems:2,maxItems:2,/.test(html)&&/expressions:\{type:"ARRAY",maxItems:2,items:\{type:"OBJECT",required:\["text","exampleText","exampleTranslation"\]/.test(html));
-  });
-  it('every card prompt asks for the pronunciation guide in the user\'s ORIGINAL language (the native setting), never IPA and never the interface language',()=>{
-    const rule=html.slice(html.indexOf('const examplesRule'),html.indexOf('const GEMINI_ENDPOINT'));
-    assert(rule.includes('written with the letters and spelling habits of ${native} (the user\'s original language), never in IPA and never in any other language'));
-    assert(!/getAppLanguage|appLanguage/.test(rule),'the rule must not look at the interface language');
-    for(const prompt of html.match(/pronunciation guides? [^`]*?\$\{native(?:Language)?\}/gi)||[])assert(!/appLanguage|getAppLanguage/.test(prompt));
+  it('the words come from the word database only: no prompt, no response schema and no model call is left in the app',()=>{
+    assert(!/examplesRule|GEMINI_SCHEMAS|generationConfig|promptWords|buildPrompt/.test(html));
   });
   it('the top bar keeps VocVoc, the separator and the page title in one line on a common baseline, and the profile photo has icon actions over its edge plus a larger view and a question before removing',()=>{
     const screensJs=read('screens.js'),screensCss=read('screens.css');
@@ -321,7 +349,7 @@ describe('Card controls',()=>{
 });
 
 describe('Code hygiene',()=>{
-  const sources=['index.html','pwa.js','a11y.js','storage.js','screens.js','stats.js','packs.js'].map(read),everything=sources.join('\n');
+  const sources=['index.html','pwa.js','a11y.js','storage.js','screens.js','stats.js','packs.js','wordbase.js'].map(read),everything=sources.join('\n');
   it('no function is defined and then never used (dead code stays out)',()=>{
     const escape=name=>name.replace(/\$/g,'\\$');
     const dead=[];
@@ -358,26 +386,24 @@ describe('Release checksums',()=>{
 describe('Content Security Policy (static guards)',()=>{
   const meta=html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)">/);
   const policy=Object.fromEntries((meta?.[1]||'').split(';').map(part=>part.trim().split(/\s+/)).filter(parts=>parts[0]).map(([name,...sources])=>[name,sources]));
-  const geminiOrigin=new URL(html.match(/GEMINI_ENDPOINT="([^"]+)"/)[1]).origin;
   it('index.html carries one CSP meta tag, before any script, style or link, so nothing loads outside it',()=>{
     assert(meta,'no Content-Security-Policy meta tag');
     assert.equal(html.match(/http-equiv="Content-Security-Policy"/g).length,1);
     assert(html.indexOf(meta[0])<html.search(/<(?:script|style|link)\b/),'the policy must come before the first script, style or link');
   });
-  it('connect-src allows this origin and the Gemini API, nothing else; no directive names any other origin',()=>{
-    assert.deepEqual(policy['connect-src'],["'self'",geminiOrigin]);
+  it('connect-src allows this origin and nothing else; no directive names any other origin',()=>{
+    assert.deepEqual(policy['connect-src'],["'self'"]);
     for(const [name,sources] of Object.entries(policy))for(const source of sources){
-      assert(!/^https?:/.test(source)||source===geminiOrigin,`${name} allows ${source}`);
+      assert(!/^https?:/.test(source),`${name} allows ${source}`);
       assert(!['*','data:','blob:',"'unsafe-eval'"].includes(source),`${name} allows ${source}`);
     }
     assert.deepEqual(policy['object-src'],["'none'"]);assert.deepEqual(policy['base-uri'],["'self'"]);assert.deepEqual(policy['form-action'],["'self'"]);
     assert.deepEqual(policy['worker-src'],["'self'"]);assert.deepEqual(policy['manifest-src'],["'self'"]);
   });
-  it('the code needs nothing the policy forbids: one fetch (Gemini), no eval, no external resources, no frames or forms',()=>{
-    const fetches=[...appScript.matchAll(/\bfetch\(([^)]*)/g)].map(match=>match[1]);
-    assert.equal(fetches.length,1);assert(fetches[0].includes('GEMINI_ENDPOINT'));
+  it('the code needs nothing the policy forbids: no fetch in the page itself (wordbase.js reads this site\'s files), no eval, no external resources, no frames or forms',()=>{
+    assert.equal([...appScript.matchAll(/\bfetch\(/g)].length,0,'index.html opens no network connection');
     for(const file of ['pwa.js','storage.js','a11y.js'])assert(!/\bfetch\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon/.test(read(file)),`${file} opens a network connection`);
-    for(const [name,source] of [['index.html',html],['pwa.js',pwa],['storage.js',storage],['a11y.js',read('a11y.js')]]){
+    for(const [name,source] of [['index.html',html],['pwa.js',pwa],['storage.js',storage],['a11y.js',read('a11y.js')],['wordbase.js',read('wordbase.js')]]){
       assert(!/\beval\(|new Function\(|\bsetTimeout\(\s*["'`]|\bsetInterval\(\s*["'`]/.test(source),`${name} evaluates strings as code (needs 'unsafe-eval')`);
     }
     assert(!/(?:src|href|action)="https?:/i.test(html)&&!/url\(\s*["']?(?:https?:|data:)/i.test(html),'index.html loads an external or data: resource');
@@ -386,11 +412,6 @@ describe('Content Security Policy (static guards)',()=>{
 });
 
 describe('Word list regressions',()=>{
-  it('the prompt word cap keeps the NEWEST 100 words: slice(0,100) on newest-first lists, never slice(-100)',()=>{
-    assert(!/\.slice\(-100\)/.test(html));
-    assert((html.match(/\.slice\(0,100\)/g)||[]).length>=2);
-    assert(html.includes('...fresh.map(data=>normalizeHistoryKey(data.word)),...blocked'),'words accepted in this run must outrank History in the capped list');
-  });
   it('archive keeps the source status for Restore/Undo, and renderWordCard never persists anything',()=>{
     assert(!/(?:swipe-armed|main-swipe-archive)\s*\{/.test(html));
     assert(!/max-height:\s*260px\s*[;!]/.test(html));

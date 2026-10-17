@@ -1,6 +1,6 @@
 {
-  "version": "1.11.0",
-  "fingerprint": "ce22f4fa3dd6f0c8a7ce3b9b330bfd00ecb98f1fcd03e11f0be3997e5548c061",
+  "version": "1.12.0",
+  "fingerprint": "41b3a96e420e02a3fb96ccac3973abd6e44baa96e9c774a8dbd8cc12b9240890",
   "files": [
     "a11y.js",
     "icons/apple-touch-icon.png",
@@ -15,6 +15,7 @@
     "screens.js",
     "stats.js",
     "storage.js",
-    "sw.js"
+    "sw.js",
+    "wordbase.js"
   ]
 }
