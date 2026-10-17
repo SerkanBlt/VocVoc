@@ -95,6 +95,8 @@ jobs:
             grep -v '^PASS' browser-output.txt | grep -vE '^\s+"' | tail -60
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          # also as an annotation: the check-run API hands these out without signing in
+          echo "::error title=Browser tests failed::$(grep -v '^PASS' browser-output.txt | grep -vE '^\s+"' | tail -14 | tr '\n' ' ' | cut -c1-1800)"
 
       - name: List the scenarios in the job summary
         if: success()

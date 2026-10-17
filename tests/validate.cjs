@@ -227,13 +227,14 @@ describe('Free allowance per level group, points for words, Premium cards and th
     assert(/function progress\(band=bandOf\(\)\)/.test(read('wordbase.js'))&&read('wordbase.js').includes('function bandOfWord(word)'));
     assert(!/wordRoom|wordCap/.test(html),'the old limit on the whole list is gone');
   });
-  it('points: five things a word that is not memorized yet can earn (1+1+1+1+2), counted once, kept on the word record, saved in backups; the chips and cards take a tone',()=>{
-    assert(html.includes('const STUDY_POINTS=Object.freeze({heard:1,opened:1,explored:1,read:1,quiz:2});'));
+  it('points: seven things a word that is not memorized yet can earn (1+1+1+1+1+1+2 = 8), counted once, kept on the word record, saved in backups; the chips and cards take a tone',()=>{
+    assert(html.includes('const STUDY_POINTS=Object.freeze({heard:1,opened:1,explored:1,read:1,flipped:1,match:1,quiz:2});'));
     assert(/if\(!progress\|\|progress\.status!=="active"\|\|record\.study\?\.\[key\]===true\)return false;/.test(html),'only an active word earns points, each once');
-    assert(storage.includes("['heard','opened','explored','read','quiz'].includes(name)||done!==true"),'Schema v1 validates the optional study record');
-    for(const hook of ['noteStudy(q.word,"quiz")','noteStudy(decodeDomText(card.dataset.word||""),"opened")','noteStudy(data.word,"opened")','details.dataset.studyFold!=="explored"','window.addEventListener("vocvoc-spoken"'])assert(html.includes(hook),hook);
+    assert(storage.includes("['heard','opened','explored','read','flipped','match','quiz'].includes(name)||done!==true"),'Schema v1 validates the optional study record');
+    for(const hook of ['noteStudy(q.word,"quiz")','noteStudy(flipSession.cards[flipSession.index].word,"flipped")','noteStudy(round.pairs[wordIndex].word,"match")','noteStudy(decodeDomText(card.dataset.word||""),"opened")','noteStudy(data.word,"opened")','details.dataset.studyFold!=="explored"','window.addEventListener("vocvoc-spoken"'])assert(html.includes(hook),hook);
     assert(/class="history-chip ui-pill\$\{isMem\?' memorized':''\} score-\$\{score\}"/.test(html)&&html.includes('class="card main-word-card score-$'+'{score}"'));
-    for(let n=1;n<=6;n++)assert(html.includes('.score-'+n+'{--score-color:var(--score-'+n+')}'),'tone '+n);
+    for(let n=1;n<=8;n++)assert(html.includes('--score-color:var(--score-'+n+');--score-ink:var(--score-text-'+n+')'),'tone '+n);
+    assert(html.includes('#contentArea .main-word-card[data-score]:not([data-score="0"]) .word-title{color:var(--score-ink)}')&&!/\.main-word-card\[data-score\][^{]*\{[^}]*border-color/.test(html),'on the home screen the word takes the tone, not the card border');
     assert(/\$\{renderStudySection\(data\)\}\$\{renderTagsSection\(data\)\}/.test(html),'the points come before the tags, both at the end of the details');
   });
   it('the read-aloud button of the new interface tells the app which word was read (a word, or a sentence or idiom of it) once the voice has started',()=>{
@@ -249,6 +250,27 @@ describe('Free allowance per level group, points for words, Premium cards and th
   it('the triangle of a main card is level with the word: its box is as high as one line of the title, and the toggle lines its children up at the top',()=>{
     assert(html.includes('.main-word-toggle{align-items:flex-start !important}')&&html.includes('height:calc(var(--main-title-size) * var(--line-tight)) !important;'));
     assert(html.includes('.main-word-card:not(.open){--main-title-size:1.45rem}')&&html.includes('.main-word-card{--main-title-size:var(--font-3xl)}'));
+  });
+});
+
+describe('Collapsible Points and Tags sections, the tag panel and the Matching test (static guards)',()=>{
+  const screensJs=read('screens.js');
+  it('the Points and Tags sections open and close (remembered on the device); the total is at the right with the toggle after it, the tags have a + before their toggle that opens a panel',()=>{
+    assert(html.includes('const SECTION_PREF_KEY="VOCVOC_DETAIL_SECTIONS";')&&/function setSectionOpen\(name,open\)/.test(html));
+    assert(/<span class="study-total score-\$\{score\}"[^]*?\$\{sectionToggleButton\("study",t\("studyScore"\),open\)\}/.test(html),'points: the badge, then the toggle');
+    assert(/data-tag-panel aria-expanded="\$\{adding\}"[^]*?\$\{sectionToggleButton\("tags",t\("tags"\),open\)\}/.test(html),'tags: the + comes before the toggle');
+    assert(/document\.addEventListener\("input",event=>\{\s*if\(!event\.target\.classList\?\.contains\("tag-input"\)\)return;/.test(html)&&html.includes('tagExistingHtml(record,event.target.value)'),'typing narrows the tags in use');
+    assert(html.includes('data-tag-new=')&&html.includes('aria-disabled="true"'),'a tag that is already on the word cannot be added twice; a new one is offered');
+  });
+  it('the meaning sits close under the line below the word, on the home cards and in the word windows',()=>{
+    assert(html.includes('#contentArea .main-word-card.open .word-header{margin-bottom:6px!important}')&&html.includes('#contentArea .main-word-body{padding-top:4px!important}')&&html.includes('.word-detail-panel .word-panel-scroll-body{padding-top:6px!important}'));
+  });
+  it('a Flip card that is turned over earns a point for its word, and the Matching test is a mode of the quiz engine with its own page, card and test kind',()=>{
+    assert(/function toggleFlip\(\)\{[^]*?if\(flipSession\.flipped\)noteStudy\(flipSession\.cards\[flipSession\.index\]\.word,"flipped"\)/.test(html));
+    assert(/function startMatchQuiz\(\)\{[^]*?mode:"match"/.test(html)&&/function getMatchPool\(\)/.test(html)&&html.includes('if(quizSession.mode==="match"){renderMatchRound(area);return;}'));
+    assert(/const QUIZ_ROUTES=\['test','recall','cloze','match'\];/.test(screensJs)&&screensJs.includes("card('⧉',t('studyMatch')")&&screensJs.includes("match:[getMatchPool,startMatchQuiz]"));
+    assert(read('stats.js').includes("q.mode==='match'")&&screensJs.includes("['recall','cloze','match'].includes(quizSession.mode)"),'a finished Matching is recorded as a test of its own kind');
+    assert(/for\(let guard=0;pairs\.length<4&&guard<400;guard\+\+\)/.test(html)&&html.includes('Array.from({length:10},()=>'),'ten rounds of four pairs');
   });
 });
 

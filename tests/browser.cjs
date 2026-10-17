@@ -47,7 +47,7 @@ async function main(){
  await page.evaluate(()=>{document.getElementById('historyFilterInput').value='word1';document.getElementById('historySort').value='az';renderHistory();});assert(await page.locator('.history-chip').count());assert.equal(await page.evaluate(()=>[...document.querySelectorAll('.history-chip')].every(el=>el.textContent.toLowerCase().includes('word1'))),true);record('History filter/sort');
  await page.evaluate(()=>toggleHistoryDetail('word1'));await pause(100);assert.equal(await page.evaluate(()=>getPageScroller().classList.contains('popup-scroll-locked')),true);await page.evaluate(()=>closeHistoryDetail());await pause(100);assert.equal(await page.evaluate(()=>getPageScroller().classList.contains('popup-scroll-locked')),false);record('popup background lock / release');
  // Explicit awaited mutations: failed commit cannot leak an optimistic memory update.
- const prior=await page.evaluate(()=>JSON.stringify(VocVocData.getDb()));assert.equal(await page.evaluate(async()=>{const adapter=VocVocStorage.adapter,write=adapter.write;adapter.write=()=>Promise.reject(new DOMException('full','QuotaExceededError'));try{await VocVocData.setStatus('word1','active');return false;}catch(_){return true;}finally{adapter.write=write;}}),true);assert.equal(await page.evaluate(()=>JSON.stringify(VocVocData.getDb())),prior);record('quota/write failure rollback retains committed runtime data');
+ const prior=await page.evaluate(async()=>{await VocVocData.flush();return JSON.stringify(VocVocData.getDb());});assert.equal(await page.evaluate(async()=>{const adapter=VocVocStorage.adapter,write=adapter.write;adapter.write=()=>Promise.reject(new DOMException('full','QuotaExceededError'));try{await VocVocData.setStatus('word1','active');return false;}catch(_){return true;}finally{adapter.write=write;}}),true);assert.equal(await page.evaluate(()=>JSON.stringify(VocVocData.getDb())),prior);record('quota/write failure rollback retains committed runtime data');
  const backup=await page.evaluate(()=>VocVocData.export());assert(!JSON.stringify(backup).includes('secret-test-value'));assert.equal(backup.exportVersion,1);await page.evaluate(()=>VocVocData.setStatus('word1','active'));const preImport=await page.evaluate(()=>VocVocData.getDb());await page.evaluate(data=>VocVocData.import(data),backup);const imported=await page.evaluate(()=>VocVocData.getDb()),expected=Object.fromEntries(Object.entries(backup).filter(([k])=>!['exportVersion','exportedAt'].includes(k)));expected.meta.updatedAt=imported.meta.updatedAt;assert.deepEqual(imported,expected);const recovery=await page.evaluate(()=>VocVocStorage.adapter.recoveryBackup());assert.deepEqual(recovery,preImport);record('secret-free export + transactional restore + recovery snapshot');
  const valid=await page.evaluate(()=>JSON.stringify(VocVocData.getDb()));const invalidCases=[{...backup,schemaVersion:2},{...backup,progress:{bad:{wordId:'bad',status:'active'}}},{...backup,apiKey:'secret'},{...backup,exportVersion:9}];for(const invalid of invalidCases){assert.equal(await page.evaluate(async data=>{try{await VocVocData.import(data);return false;}catch(_){return true;}},invalid),true);}assert.equal(await page.evaluate(()=>JSON.stringify(VocVocData.getDb())),valid);record('invalid imports reject without changing data');
  // Second tab cannot overwrite a newer revision with a stale snapshot.
@@ -175,14 +175,24 @@ async function main(){
   await page.reload();await ready();assert(await page.evaluate(word=>VocVocData.getHistoryWords().includes(word),other));assert.equal((await listed()).length,known);
  }
  record('Search / Random / synonym tags show the word database in the word window without adding; Add new words is one atomic batch; Add keeps what was shown; persistence');await context.close();
- // Tags: a word of the list can be labelled; the labels are found by the History filter and by "#tag" in the search box
+ // Tags: a word of the list can be labelled; the labels are found by the History filter and by "#tag" in the search box. The Tags section is closed to one line (a + and a toggle) until it is opened.
  {
   context=await browser.newContext({viewport:{width:1000,height:850}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
   const tagsOf=word=>page.evaluate(w=>VocVocData.getWordByText(w).tags||[],word);
   const listed=()=>page.locator('#historyArea .history-chip span').allTextContents();
   const openDetails=async word=>{await page.evaluate(w=>toggleHistoryDetail(w),word);await page.waitForSelector('#historyDetails .tags-section');};
+  const suggestions=()=>page.locator('#historyDetails .tag-existing button').allTextContents();
+  const openPanel=async()=>{if(await page.locator('#historyDetails .tag-panel').isHidden())await page.locator('#historyDetails [data-tag-panel]').click();await page.waitForSelector('#historyDetails .tag-input',{state:'visible'});};
   await openDetails('Bonjour');
+  // closed by default: the title, a + and a toggle on one line; nothing else shows
+  assert.equal(await page.locator('#historyDetails .tags-section .section-body').isHidden(),true);
+  assert.deepEqual(await page.evaluate(()=>[...document.querySelectorAll('#historyDetails .tags-section .section-head button')].map(button=>[button.getAttribute('aria-label'),button.getAttribute('aria-expanded')])),[['Etiket ekle','false'],['Etiketler','false']]);
   assert.equal(await page.locator('#historyDetails .tags-section .tag-empty').count(),1);
+  await page.locator('#historyDetails [data-section-toggle="tags"]').click();                       // open
+  assert.equal(await page.locator('#historyDetails .tags-section .tag-empty').isVisible(),true);assert.equal(await page.locator('#historyDetails .tag-panel').isHidden(),true);
+  // the + opens the panel: a field and the tags that are in use
+  await openPanel();
+  assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('tag-input')),true);
   // typed with a # and capital letters, added with Enter: stored clean, and the field is ready for the next tag
   await page.locator('#historyDetails .tag-input').fill('  #Selam ');await page.keyboard.press('Enter');
   await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').tags?.[0]==='selam');
@@ -191,16 +201,37 @@ async function main(){
   await page.locator('#historyDetails .tag-input').fill('günlük');await page.locator('#historyDetails .tag-add-btn').click();
   await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').tags?.length===2);
   assert.deepEqual(await tagsOf('Bonjour'),['selam','günlük']);
-  // the same tag again changes nothing; an empty field adds nothing
+  assert.equal(await page.locator('#historyDetails .tags-section .tag-count').textContent(),'2');
+  // the same tag again changes nothing; a tag that is already on the word is shown with a tick and cannot be added again
   await page.locator('#historyDetails .tag-input').fill('SELAM');await page.keyboard.press('Enter');await pause(200);
   assert.deepEqual(await tagsOf('Bonjour'),['selam','günlük']);
-  // another word: the tags in use are offered, most used first, and one press adds it
+  await page.locator('#historyDetails .tag-input').fill('');
+  assert.deepEqual(await suggestions(),['#günlük ✓','#selam ✓']);
+  await page.locator('#historyDetails .tag-suggest',{hasText:'#selam'}).click({force:true});await pause(200);
+  assert.deepEqual(await tagsOf('Bonjour'),['selam','günlük']);
+  // another word: the section stays open (it is remembered), the panel is closed; the + opens it and shows the tags in use, most used first
   await page.evaluate(()=>closeHistoryDetail());await openDetails('Merci');
-  assert.deepEqual(await page.locator('#historyDetails .tag-suggest').allTextContents(),['#günlük','#selam']);
+  assert.equal(await page.locator('#historyDetails [data-section-toggle="tags"]').getAttribute('aria-expanded'),'true');assert.equal(await page.locator('#historyDetails .tag-panel').isHidden(),true);
+  await openPanel();
+  assert.deepEqual(await suggestions(),['#günlük','#selam']);
+  // typing narrows them (accents and case do not matter), so an existing tag is seen before a new one is made; what is typed and does not exist is offered as new
+  await page.locator('#historyDetails .tag-input').fill('GUN');assert.deepEqual(await suggestions(),['#günlük','Yeni etiket: gun']);
+  await page.locator('#historyDetails .tag-input').fill('zzz');assert.deepEqual(await suggestions(),['Yeni etiket: zzz']);
+  await page.locator('#historyDetails .tag-input').fill('selam');assert.deepEqual(await suggestions(),['#selam']);                 // exact: no "new" offer
+  await page.locator('#historyDetails .tag-input').fill('s');assert.deepEqual(await suggestions(),['#selam','Yeni etiket: s']);
+  await page.locator('#historyDetails .tag-input').fill('');
   await page.locator('#historyDetails .tag-suggest',{hasText:'#selam'}).click();
   await page.waitForFunction(()=>VocVocData.getWordByText('Merci').tags?.[0]==='selam');
-  assert.deepEqual(await page.locator('#historyDetails .tag-suggest').allTextContents(),['#günlük']);
-  // a word that is not in the list has no tags section; the keyboard reaches every control of the section
+  assert.deepEqual(await suggestions(),['#selam ✓','#günlük']);                                // selam is now on two words, so it comes first
+  // a new tag is made from what was typed, with the offer button
+  await page.locator('#historyDetails .tag-input').fill('yeni etiket');await page.locator('#historyDetails .tag-new').click();
+  await page.waitForFunction(()=>VocVocData.getWordByText('Merci').tags?.includes('yeni etiket'));
+  // closing the section also closes the panel; the + and the toggle are two different buttons
+  await page.locator('#historyDetails [data-section-toggle="tags"]').click();
+  assert.deepEqual(await page.evaluate(()=>[document.querySelector('#historyDetails .tags-section .section-body').hidden,document.querySelector('#historyDetails .tag-panel').hidden,document.querySelector('#historyDetails [data-tag-panel]').getAttribute('aria-expanded')]),[true,true,'false']);
+  await page.locator('#historyDetails [data-section-toggle="tags"]').click();await page.locator('#historyDetails [data-tag-remove="'+await page.evaluate(()=>encodeDomText('yeni etiket'))+'"]').click();
+  await page.waitForFunction(()=>VocVocData.getWordByText('Merci').tags?.join()==='selam');
+  // a word that is not in the list has no tags section
   await page.evaluate(()=>openRelatedWordPopup('maison'));await page.waitForSelector('#relatedWordPopup [data-add-related-word]');
   assert.equal(await page.locator('#relatedWordPopup .tags-section').count(),0);
   await page.evaluate(()=>closeRelatedWordPopup());
@@ -232,14 +263,18 @@ async function main(){
   await page.evaluate(()=>VocVocData.setWordTags('Je',Array.from({length:12},(_,i)=>'etiket'+i)));
   await openDetails('Je');
   assert.equal(await page.locator('#historyDetails .tag-input').count(),0);assert.match(await page.locator('#historyDetails .tag-note').textContent(),/en çok 12 etiket/);
+  await page.locator('#historyDetails [data-tag-panel]').click();assert.equal(await page.locator('#historyDetails .tag-note').isVisible(),true);
   await page.evaluate(()=>closeHistoryDetail());
   // removing a tag from a word with 12 gives the field back; the controls have names
   await openDetails('Je');await page.locator('#historyDetails [data-tag-remove]').first().click();
-  await page.waitForSelector('#historyDetails .tag-input');
+  await page.waitForSelector('#historyDetails .tag-input',{state:'attached'});
   assert.equal(await page.evaluate(()=>[...document.querySelectorAll('#historyDetails .tags-section button,#historyDetails .tags-section input')].filter(el=>!(el.getAttribute('aria-label')||el.textContent||'').trim()).length),0);
+  // closed again, the section stays closed after a reload (the choice is remembered on the device)
+  await page.locator('#historyDetails [data-section-toggle="tags"]').click();await page.reload();await ready();await openDetails('Je');
+  assert.equal(await page.locator('#historyDetails [data-section-toggle="tags"]').getAttribute('aria-expanded'),'false');
   await context.close();
  }
- record('Tags: added with Enter or the button (clean, no duplicates), offered from the tags in use, removed, found by the History filter and by #tag in the search box, kept in the backup, at most 12 a word, none on a word that is not in the list');
+ record('Tags: closed to one line until opened; the + opens a panel with the tags in use that narrow as you type (a tag already on the word is ticked, a new one is offered); added with Enter or a button, removed, found by the History filter and by #tag in the search box, kept in the backup, at most 12 a word, none on a word that is not in the list');
  // The word window for a word that is already in the list has no second Close button, and search finds words typed with Turkish letters and suggests words that look alike
  {
   context=await browser.newContext({viewport:{width:1000,height:850}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
@@ -270,7 +305,7 @@ async function main(){
  }
  record('Search: a word already in the list shows only the note (no second Close button); ı, İ and i find île; a typo shows the words that look like it; a found word shows its spelling variants');
  // Points: a word that is not memorized yet earns 1 for listening to its pronunciation, 1 for opening it and seeing its meaning, 1 for opening the example sentences or idioms,
- // 1 for listening to them and 2 for a right answer in a test; the chip and the card of the word take a tone that follows the points
+ // 1 for listening to them, 1 for being turned over on a Flip card, 1 for a right pair in the Matching test and 2 for a right answer in a test (8 in all); the chip of the word and the word on its card take a tone that follows the points
  {
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
   const study=word=>page.evaluate(w=>VocVocData.getWordByText(w).study||{},word);
@@ -278,16 +313,24 @@ async function main(){
   const chip=word=>page.locator('#historyArea .history-chip',{hasText:word});
   const card=word=>page.locator('#contentArea .main-word-card',{hasText:word});
   const spoken=(word,kind)=>page.evaluate(([w,k])=>window.dispatchEvent(new CustomEvent('vocvoc-spoken',{detail:{word:w,kind:k}})),[word,kind]);
-  assert.deepEqual(await page.evaluate(()=>VocVocData.STUDY_POINTS),{heard:1,opened:1,explored:1,read:1,quiz:2});
+  assert.deepEqual(await page.evaluate(()=>VocVocData.STUDY_POINTS),{heard:1,opened:1,explored:1,read:1,flipped:1,match:1,quiz:2});
   assert.equal(await score('Bonjour'),0);assert.equal(await chip('Bonjour').getAttribute('data-score'),'0');
   // opening the card and seeing the meaning: +1
   await card('Bonjour').locator('.main-word-toggle').click();
   await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.opened===true);
   assert.equal(await score('Bonjour'),1);
   assert.deepEqual([await chip('Bonjour').getAttribute('data-score'),await card('Bonjour').getAttribute('data-score')],['1','1']);   // the chip and the card follow at once
-  // the points of the word in its window: what was done is ticked, with the total
-  assert.match(await card('Bonjour').locator('.study-total').textContent(),/1 \/ 6/);
+  // the points of the word in its window: the total is on the right of the title and the list is folded; the toggle after the total opens it and the choice is remembered
+  assert.match(await card('Bonjour').locator('.study-total').textContent(),/1 \/ 8/);
+  assert.equal(await card('Bonjour').locator('.study-section .section-body').isHidden(),true);
+  assert.deepEqual(await card('Bonjour').locator('.study-section .section-head button').evaluateAll(buttons=>buttons.map(button=>[button.dataset.sectionToggle,button.getAttribute('aria-label'),button.getAttribute('aria-expanded')])),[['study','Puan','false']]);
+  const headBox=await card('Bonjour').locator('.study-section .section-head').boundingBox(),totalBox=await card('Bonjour').locator('.study-total').boundingBox(),toggleBox=await card('Bonjour').locator('.study-section [data-section-toggle]').boundingBox();
+  assert(totalBox.x+totalBox.width<=toggleBox.x+1&&toggleBox.x+toggleBox.width>=headBox.x+headBox.width-2&&totalBox.x>headBox.x+headBox.width/2,'the total is at the right, the toggle after it: '+JSON.stringify({headBox,totalBox,toggleBox}));
+  await card('Bonjour').locator('.study-section [data-section-toggle]').click();
+  assert.equal(await card('Bonjour').locator('.study-list').isVisible(),true);assert.equal(await card('Bonjour').locator('.study-list li').count(),7);
   assert.equal(await card('Bonjour').locator('.study-list li.done').count(),1);
+  assert.deepEqual(await card('Bonjour').locator('.study-list .study-points').allTextContents(),['+1','+1','+1','+1','+1','+1','+2']);
+  assert.match(await card('Bonjour').locator('.study-list').textContent(),/Flip kartında kelimeyi görüp çevirdin[^]*Eşleştirmeyi doğru yaptın[^]*Testte doğru cevapladın/);
   // opening the example sentences (or the idioms): +1, once
   await card('Bonjour').locator('details[data-study-fold] summary').first().click();
   await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.explored===true);
@@ -297,8 +340,19 @@ async function main(){
   // listening to the word: +1; listening to a sentence or an idiom: +1 (the read-aloud button of the new interface tells the app)
   await spoken('Bonjour','word');await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.heard===true);
   await spoken('Bonjour','sentence');await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.read===true);
-  assert.equal(await score('Bonjour'),4);assert.match(await card('Bonjour').locator('.study-total').textContent(),/4 \/ 6/);
-  assert.match(await chip('Bonjour').getAttribute('title'),/ · Puan: 4 \/ 6$/);
+  assert.equal(await score('Bonjour'),4);assert.match(await card('Bonjour').locator('.study-total').textContent(),/4 \/ 8/);
+  assert.match(await chip('Bonjour').getAttribute('title'),/ · Puan: 4 \/ 8$/);
+  assert.equal(await card('Bonjour').locator('.study-list li.done').count(),4);                // the open list is redrawn, not folded, by a new point
+  assert.equal(await card('Bonjour').locator('.study-list').isVisible(),true);
+  // a Flip card that is seen and turned over: +1 for its word, once (turning it back and over again earns nothing more)
+  await page.evaluate(()=>startFlip());await page.waitForSelector('#flipOverlay.open #flipCard');
+  for(let guard=0;guard<40&&await page.evaluate(()=>flipSession.cards[flipSession.index].word)!=='Bonjour';guard++)await page.evaluate(()=>moveFlip(1));
+  assert.equal(await page.evaluate(()=>flipSession.cards[flipSession.index].word),'Bonjour');
+  assert.equal((await study('Bonjour')).flipped,undefined);                                    // looking at the front earns nothing
+  await page.evaluate(()=>toggleFlip());await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.flipped===true);
+  assert.equal(await score('Bonjour'),5);assert.equal(await chip('Bonjour').getAttribute('data-score'),'5');
+  await page.evaluate(()=>toggleFlip());await page.evaluate(()=>toggleFlip());await pause(300);assert.equal(await score('Bonjour'),5);
+  await page.evaluate(()=>closeFlip());
   // a right answer in a test: +2 for each word that was asked (a wrong one earns nothing)
   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'pt'+String(i).padStart(2,'0'),meaning:'anlam '+i}))));
   await page.evaluate(()=>startQuiz());await page.waitForSelector('#contentArea .quiz-option');
@@ -315,17 +369,21 @@ async function main(){
   assert.equal(quizPoints.slice(1).every(([,earned])=>earned),true);
   const quizzed=quizPoints[1][0];assert.equal(await score(quizzed)>=2,true);
   // memorized words do not earn points any more, a word that is not in the list never does
+  const merciBefore=await score('Merci');                                                      // 2 when the quiz happened to ask Merci, otherwise 0: what was earned stays, nothing is added
   await page.evaluate(()=>markMemorized('Merci'));await page.waitForFunction(()=>VocVocData.getWordProgress('Merci').status==='memorized');
   await spoken('Merci','word');await spoken('maison','word');await pause(300);
-  assert.deepEqual([await score('Merci'),await page.evaluate(()=>VocVocData.getWordByText('maison'))],[0,null]);
+  assert.deepEqual([await score('Merci'),await page.evaluate(()=>VocVocData.getWordByText('maison'))],[merciBefore,null]);
   assert.equal(await chip('Merci').getAttribute('data-score'),'0');
+  await page.evaluate(()=>startFlip());await page.waitForSelector('#flipOverlay.open #flipCard');
+  for(let guard=0;guard<40&&await page.evaluate(()=>flipSession.cards[flipSession.index].word)!=='Merci';guard++)await page.evaluate(()=>moveFlip(1));
+  await page.evaluate(()=>toggleFlip());await pause(300);assert.equal(await score('Merci'),merciBefore);await page.evaluate(()=>closeFlip());      // a memorized word turned over earns nothing either
   // the points are saved (reload, backup) and every score has its own tone
   await page.reload();await ready();
   const askedRight=quizPoints.some(([word,earned])=>word==='Bonjour'&&earned);                 // Bonjour may have been one of the ten questions
-  assert.equal(await score('Bonjour'),askedRight?6:4);assert.equal(await chip('Bonjour').getAttribute('data-score'),askedRight?'6':'4');
-  const exported=await page.evaluate(()=>VocVocData.export());assert.deepEqual(Object.values(exported.words).find(word=>word.word==='Bonjour').study,{opened:true,explored:true,heard:true,read:true,...(askedRight?{quiz:true}:{})});
-  const tones=await page.evaluate(()=>{const out={};for(let n=0;n<=6;n++){const probe=document.createElement('button');probe.className='history-chip ui-pill score-'+n;probe.dataset.score=String(n);document.getElementById('historyArea').append(probe);out[n]=getComputedStyle(probe).borderTopColor;probe.remove();}return out;});
-  assert.equal(new Set(Object.values(tones)).size,7,'seven different tones: '+JSON.stringify(tones));
+  assert.equal(await score('Bonjour'),askedRight?7:5);assert.equal(await chip('Bonjour').getAttribute('data-score'),askedRight?'7':'5');
+  const exported=await page.evaluate(()=>VocVocData.export());assert.deepEqual(Object.values(exported.words).find(word=>word.word==='Bonjour').study,{opened:true,explored:true,heard:true,read:true,flipped:true,...(askedRight?{quiz:true}:{})});
+  const tones=await page.evaluate(()=>{const out={};for(let n=0;n<=8;n++){const probe=document.createElement('button');probe.className='history-chip ui-pill score-'+n;probe.dataset.score=String(n);document.getElementById('historyArea').append(probe);out[n]=getComputedStyle(probe).borderTopColor;probe.remove();}return out;});
+  assert.equal(new Set(Object.values(tones)).size,9,'nine different tones: '+JSON.stringify(tones));
   // opening a word window (History) gives the "opened" point too, and the window shows the section for a word that is not memorized only
   await page.evaluate(()=>toggleHistoryDetail('pt11'));await page.waitForSelector('#historyDetails .study-section');
   await page.waitForFunction(()=>VocVocData.getWordByText('pt11').study?.opened===true);
@@ -333,7 +391,39 @@ async function main(){
   assert.equal(await page.locator('#historyDetails .study-section').count(),0);
   await context.close();
  }
- record('Points: opening a word +1, its examples or idioms opened +1, the word listened to +1, a sentence or idiom listened to +1, a right answer in a test +2, each once; none for a memorized word or one that is not in the list; the chip and card take a tone from the points, the window lists them, they are saved and in the backup');
+ record('Points: opening a word +1, its examples or idioms opened +1, the word listened to +1, a sentence or idiom listened to +1, a Flip card turned over +1, a right answer in a test +2 (8 in all), each once; none for a memorized word or one that is not in the list; the chip takes a tone from the points, the window lists them in a folding section with the total at its right, they are saved and in the backup');
+ // On the home screen the WORD takes the tone of its points (a darker tone in the light theme, a lighter one in the dark theme, readable on the card); the border of the card stays as it is. The meaning sits close under the line.
+ {
+  context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
+  const probe=(theme)=>page.evaluate(theme=>{
+   document.documentElement.setAttribute('data-theme',theme);
+   const card=document.querySelector('#contentArea .main-word-card'),title=card.querySelector('.word-title'),out={};
+   const toRgb=color=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=1;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.clearRect(0,0,1,1);ctx.fillStyle=color;ctx.fillRect(0,0,1,1);const [r,g,b,a]=ctx.getImageData(0,0,1,1).data;return [r,g,b,a/255];};
+   const light=([r,g,b])=>{const f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);};return .2126*f(r)+.7152*f(g)+.0722*f(b);};
+   const backdrop=()=>{let node=card;while(node){const rgba=toRgb(getComputedStyle(node).backgroundColor);if(rgba[3]===1)return rgba;node=node.parentElement;}return toRgb('#ffffff');};
+   for(let n=0;n<=8;n++){
+    card.dataset.score=String(n);card.className=card.className.replace(/\bscore-\d\b/g,'').trim()+' score-'+n;
+    const ink=toRgb(getComputedStyle(title).color),back=backdrop(),hi=Math.max(light(ink),light(back)),lo=Math.min(light(ink),light(back));
+    out[n]={ink:getComputedStyle(title).color,border:getComputedStyle(card).borderTopColor,contrast:(hi+.05)/(lo+.05)};
+   }
+   document.documentElement.removeAttribute('data-theme');
+   return out;
+  },theme);
+  for(const theme of ['light','dark']){
+   const result=await probe(theme);
+   assert.equal(new Set(Object.values(result).map(item=>item.ink)).size,9,theme+': nine different word colours '+JSON.stringify(result));                // 0 is the normal colour
+   assert.equal(new Set(Object.values(result).map(item=>item.border)).size,1,theme+': the border of the card does not change');
+   for(const n of Object.keys(result))if(n!=='0')assert(result[n].contrast>=4.5,theme+' tone '+n+' on the card: contrast '+result[n].contrast.toFixed(2));
+  }
+  // the meaning sits close under the line below the word
+  const first=page.locator('#contentArea .main-word-card').first();
+  if(await first.getAttribute('class').then(value=>!/\bopen\b/.test(value)))await first.locator('.main-word-toggle').click();
+  await page.waitForSelector('#contentArea .main-word-card.open .main-word-body .section-title');
+  const gap=await page.evaluate(()=>{const open=document.querySelector('#contentArea .main-word-card.open');return open.querySelector('.main-word-body .section-title').getBoundingClientRect().top-open.querySelector('.main-word-toggle').getBoundingClientRect().bottom;});
+  assert(gap>=0&&gap<=8,'"Anlam" starts '+gap+'px under the word row');
+  await context.close();
+ }
+ record('Home cards: the word takes the tone of its points in the light and the dark theme (readable, contrast at least 4.5), the border of the card does not change, and "Anlam" starts right under the line');
  // The triangle of an open card is level with the word, also when its type wraps onto a second line
  {
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
@@ -1216,7 +1306,7 @@ async function main(){
    // the Study page: the same Tests panel on top, the latest tests at the very bottom, newest first, a bullet by score (10 and 9 green, 6 orange)
    await route(p,'study');
    assert.deepEqual(await p.locator('#v2Screen .v2-statline .v2-stat strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['3','83%','10/10']);
-   assert.equal(await p.locator('#v2Screen .v2-page').evaluate(node=>[...node.children].map(child=>child.tagName+(child.querySelector('.v2-testlist')?'-list':'')).join()),'H1,SECTION,BUTTON,BUTTON,BUTTON,BUTTON,SECTION-list');
+   assert.equal(await p.locator('#v2Screen .v2-page').evaluate(node=>[...node.children].map(child=>child.tagName+(child.querySelector('.v2-testlist')?'-list':'')).join()),'H1,SECTION,BUTTON,BUTTON,BUTTON,BUTTON,BUTTON,SECTION-list');
    assert.deepEqual(await p.locator('.v2-testlist li strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['10/10','9/10','6/10']);
    assert.deepEqual(await p.locator('.v2-testlist .v2-bullet').evaluateAll(nodes=>nodes.map(node=>node.className.replace('v2-bullet ',''))),['v2-bullet-great','v2-bullet-great','v2-bullet-fair']);
    // Today shows the last seven days of the same history (the streak is on the Statistics page)
@@ -1666,11 +1756,11 @@ async function main(){
   await p.evaluate(()=>closeModal());
   // another page: a change made while it is open redraws it in the new language and keeps its place
   await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
-  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Recall','Fill in the blank','Flip']);
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Recall','Fill in the blank','Matching','Flip']);
   await p.evaluate(()=>{document.getElementById('v2Screen').scrollTop=60;});
   await p.evaluate(()=>changeAppLanguage('tr'));
   await p.waitForFunction(()=>document.querySelector('.v2-study-title')?.textContent==='Test'&&document.querySelectorAll('.v2-study-title')[1].textContent==='Hatırla');
-  assert.deepEqual([await p.locator('.v2-study-title').allTextContents(),await p.locator('.v2-bar-title').textContent(),await p.evaluate(()=>document.getElementById('v2Screen').scrollTop>0||document.getElementById('v2Screen').scrollHeight<=document.getElementById('v2Screen').clientHeight)],[['Test','Hatırla','Boşluk Doldurma','Flip'],'Çalış',true]);
+  assert.deepEqual([await p.locator('.v2-study-title').allTextContents(),await p.locator('.v2-bar-title').textContent(),await p.evaluate(()=>document.getElementById('v2Screen').scrollTop>0||document.getElementById('v2Screen').scrollHeight<=document.getElementById('v2Screen').clientHeight)],[['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip'],'Çalış',true]);
   // French, German, Spanish and Italian have their own texts on every page of the new interface: bar, menu, page language, and no English left over
   await p.evaluate(()=>VocVocPlan.set('premium'));                                                 // the statistics page is complete only with Premium
   const wanted={fr:['Étudier','Aujourd’hui,Mots,Étudier,Statistiques,Profil,Réglages'],de:['Lernen','Heute,Wörter,Lernen,Statistik,Profil,Einstellungen'],es:['Estudiar','Hoy,Palabras,Estudiar,Estadísticas,Perfil,Ajustes'],it:['Studia','Oggi,Parole,Studia,Statistiche,Profilo,Impostazioni']};
@@ -1747,7 +1837,7 @@ async function main(){
   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
   for(let press=0;press<2;press++){await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await pause(500);}
   await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
-  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Flip']);
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip']);
   assert.match(await p.locator('.v2-study-card',{hasText:'Boşluk Doldurma'}).textContent(),/\d+ kelimenin cümlesinden 10 soru/);
   await p.locator('.v2-study-card',{hasText:'Boşluk Doldurma'}).click();await p.waitForSelector('#v2QuizHost .quiz-option');
   assert.deepEqual(await p.evaluate(()=>[location.hash,document.querySelector('.v2-study-bar h1').textContent,document.querySelector('.v2-appbar')&&getComputedStyle(document.querySelector('.v2-appbar')).display,quizSession.mode,quizSession.questions.length]),['#/cloze','Boşluk Doldurma','none','cloze',10]);
@@ -1773,6 +1863,88 @@ async function main(){
   assert.deepEqual(await p.locator('.v2-testlist li').first().evaluate(item=>[item.querySelector('.v2-muted').textContent,item.querySelector('strong').textContent,item.querySelector('.v2-bullet').className]),['Boşluk','9/10','v2-bullet v2-bullet-great']);
   await c.close();
   record('Fill in the blank: a sentence of the word with a blank and its translation, four words to choose from, ten questions, recorded as a test of its own kind; too few words say so; it sits between Recall and Flip');
+ }
+ // ===== New interface: the Matching test =====
+ {
+  const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+  await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
+  const studyOf=word=>p.evaluate(w=>VocVocData.getWordByText(w)?.study||{},word);
+  // not enough active words: the page says how many there are, and nothing starts
+  await p.evaluate(()=>{location.hash='#/match';});await p.waitForSelector('#v2Screen[data-route="match"] .v2-card');
+  assert.match(await p.locator('#v2Screen').textContent(),/Eşleştirme için en az 10 aktif kelime gerekir\. Şu an \d+ var\./);
+  assert.equal(await p.evaluate(()=>!!quizSession),false);
+  // twelve more words; two of them share a meaning (they must never be in one round, or the pairs could not be told apart)
+  await p.evaluate(()=>VocVocData.addWordBatch([...Array.from({length:12},(_,i)=>({word:'ma'+String(i).padStart(2,'0'),meaning:'anlam '+i})),{word:'twin1',meaning:'ortak'},{word:'twin2',meaning:'ortak'}]));
+  // a memorized word is not asked
+  await p.evaluate(()=>markMemorized('ma11'));await p.waitForFunction(()=>VocVocData.getWordProgress('ma11').status==='memorized');
+  assert.equal(await p.evaluate(()=>getMatchPool().some(entry=>entry.word==='ma11')),false);
+  // the Study page offers it between Fill in the blank and Flip
+  await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip']);
+  assert.match(await p.locator('.v2-study-card',{hasText:'Eşleştirme'}).textContent(),/\d+ aktif kelimeyle 10 tur, her turda 4 eşleme/);
+  await p.locator('.v2-study-card',{hasText:'Eşleştirme'}).click();await p.waitForSelector('#v2QuizHost .match-item');
+  assert.deepEqual(await p.evaluate(()=>[location.hash,document.querySelector('.v2-study-bar h1').textContent,document.querySelector('.v2-appbar')&&getComputedStyle(document.querySelector('.v2-appbar')).display,quizSession.mode,quizSession.questions.length,document.getElementById('v2QuizCount').textContent]),['#/match','Eşleştirme','none','match',10,'Soru 1/10']);
+  // ten rounds of four pairs: four different words and four different meanings in each
+  const shape=await p.evaluate(()=>quizSession.questions.map(round=>({pairs:round.pairs.length,words:new Set(round.pairs.map(pair=>pair.word.toLowerCase())).size,meanings:new Set(round.pairs.map(pair=>pair.meaning.toLowerCase())).size,left:[...round.left].sort().join(),right:[...round.right].sort().join()})));
+  assert.deepEqual(shape.map(round=>[round.pairs,round.words,round.meanings,round.left,round.right]),Array.from({length:10},()=>[4,4,4,'0,1,2,3','0,1,2,3']));
+  assert.equal(await p.evaluate(()=>quizSession.questions.some(round=>round.pairs.some(pair=>pair.word==='ma11'))),false);
+  // the board: the prompt, the words on one side and their meanings on the other, all visible without scrolling on a phone
+  assert.equal(await p.locator('#v2QuizHost .quiz-word-v91').textContent(),'Kelimeleri anlamlarıyla eşleştir');
+  assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('#v2QuizHost .match-word').length,document.querySelectorAll('#v2QuizHost .match-meaning').length,document.querySelector('#v2QuizHost .quiz-count-v91').textContent]),[4,4,'Eşleştirme 1/10']);
+  const fits=await p.evaluate(()=>[...document.querySelectorAll('#v2QuizHost .match-item')].every(node=>{const box=node.getBoundingClientRect();return box.left>=0&&box.right<=innerWidth&&box.bottom<=innerHeight&&box.height>=44;}));
+  assert.equal(fits,true,'every tile is on the screen and at least 44px high');
+  const tile=(side,index)=>p.locator(`#v2QuizHost .match-item[data-match-side="${side}"][data-match-index="${index}"]`);
+  const pair=(index)=>tile('word',index).click().then(()=>tile('meaning',index).click());
+  // round 1: a wrong try first (a word with another word's meaning): both tiles flash, both words are listed as wrong, nothing is paired; a tap on the picked tile lets it go
+  const firstRound=await p.evaluate(()=>quizSession.questions[0].pairs.map(item=>item.word));
+  await tile('word',0).click();assert.equal(await tile('word',0).getAttribute('aria-pressed'),'true');
+  await tile('word',0).click();assert.equal(await tile('word',0).getAttribute('aria-pressed'),'false');
+  await tile('word',0).click();await tile('meaning',1).click();
+  assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('#v2QuizHost .match-item.wrong').length,document.querySelectorAll('#v2QuizHost .match-item.matched').length,quizSession.wrongWords.length,document.querySelectorAll('#v2QuizHost .quiz-wrong-badge').length]),[2,0,2,2]);
+  await p.waitForFunction(()=>!document.querySelector('#v2QuizHost .match-item.wrong'));
+  // the right pairs stay together (each pair its own colour, no longer pressable); the 2 words of the wrong try earn no point, the other 2 do
+  await pair(0);await pair(1);
+  assert.deepEqual(await p.evaluate(()=>[...document.querySelectorAll('#v2QuizHost .match-item.matched')].map(node=>[node.disabled,node.dataset.tone]).sort().join('|')),'true,0|true,0|true,1|true,1');
+  await pair(2);await pair(3);
+  await p.waitForFunction(()=>quizSession.index===1);                                          // a round that is complete moves on by itself
+  assert.equal(await p.evaluate(()=>quizSession.score),0);                                     // round 1 had a wrong try: no score for it
+  await p.waitForFunction(words=>VocVocData.getWordByText(words[2]).study?.match===true&&VocVocData.getWordByText(words[3]).study?.match===true,firstRound);
+  assert.deepEqual([await studyOf(firstRound[0]),await studyOf(firstRound[1])].map(study=>study.match),[undefined,undefined]);
+  assert.equal(await p.evaluate(words=>VocVocData.studyScore(VocVocData.getWordByText(words[2])),firstRound)>=1,true);
+  assert.equal(await p.locator('#v2QuizCount').textContent(),'Soru 2/10');
+  // round 2 with the keyboard: Tab reaches the tiles, Enter picks one and the focus stays on it; the pair is made with two Enters
+  await tile('word',0).focus();await p.keyboard.press('Enter');
+  assert.deepEqual(await p.evaluate(()=>[document.activeElement.dataset.matchSide,document.activeElement.dataset.matchIndex,document.activeElement.getAttribute('aria-pressed')]),['word','0','true']);
+  await tile('meaning',0).focus();await p.keyboard.press('Enter');
+  assert.equal(await tile('word',0).isDisabled(),true);
+  assert.equal(await p.evaluate(()=>document.activeElement.classList.contains('match-item')&&!document.activeElement.disabled),true);   // the focus moved to a tile that can still be used
+  await pair(1);await pair(2);await pair(3);await p.waitForFunction(()=>quizSession.index===2);
+  assert.equal(await p.evaluate(()=>quizSession.score),1);
+  // the other eight rounds, all right (through the test's own answer function)
+  for(let round=2;round<10;round++){
+   await p.evaluate(()=>{for(let index=0;index<4;index++){pickMatch('word',index);pickMatch('meaning',index);}});
+   await p.waitForFunction(count=>quizSession.index>count,round);
+  }
+  await p.waitForSelector('#v2QuizHost .quiz-result-card');
+  assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2QuizCount').textContent,quizSession.score,quizSession.wrongWords.length,document.querySelectorAll('#v2QuizHost .quiz-wrong-badge').length]),['Tamamlandı',9,2,2]);
+  // every word of rounds 2 to 10 was paired right without a wrong try: each earned its point; the two words of the wrong try are listed under the result
+  const later=await p.evaluate(()=>[...new Set(quizSession.questions.slice(1).flatMap(round=>round.pairs.map(item=>item.word)))].map(word=>[word,VocVocData.getWordByText(word).study?.match===true]));
+  assert.equal(later.length>=6,true);assert.deepEqual(later.filter(([,earned])=>!earned),[]);
+  assert.deepEqual((await p.locator('#v2QuizHost .quiz-wrong-badge').allTextContents()).sort(),[firstRound[0],firstRound[1]].sort());
+  // it is recorded as a Matching test of its own kind
+  const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')));
+  assert.deepEqual([saved.testsTaken,saved.quizzes.at(-1).mode,saved.quizzes.at(-1).score,saved.quizzes.at(-1).total,saved.quizzes.at(-1).wrong.length,saved.badges.recall8],[1,'match',9,10,2,undefined]);
+  // the points are in the backup
+  const exported=await p.evaluate(()=>VocVocData.export());
+  assert.equal(Object.values(exported.words).filter(word=>word.study?.match===true).length>=6,true);
+  // "new test" starts another one of the same kind; the list on the Study page names it
+  await p.locator('#v2QuizHost .quiz-restart-btn').click();await p.waitForSelector('#v2QuizHost .match-item');
+  assert.deepEqual(await p.evaluate(()=>[quizSession.mode,quizSession.index,quizSession.questions.length]),['match',0,10]);
+  await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('.v2-testlist li');
+  assert.deepEqual(await p.locator('.v2-testlist li').first().evaluate(item=>[item.querySelector('.v2-muted').textContent,item.querySelector('strong').textContent,item.querySelector('.v2-bullet').className]),['Eşleştirme','9/10','v2-bullet v2-bullet-great']);
+  await c.close();
+  record('Matching: ten rounds of four words and their four meanings (no shared meaning in a round), a wrong try flashes and is listed, a right pair stays together, a pair made without a wrong try earns its word a point, mouse and keyboard, recorded as a test of its own kind; too few words say so; it sits between Fill in the blank and Flip');
  }
  // ===== Word panel (the default interface): two examples, idioms as pills with the sentence that uses them =====
  {

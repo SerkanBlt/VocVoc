@@ -275,15 +275,15 @@ describe('Tags on words',()=>{
 
 describe('Points for words that are not memorized yet',()=>{
   const wordRecord=(app,word)=>plain(app.data.getWordByText(word));
-  it('five things are worth 1, 1, 1, 1 and 2 points; each is counted once and kept on the word record',async()=>{
+  it('seven things are worth 1, 1, 1, 1, 1, 1 and 2 points; each is counted once and kept on the word record',async()=>{
     const app=await start();
-    assert.deepEqual(plain(app.data.STUDY_POINTS),{heard:1,opened:1,explored:1,read:1,quiz:2});
+    assert.deepEqual(plain(app.data.STUDY_POINTS),{heard:1,opened:1,explored:1,read:1,flipped:1,match:1,quiz:2});
     assert.equal(app.data.studyScore(app.data.getWordByText('Bonjour')),0);
     assert.equal(await app.data.markStudy('Bonjour','opened'),true);
     assert.equal(await app.data.markStudy('Bonjour','opened'),false,'counted once');
-    for(const key of ['explored','heard','read','quiz'])await app.data.markStudy('Bonjour',key);
-    assert.deepEqual(wordRecord(app,'Bonjour').study,{opened:true,explored:true,heard:true,read:true,quiz:true});
-    assert.equal(app.data.studyScore(app.data.getWordByText('Bonjour')),6);
+    for(const key of ['explored','heard','read','flipped','match','quiz'])await app.data.markStudy('Bonjour',key);
+    assert.deepEqual(wordRecord(app,'Bonjour').study,{opened:true,explored:true,heard:true,read:true,flipped:true,match:true,quiz:true});
+    assert.equal(app.data.studyScore(app.data.getWordByText('Bonjour')),8);
     assert.equal(app.data.studyScore(null),0);
   });
   it('a word that is memorized, archived or not in the list earns nothing, and an unknown kind of point is refused',async()=>{
@@ -307,7 +307,9 @@ describe('Points for words that are not memorized yet',()=>{
     const exported=await app.data.export(),id=Object.keys(exported.words).find(key=>exported.words[key].word==='Bonjour');
     const other=await start(newProfile(legacySpa()));await other.data.import(exported);
     assert.deepEqual(wordRecord(other,'Bonjour').study,{opened:true,explored:true});
-    for(const bad of [{heard:false},{magic:true},'heard',[true],{heard:1}]){
+    const withNew=JSON.parse(JSON.stringify(exported));withNew.words[id].study={flipped:true,match:true};await other.data.import(withNew);
+    assert.deepEqual(wordRecord(other,'Bonjour').study,{flipped:true,match:true},'the Flip and Matching points are accepted in a backup');
+    for(const bad of [{heard:false},{magic:true},'heard',[true],{heard:1},{flipped:'yes'}]){
       const copy=JSON.parse(JSON.stringify(exported));copy.words[id].study=bad;
       await assert.rejects(app.data.import(copy),error=>error.storageCode==='invalidData',JSON.stringify(bad));
     }
