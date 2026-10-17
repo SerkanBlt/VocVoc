@@ -54,11 +54,11 @@ Parçalar `packs/fr-tr/A1-01.json` gibi adlanır, her biri ~500 kelime (seviye k
 
 ## Kelime listesi nereden geldi
 
-`wordbase/fr/lemmas.tsv` (A1–C1: 7.726 köklü kelime) bir **aday havuzundan** seçildi: Hermit Dave'in *FrequencyWords* projesindeki OpenSubtitles tabanlı
+`wordbase/fr/lemmas.tsv` (A1–C2: 10.226 köklü kelime; hepsinin içeriği yazıldı) bir **aday havuzundan** seçildi: Hermit Dave'in *FrequencyWords* projesindeki OpenSubtitles tabanlı
 Fransızca sıklık listesi (`fr_50k`, içerik **CC BY-SA 4.0**, kod MIT; https://github.com/hermitdave/FrequencyWords). Ham liste depoya **eklenmedi**.
 Havuzdaki çekimli biçimler köke indirildi; özel isimler, İngilizce sızıntılar, argo/küfür ve kısaltmalar çıkarıldı; her kelimenin türü ve **A1–C2 seviyesi**
 (ve seviye içindeki sırası) elle atandı. A1/A2 için altyazı dilinin yanlı bıraktığı gündelik konular (sayılar, aylar, giyim, yiyecek, ev, kalıplar) tematik olarak eklendi.
 Seviyeler **yaklaşık**tır; resmî bir sınav listesiyle (DELF, Oxford, Cambridge…) birebir örtüşmez ve onlardan kopyalanmamıştır.
 Yayınlanan içeriğin Hakkında sayfasında bu kaynağa atıf verilmelidir (kurs içeriği uygulamada yayımlanırken eklenir).
 
-C2 listesi henüz yazılmadı; o seviye yazılmadan önce aynı yöntemle çıkarılır (`lemmas.tsv`'ye eklenir, `check` sıra ve tekrar kurallarını denetler).
+C2 listesi (2.500 kelime) C1 ile aynı yöntemle çıkarıldı: sıklık listesinde C1'in bittiği yerden (yaklaşık 21.700. sıradan 32.000. sıraya kadar) çekimli biçimler ve zaten listede olan kelimeler elendi, kalanlardan gerçek Fransızca kökler seçildi (özel isimler, İngilizce sızıntılar, yazım hataları ve ünlemler dışarıda). C1 listesinden son anda çıkarılan 85 aday da C2'ye girdi. C2 kelimeleri `lemmas.tsv`'de sıklık sırasıyla durur; içerikleri `wordbase/fr-tr/src/C2-001…050.jsonl` dosyalarında yazıldı (kurs sürümü 8); yeni bir seviye eklenirken `check` henüz yazılmamış kelimeleri hata saymaz.
