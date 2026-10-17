@@ -75,7 +75,11 @@
      chunk files (packs/<pair>/<LEVEL>-<nn>.json, about 500 words each) that the page downloads only when it needs them. packs/<pair>/order.json lists
      the headwords of every chunk in order: with it the page counts progress and finds the next chunk without downloading any chunk. */
   const LEVELS=Object.freeze(['A1','A2','B1','B2','C1','C2']);
-  const BANDS=Object.freeze({'A1-A2':['A1','A2'],'B1-B2':['B1','B2'],'C1-C2':['C1','C2']});  // the difficulty setting of the app names a band
+  // The difficulty setting of the app names one level (A1 … C2). Before 1.16.0 it named a group of two levels ("A1-A2"); what older versions saved (and old backups hold) is read as the
+  // first level of that group.
+  const BANDS=Object.freeze({A1:['A1'],A2:['A2'],B1:['B1'],B2:['B2'],C1:['C1'],C2:['C2']});
+  const LEGACY_BANDS=Object.freeze({'A1-A2':'A1','B1-B2':'B1','C1-C2':'C1'});
+  const normalizeBand=value=>Object.hasOwn(BANDS,value)?value:(Object.hasOwn(LEGACY_BANDS,value)?LEGACY_BANDS[value]:'A1');
   const COURSE_FORMAT=2,CHUNK_WORDS=500,MAX_CHUNK_WORDS=600,MAX_CHUNK_BYTES=800*1024,MAX_ORDER_BYTES=400*1024,MAX_CHUNKS=100;
   const CHUNK_ID=/^(A1|A2|B1|B2|C1|C2)-(\d{2})$/;
   const chunkName=(level,number)=>`${level}-${String(number).padStart(2,'0')}`;
@@ -136,7 +140,7 @@
   }
 
   const inBand=(order,band)=>order.chunks.filter(chunk=>(BANDS[band]||[]).includes(chunk.level));
-  // How many headwords of a band (A1-A2 …) the course holds and how many of them the user already has.
+  // How many headwords of a level (A1 …) the course holds and how many of them the user already has.
   function courseProgress(order,band,isKnown){
     let total=0,used=0;
     for(const chunk of inBand(order,band)){total+=chunk.words.length;used+=chunk.words.filter(word=>isKnown(word)).length;}
@@ -171,7 +175,7 @@
   const progress=(pack,isKnown)=>({total:pack.words.length,used:pack.words.filter(entry=>isKnown(entry.word)).length});
 
   const api=Object.freeze({SUPPORTED,FORMAT,MAX_WORDS,MAX_BYTES,pairId,wordKey,validatePack,checkSize,nextWords,progress,
-    LEVELS,BANDS,COURSE_FORMAT,CHUNK_WORDS,MAX_CHUNK_WORDS,MAX_CHUNK_BYTES,MAX_ORDER_BYTES,chunkName,pairOf,validateChunk,checkChunkSize,validateOrder,courseProgress,pickChunks,nextFromChunks});
+    LEVELS,BANDS,LEGACY_BANDS,normalizeBand,COURSE_FORMAT,CHUNK_WORDS,MAX_CHUNK_WORDS,MAX_CHUNK_BYTES,MAX_ORDER_BYTES,chunkName,pairOf,validateChunk,checkChunkSize,validateOrder,courseProgress,pickChunks,nextFromChunks});
   root.VocVocPacks=api;
   if(typeof module==='object'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

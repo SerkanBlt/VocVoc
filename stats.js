@@ -3,16 +3,20 @@
    The page (screens.js) builds the input from the app's data and keeps a small activity record (finished tests, earned badges).
    Days are local calendar days as "YYYY-MM-DD" strings; every date calculation works on those strings, so it does not depend on a time zone. */
 (function(root){
-  const MAX_QUIZZES=300,MAX_WRONG=10,MAX_WORD=60,MAX_DAY_WORDS=200;
-  const KINDS=['memorized','collected','tests','perfect','recall','streak','goal'];
-  // id, what it counts, how many are needed
+  const MAX_QUIZZES=300,MAX_WRONG=10,MAX_WORD=60,MAX_DAY_WORDS=200,MAX_FLIPS=1000000;
+  const LEVELS=['A1','A2','B1','B2','C1','C2'];
+  const KINDS=['memorized','collected','tests','perfect','recall','streak','goal','points','recallTests','matchTests','flips','level'];
+  // id, what it counts, how many are needed (and, for a level, which one). "More than 10 Flip cards" is 11.
   const BADGES=Object.freeze([
     ['memo1','memorized',1],['memo10','memorized',10],['memo50','memorized',50],['memo100','memorized',100],['memo500','memorized',500],
     ['words50','collected',50],
     ['test1','tests',1],['test10','tests',10],['perfect','perfect',1],['recall8','recall',1],
     ['streak3','streak',3],['streak7','streak',7],['streak30','streak',30],
-    ['goal1','goal',1]
-  ].map(([id,kind,target])=>Object.freeze({id,kind,target})));
+    ['goal1','goal',1],
+    ['points10','points',10],['recall1','recallTests',1],['match1','matchTests',1],
+    ['flip10','flips',11],['flip30','flips',31],['flip50','flips',51],
+    ...LEVELS.map(level=>['lvl'+level,'level',1,level])
+  ].map(([id,kind,target,level])=>Object.freeze(level?{id,kind,target,level}:{id,kind,target})));
   const KNOWN=new Set(BADGES.map(badge=>badge.id));
   const DAY=/^\d{4}-\d{2}-\d{2}$/;
 
@@ -27,20 +31,26 @@
   /* ---------- the activity record ---------- */
   const isQuiz=q=>q&&typeof q==='object'&&typeof q.t==='string'&&!Number.isNaN(Date.parse(q.t))&&(q.mode==='active'||q.mode==='recall'||q.mode==='cloze'||q.mode==='match')&&Number.isInteger(q.score)&&Number.isInteger(q.total)&&q.total>=1&&q.total<=50&&q.score>=0&&q.score<=q.total;
   const cleanQuiz=q=>({t:q.t,mode:q.mode,score:q.score,total:q.total,wrong:(Array.isArray(q.wrong)?q.wrong:[]).filter(word=>typeof word==='string'&&word.trim()).slice(0,MAX_WRONG).map(word=>word.slice(0,MAX_WORD))});
-  const emptyRecord=()=>({v:1,seeded:false,testsTaken:0,quizzes:[],badges:{}});
+  const emptyRecord=()=>({v:1,seeded:false,testsTaken:0,flips:0,quizzes:[],badges:{}});
   // Whatever is in storage: keep what is valid, drop the rest.
   function normalizeRecord(raw){
     if(!raw||typeof raw!=='object'||Array.isArray(raw))return emptyRecord();
     const quizzes=(Array.isArray(raw.quizzes)?raw.quizzes:[]).filter(isQuiz).map(cleanQuiz).slice(-MAX_QUIZZES);
     const badges={};
     if(raw.badges&&typeof raw.badges==='object')for(const [id,day] of Object.entries(raw.badges))if(KNOWN.has(id)&&typeof day==='string'&&DAY.test(day))badges[id]=day;
-    return {v:1,seeded:raw.seeded===true,testsTaken:Math.max(Number.isInteger(raw.testsTaken)&&raw.testsTaken>0?raw.testsTaken:0,quizzes.length),quizzes,badges};
+    const flips=Number.isInteger(raw.flips)&&raw.flips>0?Math.min(raw.flips,MAX_FLIPS):0;
+    return {v:1,seeded:raw.seeded===true,testsTaken:Math.max(Number.isInteger(raw.testsTaken)&&raw.testsTaken>0?raw.testsTaken:0,quizzes.length),flips,quizzes,badges};
   }
   // A finished test is added; only the newest MAX_QUIZZES are kept, the number of tests taken keeps counting.
   function appendQuiz(record,result){
     const current=normalizeRecord(record);
     if(!isQuiz(result))return current;
     return {...current,testsTaken:current.testsTaken+1,quizzes:[...current.quizzes,cleanQuiz(result)].slice(-MAX_QUIZZES)};
+  }
+  // A Flip card was turned over (counted every time).
+  function appendFlip(record){
+    const current=normalizeRecord(record);
+    return {...current,flips:Math.min(current.flips+1,MAX_FLIPS)};
   }
   // earned: {id:day}. A badge already in the record keeps its date.
   function withBadges(record,earned){
@@ -51,7 +61,7 @@
 
   /* ---------- statistics and badges ---------- */
   // input: {words:[{word,status,addedAt,memorizedAt}], quizzes, testsTaken, earned:{id:day}, builtin:[lowercase starter words],
-  //         today:'YYYY-MM-DD', dayOf(iso)->day, goalReachedToday}
+  //         today:'YYYY-MM-DD', dayOf(iso)->day, goalReachedToday, points (the points of all words together), flips (Flip cards turned), levelsDone (['A1',…])}
   function compute(input){
     const dayOf=input.dayOf||localDay,today=input.today,builtin=new Set(input.builtin||[]),earnedBefore=input.earned||{};
     let active=0,memorized=0,archived=0;
@@ -109,6 +119,8 @@
     const perfect=quizzes.find(quiz=>quiz.score===quiz.total);
     const recall=quizzes.find(quiz=>quiz.mode==='recall'&&quiz.score/quiz.total>=0.8);
     const goal=!!input.goalReachedToday;
+    const points=Math.max(0,input.points||0),flips=Math.max(0,input.flips||0),levelsDone=new Set(input.levelsDone||[]);
+    const recallTests=quizzes.filter(quiz=>quiz.mode==='recall'),matchTests=quizzes.filter(quiz=>quiz.mode==='match');
     const badges=[],newlyEarned=[];
     for(const badge of BADGES){
       let progress=0,date=null;
@@ -120,11 +132,16 @@
         case 'recall':progress=recall?1:0;date=recall?dayOf(recall.t):null;break;
         case 'streak':progress=longest;date=reached[badge.target]||null;break;
         case 'goal':progress=goal?1:0;date=goal?today:null;break;
+        case 'points':progress=points;break;                                         // no date is known: the day it is noticed
+        case 'recallTests':progress=recallTests.length;date=recallTests[badge.target-1]?dayOf(recallTests[badge.target-1].t):null;break;
+        case 'matchTests':progress=matchTests.length;date=matchTests[badge.target-1]?dayOf(matchTests[badge.target-1].t):null;break;
+        case 'flips':progress=flips;break;
+        case 'level':progress=levelsDone.has(badge.level)?1:0;break;
       }
       const derived=progress>=badge.target?(date||today):null;                       // earned now (the date it happened, if the data still knows it)
       const earnedOn=earnedBefore[badge.id]||derived;                                // once earned, always earned
       if(derived&&!earnedBefore[badge.id])newlyEarned.push(badge.id);
-      badges.push({id:badge.id,kind:badge.kind,target:badge.target,progress:earnedOn?badge.target:Math.min(progress,badge.target),earnedOn});
+      badges.push({id:badge.id,kind:badge.kind,target:badge.target,...(badge.level?{level:badge.level}:{}),progress:earnedOn?badge.target:Math.min(progress,badge.target),earnedOn});
     }
     return {
       summary:{total:active+memorized,active,memorized,archived,memorizedToday:memorizedByDay.get(today)||0,addedToday:addedByDay.get(today)||0,streak:{current,longest},activeDays:activity.size},
@@ -135,7 +152,7 @@
     };
   }
 
-  const api=Object.freeze({BADGES,KINDS,MAX_QUIZZES,localDay,addDays,compute,appendQuiz,normalizeRecord,withBadges});
+  const api=Object.freeze({BADGES,KINDS,LEVELS,MAX_QUIZZES,localDay,addDays,compute,appendQuiz,appendFlip,normalizeRecord,withBadges});
   root.VocVocStats=api;
   if(typeof module==='object'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

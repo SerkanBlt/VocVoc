@@ -39,7 +39,7 @@ async function main(){
  await page.evaluate(()=>archiveWord('word1'));await page.reload();await ready();assert.equal(await page.evaluate(()=>VocVocData.getWordProgress('word1').status),'archived');await page.evaluate(()=>VocVocData.restoreArchived(['word1']));await page.reload();await ready();assert.equal(await page.evaluate(()=>VocVocData.getWordProgress('word1').status),'memorized');record('archive persists + Restore keeps SPA memorized semantics');
  await page.evaluate(()=>VocVocData.deleteWords(['word2']));await page.reload();await ready();assert.equal(await page.evaluate(()=>VocVocData.getWordByText('word2')),null);assert.equal(await page.evaluate(()=>localStorage.getItem('VOCVOC_DB_V1')),JSON.stringify(source));record('delete -> reload does not resurrect from retained migration source');
  await page.evaluate(()=>VocVocData.addDailyUsage(3));const daily=await page.evaluate(()=>VocVocData.getDailyUsage());await page.reload();await ready();assert.deepEqual(await page.evaluate(()=>VocVocData.getDailyUsage()),daily);record('dailyUsage persistence');
- await page.evaluate(()=>VocVocData.updateSettings({theme:'dark',fontSize:'large',difficulty:'B1-B2',dailyLimit:'20'}));await page.reload();await ready();assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),'dark');assert.equal(await page.evaluate(()=>document.documentElement.dataset.fontSize),'large');record('settings/theme/font persistence');
+ await page.evaluate(()=>VocVocData.updateSettings({theme:'dark',fontSize:'large',difficulty:'B1',dailyLimit:'20'}));await page.reload();await ready();assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),'dark');assert.equal(await page.evaluate(()=>document.documentElement.dataset.fontSize),'large');record('settings/theme/font persistence');
  await page.evaluate(async()=>{await VocVocData.saveAndTouch({word:'Écoute',meaning:'listen'},'écouter');await VocVocData.touchWord('écouter');});assert.equal(await page.evaluate(()=>VocVocData.getHistoryWords().filter(w=>w==='Écoute').length),1);assert.equal(await page.evaluate(()=>VocVocData.getWordByText('écouter').id),'fr:tr:ecoute');record('canonical alias + Unicode + no duplicate History');
  await page.evaluate(()=>{startQuiz();});const quiz=await page.evaluate(()=>quizSession.questions);assert.equal(quiz.length,10);assert.equal(new Set(quiz.map(q=>q.word)).size,10);assert.equal(await page.evaluate(()=>quizSession.questions.every(q=>VocVocData.getWordProgress(q.word).status==='active')),true);
  await page.evaluate(()=>startRecallQuiz());assert.equal(await page.evaluate(()=>quizSession.questions.length),10);assert.equal(await page.evaluate(()=>quizSession.questions.every(q=>VocVocData.getWordProgress(q.word).status==='memorized')),true);record('Test / Recall correct distinct 10-word pools; archived excluded');
@@ -152,7 +152,7 @@ async function main(){
   await page.evaluate(()=>addNewWords());
   const added=(await listed()).filter(word=>!first.includes(word));
   assert.equal(added.length,10);assert.equal(await page.evaluate(()=>VocVocData.getDailyUsage().count),10);assert.equal(await page.evaluate(()=>VocVocStorage.adapter.revision),revision+1);
-  assert.deepEqual(added.slice().sort(),levelWords(['A1','A2']).filter(word=>!first.map(x=>x.toLowerCase()).includes(word)).slice(0,10).sort(),'the first words of the chosen level, in the order of the course');
+  assert.deepEqual(added.slice().sort(),levelWords(['A1']).filter(word=>!first.map(x=>x.toLowerCase()).includes(word)).slice(0,10).sort(),'the first words of the chosen level, in the order of the course');
   assert.equal(await page.locator('#contentArea .main-word-card').count(),first.length+10);
   // search: a word of another level is shown with the Add button and is not added; the button adds it, without counting as a daily word
   const other=levelWords(['C1','C2'])[0];
@@ -165,7 +165,7 @@ async function main(){
   // random: a word of the chosen level is shown and not added
   const known=(await listed()).length;
   await page.evaluate(()=>randomWord());await page.waitForSelector('#relatedWordPopup [data-add-related-word]');
-  assert(levelWords(['A1','A2']).includes(await page.locator('#relatedWordPopup .word-title').first().textContent()));
+  assert(levelWords(['A1']).includes(await page.locator('#relatedWordPopup .word-title').first().textContent()));
   assert.equal((await listed()).length,known);await page.evaluate(()=>closeRelatedWordPopup());
   // a word that is not in the database says so
   await page.evaluate(()=>{document.getElementById('searchInput').value='zzzxqjk';return handleSearch();});
@@ -175,24 +175,23 @@ async function main(){
   await page.reload();await ready();assert(await page.evaluate(word=>VocVocData.getHistoryWords().includes(word),other));assert.equal((await listed()).length,known);
  }
  record('Search / Random / synonym tags show the word database in the word window without adding; Add new words is one atomic batch; Add keeps what was shown; persistence');await context.close();
- // Tags: a word of the list can be labelled; the labels are found by the History filter and by "#tag" in the search box. The Tags section is closed to one line (a + and a toggle) until it is opened.
+ // Tags: a word of the list can be labelled; the labels are found by the History filter and by "#tag" in the search box. The Tags section is closed to one line (the title and a +) until the + is pressed.
  {
   context=await browser.newContext({viewport:{width:1000,height:850}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
   const tagsOf=word=>page.evaluate(w=>VocVocData.getWordByText(w).tags||[],word);
   const listed=()=>page.locator('#historyArea .history-chip span').allTextContents();
   const openDetails=async word=>{await page.evaluate(w=>toggleHistoryDetail(w),word);await page.waitForSelector('#historyDetails .tags-section');};
   const suggestions=()=>page.locator('#historyDetails .tag-existing button').allTextContents();
-  const openPanel=async()=>{if(await page.locator('#historyDetails .tag-panel').isHidden())await page.locator('#historyDetails [data-tag-panel]').click();await page.waitForSelector('#historyDetails .tag-input',{state:'visible'});};
+  const plus='#historyDetails [data-section-toggle="tags"]';
+  const openSection=async()=>{if(await page.locator(plus).getAttribute('aria-expanded')!=='true')await page.locator(plus).click();await page.waitForSelector('#historyDetails .tag-input',{state:'visible'});};
   await openDetails('Bonjour');
-  // closed by default: the title, a + and a toggle on one line; nothing else shows
+  // closed by default: the title and one button, the +; nothing else shows, and there is no "no tags yet" line anywhere
   assert.equal(await page.locator('#historyDetails .tags-section .section-body').isHidden(),true);
-  assert.deepEqual(await page.evaluate(()=>[...document.querySelectorAll('#historyDetails .tags-section .section-head button')].map(button=>[button.getAttribute('aria-label'),button.getAttribute('aria-expanded')])),[['Etiket ekle','false'],['Etiketler','false']]);
-  assert.equal(await page.locator('#historyDetails .tags-section .tag-empty').count(),1);
-  await page.locator('#historyDetails [data-section-toggle="tags"]').click();                       // open
-  assert.equal(await page.locator('#historyDetails .tags-section .tag-empty').isVisible(),true);assert.equal(await page.locator('#historyDetails .tag-panel').isHidden(),true);
-  // the + opens the panel: a field and the tags that are in use
-  await openPanel();
+  assert.deepEqual(await page.evaluate(()=>[...document.querySelectorAll('#historyDetails .tags-section .section-head button')].map(button=>[button.getAttribute('aria-label'),button.getAttribute('aria-expanded'),button.textContent.trim()])),[['Etiket ekle','false','+']]);
+  assert.equal(await page.locator('#historyDetails .tags-section .tag-empty').count(),0);
+  await page.locator(plus).click();                                                                   // open: the field and the tags in use show at once, the tag list does not (the word has none)
   assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('tag-input')),true);
+  assert.equal(await page.locator('#historyDetails .tags-section .tag-list').count(),0);assert.match(await page.locator('#historyDetails .tags-section').textContent(),/^\s*Etiketler\s+\+\s+Ekle\s*$/);
   // typed with a # and capital letters, added with Enter: stored clean, and the field is ready for the next tag
   await page.locator('#historyDetails .tag-input').fill('  #Selam ');await page.keyboard.press('Enter');
   await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').tags?.[0]==='selam');
@@ -207,12 +206,11 @@ async function main(){
   assert.deepEqual(await tagsOf('Bonjour'),['selam','günlük']);
   await page.locator('#historyDetails .tag-input').fill('');
   assert.deepEqual(await suggestions(),['#günlük ✓','#selam ✓']);
-  await page.locator('#historyDetails .tag-suggest',{hasText:'#selam'}).click({force:true});await pause(200);
+  await page.locator('#historyDetails .tag-suggest',{hasText:'#selam'}).click({force:true});await pause(200);                       // aria-disabled: a press does nothing
   assert.deepEqual(await tagsOf('Bonjour'),['selam','günlük']);
-  // another word: the section stays open (it is remembered), the panel is closed; the + opens it and shows the tags in use, most used first
+  // another word: the section stays open (it is remembered); the field and the tags in use are there, most used first
   await page.evaluate(()=>closeHistoryDetail());await openDetails('Merci');
-  assert.equal(await page.locator('#historyDetails [data-section-toggle="tags"]').getAttribute('aria-expanded'),'true');assert.equal(await page.locator('#historyDetails .tag-panel').isHidden(),true);
-  await openPanel();
+  assert.equal(await page.locator(plus).getAttribute('aria-expanded'),'true');assert.equal(await page.locator('#historyDetails .tag-input').isVisible(),true);
   assert.deepEqual(await suggestions(),['#günlük','#selam']);
   // typing narrows them (accents and case do not matter), so an existing tag is seen before a new one is made; what is typed and does not exist is offered as new
   await page.locator('#historyDetails .tag-input').fill('GUN');assert.deepEqual(await suggestions(),['#günlük','Yeni etiket: gun']);
@@ -226,10 +224,11 @@ async function main(){
   // a new tag is made from what was typed, with the offer button
   await page.locator('#historyDetails .tag-input').fill('yeni etiket');await page.locator('#historyDetails .tag-new').click();
   await page.waitForFunction(()=>VocVocData.getWordByText('Merci').tags?.includes('yeni etiket'));
-  // closing the section also closes the panel; the + and the toggle are two different buttons
-  await page.locator('#historyDetails [data-section-toggle="tags"]').click();
-  assert.deepEqual(await page.evaluate(()=>[document.querySelector('#historyDetails .tags-section .section-body').hidden,document.querySelector('#historyDetails .tag-panel').hidden,document.querySelector('#historyDetails [data-tag-panel]').getAttribute('aria-expanded')]),[true,true,'false']);
-  await page.locator('#historyDetails [data-section-toggle="tags"]').click();await page.locator('#historyDetails [data-tag-remove="'+await page.evaluate(()=>encodeDomText('yeni etiket'))+'"]').click();
+  // the + closes the section (it turns into a × while open) and opens it again
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('#historyDetails [data-section-toggle="tags"] span')).transform!=='none'),true,'the + is turned into a ×');
+  await page.locator(plus).click();
+  assert.deepEqual(await page.evaluate(()=>[document.querySelector('#historyDetails .tags-section .section-body').hidden,document.querySelector('#historyDetails [data-section-toggle="tags"]').getAttribute('aria-expanded')]),[true,'false']);
+  await page.locator(plus).click();await page.locator('#historyDetails [data-tag-remove="'+await page.evaluate(()=>encodeDomText('yeni etiket'))+'"]').click();
   await page.waitForFunction(()=>VocVocData.getWordByText('Merci').tags?.join()==='selam');
   // a word that is not in the list has no tags section
   await page.evaluate(()=>openRelatedWordPopup('maison'));await page.waitForSelector('#relatedWordPopup [data-add-related-word]');
@@ -262,19 +261,18 @@ async function main(){
   // a word keeps at most 12 tags: the field is replaced by a note
   await page.evaluate(()=>VocVocData.setWordTags('Je',Array.from({length:12},(_,i)=>'etiket'+i)));
   await openDetails('Je');
-  assert.equal(await page.locator('#historyDetails .tag-input').count(),0);assert.match(await page.locator('#historyDetails .tag-note').textContent(),/en çok 12 etiket/);
-  await page.locator('#historyDetails [data-tag-panel]').click();assert.equal(await page.locator('#historyDetails .tag-note').isVisible(),true);
+  assert.equal(await page.locator('#historyDetails .tag-input').count(),0);assert.match(await page.locator('#historyDetails .tag-note').textContent(),/en çok 12 etiket/);assert.equal(await page.locator('#historyDetails .tag-note').isVisible(),true);
   await page.evaluate(()=>closeHistoryDetail());
   // removing a tag from a word with 12 gives the field back; the controls have names
   await openDetails('Je');await page.locator('#historyDetails [data-tag-remove]').first().click();
-  await page.waitForSelector('#historyDetails .tag-input',{state:'attached'});
+  await page.waitForSelector('#historyDetails .tag-input',{state:'visible'});
   assert.equal(await page.evaluate(()=>[...document.querySelectorAll('#historyDetails .tags-section button,#historyDetails .tags-section input')].filter(el=>!(el.getAttribute('aria-label')||el.textContent||'').trim()).length),0);
   // closed again, the section stays closed after a reload (the choice is remembered on the device)
-  await page.locator('#historyDetails [data-section-toggle="tags"]').click();await page.reload();await ready();await openDetails('Je');
-  assert.equal(await page.locator('#historyDetails [data-section-toggle="tags"]').getAttribute('aria-expanded'),'false');
+  await page.locator(plus).click();await page.reload();await ready();await openDetails('Je');
+  assert.equal(await page.locator(plus).getAttribute('aria-expanded'),'false');
   await context.close();
  }
- record('Tags: closed to one line until opened; the + opens a panel with the tags in use that narrow as you type (a tag already on the word is ticked, a new one is offered); added with Enter or a button, removed, found by the History filter and by #tag in the search box, kept in the backup, at most 12 a word, none on a word that is not in the list');
+ record('Tags: closed to one line (the title and a +) until the + is pressed; the field and the tags in use show then and narrow as you type (a tag already on the word is ticked, a new one is offered); added with Enter or a button, removed, found by the History filter and by #tag in the search box, kept in the backup, at most 12 a word, none on a word that is not in the list; no "no tags yet" line');
  // The word window for a word that is already in the list has no second Close button, and search finds words typed with Turkish letters and suggests words that look alike
  {
   context=await browser.newContext({viewport:{width:1000,height:850}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
@@ -304,8 +302,8 @@ async function main(){
   await context.close();
  }
  record('Search: a word already in the list shows only the note (no second Close button); ı, İ and i find île; a typo shows the words that look like it; a found word shows its spelling variants');
- // Points: a word that is not memorized yet earns 1 for listening to its pronunciation, 1 for opening it and seeing its meaning, 1 for opening the example sentences or idioms,
- // 1 for listening to them, 1 for being turned over on a Flip card, 1 for a right pair in the Matching test and 2 for a right answer in a test (8 in all); the chip of the word and the word on its card take a tone that follows the points
+ // Points: a word that is not memorized yet earns 1 for picking its badge in the word list, 1 for listening to its pronunciation, 1 for opening it and seeing its meaning, 1 for opening the example sentences or idioms,
+ // 1 for listening to them, 1 for being turned over on a Flip card, 2 for a right pair in the Matching test and 2 for a right answer in a test (10 in all); the chip of the word and the word on its card and in its window take a tone that follows the points
  {
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
   const study=word=>page.evaluate(w=>VocVocData.getWordByText(w).study||{},word);
@@ -313,7 +311,7 @@ async function main(){
   const chip=word=>page.locator('#historyArea .history-chip',{hasText:word});
   const card=word=>page.locator('#contentArea .main-word-card',{hasText:word});
   const spoken=(word,kind)=>page.evaluate(([w,k])=>window.dispatchEvent(new CustomEvent('vocvoc-spoken',{detail:{word:w,kind:k}})),[word,kind]);
-  assert.deepEqual(await page.evaluate(()=>VocVocData.STUDY_POINTS),{heard:1,opened:1,explored:1,read:1,flipped:1,match:1,quiz:2});
+  assert.deepEqual(await page.evaluate(()=>VocVocData.STUDY_POINTS),{picked:1,heard:1,opened:1,explored:1,read:1,flipped:1,match:2,quiz:2});
   assert.equal(await score('Bonjour'),0);assert.equal(await chip('Bonjour').getAttribute('data-score'),'0');
   // opening the card and seeing the meaning: +1
   await card('Bonjour').locator('.main-word-toggle').click();
@@ -321,16 +319,17 @@ async function main(){
   assert.equal(await score('Bonjour'),1);
   assert.deepEqual([await chip('Bonjour').getAttribute('data-score'),await card('Bonjour').getAttribute('data-score')],['1','1']);   // the chip and the card follow at once
   // the points of the word in its window: the total is on the right of the title and the list is folded; the toggle after the total opens it and the choice is remembered
-  assert.match(await card('Bonjour').locator('.study-total').textContent(),/1 \/ 8/);
+  assert.match(await card('Bonjour').locator('.study-total').textContent(),/1 \/ 10/);
   assert.equal(await card('Bonjour').locator('.study-section .section-body').isHidden(),true);
-  assert.deepEqual(await card('Bonjour').locator('.study-section .section-head button').evaluateAll(buttons=>buttons.map(button=>[button.dataset.sectionToggle,button.getAttribute('aria-label'),button.getAttribute('aria-expanded')])),[['study','Puan','false']]);
-  const headBox=await card('Bonjour').locator('.study-section .section-head').boundingBox(),totalBox=await card('Bonjour').locator('.study-total').boundingBox(),toggleBox=await card('Bonjour').locator('.study-section [data-section-toggle]').boundingBox();
-  assert(totalBox.x+totalBox.width<=toggleBox.x+1&&toggleBox.x+toggleBox.width>=headBox.x+headBox.width-2&&totalBox.x>headBox.x+headBox.width/2,'the total is at the right, the toggle after it: '+JSON.stringify({headBox,totalBox,toggleBox}));
+  assert.deepEqual(await card('Bonjour').locator('.study-section .section-head button').evaluateAll(buttons=>buttons.map(button=>[button.dataset.sectionToggle,button.getAttribute('aria-label'),button.getAttribute('aria-expanded')])),[['study','Puan: 1 / 10','false']]);        // the badge with the total is the button: no arrow beside it
+  const headBox=await card('Bonjour').locator('.study-section .section-head').boundingBox(),totalBox=await card('Bonjour').locator('.study-total').boundingBox();
+  assert(totalBox.x+totalBox.width>=headBox.x+headBox.width-2&&totalBox.x>headBox.x+headBox.width/2,'the badge is at the right end of the line: '+JSON.stringify({headBox,totalBox}));
+  assert.equal(await card('Bonjour').locator('.study-section .section-head button').count(),1);   // and there is nothing else to press in it
   await card('Bonjour').locator('.study-section [data-section-toggle]').click();
-  assert.equal(await card('Bonjour').locator('.study-list').isVisible(),true);assert.equal(await card('Bonjour').locator('.study-list li').count(),7);
+  assert.equal(await card('Bonjour').locator('.study-list').isVisible(),true);assert.equal(await card('Bonjour').locator('.study-list li').count(),8);
   assert.equal(await card('Bonjour').locator('.study-list li.done').count(),1);
-  assert.deepEqual(await card('Bonjour').locator('.study-list .study-points').allTextContents(),['+1','+1','+1','+1','+1','+1','+2']);
-  assert.match(await card('Bonjour').locator('.study-list').textContent(),/Flip kartında kelimeyi görüp çevirdin[^]*Eşleştirmeyi doğru yaptın[^]*Testte doğru cevapladın/);
+  assert.deepEqual(await card('Bonjour').locator('.study-list .study-points').allTextContents(),['+1','+1','+1','+1','+1','+1','+2','+2']);
+  assert.match(await card('Bonjour').locator('.study-list').textContent(),/Kelime listesinden kelime rozetini seçtin[^]*Okunuşunu dinledin[^]*Kelimeyi açıp anlamına baktın[^]*Flip kartında kelimeyi görüp çevirdin[^]*Eşleştirmeyi doğru yaptın[^]*Testte doğru cevapladın/);
   // opening the example sentences (or the idioms): +1, once
   await card('Bonjour').locator('details[data-study-fold] summary').first().click();
   await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.explored===true);
@@ -340,18 +339,24 @@ async function main(){
   // listening to the word: +1; listening to a sentence or an idiom: +1 (the read-aloud button of the new interface tells the app)
   await spoken('Bonjour','word');await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.heard===true);
   await spoken('Bonjour','sentence');await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.read===true);
-  assert.equal(await score('Bonjour'),4);assert.match(await card('Bonjour').locator('.study-total').textContent(),/4 \/ 8/);
-  assert.match(await chip('Bonjour').getAttribute('title'),/ · Puan: 4 \/ 8$/);
+  assert.equal(await score('Bonjour'),4);assert.match(await card('Bonjour').locator('.study-total').textContent(),/4 \/ 10/);
+  assert.match(await chip('Bonjour').getAttribute('title'),/ · Puan: 4 \/ 10$/);
   assert.equal(await card('Bonjour').locator('.study-list li.done').count(),4);                // the open list is redrawn, not folded, by a new point
   assert.equal(await card('Bonjour').locator('.study-list').isVisible(),true);
+  // the badge of the word in the word list: picking it (and only that) is worth a point, once; the word in the window takes the tone of its points, and follows them
+  await chip('Bonjour').click();await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.picked===true);
+  assert.equal(await score('Bonjour'),5);
+  assert.deepEqual(await page.evaluate(()=>{const panel=document.querySelector('#historyDetails .word-detail-panel'),title=panel.querySelector('.word-title'),probe=document.createElement('span');probe.style.color='var(--score-ink)';panel.append(probe);const ink=getComputedStyle(probe).color;probe.remove();return [panel.dataset.score,getComputedStyle(title).color===ink,ink!==getComputedStyle(document.body).color];}),['5',true,true]);
+  await page.evaluate(()=>closeHistoryDetail());
+  await chip('Bonjour').click();await pause(300);assert.equal(await score('Bonjour'),5);await page.evaluate(()=>closeHistoryDetail());      // picked again: nothing more
   // a Flip card that is seen and turned over: +1 for its word, once (turning it back and over again earns nothing more)
   await page.evaluate(()=>startFlip());await page.waitForSelector('#flipOverlay.open #flipCard');
   for(let guard=0;guard<40&&await page.evaluate(()=>flipSession.cards[flipSession.index].word)!=='Bonjour';guard++)await page.evaluate(()=>moveFlip(1));
   assert.equal(await page.evaluate(()=>flipSession.cards[flipSession.index].word),'Bonjour');
   assert.equal((await study('Bonjour')).flipped,undefined);                                    // looking at the front earns nothing
   await page.evaluate(()=>toggleFlip());await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.flipped===true);
-  assert.equal(await score('Bonjour'),5);assert.equal(await chip('Bonjour').getAttribute('data-score'),'5');
-  await page.evaluate(()=>toggleFlip());await page.evaluate(()=>toggleFlip());await pause(300);assert.equal(await score('Bonjour'),5);
+  assert.equal(await score('Bonjour'),6);assert.equal(await chip('Bonjour').getAttribute('data-score'),'6');
+  await page.evaluate(()=>toggleFlip());await page.evaluate(()=>toggleFlip());await pause(300);assert.equal(await score('Bonjour'),6);
   await page.evaluate(()=>closeFlip());
   // a right answer in a test: +2 for each word that was asked (a wrong one earns nothing)
   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'pt'+String(i).padStart(2,'0'),meaning:'anlam '+i}))));
@@ -380,18 +385,19 @@ async function main(){
   // the points are saved (reload, backup) and every score has its own tone
   await page.reload();await ready();
   const askedRight=quizPoints.some(([word,earned])=>word==='Bonjour'&&earned);                 // Bonjour may have been one of the ten questions
-  assert.equal(await score('Bonjour'),askedRight?7:5);assert.equal(await chip('Bonjour').getAttribute('data-score'),askedRight?'7':'5');
-  const exported=await page.evaluate(()=>VocVocData.export());assert.deepEqual(Object.values(exported.words).find(word=>word.word==='Bonjour').study,{opened:true,explored:true,heard:true,read:true,flipped:true,...(askedRight?{quiz:true}:{})});
-  const tones=await page.evaluate(()=>{const out={};for(let n=0;n<=8;n++){const probe=document.createElement('button');probe.className='history-chip ui-pill score-'+n;probe.dataset.score=String(n);document.getElementById('historyArea').append(probe);out[n]=getComputedStyle(probe).borderTopColor;probe.remove();}return out;});
-  assert.equal(new Set(Object.values(tones)).size,9,'nine different tones: '+JSON.stringify(tones));
+  assert.equal(await score('Bonjour'),askedRight?8:6);assert.equal(await chip('Bonjour').getAttribute('data-score'),askedRight?'8':'6');
+  const exported=await page.evaluate(()=>VocVocData.export());assert.deepEqual(Object.values(exported.words).find(word=>word.word==='Bonjour').study,{picked:true,opened:true,explored:true,heard:true,read:true,flipped:true,...(askedRight?{quiz:true}:{})});
+  const tones=await page.evaluate(()=>{const out={};for(let n=0;n<=10;n++){const probe=document.createElement('button');probe.className='history-chip ui-pill score-'+n;probe.dataset.score=String(n);document.getElementById('historyArea').append(probe);out[n]=getComputedStyle(probe).borderTopColor;probe.remove();}return out;});
+  assert.equal(new Set(Object.values(tones)).size,11,'eleven different tones: '+JSON.stringify(tones));
   // opening a word window (History) gives the "opened" point too, and the window shows the section for a word that is not memorized only
   await page.evaluate(()=>toggleHistoryDetail('pt11'));await page.waitForSelector('#historyDetails .study-section');
   await page.waitForFunction(()=>VocVocData.getWordByText('pt11').study?.opened===true);
+  assert.equal(await page.evaluate(()=>VocVocData.getWordByText('pt11').study?.picked),undefined);    // opened without the chip (a quiz, a link): no point for picking it
   await page.evaluate(()=>closeHistoryDetail());await page.evaluate(()=>toggleHistoryDetail('Merci'));await page.waitForSelector('#historyDetails.open');
   assert.equal(await page.locator('#historyDetails .study-section').count(),0);
   await context.close();
  }
- record('Points: opening a word +1, its examples or idioms opened +1, the word listened to +1, a sentence or idiom listened to +1, a Flip card turned over +1, a right answer in a test +2 (8 in all), each once; none for a memorized word or one that is not in the list; the chip takes a tone from the points, the window lists them in a folding section with the total at its right, they are saved and in the backup');
+ record('Points: the badge picked in the word list +1, opening a word +1, its examples or idioms opened +1, the word listened to +1, a sentence or idiom listened to +1, a Flip card turned over +1, a right pair in Matching +2, a right answer in a test +2 (10 in all), each once; none for a memorized word or one that is not in the list; the chip and the word in its window take a tone from the points, the window lists them in a folding section whose badge is the toggle, they are saved and in the backup');
  // On the home screen the WORD takes the tone of its points (a darker tone in the light theme, a lighter one in the dark theme, readable on the card); the border of the card stays as it is. The meaning sits close under the line.
  {
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
@@ -401,8 +407,8 @@ async function main(){
    const toRgb=color=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=1;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.clearRect(0,0,1,1);ctx.fillStyle=color;ctx.fillRect(0,0,1,1);const [r,g,b,a]=ctx.getImageData(0,0,1,1).data;return [r,g,b,a/255];};
    const light=([r,g,b])=>{const f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);};return .2126*f(r)+.7152*f(g)+.0722*f(b);};
    const backdrop=()=>{let node=card;while(node){const rgba=toRgb(getComputedStyle(node).backgroundColor);if(rgba[3]===1)return rgba;node=node.parentElement;}return toRgb('#ffffff');};
-   for(let n=0;n<=8;n++){
-    card.dataset.score=String(n);card.className=card.className.replace(/\bscore-\d\b/g,'').trim()+' score-'+n;
+   for(let n=0;n<=10;n++){
+    card.dataset.score=String(n);card.className=card.className.replace(/\bscore-\d+\b/g,'').trim()+' score-'+n;
     const ink=toRgb(getComputedStyle(title).color),back=backdrop(),hi=Math.max(light(ink),light(back)),lo=Math.min(light(ink),light(back));
     out[n]={ink:getComputedStyle(title).color,border:getComputedStyle(card).borderTopColor,contrast:(hi+.05)/(lo+.05)};
    }
@@ -411,7 +417,7 @@ async function main(){
   },theme);
   for(const theme of ['light','dark']){
    const result=await probe(theme);
-   assert.equal(new Set(Object.values(result).map(item=>item.ink)).size,9,theme+': nine different word colours '+JSON.stringify(result));                // 0 is the normal colour
+   assert.equal(new Set(Object.values(result).map(item=>item.ink)).size,11,theme+': eleven different word colours '+JSON.stringify(result));                // 0 is the normal colour
    assert.equal(new Set(Object.values(result).map(item=>item.border)).size,1,theme+': the border of the card does not change');
    for(const n of Object.keys(result))if(n!=='0')assert(result[n].contrast>=4.5,theme+' tone '+n+' on the card: contrast '+result[n].contrast.toFixed(2));
   }
@@ -421,6 +427,14 @@ async function main(){
   await page.waitForSelector('#contentArea .main-word-card.open .main-word-body .section-title');
   const gap=await page.evaluate(()=>{const open=document.querySelector('#contentArea .main-word-card.open');return open.querySelector('.main-word-body .section-title').getBoundingClientRect().top-open.querySelector('.main-word-toggle').getBoundingClientRect().bottom;});
   assert(gap>=0&&gap<=8,'"Anlam" starts '+gap+'px under the word row');
+  // little room under the meaning (the next line starts close), and a separator above the Points and above the Tags, like the one above each fold
+  const spacing=await page.evaluate(()=>{
+   const open=document.querySelector('#contentArea .main-word-card.open'),meaning=open.querySelector('.meaning-section p').getBoundingClientRect(),fold=open.querySelector('.meaning-section').nextElementSibling.getBoundingClientRect();
+   const line=name=>{const section=open.querySelector('.'+name+'-section'),style=getComputedStyle(section);return [style.borderTopWidth,style.borderTopStyle];};
+   return {meaningToLine:Math.round(fold.top-meaning.bottom),points:line('study'),tags:line('tags')};
+  });
+  assert(spacing.meaningToLine>=0&&spacing.meaningToLine<=12,'the line under the meaning is '+spacing.meaningToLine+'px away');
+  assert.deepEqual([spacing.points,spacing.tags],[['1px','solid'],['1px','solid']]);
   await context.close();
  }
  record('Home cards: the word takes the tone of its points in the light and the dark theme (readable, contrast at least 4.5), the border of the card does not change, and "Anlam" starts right under the line');
@@ -712,70 +726,70 @@ async function main(){
   }
   record('word database: unreachable files and a damaged chunk give a calm message and change nothing; the next try works');
 
-  // the free plan gives 100 words from each of the three level groups (A1-A2, B1-B2, C1-C2): Add new words fills exactly what is left of the chosen group, a looked-up word is held to
-  // the allowance of ITS group (another group is still open), and after the 100th word of a group that group needs Premium
+  // the free plan gives 100 words from each of the six levels (A1 … C2): Add new words fills exactly what is left of the chosen level, a looked-up word is held to
+  // the allowance of ITS level (another level is still open, also the next one), and after the 100th word of a level that level needs Premium
   {
    const {c,p}=await fresh();
-   const a1=levelWords(['A1','A2']),b1=levelWords(['B1','B2']),c1=levelWords(['C1','C2']);
+   const a1=levelWords(['A1']),a2=levelWords(['A2']),b1=levelWords(['B1']),c1=levelWords(['C1']);
    const usedOf=list=>p.evaluate(words=>words.filter(word=>!!VocVocData.getWordProgress(word)).length,list);   // the course has pairs that differ only by an accent (ou / où): one of them in the list counts for both
    const reaches=(list,count)=>p.waitForFunction(([words,wanted])=>words.filter(word=>!!VocVocData.getWordProgress(word)).length>=wanted,[list,count]);
    await p.evaluate(async list=>{await VocVocData.updateSettings({dailyLimit:'unlimited'});const fresh=list.filter(word=>!VocVocData.getWordProgress(word));const have=list.length-fresh.length;const key=word=>word.normalize('NFD').replace(/[̀-ͯ]/g,'').toLocaleLowerCase('fr'),twins=new Map();for(const word of list)twins.set(key(word),(twins.get(key(word))||0)+1);await VocVocData.addWordBatch(fresh.filter(word=>twins.get(key(word))===1).slice(0,97-have).map(word=>({word,meaning:'m'})));},a1);
    assert.equal(await usedOf(a1),97);
    await p.evaluate(()=>addNewWords());
    await reaches(a1,100);                                                                       // only the words that are still free
-   await alertSays(p,/A1-A2 seviyesinden 100 kelime/);                                            // and it says why there are no more, and what can be done
+   await alertSays(p,/A1 seviyesinden 100 kelime/);                                            // and it says why there are no more, and what can be done
    const full=await snapshotOf(p);
-   await p.evaluate(()=>addNewWords());await alertSays(p,/A1-A2 seviyesinden 100 kelime/);assert.equal(await snapshotOf(p),full);
+   await p.evaluate(()=>addNewWords());await alertSays(p,/A1 seviyesinden 100 kelime/);assert.equal(await snapshotOf(p),full);
    await clearAlert(p);
-   // a word of A1-A2 that is not in the list yet cannot be added any more ...
+   // a word of A1 that is not in the list yet cannot be added any more ...
    const extra=await p.evaluate(list=>list.find(word=>!VocVocData.getWordProgress(word)),a1);
    await p.evaluate(word=>{document.getElementById('searchInput').value=word;return handleSearch();},extra);
    await p.locator('#relatedWordPopup [data-add-related-word]').click();
-   await alertSays(p,/A1-A2 seviyesinden 100 kelime/);assert.equal(await snapshotOf(p),full);
+   await alertSays(p,/A1 seviyesinden 100 kelime/);assert.equal(await snapshotOf(p),full);
    await clearAlert(p);
-   // ... but a word of B1-B2 or C1-C2 can: those groups have their own 100
-   for(const word of [b1[0],c1[0]]){
+   // ... but a word of A2, B1 or C1 can: those levels have their own 100 (A2 is not part of A1 any more)
+   for(const word of [a2[0],b1[0],c1[0]]){
     await p.evaluate(value=>{document.getElementById('searchInput').value=value;return handleSearch();},word);
     await p.locator('#relatedWordPopup [data-add-related-word]').click();
     await p.waitForFunction(value=>!!VocVocData.getWordProgress(value),word);
    }
-   assert((await usedOf(a1))<=104,'the free group did not grow beyond its allowance (an accent twin may count for two)');
-   // choosing B1-B2 in Settings opens Add new words again (10 more words of that group)
-   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'B1-B2'}));await p.evaluate(()=>addNewWords());
+   assert((await usedOf(a1))<=104,'the free level did not grow beyond its allowance (an accent twin may count for two)');
+   // choosing B1 in Settings opens Add new words again (10 more words of that level)
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'B1'}));await p.evaluate(()=>addNewWords());
    await reaches(b1,11);
-   // Premium has no limit in any group; when the plan ends nothing is removed and nothing more is added to a full group
+   // Premium has no limit in any level; when the plan ends nothing is removed and nothing more is added to a full group
    await p.evaluate(()=>VocVocPlan.set('premium'));await clearAlert(p);
    const beforePremium=await usedOf(a1);
-   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'A1-A2'}));await p.evaluate(()=>addNewWords());await reaches(a1,beforePremium+10);
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'A1'}));await p.evaluate(()=>addNewWords());await reaches(a1,beforePremium+10);
    await p.evaluate(()=>VocVocPlan.set('free'));await clearAlert(p);
    await p.evaluate(()=>VocVocData.addDailyUsage(-VocVocData.getDailyUsage().count));   // a new day, so the daily goal is not what answers
-   await p.evaluate(()=>addNewWords());await alertSays(p,/A1-A2 seviyesinden 100 kelime/);
+   await p.evaluate(()=>addNewWords());await alertSays(p,/A1 seviyesinden 100 kelime/);
    assert((await usedOf(a1))>=beforePremium+10,'nothing was taken away');
    await c.close();
   }
-  record('free plan: 100 words from each level group (A1-A2, B1-B2, C1-C2), Add new words fills exactly what is left of the chosen group, a looked-up word uses the allowance of its own group, Premium has none');
+  record('free plan: 100 words from each of the six levels, Add new words fills exactly what is left of the chosen level, a looked-up word uses the allowance of its own level (A2 is open when A1 is full), Premium has none');
 
   // every word of the chosen level is in the list: the level-up question (No keeps the level, Yes does what Settings does), and the final note at the end of the course
   {
    const {c,p}=await fresh();
-   await p.evaluate(async list=>{VocVocPlan.set('premium');await VocVocData.updateSettings({dailyLimit:'unlimited'});await VocVocData.addWordBatch(list.map(word=>({word,meaning:'m'})));},levelWords(['A1','A2']));
+   await p.evaluate(async list=>{VocVocPlan.set('premium');await VocVocData.updateSettings({dailyLimit:'unlimited'});await VocVocData.addWordBatch(list.map(word=>({word,meaning:'m'})));},levelWords(['A1']));
    await p.evaluate(()=>addNewWords());await overlayShown(p);
    assert.equal(await p.locator('#levelUpCopy').textContent(),'Tebrikler! Bu seviyedeki tüm kelimeleri listene aldın, yeni seviyeye geçmek ister misin?');
    assert.deepEqual(await p.evaluate(()=>[document.getElementById('levelUpTitle').textContent,document.activeElement.id]),['Tebrikler!','levelUpYesBtn']);assert.equal(await p.locator('#levelUpNoBtn').isVisible(),true);
-   await p.locator('#levelUpNoBtn').click();assert.equal(await overlayState(p),'none,A1-A2');
+   await p.locator('#levelUpNoBtn').click();assert.equal(await overlayState(p),'none,A1');
    await p.evaluate(()=>addNewWords());await overlayShown(p);
    await p.locator('#levelUpYesBtn').click();
-   await p.waitForFunction(()=>VocVocData.getSettings().difficulty==='B1-B2');
-   assert.equal(await p.evaluate(()=>document.getElementById('difficultySelect').value),'B1-B2');await alertSays(p,/B1-B2/);
-   const b1=levelWords(['B1','B2']).slice(0,10);
+   await p.waitForFunction(()=>VocVocData.getSettings().difficulty==='A2');
+   assert.equal(await p.evaluate(()=>document.getElementById('difficultySelect').value),'A2');await alertSays(p,/A2/);
+   const b1=levelWords(['A2']).slice(0,10);
    await p.evaluate(()=>addNewWords());await p.waitForFunction(()=>VocVocData.getDailyUsage().count===10);
    assert.deepEqual(await p.evaluate(list=>list.filter(word=>!!VocVocData.getWordProgress(word)),b1),b1);
-   await p.evaluate(async()=>{await VocVocData.updateSettings({difficulty:'C1-C2'});offerNextLevel();});      // the last level: nothing comes after it
+   await p.evaluate(async()=>{await VocVocData.updateSettings({difficulty:'C2'});offerNextLevel();});      // the last level: nothing comes after it
    await overlayShown(p);
    assert.equal(await p.locator('#levelUpCopy').textContent(),'Tebrikler! Tüm seviyeleri tamamladın, bendeki kelimelerin hepsini çektin.');
    assert.equal(await p.locator('#levelUpYesBtn').textContent(),'Tamam');
    assert.equal(await p.locator('#levelUpNoBtn').isVisible(),false);
-   await p.locator('#levelUpYesBtn').click();assert.equal(await overlayState(p),'none,C1-C2');
+   await p.locator('#levelUpYesBtn').click();assert.equal(await overlayState(p),'none,C2');
    await c.close();
   }
   record('level-up: asked when every word of the level is in the list, No keeps the level, Yes sets the next one like Settings, the end of the course gets its own note');
@@ -1254,9 +1268,9 @@ async function main(){
   assert.deepEqual(await page.evaluate(()=>[JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).testsTaken,document.getElementById('v2Celebrate')?.classList.contains('v2-on')||false]),[1,false]);   // remembered, not announced again
   // resetting the progress deletes the finished tests and the badges as well, and the pages follow
   await page.evaluate(()=>{location.hash='#/today';});await page.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
-  assert.match(await page.locator('#v2Screen').textContent(),/[1-9]\d* \/ 14 rozet kazanıldı/);
+  assert.match(await page.locator('#v2Screen').textContent(),/[1-9]\d* \/ 26 rozet kazanıldı/);
   await page.evaluate(()=>resetAllProgress());
-  await page.waitForFunction(()=>/0 \/ 14 rozet kazanıldı/.test(document.getElementById('v2Screen').textContent));
+  await page.waitForFunction(()=>/0 \/ 26 rozet kazanıldı/.test(document.getElementById('v2Screen').textContent));
   assert.deepEqual(await page.evaluate(()=>{const record=JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')||'null');return record?[record.testsTaken,record.quizzes.length,Object.keys(record.badges).length]:[0,0,0];}),[0,0,0]);
   await page.evaluate(()=>{location.hash='#/study';});await page.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
   assert.equal(await page.locator('#v2Screen .v2-testlist li').count(),0,'no finished test is listed after the reset');
@@ -1318,33 +1332,33 @@ async function main(){
   // badges (free): earned ones with their real dates first, the others with their progress
   {
    const {c,p}=await open(false);await route(p,'today');
-   assert.equal(await p.locator('.v2-badges-section > .v2-muted').textContent(),'7 / 14 rozet kazanıldı');
+   assert.equal(await p.locator('.v2-badges-section > .v2-muted').textContent(),'8 / 26 rozet kazanıldı');                  // the seven that were there, and the first Recall test (this history has one)
    assert.equal(await p.locator('.v2-days').count(),1);                                                // right under the last seven days
    assert.equal(await p.locator('.v2-days').evaluate(node=>node.closest('.v2-card').nextElementSibling.className),'v2-badges-section');
    const names=selector=>p.locator(selector).evaluateAll(nodes=>nodes.map(node=>node.querySelector('h3').textContent));
-   assert.deepEqual((await names('.v2-badge.v2-earned')).sort(),['Bir hafta','Güçlü hafıza','Isınma','Kusursuz','On kelime','İlk adım','İlk test'].sort());
+   assert.deepEqual((await names('.v2-badge.v2-earned')).sort(),['Bir hafta','Güçlü hafıza','Isınma','Kusursuz','On kelime','İlk adım','İlk test','İlk hatırlama'].sort());
    assert.match(await p.locator('.v2-earned .v2-badge-date').first().textContent(),/^Kazanıldı: \d{1,2} \p{L}+ \d{4}$/u);
    // three tabs: Earned (open, with counts), Started (closest first, with their progress), Waiting (nothing done yet)
    const tabLabels=()=>p.locator('.v2-subtab').evaluateAll(nodes=>nodes.map(node=>node.textContent.replace(/\s+/g,' ').trim()+(node.getAttribute('aria-selected')==='true'?'*':'')));
-   assert.deepEqual(await tabLabels(),['Kazandıkların 7*','Başladıkların 6','Bekleyenler 1']);
+   assert.deepEqual(await tabLabels(),['Kazandıkların 8*','Başladıkların 6','Bekleyenler 12']);
    assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-subtabs').getAttribute('role'),[...document.querySelectorAll('.v2-subtab')].map(tab=>[tab.getAttribute('role'),tab.tabIndex]),document.getElementById('v2BadgePanel').getAttribute('role'),document.getElementById('v2BadgePanel').getAttribute('aria-labelledby')]),['tablist',[['tab',0],['tab',-1],['tab',-1]],'tabpanel','v2BadgeTab-earned']);
    await p.getByRole('tab',{name:/Başladıkların/}).click();
    assert.deepEqual(await names('.v2-badge'),['Koleksiyoncu','Bir ay','Düzenli çalışan','Elli kelime','Yüz kelime','Kelime ustası']);   // the closest to done first
    const fifty=p.locator('.v2-badge',{hasText:'Elli kelime'});
    assert.match(await fifty.textContent(),/12 \/ 50/);assert.equal(await fifty.locator('[role="progressbar"]').getAttribute('aria-valuenow'),'12');
    await p.getByRole('tab',{name:/Bekleyenler/}).click();
-   assert.deepEqual(await names('.v2-badge'),['Hedef tamam']);
-   assert.deepEqual(await tabLabels(),['Kazandıkların 7','Başladıkların 6','Bekleyenler 1*']);
+   assert.deepEqual(await names('.v2-badge'),['Hedef tamam','İlk 10 puan','İlk eşleştirme','Flip meraklısı','Flip tutkunu','Flip ustası','A1 tamam','A2 tamam','B1 tamam','B2 tamam','C1 tamam','C2 tamam']);
+   assert.deepEqual(await tabLabels(),['Kazandıkların 8','Başladıkların 6','Bekleyenler 12*']);
    await route(p,'study');await route(p,'today');                                                       // the tab you picked stays picked
-   assert.deepEqual(await tabLabels(),['Kazandıkların 7','Başladıkların 6','Bekleyenler 1*']);
+   assert.deepEqual(await tabLabels(),['Kazandıkların 8','Başladıkların 6','Bekleyenler 12*']);
    // the keyboard moves between the tabs: arrows (they wrap), Home and End; the focus follows
    await p.getByRole('tab',{name:/Bekleyenler/}).focus();await p.keyboard.press('ArrowRight');
-   assert.deepEqual([await p.evaluate(()=>document.activeElement.id),(await tabLabels())[0]],['v2BadgeTab-earned','Kazandıkların 7*']);
+   assert.deepEqual([await p.evaluate(()=>document.activeElement.id),(await tabLabels())[0]],['v2BadgeTab-earned','Kazandıkların 8*']);
    await p.keyboard.press('End');assert.equal(await p.evaluate(()=>document.activeElement.id),'v2BadgeTab-waiting');
    await p.keyboard.press('Home');await p.keyboard.press('ArrowLeft');assert.equal(await p.evaluate(()=>document.activeElement.id),'v2BadgeTab-waiting');
    await p.getByRole('tab',{name:/Kazandıkların/}).click();
    // the first look recorded them silently (no announcement), with the days they were really earned
-   assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Toast')?.classList.contains('v2-show')||false,Object.keys(JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges).length,JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded]),[false,7,true]);
+   assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Toast')?.classList.contains('v2-show')||false,Object.keys(JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges).length,JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded]),[false,8,true]);
    // a badge once earned stays earned when the words behind it are gone
    await p.evaluate(async()=>{for(let i=0;i<12;i++)await VocVocData.setStatus('s'+i,'active');});
    await route(p,'study');await route(p,'today');
@@ -1355,8 +1369,8 @@ async function main(){
   {
    const {c,p}=await open(true);
    await p.waitForSelector('#v2Celebrate.v2-on');
-   assert.equal(await p.locator('.v2-celebrate-kicker').textContent(),'7 yeni rozet!');
-   assert.match(await p.locator('.v2-celebrate-name').textContent(),/^.+, .+ \+5$/);
+   assert.equal(await p.locator('.v2-celebrate-kicker').textContent(),'8 yeni rozet!');
+   assert.match(await p.locator('.v2-celebrate-name').textContent(),/^.+, .+ \+6$/);
    await c.close();
   }
   record('new interface: Statistics (Premium) and Badges (free) are computed from the history: numbers, charts, dates, progress, kept badges, silent first look');
@@ -1894,6 +1908,12 @@ async function main(){
   assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('#v2QuizHost .match-word').length,document.querySelectorAll('#v2QuizHost .match-meaning').length,document.querySelector('#v2QuizHost .quiz-count-v91').textContent]),[4,4,'Eşleştirme 1/10']);
   const fits=await p.evaluate(()=>[...document.querySelectorAll('#v2QuizHost .match-item')].every(node=>{const box=node.getBoundingClientRect();return box.left>=0&&box.right<=innerWidth&&box.bottom<=innerHeight&&box.height>=44;}));
   assert.equal(fits,true,'every tile is on the screen and at least 44px high');
+  // the tiles of a round are all as high as each other (the word next to its row-mate, the rows alike); a long meaning makes them higher, twice as high at most, and scrolls inside its tile without a scrollbar
+  const heights=()=>p.evaluate(()=>[...document.querySelectorAll('#v2QuizHost .match-item')].map(node=>Math.round(node.getBoundingClientRect().height)));
+  const usual=await heights();assert.equal(new Set(usual).size,1,'equal tiles: '+usual);assert(usual[0]>=56&&usual[0]<=112,'the height of a round: '+usual[0]);
+  await p.evaluate(()=>{quizSession.questions[0].pairs[1].meaning='Bu çok uzun bir anlam metnidir: birkaç satıra yayılır ve iki katı yüksekliği aşarsa kendi içinde kaydırılır, kaydırma çubuğu görünmez. Daha da uzatalım ki taşsın: bir iki üç dört beş altı yedi sekiz dokuz on on bir on iki on üç.';renderQuizQuestion();});
+  const tall=await heights();assert.equal(new Set(tall).size,1,'still equal tiles: '+tall);assert.equal(tall[0],112,'twice the usual height (56) at most: '+tall);
+  assert.deepEqual(await p.evaluate(()=>{const node=document.querySelector('#v2QuizHost .match-meaning[data-match-index="1"]');const scrolls=node.scrollHeight>node.clientHeight;node.scrollTop=24;return [scrolls,node.scrollTop>0,getComputedStyle(node).scrollbarWidth,node.offsetWidth-node.clientWidth<=2,getComputedStyle(node).overflowY];}),[true,true,'none',true,'auto']);
   const tile=(side,index)=>p.locator(`#v2QuizHost .match-item[data-match-side="${side}"][data-match-index="${index}"]`);
   const pair=(index)=>tile('word',index).click().then(()=>tile('meaning',index).click());
   // round 1: a wrong try first (a word with another word's meaning): both tiles flash, both words are listed as wrong, nothing is paired; a tap on the picked tile lets it go
@@ -1911,7 +1931,7 @@ async function main(){
   assert.equal(await p.evaluate(()=>quizSession.score),0);                                     // round 1 had a wrong try: no score for it
   await p.waitForFunction(words=>VocVocData.getWordByText(words[2]).study?.match===true&&VocVocData.getWordByText(words[3]).study?.match===true,firstRound);
   assert.deepEqual([await studyOf(firstRound[0]),await studyOf(firstRound[1])].map(study=>study.match),[undefined,undefined]);
-  assert.equal(await p.evaluate(words=>VocVocData.studyScore(VocVocData.getWordByText(words[2])),firstRound)>=1,true);
+  assert.equal(await p.evaluate(words=>VocVocData.studyScore(VocVocData.getWordByText(words[2])),firstRound)>=2,true);    // a right pair is worth 2
   assert.equal(await p.locator('#v2QuizCount').textContent(),'Soru 2/10');
   // round 2 with the keyboard: Tab reaches the tiles, Enter picks one and the focus stays on it; the pair is made with two Enters
   await tile('word',0).focus();await p.keyboard.press('Enter');
@@ -1946,6 +1966,95 @@ async function main(){
   await c.close();
   record('Matching: ten rounds of four words and their four meanings (no shared meaning in a round), a wrong try flashes and is listed, a right pair stays together, a pair made without a wrong try earns its word a point, mouse and keyboard, recorded as a test of its own kind; too few words say so; it sits between Fill in the blank and Flip');
  }
+ // ===== Six levels in Settings (A1 A2 B1 B2 C1 C2), and the setting of older versions =====
+ {
+  const c=await browser.newContext({viewport:{width:1000,height:850}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+  await p.goto(url);await ready(p);
+  // a profile saved before the six levels says "B1-B2": it is read as B1 (the first level of the group)
+  await p.evaluate(()=>VocVocData.updateSettings({difficulty:'B1-B2'}));await p.reload();await ready(p);                   // the dialog is filled from the saved settings when the page starts
+  await p.evaluate(()=>openModal());await p.waitForFunction(()=>getComputedStyle(document.getElementById('modalOverlay')).display==='flex');
+  assert.equal(await p.evaluate(()=>document.getElementById('difficultySelect').value),'B1');
+  assert.equal((await p.locator('#difficultyDropdown .ui-dropdown-label').textContent()).trim(),'B1 · Orta');
+  assert.deepEqual(await p.evaluate(()=>[...document.querySelectorAll('#difficultyDropdown .ui-dropdown-option')].map(option=>[option.dataset.value,option.textContent.trim()])),
+   [['A1','A1 · Başlangıç'],['A2','A2 · Temel'],['B1','B1 · Orta'],['B2','B2 · Orta üstü'],['C1','C1 · İleri'],['C2','C2 · Uzman']]);
+  // choosing one of the six in the dialog and saving keeps exactly that level
+  await p.locator('#difficultyDropdown .ui-dropdown-trigger').click();await p.locator('#difficultyDropdown .ui-dropdown-option[data-value="B2"]').click();
+  await p.evaluate(()=>saveSettings());await p.waitForFunction(()=>VocVocData.getSettings().difficulty==='B2');
+  // the names follow the interface language
+  await p.evaluate(()=>changeAppLanguage('en'));await p.evaluate(()=>openModal());await p.waitForFunction(()=>getComputedStyle(document.getElementById('modalOverlay')).display==='flex');
+  assert.deepEqual(await p.evaluate(()=>[...document.querySelectorAll('#difficultyDropdown .ui-dropdown-option')].map(option=>option.textContent.trim())),['A1 · Beginner','A2 · Elementary','B1 · Intermediate','B2 · Upper intermediate','C1 · Advanced','C2 · Proficient']);
+  // the words come from the chosen level only: B2 words, not B1 ones
+  await p.evaluate(()=>closeModal());
+  const words=await p.evaluate(async()=>{await VocVocData.updateSettings({dailyLimit:'unlimited'});VocVocPlan.set('premium');const found=await VocVocWordbase.next(5);return found.map(entry=>entry.word);});
+  const b2=JSON.parse(fs.readFileSync(path.join(root,'packs','fr-tr','order.json'),'utf8')).chunks.filter(chunk=>chunk.level==='B2').flatMap(chunk=>chunk.words);
+  assert.deepEqual(words,b2.slice(0,5));
+  await c.close();
+ }
+ record('levels: Settings offers A1, A2, B1, B2, C1 and C2 with names in the interface language; an older "B1-B2" setting is read as B1; the words come from the level that was chosen');
+ // ===== New badges: the first 10 points, the first Recall and Matching test, more than 10 / 30 / 50 Flip cards, a badge for each level passed; gradients that end in purple =====
+ {
+  const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+  await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
+  const activity=()=>p.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')||'{}'));
+  const badgeList=()=>p.evaluate(()=>VocVocStats.compute({words:[],quizzes:[],today:'2026-10-17'}).badges.length);
+  assert.equal(await badgeList(),26);
+  // the first look only records what is already true (no fanfare); then a Flip card turned over counts, every time
+  const evaluate=()=>p.evaluate(()=>window.dispatchEvent(new Event('vocvoc-storage-committed')));   // the page looks at the badges after every change of the data
+  await evaluate();
+  await p.evaluate(()=>startFlip());await p.waitForSelector('#flipOverlay.open #flipCard');
+  for(let turn=1;turn<=3;turn++){await p.evaluate(()=>toggleFlip());await p.waitForFunction(count=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')||'{}').flips===count,turn);await p.evaluate(()=>toggleFlip());}   // front -> back counts, back -> front does not
+  assert.equal((await activity()).flips,3);
+  // 11 flips: "more than 10" is earned (and announced), 10 are not enough
+  await p.evaluate(()=>{const record=JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1'));record.flips=9;localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify(record));});
+  for(let turn=0;turn<1;turn++){await p.evaluate(()=>toggleFlip());await p.waitForFunction(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).flips===10);await p.evaluate(()=>toggleFlip());}
+  assert.equal(!!(await activity()).badges.flip10,false,'10 flips are not more than 10');
+  await p.evaluate(()=>toggleFlip());await p.waitForFunction(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).flips===11);
+  await p.waitForFunction(()=>!!JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges.flip10);
+  assert.equal(!!(await activity()).badges.flip30,false);
+  await p.waitForSelector('#v2Celebrate.v2-on .v2-celebrate-name');assert.equal(await p.locator('#v2Celebrate .v2-celebrate-name').textContent(),'Flip meraklısı');
+  assert.equal(await p.locator('#v2Celebrate .v2-celebrate-desc').textContent(),'10’dan fazla Flip kartı çevir.');
+  await p.evaluate(()=>closeFlip());
+  // 31 and 51 flips: the other two
+  await p.evaluate(()=>{const record=JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1'));record.flips=50;localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify(record));});
+  await p.evaluate(()=>startFlip());await p.waitForSelector('#flipOverlay.open #flipCard');await p.evaluate(()=>toggleFlip());
+  await p.waitForFunction(()=>{const badges=JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges;return !!badges.flip30&&!!badges.flip50;});
+  await p.evaluate(()=>closeFlip());
+  // the points of all words together: 10 earn the badge
+  await p.evaluate(async()=>{for(const key of ['picked','heard','opened','explored','read','flipped'])await VocVocData.markStudy('Bonjour',key);});
+  await pause(300);assert.equal(!!(await activity()).badges.points10,false,'6 points are not enough');
+  await p.evaluate(async()=>{await VocVocData.markStudy('Bonjour','match');await VocVocData.markStudy('Je','quiz');});
+  await p.waitForFunction(()=>!!JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges.points10);
+  // the first Recall test and the first Matching test (whatever the score) are earned by finishing one
+  await p.evaluate(()=>{const record=JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1'));record.quizzes=[{t:new Date().toISOString(),mode:'recall',score:3,total:10,wrong:[]},{t:new Date().toISOString(),mode:'match',score:5,total:10,wrong:[]}];record.testsTaken=2;localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify(record));});
+  await evaluate();
+  await p.waitForFunction(()=>{const badges=JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges;return !!badges.recall1&&!!badges.match1&&!!badges.test1;});
+  assert.equal(!!(await activity()).badges.recall8,false,'3/10 is not the Recall 8/10 badge');
+  // a level is passed when all its words are in the list: the badge of that level (and only that level)
+  await p.evaluate(async()=>{VocVocPlan.set('premium');await VocVocData.updateSettings({dailyLimit:'unlimited'});await VocVocWordbase.ready();const order=VocVocWordbase.state.course;const a1=order.chunks.filter(chunk=>chunk.level==='A1').flatMap(chunk=>chunk.words);await VocVocData.addWordBatch(a1.slice(0,a1.length-1).map(word=>({word,meaning:'m'})));});
+  await pause(500);assert.equal(!!(await activity()).badges.lvlA1,false,'one word is still missing');
+  await p.evaluate(async()=>{const a1=VocVocWordbase.state.course.chunks.filter(chunk=>chunk.level==='A1').flatMap(chunk=>chunk.words);await VocVocData.addWordBatch(a1.filter(word=>!VocVocData.getWordProgress(word)).map(word=>({word,meaning:'m'})));});
+  await p.waitForFunction(()=>!!JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges.lvlA1,null,{timeout:20000});
+  assert.deepEqual(Object.keys((await activity()).badges).filter(id=>/^lvl/.test(id)),['lvlA1']);
+  // the Badges list: the new ones are there, earned ones are gradients whose second colour is purple, the level badge shows its level
+  await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('.v2-badges-section');
+  await p.locator('#v2BadgeTab-earned').click();                                                       // the tab that was picked when the list was first drawn stays picked
+  assert.match(await p.locator('.v2-badges-section p.v2-muted').first().textContent(),/ \/ 26 rozet kazanıldı/);
+  const earned=await p.evaluate(()=>[...document.querySelectorAll('.v2-badges .v2-badge')].map(card=>({name:card.querySelector('h3').textContent,glyph:card.querySelector('.v2-badge-icon').textContent,image:getComputedStyle(card.querySelector('.v2-badge-icon')).backgroundImage})));
+  assert(earned.every(item=>/^linear-gradient\(135deg, rgb\(\d+, \d+, \d+\), rgb\(124, 58, 237\)\)$/.test(item.image)),'every earned badge ends in purple: '+JSON.stringify(earned.map(item=>item.image)));
+  assert.equal(earned.find(item=>item.name==='A1 tamam')?.glyph,'A1');
+  assert(new Set(earned.map(item=>item.image)).size>=5,'the first colours differ from badge to badge');
+  await p.evaluate(()=>{location.hash='#/today';});
+  // waiting badges are plain (a lock), and the six level badges are among them
+  await p.locator('#v2BadgeTab-waiting').click();
+  assert.equal(await p.evaluate(()=>[...document.querySelectorAll('.v2-badges .v2-badge')].filter(card=>/^[ABC][12] tamam$/.test(card.querySelector('h3').textContent)).length),5);
+  assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-badges .v2-badge-icon')).backgroundImage),'none');
+  // resetting the activity deletes the Flip count, the tests and the badges that depended on them (what the words in the list still say, such as their points, is worked out again)
+  await p.evaluate(()=>VocVocScreens.resetActivity());
+  await p.waitForFunction(()=>{const record=JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')||'{"flips":0}'),badges=record.badges||{};return record.flips===0&&!(record.quizzes||[]).length&&!badges.flip10&&!badges.recall1&&!badges.match1&&!badges.test1;});
+  await c.close();
+ }
+ record('badges: the first 10 points, the first Recall and Matching test, more than 10 / 30 / 50 Flip cards (counted when a card is turned over), one badge for each level passed; earned badges are gradients that end in purple, the level badge shows its level');
  // ===== Word panel (the default interface): two examples, idioms as pills with the sentence that uses them =====
  {
   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
@@ -2092,10 +2201,10 @@ async function main(){
   const haveOf=(p,words)=>p.evaluate(list=>list.filter(word=>!!VocVocData.getWordProgress(word)),words);
   {
    const {c,p,seen}=await openPage({course:true,init:value=>localStorage.setItem('VOCVOC_SIM_PLAN',value),initArg:'premium'});   // Premium: below the whole first chunk is added by hand, more words than the free plan holds
-   const words=bandWords(['A1','A2']),total=words.length;
+   const words=bandWords(['A1']),total=words.length;
    const known=await haveOf(p,words);
    await waitPack(p,`${known.length} / ${total} kelime eklendi`);
-   assert.equal(await p.locator('.v2-pack .v2-goal-label').textContent(),'Hazır kelimeler · Başlangıç (A1-A2)');
+   assert.equal(await p.locator('.v2-pack .v2-goal-label').textContent(),'Hazır kelimeler · Başlangıç (A1)');          // the setting this profile was saved with is "A1-A2" (before the six levels): it is read as A1
    assert.deepEqual(seen.chunks,['order']);                                                           // the order counts the progress: no chunk is downloaded yet
    await dailyButton(p).click();
    await p.waitForFunction(()=>document.querySelector('.v2-goal-value')?.textContent==='10 / 10 kelime');
@@ -2181,8 +2290,10 @@ async function main(){
   {
    const {c,p,seen}=await openPage({course:true,withoutLevels:['C1','C2']});
    await p.waitForFunction(()=>/kelime eklendi/.test(document.querySelector('.v2-pack .v2-pack-text')?.textContent||''));
-   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'C1-C2'}));
-   await p.waitForFunction(()=>document.querySelector('.v2-pack .v2-goal-label')?.textContent==='Hazır kelimeler · İleri (C1-C2)');
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'C1-C2'}));                               // an older setting is read as its first level
+   await p.waitForFunction(()=>document.querySelector('.v2-pack .v2-goal-label')?.textContent==='Hazır kelimeler · İleri (C1)');
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'C2'}));
+   await p.waitForFunction(()=>document.querySelector('.v2-pack .v2-goal-label')?.textContent==='Hazır kelimeler · Uzman (C2)');
    assert.match(await packText(p),/henüz hazırlanıyor/);
    assert.equal(await p.locator('.v2-pack .v2-bar').count(),0);                                         // nothing to count: no bar
    const words=await p.evaluate(()=>getHistory().length);
@@ -2190,8 +2301,8 @@ async function main(){
    await p.waitForFunction(()=>/henüz hazırlanıyor/.test(document.querySelector('.app-alert .app-alert-text')?.textContent||''));
    assert.equal(await p.evaluate(()=>getComputedStyle(document.getElementById('levelUpOverlay')).display),'none');   // not a "you have them all": nothing was written for this level
    assert.deepEqual([await p.evaluate(()=>getHistory().length),seen.gemini,seen.chunks],[words,0,['order']]);
-   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'A1-A2'}));
-   await p.waitForFunction(()=>document.querySelector('.v2-pack .v2-goal-label')?.textContent==='Hazır kelimeler · Başlangıç (A1-A2)');
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'A1'}));
+   await p.waitForFunction(()=>document.querySelector('.v2-pack .v2-goal-label')?.textContent==='Hazır kelimeler · Başlangıç (A1)');
    await c.close();
   }
   record('French course: a level without ready-made words says so (no congratulation, nothing downloaded); the card follows the difficulty setting');
@@ -2199,7 +2310,7 @@ async function main(){
   // a word of another level that the user adds (a looked-up word, a synonym tag, the random word) counts in the card as soon as that level is chosen
   {
    const {c,p}=await openPage({course:true});
-   const a1=bandWords(['A1','A2']),b1=bandWords(['B1','B2']);
+   const a1=bandWords(['A1']),b1=bandWords(['B1']);
    const knownA=(await haveOf(p,a1)).length;
    await waitPack(p,`${knownA} / ${a1.length} kelime eklendi`);
    await p.evaluate(word=>{document.getElementById('searchInput').value=word;return handleSearch();},b1[0]);
@@ -2207,9 +2318,9 @@ async function main(){
    await pause(300);assert.equal(await packText(p),`${knownA} / ${a1.length} kelime eklendi`);            // only shown: the card has not moved
    await p.locator('#relatedWordPopup [data-add-related-word]').click();
    await p.waitForFunction(word=>!!VocVocData.getWordProgress(word),b1[0]);
-   await pause(300);assert.equal(await packText(p),`${knownA} / ${a1.length} kelime eklendi`);            // another level: not counted while A1-A2 is chosen
-   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'B1-B2'}));
-   await waitPack(p,`1 / ${b1.length} kelime eklendi`);                                                  // and counted once B1-B2 is chosen
+   await pause(300);assert.equal(await packText(p),`${knownA} / ${a1.length} kelime eklendi`);            // another level: not counted while A1 is chosen
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'B1'}));
+   await waitPack(p,`1 / ${b1.length} kelime eklendi`);                                                  // and counted once B1 is chosen
    await c.close();
   }
   record('word packs: a word of another level that the user adds counts in the "Ready-made words" number when that level is chosen, not before');

@@ -227,14 +227,15 @@ describe('Free allowance per level group, points for words, Premium cards and th
     assert(/function progress\(band=bandOf\(\)\)/.test(read('wordbase.js'))&&read('wordbase.js').includes('function bandOfWord(word)'));
     assert(!/wordRoom|wordCap/.test(html),'the old limit on the whole list is gone');
   });
-  it('points: seven things a word that is not memorized yet can earn (1+1+1+1+1+1+2 = 8), counted once, kept on the word record, saved in backups; the chips and cards take a tone',()=>{
-    assert(html.includes('const STUDY_POINTS=Object.freeze({heard:1,opened:1,explored:1,read:1,flipped:1,match:1,quiz:2});'));
+  it('points: eight things a word that is not memorized yet can earn (1+1+1+1+1+1+2+2 = 10), counted once, kept on the word record, saved in backups; the chips, the cards and the word windows take a tone',()=>{
+    assert(html.includes('const STUDY_POINTS=Object.freeze({picked:1,heard:1,opened:1,explored:1,read:1,flipped:1,match:2,quiz:2});'));
     assert(/if\(!progress\|\|progress\.status!=="active"\|\|record\.study\?\.\[key\]===true\)return false;/.test(html),'only an active word earns points, each once');
-    assert(storage.includes("['heard','opened','explored','read','flipped','match','quiz'].includes(name)||done!==true"),'Schema v1 validates the optional study record');
-    for(const hook of ['noteStudy(q.word,"quiz")','noteStudy(flipSession.cards[flipSession.index].word,"flipped")','noteStudy(round.pairs[wordIndex].word,"match")','noteStudy(decodeDomText(card.dataset.word||""),"opened")','noteStudy(data.word,"opened")','details.dataset.studyFold!=="explored"','window.addEventListener("vocvoc-spoken"'])assert(html.includes(hook),hook);
+    assert(storage.includes("['picked','heard','opened','explored','read','flipped','match','quiz'].includes(name)||done!==true"),'Schema v1 validates the optional study record');
+    for(const hook of ['noteStudy(data.word,"picked")','toggleHistoryDetail(word,{fromChip:true})','noteStudy(q.word,"quiz")','noteStudy(flipSession.cards[flipSession.index].word,"flipped")','noteStudy(round.pairs[wordIndex].word,"match")','noteStudy(decodeDomText(card.dataset.word||""),"opened")','noteStudy(data.word,"opened")','details.dataset.studyFold!=="explored"','window.addEventListener("vocvoc-spoken"'])assert(html.includes(hook),hook);
     assert(/class="history-chip ui-pill\$\{isMem\?' memorized':''\} score-\$\{score\}"/.test(html)&&html.includes('class="card main-word-card score-$'+'{score}"'));
-    for(let n=1;n<=8;n++)assert(html.includes('--score-color:var(--score-'+n+');--score-ink:var(--score-text-'+n+')'),'tone '+n);
-    assert(html.includes('#contentArea .main-word-card[data-score]:not([data-score="0"]) .word-title{color:var(--score-ink)}')&&!/\.main-word-card\[data-score\][^{]*\{[^}]*border-color/.test(html),'on the home screen the word takes the tone, not the card border');
+    for(let n=1;n<=10;n++)assert(html.includes('--score-color:var(--score-'+n+');--score-ink:var(--score-text-'+n+')'),'tone '+n);
+    assert(html.includes('#contentArea .main-word-card[data-score]:not([data-score="0"]) .word-title,.word-detail-panel[data-score]:not([data-score="0"]) .word-title{color:var(--score-ink)}')&&!/\.main-word-card\[data-score\][^{]*\{[^}]*border-color/.test(html),'on the home screen and in the word windows the word takes the tone, not the card border');
+    assert(html.includes('data-panel-word="${encodeDomText(data.word||"")}"')&&html.includes('.word-detail-panel[data-panel-word]'),'a word window follows the points of its word at once');
     assert(/\$\{renderStudySection\(data\)\}\$\{renderTagsSection\(data\)\}/.test(html),'the points come before the tags, both at the end of the details');
   });
   it('the read-aloud button of the new interface tells the app which word was read (a word, or a sentence or idiom of it) once the voice has started',()=>{
@@ -247,7 +248,7 @@ describe('Free allowance per level group, points for words, Premium cards and th
     assert(/\.v2-plan-premium\{[^}]*background-color:#5b21b6;background-image:linear-gradient/.test(screensCss),'a solid colour under the gradient');
     assert(!/oldUi|freeIncludes/.test(screensJs));
   });
-  it('the triangle of a main card is level with the word: its box is as high as one line of the title, and the toggle lines its children up at the top',()=>{
+  it('the triangle of a main card is level with the word: it sits on the middle of the first title line without a height of its own, and the toggle lines its children up at the top',()=>{
     assert(html.includes('.main-word-toggle{align-items:flex-start !important}')&&html.includes('height:0 !important;\n    margin-top:calc(var(--main-title-size) * var(--line-tight) / 2) !important;'),'the triangle has no height of its own and sits on the middle of the first title line');
     assert(html.includes('.main-word-card:not(.open){--main-title-size:1.45rem}')&&html.includes('.main-word-card{--main-title-size:var(--font-3xl)}'));
   });
@@ -255,22 +256,48 @@ describe('Free allowance per level group, points for words, Premium cards and th
 
 describe('Collapsible Points and Tags sections, the tag panel and the Matching test (static guards)',()=>{
   const screensJs=read('screens.js');
-  it('the Points and Tags sections open and close (remembered on the device); the total is at the right with the toggle after it, the tags have a + before their toggle that opens a panel',()=>{
+  it('the Points and Tags sections open and close (remembered on the device): the badge with the total is the toggle of the Points, the + is the toggle of the Tags (no arrows, no "no tags yet" line)',()=>{
     assert(html.includes('const SECTION_PREF_KEY="VOCVOC_DETAIL_SECTIONS";')&&/function setSectionOpen\(name,open\)/.test(html));
-    assert(/<span class="study-total score-\$\{score\}"[^]*?\$\{sectionToggleButton\("study",t\("studyScore"\),open\)\}/.test(html),'points: the badge, then the toggle');
-    assert(/data-tag-panel aria-expanded="\$\{adding\}"[^]*?\$\{sectionToggleButton\("tags",t\("tags"\),open\)\}/.test(html),'tags: the + comes before the toggle');
+    assert(/<button type="button" class="study-total score-\$\{score\}" data-section-toggle="study" aria-expanded="\$\{open\}"/.test(html),'points: the badge is the toggle');
+    assert(/<button type="button" class="section-add" data-section-toggle="tags" aria-expanded="\$\{open\}"/.test(html),'tags: the + is the toggle');
+    assert(!/section-chevron|sectionToggleButton|data-tag-panel|is-adding|tag-empty|tagsNone/.test(html),'the arrows, the separate tag panel switch and the empty-tags line are gone');
+    assert(html.includes('.tags-section,.study-section{border-top:1px solid var(--border);padding:13px 0 0;margin-top:13px}'),'a separator above the Points and above the Tags, like the folds have');
     assert(/document\.addEventListener\("input",event=>\{\s*if\(!event\.target\.classList\?\.contains\("tag-input"\)\)return;/.test(html)&&html.includes('tagExistingHtml(record,event.target.value)'),'typing narrows the tags in use');
     assert(html.includes('data-tag-new=')&&html.includes('aria-disabled="true"'),'a tag that is already on the word cannot be added twice; a new one is offered');
   });
   it('the meaning sits close under the line below the word, on the home cards and in the word windows',()=>{
     assert(html.includes('#contentArea .main-word-card.open .word-header{margin-bottom:6px!important}')&&html.includes('#contentArea .main-word-body{padding-top:4px!important}')&&html.includes('.word-detail-panel .word-panel-scroll-body{padding-top:6px!important}'));
+    assert(html.includes('.meaning-section{margin-bottom:0}')&&html.includes('<div class="section meaning-section">'),'little room under the meaning');
   });
   it('a Flip card that is turned over earns a point for its word, and the Matching test is a mode of the quiz engine with its own page, card and test kind',()=>{
-    assert(/function toggleFlip\(\)\{[^]*?if\(flipSession\.flipped\)noteStudy\(flipSession\.cards\[flipSession\.index\]\.word,"flipped"\)/.test(html));
+    assert(/function toggleFlip\(\)\{[^]*?if\(flipSession\.flipped\)\{\s*noteStudy\(flipSession\.cards\[flipSession\.index\]\.word,"flipped"\);[^]*?new CustomEvent\("vocvoc-flipped"\)/.test(html),'a Flip card turned over: a point for its word and one more flip for the badges');
     assert(/function startMatchQuiz\(\)\{[^]*?mode:"match"/.test(html)&&/function getMatchPool\(\)/.test(html)&&html.includes('if(quizSession.mode==="match"){renderMatchRound(area);return;}'));
     assert(/const QUIZ_ROUTES=\['test','recall','cloze','match'\];/.test(screensJs)&&screensJs.includes("card('⧉',t('studyMatch')")&&screensJs.includes("match:[getMatchPool,startMatchQuiz]"));
     assert(read('stats.js').includes("q.mode==='match'")&&screensJs.includes("['recall','cloze','match'].includes(quizSession.mode)"),'a finished Matching is recorded as a test of its own kind');
     assert(/for\(let guard=0;pairs\.length<4&&guard<400;guard\+\+\)/.test(html)&&html.includes('Array.from({length:10},()=>'),'ten rounds of four pairs');
+  });
+  it('the Matching board has rows of one height (a tile as high as the longest one needs, at most twice the usual) and a tile with a long text scrolls inside itself without a scrollbar',()=>{
+    assert(html.includes('.match-board{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;')&&html.includes('.match-col{display:contents}'),'equal rows, the two groups placed by row');
+    assert(/\.match-item\{[^}]*min-height:56px;max-height:112px;overflow-y:auto;[^}]*scrollbar-width:none;/.test(html)&&html.includes('.match-item::-webkit-scrollbar{display:none}'),'twice the height at most, scrolls, no scrollbar');
+    assert(html.includes('.match-text{margin:auto;max-width:100%}')&&html.includes('<span class=\"match-text\">'),'centred text that is never cut at the top');
+  });
+  it('the level is one of A1 A2 B1 B2 C1 C2 (an older "A1-A2" setting is read as A1), in Settings, the pack card and the free allowance',()=>{
+    const packs=read('packs.js'),wordbase=read('wordbase.js');
+    assert(packs.includes("const BANDS=Object.freeze({A1:['A1'],A2:['A2'],B1:['B1'],B2:['B2'],C1:['C1'],C2:['C2']});")&&packs.includes("const LEGACY_BANDS=Object.freeze({'A1-A2':'A1','B1-B2':'B1','C1-C2':'C1'});"));
+    assert(wordbase.includes("const BAND_ORDER=Object.freeze(['A1','A2','B1','B2','C1','C2']);")&&wordbase.includes('const bandOf=()=>packs.normalizeBand(settings().difficulty);'));
+    for(const level of ['A1','A2','B1','B2','C1','C2'])assert(html.includes('data-value="'+level+'" onclick="selectUiDropdown(\'difficultyDropdown\',\''+level+'\''),'Settings offers '+level);
+    assert(!/data-value="(A1-A2|B1-B2|C1-C2)"/.test(html),'no group of two levels is offered any more');
+    assert(html.includes('const normalizeLevel=value=>/^(A1|A2|B1|B2|C1|C2)$/.test(value)?value:({"A1-A2":"A1","B1-B2":"B1","C1-C2":"C1"})[value]||"A1";')&&html.includes('function levelOf(value){return VocVocData.normalizeLevel(value);}'),'the page reads a saved level the same way as VocVocPacks.normalizeBand');
+    assert(screensJs.includes("const BAND_TEXT=Object.fromEntries(['A1','A2','B1','B2','C1','C2'].map(level=>[level,'packLevel'+level]));"));
+  });
+  it('the badges: first 10 points, first Recall and Matching test, more than 10 / 30 / 50 Flip cards, one for each level passed; each a gradient whose second colour is always purple',()=>{
+    const stats=require('../stats.js'),ids=stats.BADGES.map(badge=>badge.id);
+    for(const id of ['points10','recall1','match1','flip10','flip30','flip50','lvlA1','lvlA2','lvlB1','lvlB2','lvlC1','lvlC2','test1'])assert(ids.includes(id),id);
+    assert.deepEqual(stats.BADGES.filter(badge=>badge.kind==='flips').map(badge=>badge.target),[11,31,51],'"more than 10" is 11');
+    assert(html.includes('new CustomEvent("vocvoc-flipped")')&&screensJs.includes("window.addEventListener('vocvoc-flipped'")&&screensJs.includes('VocVocStats.appendFlip(readActivity())'));
+    const css=read('screens.css');
+    assert(/\.v2-earned \.v2-badge-icon\{background:linear-gradient\(135deg,var\(--badge-from,#2563eb\),#7c3aed\)/.test(css)&&/\.v2-medal\{[^}]*background:linear-gradient\(135deg,var\(--badge-from,#2563eb\),#7c3aed\)/.test(css),'the second colour of every badge is purple');
+    assert(screensJs.includes('levelsDone:levelsDone(db)')&&screensJs.includes('points:pointsOf(db)'));
   });
 });
 
@@ -362,6 +389,7 @@ describe('New interface (prototype)',()=>{
     const badgeIds=require('../stats.js').BADGES.map(badge=>badge.id);
     for(const key of Object.keys(TEXT.en)){
       if(/^bd?_(\w+)$/.test(key)&&badgeIds.includes(key.replace(/^bd?_/,'')))continue;                // badge texts are looked up as t('b_'+id) / t('bd_'+id)
+      if(/^packLevel(A1|A2|B1|B2|C1|C2)$/.test(key)&&code.includes("'packLevel'+level"))continue;       // the level on the pack card: BAND_TEXT is made from 'packLevel'+level
       assert(new RegExp(`'${key}'`).test(code),`text key ${key} is never used`);
     }
     for(const id of badgeIds)for(const language of ['tr','en','fr','de','es','it'])assert(TEXT[language]['b_'+id]&&TEXT[language]['bd_'+id],`badge ${id} has no ${language} name or description`);

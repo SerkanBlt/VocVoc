@@ -144,6 +144,34 @@ describe('Badges',()=>{
   it('the daily goal badge is earned on the day the goal is reached',()=>{
     assert.deepEqual([badge(Stats.compute(input({goalReachedToday:true})),'goal1').earnedOn,badge(Stats.compute(input()),'goal1').earnedOn],[TODAY,null]);
   });
+  it('the first 10 points are earned when the points of all words together reach 10 (no date is known: the day it is noticed)',()=>{
+    assert.deepEqual([badge(Stats.compute(input({points:9})),'points10').earnedOn,badge(Stats.compute(input({points:9})),'points10').progress],[null,9]);
+    assert.equal(badge(Stats.compute(input({points:10})),'points10').earnedOn,TODAY);
+    assert.equal(badge(Stats.compute(input()),'points10').progress,0);
+  });
+  it('the first Recall test and the first Matching test are earned by finishing one, on the day it was finished, whatever the score',()=>{
+    const result=Stats.compute(input({quizzes:[quiz('2026-10-05',2,{mode:'active'}),quiz('2026-10-06',3,{mode:'recall'}),quiz('2026-10-07',4,{mode:'match'})]}));
+    assert.deepEqual([badge(result,'recall1').earnedOn,badge(result,'match1').earnedOn,badge(result,'recall8').earnedOn],['2026-10-06','2026-10-07',null],'a low Recall score does not earn the 8/10 badge');
+    const none=Stats.compute(input({quizzes:[quiz('2026-10-05',10,{mode:'cloze'})]}));
+    assert.deepEqual([badge(none,'recall1').progress,badge(none,'match1').progress],[0,0]);
+  });
+  it('more than 10, 30 and 50 Flip cards turned over earn their badges at 11, 31 and 51',()=>{
+    const earned=flips=>['flip10','flip30','flip50'].map(id=>!!badge(Stats.compute(input({flips})),id).earnedOn);
+    assert.deepEqual([0,10,11,30,31,50,51].map(earned),[[false,false,false],[false,false,false],[true,false,false],[true,false,false],[true,true,false],[true,true,false],[true,true,true]]);
+    assert.equal(badge(Stats.compute(input({flips:4})),'flip10').progress,4);
+  });
+  it('a level is passed when every word of it is in the list; each level has a badge of its own',()=>{
+    const result=Stats.compute(input({levelsDone:['A1','C2']}));
+    assert.deepEqual(['A1','A2','B1','B2','C1','C2'].map(level=>!!badge(result,'lvl'+level).earnedOn),[true,false,false,false,false,true]);
+    assert.equal(badge(result,'lvlB1').level,'B1');
+  });
+  it('the Flip count is part of the activity record: it grows by one, is bounded and survives damage',()=>{
+    let record=null;for(let n=0;n<3;n++)record=Stats.appendFlip(record);
+    assert.equal(record.flips,3);assert.equal(Stats.normalizeRecord(record).flips,3);
+    assert.equal(Stats.normalizeRecord({flips:-4}).flips,0);assert.equal(Stats.normalizeRecord({flips:'many'}).flips,0);assert.equal(Stats.normalizeRecord({flips:2.5}).flips,0);
+    assert.equal(Stats.appendFlip({flips:1000000}).flips,1000000);
+    assert.equal(Stats.appendQuiz(record,quiz('2026-10-07',5)).flips,3,'a test does not touch it');
+  });
   it('every badge in the list is reported, once, with a positive target',()=>{
     const result=Stats.compute(input());
     assert.deepEqual(result.badges.map(item=>item.id),Stats.BADGES.map(item=>item.id));
@@ -173,7 +201,7 @@ describe('The activity record',()=>{
       assert.equal(Stats.appendQuiz(null,bad).testsTaken,0);
   });
   it('whatever is in storage, the record that comes out is valid',()=>{
-    for(const raw of [undefined,null,'text',42,[],{quizzes:'no',badges:'no'}])assert.deepEqual(Stats.normalizeRecord(raw),{v:1,seeded:false,testsTaken:0,quizzes:[],badges:{}});
+    for(const raw of [undefined,null,'text',42,[],{quizzes:'no',badges:'no'}])assert.deepEqual(Stats.normalizeRecord(raw),{v:1,seeded:false,testsTaken:0,flips:0,quizzes:[],badges:{}});
     const record=Stats.normalizeRecord({seeded:true,testsTaken:2,quizzes:[quiz('2026-10-07',5),{junk:1}],badges:{memo10:'2026-09-01',notABadge:'2026-09-01',streak3:'yesterday'}});
     assert.deepEqual([record.seeded,record.quizzes.length,Object.keys(record.badges)],[true,1,['memo10']]);
     assert.equal(record.testsTaken,2);

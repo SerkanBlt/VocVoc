@@ -72,19 +72,31 @@ describe('Choosing the next words of a course',()=>{
   const order={format:2,id:'fr-tr',version:1,chunks:[
     {id:'A1-01',level:'A1',words:['a','b','c']},{id:'A2-01',level:'A2',words:['d','e']},{id:'B1-01',level:'B1',words:['f','g']},{id:'B2-01',level:'B2',words:['h']},{id:'C1-01',level:'C1',words:['i']}]};
   const known=(...words)=>word=>words.includes(word);
-  it('counts the words of a band and the ones the user has',()=>{
-    assert.deepEqual(Packs.courseProgress(order,'A1-A2',known('a','e')),{total:5,used:2});
-    assert.deepEqual(Packs.courseProgress(order,'B1-B2',known()),{total:3,used:0});
-    assert.deepEqual(Packs.courseProgress(order,'C1-C2',known('i')),{total:1,used:1});
+  it('counts the words of a level and the ones the user has',()=>{
+    assert.deepEqual(Packs.courseProgress(order,'A1',known('a','e')),{total:3,used:1});
+    assert.deepEqual(Packs.courseProgress(order,'A2',known('a','e')),{total:2,used:1});
+    assert.deepEqual(Packs.courseProgress(order,'B1',known()),{total:2,used:0});
+    assert.deepEqual(Packs.courseProgress(order,'B2',known('h')),{total:1,used:1});
+    assert.deepEqual(Packs.courseProgress(order,'C1',known('i')),{total:1,used:1});
+    assert.deepEqual(Packs.courseProgress(order,'C2',known()),{total:0,used:0},'no word is written for C2 in this course');
     assert.deepEqual(Packs.courseProgress(order,'nothing',known()),{total:0,used:0});
+    assert.deepEqual(Packs.courseProgress(order,'A1-A2',known()),{total:0,used:0},'a group of two levels is not a level any more');
+  });
+  it('reads the setting of older versions (a group of two levels) as its first level',()=>{
+    assert.deepEqual(['A1','A2','B1','B2','C1','C2'].map(Packs.normalizeBand),['A1','A2','B1','B2','C1','C2']);
+    assert.deepEqual(['A1-A2','B1-B2','C1-C2'].map(Packs.normalizeBand),['A1','B1','C1']);
+    assert.deepEqual([undefined,null,'','x','a1','__proto__','constructor'].map(Packs.normalizeBand),['A1','A1','A1','A1','A1','A1','A1']);
+    assert.deepEqual(Object.keys(Packs.BANDS),['A1','A2','B1','B2','C1','C2']);
   });
   it('names the chunks that hold the next unknown words, in order, and none that are used up',()=>{
-    assert.deepEqual(Packs.pickChunks(order,'A1-A2',known(),2),['A1-01']);
-    assert.deepEqual(Packs.pickChunks(order,'A1-A2',known(),4),['A1-01','A2-01']);
-    assert.deepEqual(Packs.pickChunks(order,'A1-A2',known('a','b','c'),2),['A2-01']);
-    assert.deepEqual(Packs.pickChunks(order,'A1-A2',known('a','b','c','d','e'),10),[]);
-    assert.deepEqual(Packs.pickChunks(order,'B1-B2',known(),99),['B1-01','B2-01']);
-    assert.deepEqual(Packs.pickChunks(order,'A1-A2',known(),0),[]);
+    assert.deepEqual(Packs.pickChunks(order,'A1',known(),2),['A1-01']);
+    assert.deepEqual(Packs.pickChunks(order,'A1',known(),4),['A1-01'],'the next level is another level: the words of A2 are not borrowed');
+    assert.deepEqual(Packs.pickChunks(order,'A2',known(),4),['A2-01']);
+    assert.deepEqual(Packs.pickChunks(order,'A1',known('a','b','c'),2),[]);
+    assert.deepEqual(Packs.pickChunks(order,'A2',known('d','e'),10),[]);
+    assert.deepEqual(Packs.pickChunks(order,'B1',known(),99),['B1-01']);
+    assert.deepEqual(Packs.pickChunks(order,'B2',known(),99),['B2-01']);
+    assert.deepEqual(Packs.pickChunks(order,'A1',known(),0),[]);
   });
   it('takes the words out of the downloaded chunks across a chunk boundary, as complete records',()=>{
     const chunks=[chunkOf({words:[{word:'a',meaning:'A'},{word:'b',meaning:'B'}]}),chunkOf({chunk:'A1-02',words:[{word:'c',meaning:'C'},{word:'d',meaning:'D'}]})];

@@ -8,7 +8,7 @@
    Pure logic (the keys a word is looked up by, the levels) is separate from the part that talks to the network, so the tests can run it without a browser. */
 (function(root){
   const PACK_CACHE='vocvoc-packs-v1';
-  const BAND_ORDER=Object.freeze(['A1-A2','B1-B2','C1-C2']);
+  const BAND_ORDER=Object.freeze(['A1','A2','B1','B2','C1','C2']);
 
   /* ---------- keys a word is looked up by ---------- */
   // "École", "ecole" and "l'école" are the same word to the user: letters without accents, no case, no leading article.
@@ -117,7 +117,7 @@
     let load=null;
     const settings=()=>env.settings();
     const currentPair=()=>{const value=settings();return packs.pairId(value.targetLanguage,value.nativeLanguage);};
-    const bandOf=()=>{const level=settings().difficulty;return packs.BANDS[level]?level:'A1-A2';};   // the difficulty setting names the band of levels words are drawn from
+    const bandOf=()=>packs.normalizeBand(settings().difficulty);                                       // the difficulty setting names the level words are drawn from (an older "A1-A2" is read as A1)
     const changed=()=>{try{env.onChange&&env.onChange();}catch(_){}};
 
     // order.json of a course: the copy on this device when it is as new as the index says, else a fresh download.
@@ -172,14 +172,14 @@
     function sync(){try{if(currentPair()!==state.pair)refresh();}catch(_){}}               // the language pair changed
 
     const chunksOfBand=band=>state.course.chunks.filter(chunk=>(packs.BANDS[band]||[]).includes(chunk.level));
-    // How many words of a level group (the chosen one when none is named) the user has, out of how many there are. A starter pack is one group only.
+    // How many words of a level (the chosen one when none is named) the user has, out of how many there are. A starter pack is one group only.
     function progress(band=bandOf()){
       if(state.status!=='ready')return {total:0,used:0};
       if(state.course)return packs.courseProgress(state.course,band,env.isKnown);
       return band===packBand()?packs.progress(state.pack,env.isKnown):{total:0,used:0};
     }
-    const packBand=()=>packs.BANDS[state.pack?.level]?state.pack.level:'A1-A2';
-    // The level group a headword belongs to (null when it is not in the words of this pair, or they are not loaded).
+    const packBand=()=>packs.normalizeBand(state.pack?.level);
+    // The level a headword belongs to (null when it is not in the words of this pair, or they are not loaded).
     function bandOfWord(word){
       if(state.status!=='ready')return null;
       if(!state.course)return state.pack.words.some(item=>item.word===word||foldText(item.word,settings().targetLanguage)===foldText(word,settings().targetLanguage))?packBand():null;
