@@ -272,3 +272,44 @@ describe('Tags on words',()=>{
     assert.deepEqual(plain(app.data.getDb()),before);
   });
 });
+
+describe('Points for words that are not memorized yet',()=>{
+  const wordRecord=(app,word)=>plain(app.data.getWordByText(word));
+  it('five things are worth 1, 1, 1, 1 and 2 points; each is counted once and kept on the word record',async()=>{
+    const app=await start();
+    assert.deepEqual(plain(app.data.STUDY_POINTS),{heard:1,opened:1,explored:1,read:1,quiz:2});
+    assert.equal(app.data.studyScore(app.data.getWordByText('Bonjour')),0);
+    assert.equal(await app.data.markStudy('Bonjour','opened'),true);
+    assert.equal(await app.data.markStudy('Bonjour','opened'),false,'counted once');
+    for(const key of ['explored','heard','read','quiz'])await app.data.markStudy('Bonjour',key);
+    assert.deepEqual(wordRecord(app,'Bonjour').study,{opened:true,explored:true,heard:true,read:true,quiz:true});
+    assert.equal(app.data.studyScore(app.data.getWordByText('Bonjour')),6);
+    assert.equal(app.data.studyScore(null),0);
+  });
+  it('a word that is memorized, archived or not in the list earns nothing, and an unknown kind of point is refused',async()=>{
+    const app=await start();                                                     // Merci is memorized, Chat is archived, Bonjour and Je are active
+    const before=plain(app.data.getDb());
+    assert.equal(await app.data.markStudy('Merci','heard'),false);
+    assert.equal(await app.data.markStudy('Chat','heard'),false);
+    assert.equal(await app.data.markStudy('olmayankelime','heard'),false);
+    assert.equal(await app.data.markStudy('Bonjour','magic'),false);
+    assert.deepEqual(plain(app.data.getDb()),before,'nothing was written');
+    await app.data.markStudy('Je','heard');
+    await app.data.setStatus('Je','memorized');                                // memorized later: what was earned stays, but nothing more is
+    assert.equal(await app.data.markStudy('Je','quiz'),false);assert.deepEqual(wordRecord(app,'Je').study,{heard:true});
+  });
+  it('the points survive a restart, a save of the word with fresh data, a backup export and import; a damaged study record in a backup is rejected',async()=>{
+    const profile=newProfile(legacySpa()),app=await start(profile);
+    await app.data.markStudy('Bonjour','opened');await app.data.markStudy('Bonjour','explored');
+    await app.data.saveAndTouch({word:'Bonjour',meaning:'merhaba (yeni)',synonyms:[],antonyms:[],examples:[],expressions:[]},'bonjour');
+    assert.deepEqual(wordRecord(app,'Bonjour').study,{opened:true,explored:true});
+    assert.deepEqual(wordRecord(await start(profile),'Bonjour').study,{opened:true,explored:true});
+    const exported=await app.data.export(),id=Object.keys(exported.words).find(key=>exported.words[key].word==='Bonjour');
+    const other=await start(newProfile(legacySpa()));await other.data.import(exported);
+    assert.deepEqual(wordRecord(other,'Bonjour').study,{opened:true,explored:true});
+    for(const bad of [{heard:false},{magic:true},'heard',[true],{heard:1}]){
+      const copy=JSON.parse(JSON.stringify(exported));copy.words[id].study=bad;
+      await assert.rejects(app.data.import(copy),error=>error.storageCode==='invalidData',JSON.stringify(bad));
+    }
+  });
+});

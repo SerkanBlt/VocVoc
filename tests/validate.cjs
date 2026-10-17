@@ -147,7 +147,8 @@ describe('No AI and no API key (static guards)',()=>{
     const add=html.slice(html.indexOf('async function addNewWords()'),html.indexOf('let pendingNextLevel'));
     assert(add.includes('wordbase.next(Math.min(10,remainingToday,room))'),'ten words at most, fewer when the daily goal or the free plan leaves less room');
     assert(add.includes('VocVocData.addWordBatch(words,{dailyCount:words.length})'),'the words count towards the daily goal');
-    assert(add.indexOf('dailyLimitReached')<add.indexOf('wordRoom()')&&add.indexOf('wordRoom()')<add.indexOf('wordbase.ready()'),'the limits are checked before anything is downloaded');
+    assert(add.indexOf('dailyLimitReached')<add.indexOf('wordbase.ready()')&&add.indexOf('wordbase.ready()')<add.indexOf('bandRoom(band)'),'the daily goal is checked first; the free allowance of the chosen level group once the course is known (before any chunk is downloaded)');
+    assert(add.includes('freeWordLimitText(band)')&&html.includes('const band=window.VocVocWordbase?.bandOfWord(word);'),'a looked-up word uses the allowance of its own level group');
     assert(/offerNextLevel\(\);return \{status:"band-done"/.test(add)&&add.includes('t("levelEmpty")'),'no words left in the level: the level-up question, or the note that nothing is written for the level');
     const offer=html.slice(html.indexOf('function offerNextLevel()'),html.indexOf('// The random button'));
     assert(offer.includes('t(next?"levelUpAsk":"levelUpAll")'),'a next level is offered, or the whole course is reported finished');
@@ -218,6 +219,39 @@ describe('Tags, similar words, reset and the Profile page (static guards)',()=>{
   });
 });
 
+describe('Free allowance per level group, points for words, Premium cards and the card triangle (static guards)',()=>{
+  const screensJs=read('screens.js'),screensCss=read('screens.css');
+  it('the free plan gives 100 words from each of the three level groups; the count comes from the words in the list (archived ones too) per group, not from a counter',()=>{
+    assert(/const FREE_BAND_LIMIT=100;/.test(screensJs)&&/bandWordLimit\(\)\{return planNow\(\)==='premium'\?Infinity:FREE_BAND_LIMIT;\}/.test(screensJs));
+    assert(/function bandRoom\(band\)\{[^]*?window\.VocVocWordbase\.progress\(band\)\.used/.test(html),'used = the words of that group that are in the list (archived included)');
+    assert(/function progress\(band=bandOf\(\)\)/.test(read('wordbase.js'))&&read('wordbase.js').includes('function bandOfWord(word)'));
+    assert(!/wordRoom|wordCap/.test(html),'the old limit on the whole list is gone');
+  });
+  it('points: five things a word that is not memorized yet can earn (1+1+1+1+2), counted once, kept on the word record, saved in backups; the chips and cards take a tone',()=>{
+    assert(html.includes('const STUDY_POINTS=Object.freeze({heard:1,opened:1,explored:1,read:1,quiz:2});'));
+    assert(/if\(!progress\|\|progress\.status!=="active"\|\|record\.study\?\.\[key\]===true\)return false;/.test(html),'only an active word earns points, each once');
+    assert(storage.includes("['heard','opened','explored','read','quiz'].includes(name)||done!==true"),'Schema v1 validates the optional study record');
+    for(const hook of ['noteStudy(q.word,"quiz")','noteStudy(decodeDomText(card.dataset.word||""),"opened")','noteStudy(data.word,"opened")','details.dataset.studyFold!=="explored"','window.addEventListener("vocvoc-spoken"'])assert(html.includes(hook),hook);
+    assert(/class="history-chip ui-pill\$\{isMem\?' memorized':''\} score-\$\{score\}"/.test(html)&&html.includes('class="card main-word-card score-$'+'{score}"'));
+    for(let n=1;n<=6;n++)assert(html.includes('.score-'+n+'{--score-color:var(--score-'+n+')}'),'tone '+n);
+    assert(/\$\{renderStudySection\(data\)\}\$\{renderTagsSection\(data\)\}/.test(html),'the points come before the tags, both at the end of the details');
+  });
+  it('the read-aloud button of the new interface tells the app which word was read (a word, or a sentence or idiom of it) once the voice has started',()=>{
+    assert(/function announceSpoken\(button\)\{[^]*?new CustomEvent\('vocvoc-spoken',\{detail:\{word,kind:info\.kind\}\}\)/.test(screensJs));
+    assert(/if\(text&&speak\(button,text\)\)announceSpoken\(button\);/.test(screensJs)&&screensJs.includes("{kind:'sentence',word:()=>decodeDomText(host.closest('[data-study-word]')"),'a sentence belongs to the word whose window it is in');
+  });
+  it('the Premium page is a card for each plan (Free 0 USD, Premium 1.99 USD a month or 19.90 USD a year, two months free) with a Monthly / Yearly switch',()=>{
+    assert(screensJs.includes('const PRICE={monthly:1.99,yearly:19.9,yearlyFull:23.88};')&&Math.abs(1.99*10-19.9)<1e-9&&Math.abs(1.99*12-23.88)<1e-9,'the year is ten months of the monthly price');
+    assert(/class:'v2-plan v2-plan-free'/.test(screensJs)&&/class:'v2-plan v2-plan-premium'/.test(screensJs)&&screensJs.includes("class:'v2-billing'"));
+    assert(/\.v2-plan-premium\{[^}]*background-color:#5b21b6;background-image:linear-gradient/.test(screensCss),'a solid colour under the gradient');
+    assert(!/oldUi|freeIncludes/.test(screensJs));
+  });
+  it('the triangle of a main card is level with the word: its box is as high as one line of the title, and the toggle lines its children up at the top',()=>{
+    assert(html.includes('.main-word-toggle{align-items:flex-start !important}')&&html.includes('height:calc(var(--main-title-size) * var(--line-tight)) !important;'));
+    assert(html.includes('.main-word-card:not(.open){--main-title-size:1.45rem}')&&html.includes('.main-word-card{--main-title-size:var(--font-3xl)}'));
+  });
+});
+
 describe('New interface (prototype)',()=>{
   const screensJs=read('screens.js'),screensCss=read('screens.css'),screensCode=screensJs.replace(/\/\*[^]*?\*\//g,'');   // code without the comments
   // Run screens.js on its own, as a page that did not ask for the new interface would: it must only define the plan helper.
@@ -248,19 +282,20 @@ describe('New interface (prototype)',()=>{
     const {win}=load();
     assert.deepEqual(Object.keys(win).sort(),['VocVocPlan','VocVocScreens','dispatchEvent']);
   });
-  it('the plan rules match the agreed product: Free by default with 300 words and a 20-word daily goal, stats/sentences/speech/unlimited words are Premium, no AI and no key anywhere',()=>{
+  it('the plan rules match the agreed product: Free by default with 100 words from each level group and a 20-word daily goal, stats/sentences/speech/unlimited words are Premium, no AI and no key anywhere',()=>{
     const {win,events,storage}=load(),plan=win.VocVocPlan;
     assert.deepEqual([plan.get(),plan.has('stats'),plan.has('badges'),plan.has('freeWords'),plan.has('unlimitedWords')],['free',false,true,true,false]);
     assert.deepEqual(Object.entries(plan.features).filter(([,need])=>need==='premium').map(([name])=>name).sort(),['dailyGoalOver20','historyAnalysis','sentenceBuilder','speech','stats','unlimitedWords']);
     assert(!('ownKeyActive' in plan)&&!('ownKeyAi' in plan.features)&&!('builtInAi' in plan.features),'the own key and the built-in AI are not part of the plan any more');
     assert.deepEqual([plan.FREE_DAILY_LIMIT,plan.dailyLimitMax()],[20,20],'the free plan keeps the daily goal at 20 words');
-    assert.deepEqual([plan.FREE_WORD_LIMIT,plan.wordLimit()],[300,300],'the free plan holds 300 words');
+    assert.deepEqual([plan.FREE_BAND_LIMIT,plan.bandWordLimit()],[100,100],'the free plan gives 100 words from each level group');
+    assert(!('wordLimit' in plan)&&!('FREE_WORD_LIMIT' in plan),'no single limit on the whole list any more');
     assert.equal(plan.has('somethingUnknown'),false);
     plan.set('premium');
-    assert.deepEqual([plan.dailyLimitMax(),plan.wordLimit()],[Infinity,Infinity],'Premium has no limit on the daily goal or the word list');
+    assert.deepEqual([plan.dailyLimitMax(),plan.bandWordLimit()],[Infinity,Infinity],'Premium has no limit on the daily goal or the words');
     assert.deepEqual([plan.get(),plan.has('stats'),plan.has('sentenceBuilder'),plan.has('speech'),plan.has('unlimitedWords'),storage.VOCVOC_SIM_PLAN,events.length],['premium',true,true,true,true,'premium',1]);
     plan.set('premium');assert.equal(events.length,1,'setting the same plan again is not a change');
-    plan.set('free');assert.deepEqual([plan.get(),plan.wordLimit(),'VOCVOC_SIM_PLAN' in storage,events.length],['free',300,false,2]);
+    plan.set('free');assert.deepEqual([plan.get(),plan.bandWordLimit(),'VOCVOC_SIM_PLAN' in storage,events.length],['free',100,false,2]);
     assert.throws(()=>{'use strict';plan.features.stats='free';},TypeError);
     assert.equal(load({VOCVOC_SIM_PLAN:'garbage'}).win.VocVocPlan.get(),'free');
   });

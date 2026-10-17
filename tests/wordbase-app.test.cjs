@@ -192,3 +192,25 @@ describe('Words typed with Turkish letters, and words that look alike',()=>{
     assert.deepEqual((await wordbase.find('zzzxqj')),{status:'missing',similar:[]});
   });
 });
+
+describe('Level groups: how many words of each the user has, and which group a word belongs to',()=>{
+  it('counts the words of any group, not only the chosen one, and names the group of a word (the free allowance is per group)',async()=>{
+    const a1=wordsOf('A1-A2'),b1=wordsOf('B1-B2'),c1=wordsOf('C1-C2');
+    const {wordbase}=makeEnv({settings:{difficulty:'A1-A2'},known:[...a1.slice(0,3),...b1.slice(0,5),c1[0]]});
+    await wordbase.ready();
+    assert.deepEqual(['A1-A2','B1-B2','C1-C2'].map(band=>wordbase.progress(band).used),[3,5,1]);
+    assert.deepEqual(wordbase.progress(),wordbase.progress('A1-A2'),'no group named: the chosen one');
+    assert.equal(wordbase.progress('B1-B2').total,b1.length);
+    assert.deepEqual([a1[0],b1[10],c1[3],'zzzxqj'].map(word=>wordbase.bandOfWord(word)),['A1-A2','B1-B2','C1-C2',null]);
+    assert.notEqual(wordbase.bandOfWord('île'),null);assert.equal(wordbase.bandOfWord('ıle'),wordbase.bandOfWord('île'),'a word typed with a Turkish ı belongs to the same group as the word');
+  });
+  it('a pair with only a starter pack has one group; nothing is known before the words are loaded',async()=>{
+    const single=makeEnv({settings:{targetLanguage:'de'}});
+    assert.equal(single.wordbase.bandOfWord('Hallo'),null);assert.deepEqual(single.wordbase.progress('A1-A2'),{total:0,used:0});
+    await single.wordbase.ready();
+    const first=single.wordbase.state.pack.words[0].word;
+    assert.equal(single.wordbase.bandOfWord(first),'A1-A2');
+    assert.equal(single.wordbase.progress('A1-A2').total,single.wordbase.state.pack.words.length);
+    assert.deepEqual(single.wordbase.progress('C1-C2'),{total:0,used:0});
+  });
+});

@@ -319,3 +319,31 @@ body.v2 .example-item .fr-text .v2-speak,body.v2 .expression-item .fr-text .v2-s
 /* No scrollbar is drawn anywhere in the new interface; everything that can scroll still scrolls (wheel, touch, keys) */
 html:has(body.v2),body.v2,body.v2 *{scrollbar-width:none;-ms-overflow-style:none}
 html:has(body.v2)::-webkit-scrollbar,body.v2::-webkit-scrollbar,body.v2 *::-webkit-scrollbar{display:none;width:0;height:0}
+
+/* Premium: a card for each plan; the Premium one is in colour (a solid colour under the gradient keeps the text contrast measurable in both themes) */
+.v2-plans{display:grid;gap:16px;margin:4px 0 16px}
+@media(min-width:760px){.v2-plans{grid-template-columns:1fr 1fr;align-items:stretch}}
+.v2-plan{position:relative;display:flex;flex-direction:column;gap:12px;padding:22px 20px;border-radius:24px;border:1px solid var(--border);background:var(--card-bg);overflow:hidden}
+.v2-plan-head{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative}
+.v2-plan-name{margin:0;font-size:1.25rem;font-weight:800;letter-spacing:.01em}
+.v2-plan-price{margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;position:relative}
+.v2-plan-amount{font-size:2.3rem;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+.v2-plan-unit{color:var(--text-muted);font-weight:600}
+.v2-plan-sub{margin:-4px 0 0;font-size:.88rem;line-height:1.4;color:var(--text-muted);position:relative}
+.v2-plan .v2-feature-list{display:grid;gap:10px;margin:4px 0 0;position:relative}
+.v2-plan-premium{color:#fff;border-color:transparent;background-color:#5b21b6;background-image:linear-gradient(to top right,#3b0764,#6d28d9 55%,#7c3aed);box-shadow:0 18px 44px rgba(91,33,182,.38)}
+.v2-plan-premium::after{content:"";position:absolute;right:-60px;top:-60px;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.1);pointer-events:none}
+.v2-plan-premium .v2-plan-unit,.v2-plan-premium .v2-plan-sub{color:rgba(255,255,255,.9)}
+.v2-plan-premium .v2-feature-list li::before{color:#fbbf24}
+.v2-plan-caption{margin:0;font-size:.88rem;font-weight:600;color:rgba(255,255,255,.9);position:relative}
+.v2-plan-ribbon{align-self:flex-start;padding:4px 12px;border-radius:999px;background:#fbbf24;color:#3b0764;font-size:.8rem;font-weight:800;position:relative}
+.v2-chip-on-dark{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.45)}
+.v2-billing{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(0,0,0,.3);position:relative}
+.v2-billing-btn{flex:1 1 0;display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;min-height:40px;padding:6px 10px;border:0;border-radius:999px;background:transparent;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.v2-billing-btn[aria-pressed="true"]{background:#fff;color:#4c1d95}
+.v2-billing-btn:focus-visible,.v2-plan-btn:focus-visible{outline:2px solid #fbbf24;outline-offset:2px}
+.v2-billing-tag{padding:2px 8px;border-radius:999px;background:#fbbf24;color:#3b0764;font-size:.72rem;font-weight:800}
+.v2-plan-btn{margin-top:auto;width:100%;background:#fff;color:#4c1d95;border-color:#fff;font-weight:800;position:relative}
+.v2-plan-btn:hover{background:#f3e8ff;border-color:#f3e8ff}
+.v2-plan-btn-quiet{background:transparent;color:#fff;border-color:rgba(255,255,255,.75)}
+.v2-plan-btn-quiet:hover{background:rgba(255,255,255,.14);border-color:#fff}

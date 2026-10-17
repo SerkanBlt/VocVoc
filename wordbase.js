@@ -172,9 +172,19 @@
     function sync(){try{if(currentPair()!==state.pair)refresh();}catch(_){}}               // the language pair changed
 
     const chunksOfBand=band=>state.course.chunks.filter(chunk=>(packs.BANDS[band]||[]).includes(chunk.level));
-    function progress(){
+    // How many words of a level group (the chosen one when none is named) the user has, out of how many there are. A starter pack is one group only.
+    function progress(band=bandOf()){
       if(state.status!=='ready')return {total:0,used:0};
-      return state.course?packs.courseProgress(state.course,bandOf(),env.isKnown):packs.progress(state.pack,env.isKnown);
+      if(state.course)return packs.courseProgress(state.course,band,env.isKnown);
+      return band===packBand()?packs.progress(state.pack,env.isKnown):{total:0,used:0};
+    }
+    const packBand=()=>packs.BANDS[state.pack?.level]?state.pack.level:'A1-A2';
+    // The level group a headword belongs to (null when it is not in the words of this pair, or they are not loaded).
+    function bandOfWord(word){
+      if(state.status!=='ready')return null;
+      if(!state.course)return state.pack.words.some(item=>item.word===word||foldText(item.word,settings().targetLanguage)===foldText(word,settings().targetLanguage))?packBand():null;
+      const hit=lookupInIndex(state.index,word,settings().targetLanguage);
+      return hit?BAND_ORDER.find(band=>(packs.BANDS[band]||[]).includes(hit.level))||null:null;
     }
     // The next unknown words of the band the user chose; only the chunks that are needed are downloaded.
     async function next(count){
@@ -225,7 +235,7 @@
       for(let band=nextBand(bandOf());band;band=nextBand(band))if(chunksOfBand(band).length)return band;
       return null;
     }
-    return {state,refresh,ready,sync,bandOf,progress,next,find,random,nextBandOf,hasCourse:()=>!!state.course};
+    return {state,refresh,ready,sync,bandOf,bandOfWord,progress,next,find,random,nextBandOf,hasCourse:()=>!!state.course};
   }
 
   /* ---------- the page ---------- */

@@ -269,6 +269,84 @@ async function main(){
   await context.close();
  }
  record('Search: a word already in the list shows only the note (no second Close button); ı, İ and i find île; a typo shows the words that look like it; a found word shows its spelling variants');
+ // Points: a word that is not memorized yet earns 1 for listening to its pronunciation, 1 for opening it and seeing its meaning, 1 for opening the example sentences or idioms,
+ // 1 for listening to them and 2 for a right answer in a test; the chip and the card of the word take a tone that follows the points
+ {
+  context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
+  const study=word=>page.evaluate(w=>VocVocData.getWordByText(w).study||{},word);
+  const score=word=>page.evaluate(w=>VocVocData.studyScore(VocVocData.getWordByText(w)),word);
+  const chip=word=>page.locator('#historyArea .history-chip',{hasText:word});
+  const card=word=>page.locator('#contentArea .main-word-card',{hasText:word});
+  const spoken=(word,kind)=>page.evaluate(([w,k])=>window.dispatchEvent(new CustomEvent('vocvoc-spoken',{detail:{word:w,kind:k}})),[word,kind]);
+  assert.deepEqual(await page.evaluate(()=>VocVocData.STUDY_POINTS),{heard:1,opened:1,explored:1,read:1,quiz:2});
+  assert.equal(await score('Bonjour'),0);assert.equal(await chip('Bonjour').getAttribute('data-score'),'0');
+  // opening the card and seeing the meaning: +1
+  await card('Bonjour').locator('.main-word-toggle').click();
+  await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.opened===true);
+  assert.equal(await score('Bonjour'),1);
+  assert.deepEqual([await chip('Bonjour').getAttribute('data-score'),await card('Bonjour').getAttribute('data-score')],['1','1']);   // the chip and the card follow at once
+  // the points of the word in its window: what was done is ticked, with the total
+  assert.match(await card('Bonjour').locator('.study-total').textContent(),/1 \/ 6/);
+  assert.equal(await card('Bonjour').locator('.study-list li.done').count(),1);
+  // opening the example sentences (or the idioms): +1, once
+  await card('Bonjour').locator('details[data-study-fold] summary').first().click();
+  await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.explored===true);
+  assert.equal(await score('Bonjour'),2);
+  await card('Bonjour').locator('details[data-study-fold] summary').first().click();await card('Bonjour').locator('details[data-study-fold] summary').first().click();   // closed and opened again
+  await pause(300);assert.equal(await score('Bonjour'),2);
+  // listening to the word: +1; listening to a sentence or an idiom: +1 (the read-aloud button of the new interface tells the app)
+  await spoken('Bonjour','word');await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.heard===true);
+  await spoken('Bonjour','sentence');await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.read===true);
+  assert.equal(await score('Bonjour'),4);assert.match(await card('Bonjour').locator('.study-total').textContent(),/4 \/ 6/);
+  assert.match(await chip('Bonjour').getAttribute('title'),/ · Puan: 4 \/ 6$/);
+  // a right answer in a test: +2 for each word that was asked (a wrong one earns nothing)
+  await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'pt'+String(i).padStart(2,'0'),meaning:'anlam '+i}))));
+  await page.evaluate(()=>startQuiz());await page.waitForSelector('#contentArea .quiz-option');
+  const asked=[];
+  for(let question=0;question<10;question++){
+   const answer=await page.evaluate(()=>quizSession.questions[quizSession.index].word);asked.push(answer);
+   const wrong=question===0;                                                                    // the first one is answered wrong on purpose
+   const pick=wrong?await page.evaluate(correct=>[...document.querySelectorAll('#contentArea .quiz-option')].map(node=>node.textContent).find(text=>text.toLowerCase()!==correct.toLowerCase()),answer):answer;
+   await page.locator('#contentArea .quiz-option:not([disabled])',{hasText:new RegExp('^'+pick.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'$')}).click();
+   await page.waitForFunction(count=>quizSession.index>count,question);
+  }
+  const quizPoints=await page.evaluate(words=>words.map(word=>[word,VocVocData.getWordByText(word).study?.quiz===true]),asked);
+  assert.equal(quizPoints[0][1],false);                                                         // the wrong answer
+  assert.equal(quizPoints.slice(1).every(([,earned])=>earned),true);
+  const quizzed=quizPoints[1][0];assert.equal(await score(quizzed)>=2,true);
+  // memorized words do not earn points any more, a word that is not in the list never does
+  await page.evaluate(()=>markMemorized('Merci'));await page.waitForFunction(()=>VocVocData.getWordProgress('Merci').status==='memorized');
+  await spoken('Merci','word');await spoken('maison','word');await pause(300);
+  assert.deepEqual([await score('Merci'),await page.evaluate(()=>VocVocData.getWordByText('maison'))],[0,null]);
+  assert.equal(await chip('Merci').getAttribute('data-score'),'0');
+  // the points are saved (reload, backup) and every score has its own tone
+  await page.reload();await ready();
+  const askedRight=quizPoints.some(([word,earned])=>word==='Bonjour'&&earned);                 // Bonjour may have been one of the ten questions
+  assert.equal(await score('Bonjour'),askedRight?6:4);assert.equal(await chip('Bonjour').getAttribute('data-score'),askedRight?'6':'4');
+  const exported=await page.evaluate(()=>VocVocData.export());assert.deepEqual(Object.values(exported.words).find(word=>word.word==='Bonjour').study,{opened:true,explored:true,heard:true,read:true,...(askedRight?{quiz:true}:{})});
+  const tones=await page.evaluate(()=>{const out={};for(let n=0;n<=6;n++){const probe=document.createElement('button');probe.className='history-chip ui-pill score-'+n;probe.dataset.score=String(n);document.getElementById('historyArea').append(probe);out[n]=getComputedStyle(probe).borderTopColor;probe.remove();}return out;});
+  assert.equal(new Set(Object.values(tones)).size,7,'seven different tones: '+JSON.stringify(tones));
+  // opening a word window (History) gives the "opened" point too, and the window shows the section for a word that is not memorized only
+  await page.evaluate(()=>toggleHistoryDetail('pt11'));await page.waitForSelector('#historyDetails .study-section');
+  await page.waitForFunction(()=>VocVocData.getWordByText('pt11').study?.opened===true);
+  await page.evaluate(()=>closeHistoryDetail());await page.evaluate(()=>toggleHistoryDetail('Merci'));await page.waitForSelector('#historyDetails.open');
+  assert.equal(await page.locator('#historyDetails .study-section').count(),0);
+  await context.close();
+ }
+ record('Points: opening a word +1, its examples or idioms opened +1, the word listened to +1, a sentence or idiom listened to +1, a right answer in a test +2, each once; none for a memorized word or one that is not in the list; the chip and card take a tone from the points, the window lists them, they are saved and in the backup');
+ // The triangle of an open card is level with the word, also when its type wraps onto a second line
+ {
+  context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
+  const levels=()=>page.evaluate(()=>[...document.querySelectorAll('#contentArea .main-word-card')].map(card=>{const middle=el=>{const box=el.getBoundingClientRect();return box.top+box.height/2;};return {open:card.classList.contains('open'),title:Math.round(middle(card.querySelector('.word-title'))*10)/10,triangle:Math.round(middle(card.querySelector('.main-card-chevron'))*10)/10,header:Math.round(card.querySelector('.word-header').getBoundingClientRect().height)};}));
+  const closed=await levels();
+  assert(closed.every(item=>Math.abs(item.title-item.triangle)<=1),'closed: '+JSON.stringify(closed));
+  await page.locator('#contentArea .main-word-card',{hasText:'Bonjour'}).locator('.main-word-toggle').click();
+  const open=(await levels()).find(item=>item.open);
+  assert(open.header>closed[0].header*1.2,'the open card has a taller header: '+JSON.stringify(open));    // the type of Bonjour wraps onto a second line
+  assert(Math.abs(open.title-open.triangle)<=1,'open: '+JSON.stringify(open));
+  await context.close();
+ }
+ record('Cards: the triangle is vertically level with the word, closed and open, also when the type wraps onto a second line');
  // Actual pointer drags execute the async commit callbacks on every card family.
  context=await browser.newContext({viewport:{width:1000,height:850}});page=await context.newPage();await page.goto(url);await ready();
  const drag=async(selector,amount)=>{const box=await page.locator(selector).first().boundingBox(),x=box.x+box.width/2,y=box.y+box.height/2;await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+amount,y+5,{steps:8});await page.mouse.up();};
@@ -544,28 +622,48 @@ async function main(){
   }
   record('word database: unreachable files and a damaged chunk give a calm message and change nothing; the next try works');
 
-  // the free plan holds 300 words in the list: Add new words, a looked-up word and the random word are all held to it; Premium has no limit
+  // the free plan gives 100 words from each of the three level groups (A1-A2, B1-B2, C1-C2): Add new words fills exactly what is left of the chosen group, a looked-up word is held to
+  // the allowance of ITS group (another group is still open), and after the 100th word of a group that group needs Premium
   {
    const {c,p}=await fresh();
-   await p.evaluate(async()=>{await VocVocData.updateSettings({dailyLimit:'unlimited'});const have=VocVocData.getProgressEntries().length;await VocVocData.addWordBatch(Array.from({length:297-have},(_,i)=>({word:'seed'+i,meaning:'m'})));});
-   assert.equal(await p.evaluate(()=>VocVocData.getProgressEntries().length),297);
+   const a1=levelWords(['A1','A2']),b1=levelWords(['B1','B2']),c1=levelWords(['C1','C2']);
+   const usedOf=list=>p.evaluate(words=>words.filter(word=>!!VocVocData.getWordProgress(word)).length,list);   // the course has pairs that differ only by an accent (ou / où): one of them in the list counts for both
+   const reaches=(list,count)=>p.waitForFunction(([words,wanted])=>words.filter(word=>!!VocVocData.getWordProgress(word)).length>=wanted,[list,count]);
+   await p.evaluate(async list=>{await VocVocData.updateSettings({dailyLimit:'unlimited'});const fresh=list.filter(word=>!VocVocData.getWordProgress(word));const have=list.length-fresh.length;const key=word=>word.normalize('NFD').replace(/[̀-ͯ]/g,'').toLocaleLowerCase('fr'),twins=new Map();for(const word of list)twins.set(key(word),(twins.get(key(word))||0)+1);await VocVocData.addWordBatch(fresh.filter(word=>twins.get(key(word))===1).slice(0,97-have).map(word=>({word,meaning:'m'})));},a1);
+   assert.equal(await usedOf(a1),97);
    await p.evaluate(()=>addNewWords());
-   await p.waitForFunction(()=>VocVocData.getProgressEntries().length===300);                    // only the three words that still fit
-   await alertSays(p,/en çok 300 kelime/);                                                       // and it says why there are no more
+   await reaches(a1,100);                                                                       // only the words that are still free
+   await alertSays(p,/A1-A2 seviyesinden 100 kelime/);                                            // and it says why there are no more, and what can be done
    const full=await snapshotOf(p);
-   await p.evaluate(()=>addNewWords());await alertSays(p,/en çok 300 kelime/);assert.equal(await snapshotOf(p),full);
+   await p.evaluate(()=>addNewWords());await alertSays(p,/A1-A2 seviyesinden 100 kelime/);assert.equal(await snapshotOf(p),full);
    await clearAlert(p);
-   await p.evaluate(word=>{document.getElementById('searchInput').value=word;return handleSearch();},levelWords(['C1','C2'])[0]);
+   // a word of A1-A2 that is not in the list yet cannot be added any more ...
+   const extra=await p.evaluate(list=>list.find(word=>!VocVocData.getWordProgress(word)),a1);
+   await p.evaluate(word=>{document.getElementById('searchInput').value=word;return handleSearch();},extra);
    await p.locator('#relatedWordPopup [data-add-related-word]').click();
-   await alertSays(p,/en çok 300 kelime/);assert.equal(await snapshotOf(p),full);
+   await alertSays(p,/A1-A2 seviyesinden 100 kelime/);assert.equal(await snapshotOf(p),full);
+   await clearAlert(p);
+   // ... but a word of B1-B2 or C1-C2 can: those groups have their own 100
+   for(const word of [b1[0],c1[0]]){
+    await p.evaluate(value=>{document.getElementById('searchInput').value=value;return handleSearch();},word);
+    await p.locator('#relatedWordPopup [data-add-related-word]').click();
+    await p.waitForFunction(value=>!!VocVocData.getWordProgress(value),word);
+   }
+   assert((await usedOf(a1))<=104,'the free group did not grow beyond its allowance (an accent twin may count for two)');
+   // choosing B1-B2 in Settings opens Add new words again (10 more words of that group)
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'B1-B2'}));await p.evaluate(()=>addNewWords());
+   await reaches(b1,11);
+   // Premium has no limit in any group; when the plan ends nothing is removed and nothing more is added to a full group
    await p.evaluate(()=>VocVocPlan.set('premium'));await clearAlert(p);
-   await p.evaluate(()=>addNewWords());await p.waitForFunction(()=>VocVocData.getProgressEntries().length===310);
-   await p.evaluate(()=>VocVocPlan.set('free'));await clearAlert(p);                            // the plan ends: nothing is removed, nothing more is added
-   await p.evaluate(()=>addNewWords());await alertSays(p,/en çok 300 kelime/);
-   assert.equal(await p.evaluate(()=>VocVocData.getProgressEntries().length),310);
+   const beforePremium=await usedOf(a1);
+   await p.evaluate(()=>VocVocData.updateSettings({difficulty:'A1-A2'}));await p.evaluate(()=>addNewWords());await reaches(a1,beforePremium+10);
+   await p.evaluate(()=>VocVocPlan.set('free'));await clearAlert(p);
+   await p.evaluate(()=>VocVocData.addDailyUsage(-VocVocData.getDailyUsage().count));   // a new day, so the daily goal is not what answers
+   await p.evaluate(()=>addNewWords());await alertSays(p,/A1-A2 seviyesinden 100 kelime/);
+   assert((await usedOf(a1))>=beforePremium+10,'nothing was taken away');
    await c.close();
   }
-  record('free plan: 300 words in the list, Add new words fills exactly the room that is left, a looked-up word is held to the same limit, Premium has none');
+  record('free plan: 100 words from each level group (A1-A2, B1-B2, C1-C2), Add new words fills exactly what is left of the chosen group, a looked-up word uses the allowance of its own group, Premium has none');
 
   // every word of the chosen level is in the list: the level-up question (No keeps the level, Yes does what Settings does), and the final note at the end of the course
   {
@@ -978,11 +1076,27 @@ async function main(){
   await goTo(page,'İstatistik');
   assert.equal(await page.locator('#v2Screen .v2-locked').count(),1);
   await page.getByRole('button',{name:"Premium'a geç"}).click();assert.equal(await page.locator('#v2Screen h1').textContent(),'Premium');
-  assert.match(await page.locator('#v2Screen').textContent(),/300\. kelimeden sonrası/);assert.doesNotMatch(await page.locator('#v2Screen').textContent(),/API|yapay zek/i,'Premium is no longer about a key or an AI');
+  assert.match(await page.locator('#v2Screen').textContent(),/100\. kelimeden sonrası/);assert.doesNotMatch(await page.locator('#v2Screen').textContent(),/API|yapay zek/i,'Premium is no longer about a key or an AI');
+  // a card for each plan: Free 0 USD a month; Premium 1.99 USD a month or 19.90 USD a year (two months free), switched with Monthly / Yearly
+  const plans=()=>page.evaluate(()=>[...document.querySelectorAll('#v2Screen .v2-plan')].map(card=>({name:card.querySelector('.v2-plan-name').textContent,amount:card.querySelector('.v2-plan-amount').textContent,unit:card.querySelector('.v2-plan-unit').textContent,current:!!card.querySelector('.v2-chip'),ribbon:card.querySelector('.v2-plan-ribbon')?.textContent||'',items:card.querySelectorAll('.v2-feature-list li').length,sub:card.querySelector('.v2-plan-sub')?.textContent||''})));
+  assert.deepEqual((await plans()).map(({name,amount,unit,current,ribbon,items})=>({name,amount,unit,current,ribbon,items})),[
+   {name:'Ücretsiz',amount:'0 USD',unit:'/ ay',current:true,ribbon:'',items:6},
+   {name:'Premium',amount:'19,90 USD',unit:'/ yıl',current:false,ribbon:'★ 2 ay bedava',items:5}]);                  // the year is the default, and it is the better deal
+  assert.match((await plans())[1].sub,/23,88 USD.*12 ay yerine 10 ay öde.*Aylık ≈ 1,66 USD/);
+  assert.equal(await page.locator('.v2-billing-btn[aria-pressed="true"]').textContent(),'Yıllık2 ay bedava');
+  await page.locator('.v2-billing-btn',{hasText:'Aylık'}).click();
+  assert.deepEqual((await plans())[1],{name:'Premium',amount:'1,99 USD',unit:'/ ay',current:false,ribbon:'',items:5,sub:''});
+  assert.equal(await page.evaluate(()=>localStorage.getItem('VOCVOC_SIM_BILLING')),'monthly');
+  await page.locator('.v2-billing-btn',{hasText:'Yıllık'}).click();assert.equal((await plans())[1].amount,'19,90 USD');
+  const look=await page.evaluate(()=>{const card=document.querySelector('#v2Screen .v2-plan-premium'),style=getComputedStyle(card);return {image:style.backgroundImage,color:style.color,radius:style.borderTopLeftRadius};});
+  assert(/linear-gradient/.test(look.image)&&look.color==='rgb(255, 255, 255)'&&parseFloat(look.radius)>=20,'the Premium card is a coloured gradient card with white text: '+JSON.stringify(look));
+  assert.equal(await page.locator('#v2Screen .v2-plan').count(),2);
   await page.getByRole('button',{name:"Premium'u simüle et"}).click();
-  assert.deepEqual(await page.evaluate(()=>[VocVocPlan.get(),VocVocPlan.has('stats'),VocVocPlan.has('sentenceBuilder'),VocVocPlan.wordLimit(),localStorage.getItem('VOCVOC_SIM_PLAN')]),['premium',true,true,Infinity,'premium']);
+  assert.deepEqual(await page.evaluate(()=>[VocVocPlan.get(),VocVocPlan.has('stats'),VocVocPlan.has('sentenceBuilder'),VocVocPlan.bandWordLimit(),localStorage.getItem('VOCVOC_SIM_PLAN')]),['premium',true,true,Infinity,'premium']);
+  assert.deepEqual((await plans()).map(plan=>plan.current),[false,true],'the current-plan label moves to the Premium card');
+  assert.equal(await page.getByRole('button',{name:'Ücretsiz plana dön'}).count(),1);
   await goTo(page,'İstatistik');assert.equal(await page.locator('#v2Screen .v2-locked').count(),0);
-  record('new interface: Statistics are locked on Free, "Premium" simulation unlocks them and lifts the 300-word limit; the Premium page says nothing about a key or an AI');
+  record('new interface: Statistics are locked on Free, "Premium" simulation unlocks them and lifts the free word allowance; the Premium page is a card for each plan with the prices and a Monthly / Yearly switch, and says nothing about a key or an AI');
 
   // the choices survive a reload and a normal page does not ask for sign-in again
   await page.goto(url+'#/profile');await ready();
@@ -1970,6 +2084,7 @@ async function main(){
    assert.equal(await p.locator('#historyDetails .v2-speak').first().getAttribute('aria-label'),'Sesli oku: Bonjour');
    await p.locator('#historyDetails .v2-speak').first().click();
    assert.deepEqual((await calls()).filter(call=>!call.cancel),[{text:'Bonjour',lang:'fr-FR',voice:'Fake French',rate:1}]);
+   await p.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.heard===true);                 // listening to the word earns a point
    await p.waitForFunction(()=>document.querySelector('#historyDetails .v2-speak').getAttribute('aria-pressed')==='false');   // ended
    // an example sentence is read as written; the same sentence pressed again is read at 0.5, then at 1.0 again, then at 0.5 ...
    await p.evaluate(()=>{for(const details of document.querySelectorAll('#historyDetails details.fold'))details.open=true;});
@@ -1978,6 +2093,7 @@ async function main(){
    const example=p.locator('#historyDetails .example-item .v2-speak').first();
    const spoken=async()=>(await calls()).filter(call=>call.text);
    await example.click();assert.deepEqual([(await spoken())[0].text,await example.getAttribute('aria-pressed'),await example.getAttribute('data-rate')],[sentence,'true','1×']);
+   await p.waitForFunction(()=>VocVocData.getWordByText('Bonjour').study?.read===true);                  // so does listening to a sentence or an idiom
    for(let press=0;press<4;press++)await example.click();
    assert.deepEqual((await spoken()).map(call=>call.rate),[1,0.5,1,0.5,1]);                          // normal, slow, normal, slow, normal
    assert.deepEqual([await example.getAttribute('data-rate'),await example.getAttribute('aria-label')],['1×',`Sesli oku: ${sentence} (normal)`]);
@@ -2112,7 +2228,7 @@ async function main(){
     ['.v2-testlist .v2-bullet-great'],['.v2-testlist .v2-bullet-good'],['.v2-testlist .v2-bullet-fair'],['.v2-testlist .v2-bullet-low'],['.v2-test-day'],['.v2-testlist .v2-muted'],['.v2-testlist strong']]],
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
    ['#/profile',[['.v2-profile-name'],['.v2-chip'],['.v2-profile-head .v2-muted'],['.v2-row'],['.v2-row-end'],['.v2-row[data-danger]'],['.v2-page > .v2-muted']]],
-   ['#/premium',[['.v2-back'],['.v2-card .v2-muted'],['.v2-feature-list li'],['.v2-card .ui-button']]],
+   ['#/premium',[['.v2-back'],['.v2-plan-free .v2-plan-name'],['.v2-plan-free .v2-plan-amount'],['.v2-plan-free .v2-plan-unit'],['.v2-plan-free .v2-feature-list li'],['.v2-plan-premium .v2-plan-name'],['.v2-plan-premium .v2-plan-amount'],['.v2-plan-premium .v2-plan-unit'],['.v2-plan-premium .v2-plan-sub'],['.v2-plan-premium .v2-plan-caption'],['.v2-plan-premium .v2-feature-list li'],['.v2-plan-premium .v2-plan-ribbon'],['.v2-billing-btn[aria-pressed="true"]'],['.v2-billing-btn[aria-pressed="false"]'],['.v2-plan-premium .v2-billing-tag'],['.v2-plan-premium .v2-plan-btn'],['.v2-page > .v2-muted']]],
    ['#/privacy',[['.v2-note'],['.v2-page h2'],['.v2-page p:not(.v2-note)']]]];
   let measured=0;
   for(const colorScheme of ['light','dark']){
@@ -2125,7 +2241,7 @@ async function main(){
    await page.getByRole('button',{name:/Misafir olarak/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
    await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i,examples:[{text:'This is contrast'+i+' here.',phonetic:'dis iz kontrast here',translation:'Bu burada.'}],...(i===1?{expressions:[{text:'an idiom',translation:'bir deyim',exampleText:'An example.',examplePhonetic:'en igzempıl',exampleTranslation:'Bir örnek.'}]}:{})}))));
    for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'#v2Screen[data-route="today"] .v2-pack-text':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test'||hash==='#/cloze')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
-   await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip.v2-premium');await measureAll([['.v2-chip'],['.v2-card .ui-button']]);
+   await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip-on-dark');await measureAll([['.v2-chip-on-dark'],['.v2-plan-btn-quiet']]);
    await page.evaluate(()=>markMemorized('contrast0'));await page.waitForFunction(()=>VocVocData.getWordProgress('contrast0').status==='memorized');
    await page.waitForSelector('#v2Celebrate.v2-on');await measureAll([['.v2-celebrate-kicker'],['.v2-celebrate-name'],['.v2-celebrate-desc'],['.v2-medal']]);   // the new-badge card
    await page.evaluate(()=>toggleHistoryDetail('contrast0'));await page.waitForSelector('#historyDetails.open .v2-speak');await measureAll([['#historyDetails .v2-speak']]);await page.evaluate(()=>closeHistoryDetail());

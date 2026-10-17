@@ -33,6 +33,8 @@ const VocVocStorage=(()=>{
       for(const k of ['examples','expressions'])if(w[k]?.some(x=>!object(x)||Object.values(x).some(v=>typeof v!=='string')))throw fail('invalidData');
       // Optional labels the user gave the word (absent on words that have none); the limits here are wider than the ones the app applies.
       if(w.tags!=null&&(!Array.isArray(w.tags)||w.tags.length>50||w.tags.some(x=>typeof x!=='string'||!x.trim()||x.length>64)))throw fail('invalidData');
+      // Optional record of what the user did with the word (points): only these names, each true.
+      if(w.study!=null&&(!object(w.study)||Object.entries(w.study).some(([name,done])=>!['heard','opened','explored','read','quiz'].includes(name)||done!==true)))throw fail('invalidData');
     }
     for(const [alias,id] of Object.entries(db.aliases))if(typeof id!=='string'||!Object.hasOwn(db.words,id)||!alias.startsWith(`${db.words[id].targetLanguage}:${db.words[id].nativeLanguage}:`))throw fail('invalidData');
     for(const [id,p] of Object.entries(db.progress)){
