@@ -248,7 +248,7 @@ describe('Free allowance per level group, points for words, Premium cards and th
     assert(!/oldUi|freeIncludes/.test(screensJs));
   });
   it('the triangle of a main card is level with the word: its box is as high as one line of the title, and the toggle lines its children up at the top',()=>{
-    assert(html.includes('.main-word-toggle{align-items:flex-start !important}')&&html.includes('height:calc(var(--main-title-size) * var(--line-tight)) !important;'));
+    assert(html.includes('.main-word-toggle{align-items:flex-start !important}')&&html.includes('height:0 !important;\n    margin-top:calc(var(--main-title-size) * var(--line-tight) / 2) !important;'),'the triangle has no height of its own and sits on the middle of the first title line');
     assert(html.includes('.main-word-card:not(.open){--main-title-size:1.45rem}')&&html.includes('.main-word-card{--main-title-size:var(--font-3xl)}'));
   });
 });

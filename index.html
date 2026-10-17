@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.15.0">
+  <meta name="vocvoc-shell" content="1.15.1">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -202,15 +202,17 @@
     transform: rotate(90deg) !important;
   }
 
-  /* The triangle is level with the word itself: the toggle lines its children up at the top, and the triangle's box is exactly as high as one line of the
-     word's title (size and line height as the title has them), so a type that wraps onto a second line does not pull it down. */
+  /* The triangle is level with the word itself: the toggle lines its children up at the top, and the triangle sits on the middle of the first line of the word's
+     title (size and line height as the title has them), so a type that wraps onto a second line does not pull it down. Its box has no height of its own, so it
+     can never make the row higher than the word (a box as high as the title line was 1/64 px higher than the line on some systems and made the card taller). */
   .main-word-card{--main-title-size:var(--font-3xl)}
   .main-word-card:not(.open){--main-title-size:1.45rem}
   @media (max-width: 600px){.main-word-card:not(.open){--main-title-size:1.35rem}}
   .main-word-toggle{align-items:flex-start !important}
   .main-word-toggle .main-card-chevron{
     display:flex !important;align-items:center;justify-content:center;
-    height:calc(var(--main-title-size) * var(--line-tight)) !important;
+    height:0 !important;
+    margin-top:calc(var(--main-title-size) * var(--line-tight) / 2) !important;
   }
 
   /* Prevent old header/divider rules from drawing a line while collapsed */
