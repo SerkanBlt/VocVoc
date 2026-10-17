@@ -2454,6 +2454,8 @@ async function main(){
   // 2. a theme change in B reaches A, and a card A's reader has opened stays open
   await A.locator('#contentArea .main-word-toggle').first().click();
   assert.equal(await A.evaluate(()=>document.querySelectorAll('#contentArea .main-word-card.open').length),1);
+  await A.waitForFunction(()=>VocVocData.getWords().some(word=>word.study?.opened===true));       // opening a card earns its word a point: a commit of A's own, which B has to adopt before it writes
+  await A.evaluate(()=>VocVocData.flush());const settled=await revision(A);await B.waitForFunction(rev=>VocVocStorage.adapter.revision===rev,settled);
   await B.evaluate(()=>VocVocData.updateSettings({theme:'dark'}));
   await A.waitForFunction(()=>document.documentElement.dataset.theme==='dark');
   assert.equal(await A.evaluate(()=>document.querySelectorAll('#contentArea .main-word-card.open').length),1);assert.equal(await A.evaluate(()=>document.getElementById('themeSelect').value),'dark');
