@@ -1,10 +1,16 @@
 /* npm install --prefix tests; npx playwright install chromium; node tests/browser.cjs
-   Optional PWA_BROWSER_PATH points to a compatible Chromium executable. */
-const {chromium}=require('playwright'),fs=require('fs'),http=require('http'),os=require('os'),path=require('path'),assert=require('node:assert/strict');
+   Optional PWA_BROWSER_PATH points to a compatible Chromium executable.
+   Optional --keep-going (npm run test:browser:all) does not stop at the first failed assertion: every failing scenario is listed at the end. */
+const {chromium}=require('playwright'),fs=require('fs'),http=require('http'),os=require('os'),path=require('path'),hardAssert=require('node:assert/strict');
+// --keep-going: a failed assertion is noted and the run goes on, so one run lists every scenario that is out of date (a timeout or any other error still stops it, as before). CI runs without it.
+const keepGoing=process.argv.includes('--keep-going'),failures=[];let pending=[];
+const note=e=>{if(e?.code!=='ERR_ASSERTION')throw e;pending.push([String(e.stack||'').split('\n').filter(line=>line.includes(path.basename(__filename)))[1]?.trim()||'',...String(e.message).split('\n').slice(0,8)].join('\n     '));};
+const softly=(fn,self)=>(...args)=>{try{const out=fn.apply(self,args);return out&&typeof out.then==='function'?out.catch(note):out;}catch(e){note(e);}};
+const assert=keepGoing?new Proxy(softly(hardAssert),{get:(target,key)=>typeof hardAssert[key]==='function'?softly(hardAssert[key],hardAssert):hardAssert[key]}):hardAssert;
 const root=path.resolve(__dirname,'..'),original=path.resolve(root,'tests/fixtures/spa-v1.html');
 let serveNext=false,skew=null,server,browser;const results=[]; // serveNext: serve the next deploy; skew: 'meta' = HTML still carries the old shell version, 'icon' = one shell asset is missing
 const shellVersion=fs.readFileSync(path.join(root,'sw.js'),'utf8').match(/VERSION='([^']+)'/)[1],nextVersion=shellVersion.replace(/\d+$/,n=>String(Number(n)+1));
-const record=(name)=>{results.push(name);console.log('PASS',name)};
+const record=(name)=>{if(pending.length){failures.push(name);console.log('FAIL',name,'\n    ',pending.join('\n    '));pending=[];return;}results.push(name);console.log('PASS',name)};
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 function seed(n=100){const words={},aliases={},progress={};for(let i=0;i<n;i++){const word='word'+i,id='fr:tr:'+word;words[id]={id,word,normalized:word,targetLanguage:'fr',nativeLanguage:'tr',meaning:'meaning '+i,type:'noun',synonyms:[],antonyms:[],examples:[],expressions:[],createdAt:'2026-01-01',updatedAt:'2026-01-01'};aliases[id]=id;progress[id]={wordId:id,status:i%3===0?'memorized':i%3===1?'active':'archived',firstSeenAt:'2026-01-01',lastSeenAt:'2026-01-01',statusChangedAt:'2026-01-01',memorizedAt:null,archivedAt:i%3===2?'2026-01-01':null,archiveSourceStatus:i%3===2?'memorized':null};}return {schemaVersion:1,meta:{starterWordsInitialized:true},settings:{nativeLanguage:'tr',targetLanguage:'fr',difficulty:'A1-A2',dailyLimit:'10',theme:'system',fontSize:'normal'},words,aliases,progress,dailyUsage:{date:'2026-10-05',count:7}};}
 async function main(){
@@ -2780,6 +2786,7 @@ async function main(){
  }
  assert.deepEqual(errors,[]);record('no browser JavaScript errors');
  assert.deepEqual(cspViolations,[]);record('CSP: the whole suite (every screen, backup, update, offline, word-database calls) ran without a single policy violation');
+ if(failures.length){console.log(`\n${failures.length} scenario(s) failed (--keep-going), ${results.length} passed:`);for(const name of failures)console.log(' -',name);process.exitCode=1;return;}
  console.log(JSON.stringify({passed:results.length,startup1000ms:startupMs,results},null,2));fs.writeFileSync(path.join(root,'tests','browser-results.json'),JSON.stringify({passed:results.length,startup1000ms:startupMs,results},null,2));
 }
 main().catch(e=>{console.error(e);console.error(`

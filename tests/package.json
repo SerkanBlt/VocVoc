@@ -6,6 +6,7 @@
     "test:static": "node --test --test-reporter=spec validate.cjs",
     "test:data": "node --test --test-reporter=spec storage.cjs data-layer.test.cjs stats.test.cjs packs.test.cjs wordbase.test.cjs wordbase-app.test.cjs",
     "test:browser": "node browser.cjs",
+    "test:browser:all": "node browser.cjs --keep-going",
     "test:all": "npm test && npm run test:browser",
     "perf": "node perf.cjs"
   },
