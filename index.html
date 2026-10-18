@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.16.0">
+  <meta name="vocvoc-shell" content="1.17.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -807,7 +807,7 @@ input.ui-input:focus{
 .tag-chip button{appearance:none;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;padding:6px 11px;min-height:34px}
 .tag-chip button:hover{background:var(--ui-control-bg-hover)}
 .tag-chip .tag-chip-remove{border-inline-start:1px solid var(--ui-control-border);padding:6px 10px;color:var(--text-muted)}
-.tags-section,.study-section{border-top:1px solid var(--border);padding:13px 0 0;margin-top:13px}          /* a separator above each, like the folds have: under the examples, under the points */
+.tags-section,.study-section{border-top:1px solid var(--border);padding:13px 0 0;margin:13px 0 0}          /* a separator above each, like the folds have: under the examples, under the points */
 /* points of a word that is not memorized yet: its History chip, its word on a card or in a word window and the total in its window take a tone from none (0) through blue, green and yellow to orange (10).
    The chip is tinted (tone as border and background); on the cards and in the word windows the WORD itself takes the tone (a darker one in the light theme, a lighter one in the dark theme). */
 :root{--score-1:#60a5fa;--score-2:#38bdf8;--score-3:#22d3ee;--score-4:#2dd4bf;--score-5:#34d399;--score-6:#4ade80;--score-7:#a3e635;--score-8:#facc15;--score-9:#f59e0b;--score-10:#f97316}
@@ -828,18 +828,18 @@ input.ui-input:focus{
 /* little room under the meaning: the line under it (and the next section) starts close; a longer meaning just takes more lines */
 .meaning-section{margin-bottom:0}
 .meaning-section + details.fold,.meaning-section + .study-section,.meaning-section + .tags-section{margin-top:9px}
-.section-head{display:flex;align-items:center;gap:8px;min-height:32px}
-.section-head .section-title{flex:1;min-width:0;margin:0}
-.section-add{flex:none;display:grid;place-items:center;width:32px;height:32px;padding:0;border:1px solid var(--ui-control-border);border-radius:50%;background:transparent;color:var(--text);font:inherit;font-size:1.1rem;line-height:1;cursor:pointer}
-.section-add:hover{background:var(--ui-control-bg-hover)}
-.section-add span{display:block;transition:transform .15s ease}
+/* The head of the Points and Tags sections is a line like the fold rows above it (Zıt Anlamlılar, Örnek Cümleler …): the same height (1.22rem is the height of the arrow of a fold row), the whole line is a button */
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:1.22rem;cursor:pointer}
+.section-head .section-title{flex:1;min-width:0;margin:0;white-space:nowrap}
+.section-add{flex:none;appearance:none;display:flex;align-items:center;justify-content:flex-end;width:auto;height:1.22rem;padding:0 .12rem 0 .6rem;border:0;border-radius:0;background:transparent;color:var(--text-muted);font:inherit;font-size:1.22rem;font-weight:500;line-height:1;cursor:pointer}
+.section-add span{display:block;transition:transform .18s ease}
 .section-add[aria-expanded="true"] span{transform:rotate(45deg)}
 .section-body{margin-top:8px}
 .tag-count{display:inline-block;min-width:1.4em;margin-inline-start:4px;padding:0 6px;border-radius:999px;background:var(--accent-bg);color:var(--text-muted);font-size:.75rem;font-weight:700;text-align:center;letter-spacing:0}
 .tag-list + .tag-panel{margin-top:10px}
 .tag-suggest.is-on{opacity:.7;cursor:default}
 .tag-new{border-style:dashed}
-.study-total{appearance:none;display:inline-block;padding:1px 10px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text);font:inherit;font-size:.82rem;font-weight:700;letter-spacing:0;text-transform:none;cursor:pointer;min-height:28px}
+.study-total{appearance:none;box-sizing:border-box;display:inline-flex;align-items:center;height:1.22rem;padding:0 9px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text);font:inherit;font-size:.75rem;font-weight:700;line-height:1;letter-spacing:0;text-transform:none;cursor:pointer}
 .study-total[aria-expanded="true"]{box-shadow:0 0 0 2px color-mix(in srgb,var(--score-color,var(--primary)) 35%,transparent)}
 .study-total[class*="score-"]:not(.score-0){border-color:var(--score-color);background:color-mix(in srgb,var(--score-color) 22%,transparent)}
 .study-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
@@ -998,21 +998,19 @@ input.ui-input:focus{
   scrollbar-width:none;
 }
 .settings-panel-body::-webkit-scrollbar{display:none}
-.settings-panel-footer{
-  flex:0 0 auto;
-  padding:var(--ui-panel-y) var(--ui-panel-x) max(var(--ui-panel-y),env(safe-area-inset-bottom));
-  border-top:1px solid var(--border);
-  background:var(--card-bg);
-}
-.settings-panel-footer .modal-actions{margin-top:0}
-
-.settings-panel-body > p{
-  margin:0 0 14px;
-  color:var(--text-muted);
-  font-size:.88rem;
-  line-height:1.4;
-}
-.settings-row{margin:0 0 12px}
+/* Settings: every setting is a panel, its name on the left and its choice (or button) on the right; a change is saved at once */
+.settings-panel-body{display:grid!important;gap:10px;align-content:start}
+.settings-panel-body > .settings-row{--ui-control-h:40px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:10px 12px;border:1px solid var(--border);border-radius:var(--ui-panel-radius,16px);background:var(--card-bg)}
+.settings-panel-body > .settings-row > label{flex:1 1 auto;min-width:0;margin:0!important;color:var(--text);font-size:var(--font-md);font-weight:600}
+.settings-row .settings-dropdown,.settings-row .daily-limit-combo{flex:0 0 auto;width:clamp(132px,48%,220px)}
+.settings-row .ui-dropdown-menu{left:auto;right:0;width:max-content;min-width:100%;max-width:min(78vw,280px)}
+.settings-row > .ui-button{flex:none;width:auto;min-width:92px;min-height:40px;padding:0 16px}
+.settings-panel-body > details.settings-row{display:block}
+.settings-panel-body > details.settings-row > summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:600;font-size:var(--font-md);color:var(--text)}
+.settings-panel-body > details.settings-row > summary::-webkit-details-marker{display:none}
+.settings-panel-body > details.settings-row > summary::after{content:"›";font-size:1.22rem;line-height:1;font-weight:500;color:var(--text-muted);transition:transform .18s ease}
+.settings-panel-body > details.settings-row[open] > summary::after{transform:rotate(90deg)}
+.settings-panel-body > details.settings-row .ui-panel-actions{margin-top:10px}
 .settings-row label{
   display:block;
   margin:0 0 6px;
@@ -1066,10 +1064,11 @@ input.ui-input:focus{
   border-radius:var(--ui-panel-radius)!important;
 }
 
-/* Expanded inline word card uses the same spacing/radius tokens. */
+/* Expanded inline word card uses the same spacing/radius tokens (and a little less room above the word). */
 .main-word-card.open{
   border-radius:var(--ui-panel-radius)!important;
   padding:var(--ui-panel-y) var(--ui-panel-x)!important;
+  padding-top:8px!important;
 }
 
 /* ---------- ACCORDION FAMILY ---------- */
@@ -2316,8 +2315,6 @@ body{
       <button type="button" class="word-popup-close settings-close ui-panel-close" onclick="closeModal()" aria-label="Close">×</button>
     </div>
     <div class="settings-panel-body ui-panel-body">
-      <p id="settingsSubtitle">App settings.</p>
-
       <div class="settings-row">
         <label id="appLanguageLabel">App language</label>
         <div class="settings-dropdown ui-dropdown" id="appLanguageDropdown" data-ui-change="appLanguage">
@@ -2375,7 +2372,7 @@ body{
 
       <div class="settings-row">
         <label id="difficultyLabel">Word difficulty</label>
-        <div class="settings-dropdown ui-dropdown" id="difficultyDropdown">
+        <div class="settings-dropdown ui-dropdown" id="difficultyDropdown" data-ui-change="difficulty">
           <button type="button" class="settings-dropdown-trigger ui-dropdown-trigger" onclick="toggleUiDropdown('difficultyDropdown')" aria-expanded="false">
             <span class="settings-dropdown-label ui-dropdown-label">A1 · Beginner</span><span class="settings-dropdown-chevron ui-chevron"></span>
           </button>
@@ -2441,18 +2438,14 @@ body{
       </div>
 
       <details id="backupControls" class="settings-row"><summary id="backupLabel">JSON backup</summary><p id="persistNotice" class="settings-hint" role="status" hidden></p><div class="ui-panel-actions"><button type="button" id="exportDataBtn" class="ui-button ui-button-secondary" onclick="exportVocVocData()">Export</button><button type="button" id="importDataBtn" class="ui-button ui-button-secondary" onclick="document.getElementById('importDataFile').click()">Import</button><button type="button" id="recoveryDataBtn" class="ui-button ui-button-secondary" onclick="exportRecoveryBackup()">↶ JSON</button><input id="importDataFile" type="file" accept="application/json,.json" hidden onchange="importVocVocData(this)"></div></details>
-    </div>
-    <div class="settings-panel-footer">
       <div class="settings-row">
-        <button type="button" id="archiveShowBtn" class="ui-button ui-button-secondary ui-button-full" onclick="openArchive()">Show archive</button>
+        <label id="archiveShowLabel" for="archiveShowBtn">Show archive</label>
+        <button type="button" id="archiveShowBtn" class="ui-button ui-button-secondary" onclick="openArchive()">Open</button>
       </div>
 
       <div class="settings-row">
-        <button type="button" id="resetProgressBtn" class="ui-button ui-button-secondary ui-button-full" onclick="confirmResetProgress()">Reset progress</button>
-      </div>
-
-      <div class="modal-actions ui-panel-actions">
-        <button type="button" id="settingsSaveBtn" class="ui-button ui-button-success" onclick="saveSettings()">Save</button>
+        <label id="resetProgressLabel" for="resetProgressBtn">Reset progress</label>
+        <button type="button" id="resetProgressBtn" class="ui-button ui-button-secondary" onclick="confirmResetProgress()">Reset</button>
       </div>
     </div>
   </div>
@@ -2521,7 +2514,7 @@ const I18N={
   en:{
     flip:"Flip",flipHint:"Tap to flip",previousCard:"Previous card",nextCard:"Next card",flipEmpty:"No saved word with a meaning is available.",
     settings:"Settings",originalLanguage:"Original language",learningLanguage:"Learning language",appLanguage:"App language",
-    difficulty:"Word difficulty",dailyLimit:"Daily word limit",theme:"Theme",fontSize:"Font size",showArchive:"Show archive",resetProgress:"Reset progress",save:"Save",
+    difficulty:"Word difficulty",dailyLimit:"Daily word limit",theme:"Theme",fontSize:"Font size",openAction:"Open",resetAction:"Reset",showArchive:"Show archive",resetProgress:"Reset progress",
     test:"Test",recall:"Recall",searchPlaceholder:"Enter a word...",historySearch:"Search my list or type #tag…",all:"All",active:"Active",memorized:"Memorized",flipOther:"Other",noSort:"No sorting",
     archive:"Archive",archiveSearch:"Search archive...",fromActive:"From active",fromMemorized:"From memorized",activate:"Reactivate",delete:"Delete",cancel:"Cancel",reset:"Reset",
     resetCopy:"History, memorized words, archive and saved word data will be deleted.",irreversible:"This cannot be undone.",languageChangeTitle:"Change learning languages?",
@@ -2534,7 +2527,7 @@ const I18N={
     clozeNeed:"Fill in the blank needs at least 10 words that have an example sentence.",archivedWord:"This word is archived. Reactivate it from Settings → Show archive.",
     dailyLimitReached:"Daily limit reached. Change it in Settings.",dailyLimitPremium:"A daily goal above 20 words comes with Premium.",
     levelA1:"Beginner",levelA2:"Elementary",levelB1:"Intermediate",levelB2:"Upper intermediate",levelC1:"Advanced",levelC2:"Proficient",system:"System",light:"Light",dark:"Dark",newTest:"New 10-question test",wordLabel:"Word",chooseWord:"Choose the correct word",wrongSelected:"Incorrect answers",unlimited:"Unlimited",settingsAction:"Settings",randomAction:"Random word",openDetails:"Open details",memorizedOpenDetails:"Memorized — open details",rememberCue:"Memorized",forgetCue:"Remove memorized",archiveCue:"↓ Archive",archiveToast:"Archived",undo:"Undo",wordFallback:"Word",detailsLoadError:"Word details could not be loaded.",alertClose:"Close alert",optionShow:"Show options",close:"Close",searchAction:"Search",testAction:"Test active words",recallAction:"Test memorized words",limitPlaceholder:"Enter a limit",statusFilter:"Status filter",sortOrder:"Sort order",swipeActions:"Swipe actions",fontSmall:"Small",fontNormal:"Normal",fontLarge:"Large",fontXLarge:"Extra large",showMore:"Show more ({count})",
-    settingsSub:"App settings.",addNewAction:"Add new words",wordsAdded:"{n} words added.",freeWordLimit:"The free plan includes {n} words from {band}. You can continue with another level or go Premium.",wordbaseNone:"There is no word database for this language pair yet.",wordbaseUnavailable:"The word database cannot be reached right now. Check your connection and try again.",notInWordbase:"“{word}” is not in the word database.",inYourList:"This word is already in your list.",levelUpTitle:"Congratulations!",levelUpAsk:"Congratulations! You have added every word of this level to your list. Do you want to move to the next level?",levelUpAll:"Congratulations! You have completed every level and taken all the words I have.",levelUpYes:"Yes, move up",levelUpNo:"Not now",levelUpOk:"OK",levelChanged:"Level set to {level}.",soonTag:"Soon",levelEmpty:"Nothing is ready for this level yet. You can choose another level in Settings.",
+    addNewAction:"Add new words",wordsAdded:"{n} words added.",freeWordLimit:"The free plan includes {n} words from {band}. You can continue with another level or go Premium.",wordbaseNone:"There is no word database for this language pair yet.",wordbaseUnavailable:"The word database cannot be reached right now. Check your connection and try again.",notInWordbase:"“{word}” is not in the word database.",inYourList:"This word is already in your list.",levelUpTitle:"Congratulations!",levelUpAsk:"Congratulations! You have added every word of this level to your list. Do you want to move to the next level?",levelUpAll:"Congratulations! You have completed every level and taken all the words I have.",levelUpYes:"Yes, move up",levelUpNo:"Not now",levelUpOk:"OK",levelChanged:"Level set to {level}.",soonTag:"Soon",levelEmpty:"Nothing is ready for this level yet. You can choose another level in Settings.",
     tags:"Tags",tagAdd:"Add",tagRemove:"Remove the tag “{tag}”",tagShow:"Show the words tagged “{tag}”",tagLimit:"A word can have up to {n} tags.",tagSuggested:"Your tags",tagNoWords:"No word has the tag “{tag}”.",similarWords:"Similar words",
     studyScore:"Points",studyHeard:"You listened to its pronunciation",studyOpened:"You opened it and read the meaning",studyExplored:"You opened the example sentences or idioms",studyRead:"You listened to the example sentences or idioms",studyQuiz:"You answered it right in a test",studyDone:"Done",studyTodo:"Not yet",scoreTitle:"Points: {n} / {m}",
     studyPicked:"You picked the word's badge in the word list",studyFlipped:"You saw it on a Flip card and turned it over",studyMatch:"You matched it correctly",tagAddTag:"Add a tag",tagNew:"New tag: {tag}",tagOnWord:"Already on this word",tagPlaceholder:"Find a tag or type a new one…",matchNeed:"Matching needs at least 10 active words.",matchPrompt:"Match each word with its meaning",matchLabel:"Match {n}/10",matchWords:"Words",matchMeanings:"Meanings"
@@ -2542,7 +2535,7 @@ const I18N={
   tr:{
     flip:"Flip",flipHint:"Anlamı görmek için dokun",previousCard:"Önceki kart",nextCard:"Sonraki kart",flipEmpty:"Anlamı kayıtlı kelime bulunamadı.",
     settings:"Ayarlar",originalLanguage:"Orijinal dil",learningLanguage:"Öğrenilen dil",appLanguage:"Uygulama dili",
-    difficulty:"Kelime zorluk derecesi",dailyLimit:"Günlük kelime limiti",theme:"Tema",fontSize:"Yazı boyutu",showArchive:"Arşivi göster",resetProgress:"İlerlemeyi Sıfırla",save:"Kaydet",
+    difficulty:"Kelime zorluk derecesi",dailyLimit:"Günlük kelime limiti",theme:"Tema",fontSize:"Yazı boyutu",openAction:"Aç",resetAction:"Sıfırla",showArchive:"Arşivi göster",resetProgress:"İlerlemeyi Sıfırla",
     test:"Test",recall:"Hatırla",searchPlaceholder:"Kelime girin...",historySearch:"Listemde ara veya #etiket yaz…",all:"Tümü",active:"Aktifler",memorized:"Ezberimdekiler",flipOther:"Diğer",noSort:"Sıralama Yok",
     archive:"Arşiv",archiveSearch:"Arşivde ara...",fromActive:"Aktiften",fromMemorized:"Ezberimden",activate:"Aktif hale getir",delete:"Sil",cancel:"Vazgeç",reset:"Sıfırla",
     resetCopy:"Listem, Ezberimde, Arşiv ve kayıtlı kelime verileri silinecek.",irreversible:"Bu işlem geri alınamaz.",languageChangeTitle:"Dil seçimi değiştirilsin mi?",
@@ -2555,7 +2548,7 @@ const I18N={
     clozeNeed:"Boşluk Doldurma için cümlesi olan en az 10 kelime gerekli.",archivedWord:"Bu kelime arşivde. Ayarlar → Arşivi göster bölümünden tekrar aktif hale getirebilirsiniz.",
     dailyLimitReached:"Günlük limite ulaşıldı. Ayarlardaki limiti değiştirin.",dailyLimitPremium:"20 kelimenin üzerindeki günlük hedef Premium ile açılır.",
     levelA1:"Başlangıç",levelA2:"Temel",levelB1:"Orta",levelB2:"Orta üstü",levelC1:"İleri",levelC2:"Uzman",system:"Sistem",light:"Açık",dark:"Koyu",newTest:"Yeni 10 Soruluk Test",wordLabel:"Kelime",chooseWord:"Doğru kelimeyi seç",wrongSelected:"Yanlış işaretlediklerin",unlimited:"Sınırsız",settingsAction:"Ayarlar",randomAction:"Rastgele kelime",openDetails:"Detayı aç",memorizedOpenDetails:"Ezberimde — detayı aç",rememberCue:"Ezberimde",forgetCue:"Ezberimden Çıkar",archiveCue:"↓ Arşivle",archiveToast:"Arşivlendi",undo:"Geri al",wordFallback:"Kelime",detailsLoadError:"Kelime detayı alınamadı.",alertClose:"Uyarıyı kapat",optionShow:"Seçenekleri göster",close:"Kapat",searchAction:"Ara",testAction:"Aktif kelimelerden test",recallAction:"Ezberimdeki kelimelerden test",limitPlaceholder:"Limit girin",statusFilter:"Durum filtresi",sortOrder:"Sıralama",swipeActions:"Kaydırma eylemleri",fontSmall:"Küçük",fontNormal:"Normal",fontLarge:"Büyük",fontXLarge:"Çok büyük",showMore:"Daha fazla göster ({count})",
-    settingsSub:"Uygulama ayarları.",addNewAction:"Yeni kelime ekle",wordsAdded:"{n} kelime eklendi.",freeWordLimit:"Ücretsiz planda {band} seviyesinden {n} kelime alabilirsin. Başka bir seviyeden devam edebilir ya da Premium’a geçebilirsin.",wordbaseNone:"Bu dil çifti için kelime veritabanı henüz yok.",wordbaseUnavailable:"Kelime veritabanına şu an ulaşılamıyor. İnternet bağlantını kontrol edip tekrar dene.",notInWordbase:"“{word}” kelime veritabanında yok.",inYourList:"Bu kelime zaten listende.",levelUpTitle:"Tebrikler!",levelUpAsk:"Tebrikler! Bu seviyedeki tüm kelimeleri listene aldın, yeni seviyeye geçmek ister misin?",levelUpAll:"Tebrikler! Tüm seviyeleri tamamladın, bendeki kelimelerin hepsini çektin.",levelUpYes:"Evet, geç",levelUpNo:"Şimdi değil",levelUpOk:"Tamam",levelChanged:"Seviye {level} olarak ayarlandı.",soonTag:"Yakında",levelEmpty:"Bu seviyenin kelimeleri henüz hazırlanıyor. Ayarlar’dan başka bir seviye seçebilirsin.",
+    addNewAction:"Yeni kelime ekle",wordsAdded:"{n} kelime eklendi.",freeWordLimit:"Ücretsiz planda {band} seviyesinden {n} kelime alabilirsin. Başka bir seviyeden devam edebilir ya da Premium’a geçebilirsin.",wordbaseNone:"Bu dil çifti için kelime veritabanı henüz yok.",wordbaseUnavailable:"Kelime veritabanına şu an ulaşılamıyor. İnternet bağlantını kontrol edip tekrar dene.",notInWordbase:"“{word}” kelime veritabanında yok.",inYourList:"Bu kelime zaten listende.",levelUpTitle:"Tebrikler!",levelUpAsk:"Tebrikler! Bu seviyedeki tüm kelimeleri listene aldın, yeni seviyeye geçmek ister misin?",levelUpAll:"Tebrikler! Tüm seviyeleri tamamladın, bendeki kelimelerin hepsini çektin.",levelUpYes:"Evet, geç",levelUpNo:"Şimdi değil",levelUpOk:"Tamam",levelChanged:"Seviye {level} olarak ayarlandı.",soonTag:"Yakında",levelEmpty:"Bu seviyenin kelimeleri henüz hazırlanıyor. Ayarlar’dan başka bir seviye seçebilirsin.",
     tags:"Etiketler",tagAdd:"Ekle",tagRemove:"“{tag}” etiketini kaldır",tagShow:"“{tag}” etiketli kelimeleri göster",tagLimit:"Bir kelimeye en çok {n} etiket verilebilir.",tagSuggested:"Kullandığın etiketler",tagNoWords:"“{tag}” etiketli kelime yok.",similarWords:"Benzer kelimeler",
     studyScore:"Puan",studyHeard:"Okunuşunu dinledin",studyOpened:"Kelimeyi açıp anlamına baktın",studyExplored:"Örnek cümleleri veya deyimleri açtın",studyRead:"Örnek cümleleri veya deyimleri dinledin",studyQuiz:"Testte doğru cevapladın",studyDone:"Tamamlandı",studyTodo:"Henüz değil",scoreTitle:"Puan: {n} / {m}",
     studyPicked:"Kelime listesinden kelime rozetini seçtin",studyFlipped:"Flip kartında kelimeyi görüp çevirdin",studyMatch:"Eşleştirmeyi doğru yaptın",tagAddTag:"Etiket ekle",tagNew:"Yeni etiket: {tag}",tagOnWord:"Bu kelimede zaten var",tagPlaceholder:"Etiket ara ya da yeni yaz…",matchNeed:"Eşleştirme için en az 10 aktif kelime gerekli.",matchPrompt:"Kelimeleri anlamlarıyla eşleştir",matchLabel:"Eşleştirme {n}/10",matchWords:"Kelimeler",matchMeanings:"Anlamlar"
@@ -2563,7 +2556,7 @@ const I18N={
   fr:{
     flip:"Flip",flipHint:"Touchez pour retourner",previousCard:"Carte précédente",nextCard:"Carte suivante",flipEmpty:"Aucun mot enregistré avec une signification.",
     settings:"Réglages",originalLanguage:"Langue d’origine",learningLanguage:"Langue apprise",appLanguage:"Langue de l’application",
-    difficulty:"Niveau des mots",dailyLimit:"Limite quotidienne",theme:"Thème",fontSize:"Taille du texte",showArchive:"Afficher l’archive",resetProgress:"Réinitialiser la progression",save:"Enregistrer",
+    difficulty:"Niveau des mots",dailyLimit:"Limite quotidienne",theme:"Thème",fontSize:"Taille du texte",openAction:"Ouvrir",resetAction:"Réinitialiser",showArchive:"Afficher l’archive",resetProgress:"Réinitialiser la progression",
     test:"Test",recall:"Réviser",searchPlaceholder:"Saisir un mot...",historySearch:"Rechercher dans ma liste ou #étiquette…",all:"Tous",active:"Actifs",memorized:"Mémorisés",flipOther:"Autres",noSort:"Sans tri",
     archive:"Archive",archiveSearch:"Rechercher dans l’archive...",fromActive:"Depuis actifs",fromMemorized:"Depuis mémorisés",activate:"Réactiver",delete:"Supprimer",cancel:"Annuler",reset:"Réinitialiser",
     resetCopy:"L’historique, les mots mémorisés, l’archive et les données enregistrées seront supprimés.",irreversible:"Cette action est irréversible.",languageChangeTitle:"Changer les langues d’apprentissage ?",
@@ -2576,7 +2569,7 @@ const I18N={
     clozeNeed:"Compléter la phrase nécessite au moins 10 mots avec une phrase d'exemple.",archivedWord:"Ce mot est archivé. Réactivez-le via Réglages → Afficher l’archive.",
     dailyLimitReached:"Limite quotidienne atteinte. Modifiez-la dans Réglages.",dailyLimitPremium:"Un objectif du jour au-delà de 20 mots est réservé à Premium.",
     levelA1:"Débutant",levelA2:"Élémentaire",levelB1:"Intermédiaire",levelB2:"Intermédiaire supérieur",levelC1:"Avancé",levelC2:"Maîtrise",system:"Système",light:"Clair",dark:"Sombre",newTest:"Nouveau test de 10 questions",wordLabel:"Mot",chooseWord:"Choisissez le bon mot",wrongSelected:"Réponses incorrectes",unlimited:"Illimité",settingsAction:"Réglages",randomAction:"Mot aléatoire",openDetails:"Ouvrir les détails",memorizedOpenDetails:"Mémorisé — ouvrir les détails",rememberCue:"Mémorisé",forgetCue:"Retirer des mémorisés",archiveCue:"↓ Archiver",archiveToast:"Archivé",undo:"Annuler",wordFallback:"Mot",detailsLoadError:"Impossible de charger les détails du mot.",alertClose:"Fermer l’alerte",optionShow:"Afficher les options",close:"Fermer",searchAction:"Rechercher",testAction:"Tester les mots actifs",recallAction:"Tester les mots mémorisés",limitPlaceholder:"Saisir une limite",statusFilter:"Filtre de statut",sortOrder:"Ordre de tri",swipeActions:"Actions par glissement",fontSmall:"Petit",fontNormal:"Normal",fontLarge:"Grand",fontXLarge:"Très grand",showMore:"Afficher plus ({count})",
-    settingsSub:"Réglages de l’application.",addNewAction:"Ajouter de nouveaux mots",wordsAdded:"{n} mots ajoutés.",freeWordLimit:"Le plan gratuit inclut {n} mots du niveau {band}. Vous pouvez continuer avec un autre niveau ou passer à Premium.",wordbaseNone:"Il n’y a pas encore de base de mots pour cette paire de langues.",wordbaseUnavailable:"La base de mots est inaccessible pour le moment. Vérifiez votre connexion et réessayez.",notInWordbase:"« {word} » n’est pas dans la base de mots.",inYourList:"Ce mot est déjà dans votre liste.",levelUpTitle:"Félicitations !",levelUpAsk:"Félicitations ! Vous avez ajouté tous les mots de ce niveau à votre liste. Voulez-vous passer au niveau suivant ?",levelUpAll:"Félicitations ! Vous avez terminé tous les niveaux et récupéré tous les mots que j’ai.",levelUpYes:"Oui, passer",levelUpNo:"Pas maintenant",levelUpOk:"OK",levelChanged:"Niveau réglé sur {level}.",soonTag:"Bientôt",levelEmpty:"Les mots de ce niveau sont encore en préparation. Vous pouvez choisir un autre niveau dans les Réglages.",
+    addNewAction:"Ajouter de nouveaux mots",wordsAdded:"{n} mots ajoutés.",freeWordLimit:"Le plan gratuit inclut {n} mots du niveau {band}. Vous pouvez continuer avec un autre niveau ou passer à Premium.",wordbaseNone:"Il n’y a pas encore de base de mots pour cette paire de langues.",wordbaseUnavailable:"La base de mots est inaccessible pour le moment. Vérifiez votre connexion et réessayez.",notInWordbase:"« {word} » n’est pas dans la base de mots.",inYourList:"Ce mot est déjà dans votre liste.",levelUpTitle:"Félicitations !",levelUpAsk:"Félicitations ! Vous avez ajouté tous les mots de ce niveau à votre liste. Voulez-vous passer au niveau suivant ?",levelUpAll:"Félicitations ! Vous avez terminé tous les niveaux et récupéré tous les mots que j’ai.",levelUpYes:"Oui, passer",levelUpNo:"Pas maintenant",levelUpOk:"OK",levelChanged:"Niveau réglé sur {level}.",soonTag:"Bientôt",levelEmpty:"Les mots de ce niveau sont encore en préparation. Vous pouvez choisir un autre niveau dans les Réglages.",
     tags:"Étiquettes",tagAdd:"Ajouter",tagRemove:"Retirer l’étiquette « {tag} »",tagShow:"Afficher les mots avec l’étiquette « {tag} »",tagLimit:"Un mot peut avoir jusqu’à {n} étiquettes.",tagSuggested:"Vos étiquettes",tagNoWords:"Aucun mot n’a l’étiquette « {tag} ».",similarWords:"Mots semblables",
     studyScore:"Points",studyHeard:"Vous avez écouté la prononciation",studyOpened:"Vous l’avez ouvert et lu le sens",studyExplored:"Vous avez ouvert les phrases d’exemple ou les expressions",studyRead:"Vous avez écouté les phrases d’exemple ou les expressions",studyQuiz:"Vous avez bien répondu à un test",studyDone:"Fait",studyTodo:"Pas encore",scoreTitle:"Points : {n} / {m}",
     studyPicked:"Vous avez choisi le badge du mot dans la liste de mots",studyFlipped:"Vous l’avez vu sur une carte Flip et retourné",studyMatch:"Vous l’avez bien associé",tagAddTag:"Ajouter une étiquette",tagNew:"Nouvelle étiquette : {tag}",tagOnWord:"Déjà sur ce mot",tagPlaceholder:"Chercher ou écrire une étiquette…",matchNeed:"L’association demande au moins 10 mots actifs.",matchPrompt:"Associez chaque mot à son sens",matchLabel:"Association {n}/10",matchWords:"Mots",matchMeanings:"Sens"
@@ -2584,7 +2577,7 @@ const I18N={
   de:{
     flip:"Flip",flipHint:"Zum Umdrehen tippen",previousCard:"Vorherige Karte",nextCard:"Nächste Karte",flipEmpty:"Kein gespeichertes Wort mit Bedeutung verfügbar.",
     settings:"Einstellungen",originalLanguage:"Ausgangssprache",learningLanguage:"Lernsprache",appLanguage:"App-Sprache",
-    difficulty:"Wortschwierigkeit",dailyLimit:"Tägliches Wortlimit",theme:"Design",fontSize:"Schriftgröße",showArchive:"Archiv anzeigen",resetProgress:"Fortschritt zurücksetzen",save:"Speichern",
+    difficulty:"Wortschwierigkeit",dailyLimit:"Tägliches Wortlimit",theme:"Design",fontSize:"Schriftgröße",openAction:"Öffnen",resetAction:"Zurücksetzen",showArchive:"Archiv anzeigen",resetProgress:"Fortschritt zurücksetzen",
     test:"Test",recall:"Wiederholen",searchPlaceholder:"Wort eingeben...",historySearch:"Meine Liste durchsuchen oder #Tag…",all:"Alle",active:"Aktiv",memorized:"Gelernt",flipOther:"Andere",noSort:"Keine Sortierung",
     archive:"Archiv",archiveSearch:"Archiv durchsuchen...",fromActive:"Aus Aktiv",fromMemorized:"Aus Gelernt",activate:"Reaktivieren",delete:"Löschen",cancel:"Abbrechen",reset:"Zurücksetzen",
     resetCopy:"Verlauf, gelernte Wörter, Archiv und gespeicherte Wortdaten werden gelöscht.",irreversible:"Dies kann nicht rückgängig gemacht werden.",languageChangeTitle:"Lernsprachen ändern?",
@@ -2598,7 +2591,7 @@ const I18N={
     dailyLimitReached:"Tageslimit erreicht. Ändern Sie es in den Einstellungen.",dailyLimitPremium:"Ein Tagesziel über 20 Wörter gibt es mit Premium.",
     levelA1:"Anfänger",levelA2:"Grundstufe",levelB1:"Mittelstufe",levelB2:"Gehobene Mittelstufe",levelC1:"Fortgeschritten",levelC2:"Experte",system:"System",light:"Hell",dark:"Dunkel",newTest:"Neuer Test mit 10 Fragen",wordLabel:"Wort",chooseWord:"Wählen Sie das richtige Wort",wrongSelected:"Falsche Antworten",
     unlimited:"Unbegrenzt",settingsAction:"Einstellungen",randomAction:"Zufälliges Wort",openDetails:"Details öffnen",memorizedOpenDetails:"Gelernt — Details öffnen",rememberCue:"Gelernt",forgetCue:"Aus Gelernt entfernen",archiveCue:"↓ Archivieren",archiveToast:"Archiviert",undo:"Rückgängig",wordFallback:"Wort",detailsLoadError:"Wortdetails konnten nicht geladen werden.",alertClose:"Warnung schließen",optionShow:"Optionen anzeigen",close:"Schließen",searchAction:"Suchen",testAction:"Aktive Wörter testen",recallAction:"Gelernte Wörter testen",limitPlaceholder:"Limit eingeben",statusFilter:"Statusfilter",sortOrder:"Sortierung",swipeActions:"Wischaktionen",fontSmall:"Klein",fontNormal:"Normal",fontLarge:"Groß",fontXLarge:"Sehr groß",showMore:"Mehr anzeigen ({count})",
-    settingsSub:"App-Einstellungen.",addNewAction:"Neue Wörter hinzufügen",wordsAdded:"{n} Wörter hinzugefügt.",freeWordLimit:"Der kostenlose Plan enthält {n} Wörter aus {band}. Sie können mit einer anderen Stufe weitermachen oder Premium holen.",wordbaseNone:"Für dieses Sprachpaar gibt es noch keine Wortdatenbank.",wordbaseUnavailable:"Die Wortdatenbank ist gerade nicht erreichbar. Prüfen Sie die Verbindung und versuchen Sie es erneut.",notInWordbase:"„{word}“ ist nicht in der Wortdatenbank.",inYourList:"Dieses Wort ist schon in Ihrer Liste.",levelUpTitle:"Glückwunsch!",levelUpAsk:"Glückwunsch! Sie haben alle Wörter dieser Stufe in Ihre Liste aufgenommen. Möchten Sie zur nächsten Stufe wechseln?",levelUpAll:"Glückwunsch! Sie haben alle Stufen abgeschlossen und alle meine Wörter geholt.",levelUpYes:"Ja, wechseln",levelUpNo:"Jetzt nicht",levelUpOk:"OK",levelChanged:"Stufe auf {level} gestellt.",soonTag:"Bald",levelEmpty:"Die Wörter dieser Stufe werden noch vorbereitet. Wählen Sie in den Einstellungen eine andere Stufe.",
+    addNewAction:"Neue Wörter hinzufügen",wordsAdded:"{n} Wörter hinzugefügt.",freeWordLimit:"Der kostenlose Plan enthält {n} Wörter aus {band}. Sie können mit einer anderen Stufe weitermachen oder Premium holen.",wordbaseNone:"Für dieses Sprachpaar gibt es noch keine Wortdatenbank.",wordbaseUnavailable:"Die Wortdatenbank ist gerade nicht erreichbar. Prüfen Sie die Verbindung und versuchen Sie es erneut.",notInWordbase:"„{word}“ ist nicht in der Wortdatenbank.",inYourList:"Dieses Wort ist schon in Ihrer Liste.",levelUpTitle:"Glückwunsch!",levelUpAsk:"Glückwunsch! Sie haben alle Wörter dieser Stufe in Ihre Liste aufgenommen. Möchten Sie zur nächsten Stufe wechseln?",levelUpAll:"Glückwunsch! Sie haben alle Stufen abgeschlossen und alle meine Wörter geholt.",levelUpYes:"Ja, wechseln",levelUpNo:"Jetzt nicht",levelUpOk:"OK",levelChanged:"Stufe auf {level} gestellt.",soonTag:"Bald",levelEmpty:"Die Wörter dieser Stufe werden noch vorbereitet. Wählen Sie in den Einstellungen eine andere Stufe.",
     tags:"Tags",tagAdd:"Hinzufügen",tagRemove:"Tag „{tag}“ entfernen",tagShow:"Wörter mit dem Tag „{tag}“ anzeigen",tagLimit:"Ein Wort kann bis zu {n} Tags haben.",tagSuggested:"Ihre Tags",tagNoWords:"Kein Wort hat den Tag „{tag}“.",similarWords:"Ähnliche Wörter",
     studyScore:"Punkte",studyHeard:"Sie haben die Aussprache angehört",studyOpened:"Sie haben es geöffnet und die Bedeutung gelesen",studyExplored:"Sie haben die Beispielsätze oder Redewendungen geöffnet",studyRead:"Sie haben die Beispielsätze oder Redewendungen angehört",studyQuiz:"Sie haben es im Test richtig beantwortet",studyDone:"Erledigt",studyTodo:"Noch nicht",scoreTitle:"Punkte: {n} / {m}",
     studyPicked:"Sie haben das Abzeichen des Wortes in der Wortliste gewählt",studyFlipped:"Sie haben es auf einer Flip-Karte gesehen und umgedreht",studyMatch:"Sie haben es richtig zugeordnet",tagAddTag:"Tag hinzufügen",tagNew:"Neuer Tag: {tag}",tagOnWord:"Schon bei diesem Wort",tagPlaceholder:"Tag suchen oder neuen schreiben…",matchNeed:"Zuordnen braucht mindestens 10 aktive Wörter.",matchPrompt:"Ordnen Sie jedem Wort seine Bedeutung zu",matchLabel:"Zuordnung {n}/10",matchWords:"Wörter",matchMeanings:"Bedeutungen"
@@ -2606,7 +2599,7 @@ const I18N={
   es:{
     flip:"Flip",flipHint:"Toca para girar",previousCard:"Tarjeta anterior",nextCard:"Tarjeta siguiente",flipEmpty:"No hay palabras guardadas con significado.",
     settings:"Ajustes",originalLanguage:"Idioma de origen",learningLanguage:"Idioma aprendido",appLanguage:"Idioma de la aplicación",
-    difficulty:"Dificultad de palabras",dailyLimit:"Límite diario de palabras",theme:"Tema",fontSize:"Tamaño del texto",showArchive:"Mostrar archivo",resetProgress:"Restablecer progreso",save:"Guardar",
+    difficulty:"Dificultad de palabras",dailyLimit:"Límite diario de palabras",theme:"Tema",fontSize:"Tamaño del texto",openAction:"Abrir",resetAction:"Restablecer",showArchive:"Mostrar archivo",resetProgress:"Restablecer progreso",
     test:"Test",recall:"Repasar",searchPlaceholder:"Escribe una palabra...",historySearch:"Buscar en mi lista o #etiqueta…",all:"Todos",active:"Activos",memorized:"Memorizados",flipOther:"Otros",noSort:"Sin ordenar",
     archive:"Archivo",archiveSearch:"Buscar en el archivo...",fromActive:"Desde activos",fromMemorized:"Desde memorizados",activate:"Reactivar",delete:"Eliminar",cancel:"Cancelar",reset:"Restablecer",
     resetCopy:"Se eliminarán el historial, las palabras memorizadas, el archivo y los datos guardados.",irreversible:"Esta acción no se puede deshacer.",languageChangeTitle:"¿Cambiar los idiomas de aprendizaje?",
@@ -2620,7 +2613,7 @@ const I18N={
     dailyLimitReached:"Se alcanzó el límite diario. Cámbialo en Ajustes.",dailyLimitPremium:"Un objetivo diario de más de 20 palabras llega con Premium.",
     levelA1:"Principiante",levelA2:"Elemental",levelB1:"Intermedio",levelB2:"Intermedio alto",levelC1:"Avanzado",levelC2:"Dominio",system:"Sistema",light:"Claro",dark:"Oscuro",newTest:"Nuevo test de 10 preguntas",wordLabel:"Palabra",chooseWord:"Elige la palabra correcta",wrongSelected:"Respuestas incorrectas",
     unlimited:"Ilimitado",settingsAction:"Ajustes",randomAction:"Palabra aleatoria",openDetails:"Abrir detalles",memorizedOpenDetails:"Memorizado — abrir detalles",rememberCue:"Memorizado",forgetCue:"Quitar de memorizados",archiveCue:"↓ Archivar",archiveToast:"Archivado",undo:"Deshacer",wordFallback:"Palabra",detailsLoadError:"No se pudieron cargar los detalles de la palabra.",alertClose:"Cerrar aviso",optionShow:"Mostrar opciones",close:"Cerrar",searchAction:"Buscar",testAction:"Probar palabras activas",recallAction:"Probar palabras memorizadas",limitPlaceholder:"Introduce un límite",statusFilter:"Filtro de estado",sortOrder:"Orden",swipeActions:"Acciones de deslizamiento",fontSmall:"Pequeño",fontNormal:"Normal",fontLarge:"Grande",fontXLarge:"Muy grande",showMore:"Mostrar más ({count})",
-    settingsSub:"Ajustes de la aplicación.",addNewAction:"Añadir palabras nuevas",wordsAdded:"{n} palabras añadidas.",freeWordLimit:"El plan gratuito incluye {n} palabras de {band}. Puedes seguir con otro nivel o pasarte a Premium.",wordbaseNone:"Todavía no hay base de palabras para este par de idiomas.",wordbaseUnavailable:"No se puede acceder a la base de palabras ahora. Comprueba la conexión e inténtalo de nuevo.",notInWordbase:"«{word}» no está en la base de palabras.",inYourList:"Esta palabra ya está en tu lista.",levelUpTitle:"¡Felicidades!",levelUpAsk:"¡Felicidades! Has añadido todas las palabras de este nivel a tu lista. ¿Quieres pasar al siguiente nivel?",levelUpAll:"¡Felicidades! Has completado todos los niveles y has conseguido todas las palabras que tengo.",levelUpYes:"Sí, pasar",levelUpNo:"Ahora no",levelUpOk:"Vale",levelChanged:"Nivel cambiado a {level}.",soonTag:"Pronto",levelEmpty:"Las palabras de este nivel aún se están preparando. Puedes elegir otro nivel en Ajustes.",
+    addNewAction:"Añadir palabras nuevas",wordsAdded:"{n} palabras añadidas.",freeWordLimit:"El plan gratuito incluye {n} palabras de {band}. Puedes seguir con otro nivel o pasarte a Premium.",wordbaseNone:"Todavía no hay base de palabras para este par de idiomas.",wordbaseUnavailable:"No se puede acceder a la base de palabras ahora. Comprueba la conexión e inténtalo de nuevo.",notInWordbase:"«{word}» no está en la base de palabras.",inYourList:"Esta palabra ya está en tu lista.",levelUpTitle:"¡Felicidades!",levelUpAsk:"¡Felicidades! Has añadido todas las palabras de este nivel a tu lista. ¿Quieres pasar al siguiente nivel?",levelUpAll:"¡Felicidades! Has completado todos los niveles y has conseguido todas las palabras que tengo.",levelUpYes:"Sí, pasar",levelUpNo:"Ahora no",levelUpOk:"Vale",levelChanged:"Nivel cambiado a {level}.",soonTag:"Pronto",levelEmpty:"Las palabras de este nivel aún se están preparando. Puedes elegir otro nivel en Ajustes.",
     tags:"Etiquetas",tagAdd:"Añadir",tagRemove:"Quitar la etiqueta «{tag}»",tagShow:"Mostrar las palabras con la etiqueta «{tag}»",tagLimit:"Una palabra puede tener hasta {n} etiquetas.",tagSuggested:"Tus etiquetas",tagNoWords:"Ninguna palabra tiene la etiqueta «{tag}».",similarWords:"Palabras parecidas",
     studyScore:"Puntos",studyHeard:"Escuchaste su pronunciación",studyOpened:"La abriste y leíste el significado",studyExplored:"Abriste las frases de ejemplo o las expresiones",studyRead:"Escuchaste las frases de ejemplo o las expresiones",studyQuiz:"La respondiste bien en un test",studyDone:"Hecho",studyTodo:"Aún no",scoreTitle:"Puntos: {n} / {m}",
     studyPicked:"Elegiste la insignia de la palabra en la lista de palabras",studyFlipped:"La viste en una tarjeta Flip y la giraste",studyMatch:"La emparejaste bien",tagAddTag:"Añadir etiqueta",tagNew:"Nueva etiqueta: {tag}",tagOnWord:"Ya está en esta palabra",tagPlaceholder:"Busca una etiqueta o escribe una nueva…",matchNeed:"Emparejar necesita al menos 10 palabras activas.",matchPrompt:"Empareja cada palabra con su significado",matchLabel:"Emparejar {n}/10",matchWords:"Palabras",matchMeanings:"Significados"
@@ -2628,7 +2621,7 @@ const I18N={
   it:{
     flip:"Flip",flipHint:"Tocca per girare",previousCard:"Carta precedente",nextCard:"Carta successiva",flipEmpty:"Nessuna parola salvata con significato disponibile.",
     settings:"Impostazioni",originalLanguage:"Lingua originale",learningLanguage:"Lingua studiata",appLanguage:"Lingua dell’app",
-    difficulty:"Difficoltà delle parole",dailyLimit:"Limite giornaliero di parole",theme:"Tema",fontSize:"Dimensione testo",showArchive:"Mostra archivio",resetProgress:"Azzera progressi",save:"Salva",
+    difficulty:"Difficoltà delle parole",dailyLimit:"Limite giornaliero di parole",theme:"Tema",fontSize:"Dimensione testo",openAction:"Apri",resetAction:"Azzera",showArchive:"Mostra archivio",resetProgress:"Azzera progressi",
     test:"Test",recall:"Ripassa",searchPlaceholder:"Inserisci una parola...",historySearch:"Cerca nella mia lista o #etichetta…",all:"Tutti",active:"Attivi",memorized:"Memorizzati",flipOther:"Altri",noSort:"Nessun ordinamento",
     archive:"Archivio",archiveSearch:"Cerca nell’archivio...",fromActive:"Da attivi",fromMemorized:"Da memorizzati",activate:"Riattiva",delete:"Elimina",cancel:"Annulla",reset:"Azzera",
     resetCopy:"Cronologia, parole memorizzate, archivio e dati salvati verranno eliminati.",irreversible:"Questa operazione non può essere annullata.",languageChangeTitle:"Cambiare le lingue di apprendimento?",
@@ -2642,7 +2635,7 @@ const I18N={
     dailyLimitReached:"Limite giornaliero raggiunto. Modificalo nelle Impostazioni.",dailyLimitPremium:"Un obiettivo giornaliero oltre 20 parole è incluso in Premium.",
     levelA1:"Principiante",levelA2:"Elementare",levelB1:"Intermedio",levelB2:"Intermedio superiore",levelC1:"Avanzato",levelC2:"Padronanza",system:"Sistema",light:"Chiaro",dark:"Scuro",newTest:"Nuovo test di 10 domande",wordLabel:"Parola",chooseWord:"Scegli la parola corretta",wrongSelected:"Risposte errate",
     unlimited:"Illimitato",settingsAction:"Impostazioni",randomAction:"Parola casuale",openDetails:"Apri dettagli",memorizedOpenDetails:"Memorizzato — apri dettagli",rememberCue:"Memorizzato",forgetCue:"Rimuovi dai memorizzati",archiveCue:"↓ Archivia",archiveToast:"Archiviato",undo:"Annulla",wordFallback:"Parola",detailsLoadError:"Impossibile caricare i dettagli della parola.",alertClose:"Chiudi avviso",optionShow:"Mostra opzioni",close:"Chiudi",searchAction:"Cerca",testAction:"Testa parole attive",recallAction:"Testa parole memorizzate",limitPlaceholder:"Inserisci un limite",statusFilter:"Filtro di stato",sortOrder:"Ordinamento",swipeActions:"Azioni di scorrimento",fontSmall:"Piccolo",fontNormal:"Normale",fontLarge:"Grande",fontXLarge:"Molto grande",showMore:"Mostra altri ({count})",
-    settingsSub:"Impostazioni dell’app.",addNewAction:"Aggiungi parole nuove",wordsAdded:"{n} parole aggiunte.",freeWordLimit:"Il piano gratuito include {n} parole di {band}. Puoi continuare con un altro livello o passare a Premium.",wordbaseNone:"Non c’è ancora un database di parole per questa coppia di lingue.",wordbaseUnavailable:"Il database di parole non è raggiungibile ora. Controlla la connessione e riprova.",notInWordbase:"«{word}» non è nel database di parole.",inYourList:"Questa parola è già nella tua lista.",levelUpTitle:"Complimenti!",levelUpAsk:"Complimenti! Hai aggiunto alla tua lista tutte le parole di questo livello. Vuoi passare al livello successivo?",levelUpAll:"Complimenti! Hai completato tutti i livelli e hai preso tutte le parole che ho.",levelUpYes:"Sì, passa",levelUpNo:"Non ora",levelUpOk:"OK",levelChanged:"Livello impostato su {level}.",soonTag:"Presto",levelEmpty:"Le parole di questo livello sono ancora in preparazione. Puoi scegliere un altro livello nelle Impostazioni.",
+    addNewAction:"Aggiungi parole nuove",wordsAdded:"{n} parole aggiunte.",freeWordLimit:"Il piano gratuito include {n} parole di {band}. Puoi continuare con un altro livello o passare a Premium.",wordbaseNone:"Non c’è ancora un database di parole per questa coppia di lingue.",wordbaseUnavailable:"Il database di parole non è raggiungibile ora. Controlla la connessione e riprova.",notInWordbase:"«{word}» non è nel database di parole.",inYourList:"Questa parola è già nella tua lista.",levelUpTitle:"Complimenti!",levelUpAsk:"Complimenti! Hai aggiunto alla tua lista tutte le parole di questo livello. Vuoi passare al livello successivo?",levelUpAll:"Complimenti! Hai completato tutti i livelli e hai preso tutte le parole che ho.",levelUpYes:"Sì, passa",levelUpNo:"Non ora",levelUpOk:"OK",levelChanged:"Livello impostato su {level}.",soonTag:"Presto",levelEmpty:"Le parole di questo livello sono ancora in preparazione. Puoi scegliere un altro livello nelle Impostazioni.",
     tags:"Etichette",tagAdd:"Aggiungi",tagRemove:"Rimuovi l’etichetta «{tag}»",tagShow:"Mostra le parole con l’etichetta «{tag}»",tagLimit:"Una parola può avere fino a {n} etichette.",tagSuggested:"Le tue etichette",tagNoWords:"Nessuna parola ha l’etichetta «{tag}».",similarWords:"Parole simili",
     studyScore:"Punti",studyHeard:"Hai ascoltato la pronuncia",studyOpened:"L’hai aperta e letto il significato",studyExplored:"Hai aperto le frasi d’esempio o le espressioni",studyRead:"Hai ascoltato le frasi d’esempio o le espressioni",studyQuiz:"Hai risposto correttamente in un test",studyDone:"Fatto",studyTodo:"Non ancora",scoreTitle:"Punti: {n} / {m}",
     studyPicked:"Hai scelto il badge della parola nell’elenco delle parole",studyFlipped:"L’hai vista su una carta Flip e girata",studyMatch:"L’hai abbinata correttamente",tagAddTag:"Aggiungi etichetta",tagNew:"Nuova etichetta: {tag}",tagOnWord:"Già su questa parola",tagPlaceholder:"Cerca un’etichetta o scrivine una nuova…",matchNeed:"Abbinare richiede almeno 10 parole attive.",matchPrompt:"Abbina ogni parola al suo significato",matchLabel:"Abbina {n}/10",matchWords:"Parole",matchMeanings:"Significati"
@@ -3267,14 +3260,15 @@ function applyAppLanguage(){
   const lang=getAppLanguage();
   document.documentElement.lang=lang;
 
-  setText("#settingsTitle","settings");setText("#settingsSubtitle","settingsSub");
+  setText("#settingsTitle","settings");
   setText("#appLanguageLabel","appLanguage");
   setText("#nativeLanguageLabel","originalLanguage");setText("#targetLanguageLabel","learningLanguage");
   setText("#difficultyLabel","difficulty");setText("#dailyLimitLabel","dailyLimit");setText("#fontSizeLabel","fontSize");setText("#themeLabel","theme");
   const fontKeys=[["small","fontSmall"],["normal","fontNormal"],["large","fontLarge"],["xlarge","fontXLarge"]];
   for(const [value,key] of fontKeys)setDropdownText("fontSizeDropdown",value,t(key));
   syncUiDropdown("fontSizeDropdown",normalizeFontSizePreference(document.getElementById("fontSizeSelect")?.value));
-  setText("#archiveShowBtn","showArchive");setText("#resetProgressBtn","resetProgress");setText("#settingsSaveBtn","save");
+  setText("#archiveShowLabel","showArchive");setText("#archiveShowBtn","openAction");document.getElementById("archiveShowBtn")?.setAttribute("aria-label",t("showArchive"));       // the row says what it is, its button what it does
+  setText("#resetProgressLabel","resetProgress");setText("#resetProgressBtn","resetAction");document.getElementById("resetProgressBtn")?.setAttribute("aria-label",t("resetProgress"));
   setText("#resetTitle","resetProgress");setText("#resetCopy","resetCopy");setText("#resetWarning","irreversible");
   setText("#resetCancelBtn","cancel");setText("#resetConfirmBtn","reset");
   setText("#languageChangeTitle","languageChangeTitle");setText("#languageChangeCopy","languageChangeCopy");
@@ -3490,6 +3484,7 @@ function selectUiDropdown(id,value,label){
   if(change==="theme")previewTheme(value);
   if(change==="fontSize")previewFontSize(value);
   if(change==="appLanguage")changeAppLanguage(value);
+  if(change==="difficulty"||change==="theme"||change==="fontSize")autoSaveSettings();                  // a setting is saved when it is changed: there is no Save button
 }
 async function changeAppLanguage(value){
   if(!LANGUAGE_META[value]||value===getAppLanguage())return;
@@ -3555,6 +3550,7 @@ function chooseDailyLimit(value){
   if(i)i.value=value==="unlimited"?t("unlimited"):value;
   syncDailyLimitSelection();
   closeDailyLimitMenu();
+  autoSaveSettings();
 }
 document.addEventListener("pointerdown",e=>{
   if(!e.target.closest(".ui-dropdown"))closeUiDropdowns();
@@ -3563,6 +3559,9 @@ document.addEventListener("pointerdown",e=>{
 document.addEventListener("input",e=>{
   if(e.target?.id==="dailyLimitInput")syncDailyLimitSelection();
 });
+// a typed limit is saved when the field is left or Enter is pressed (not on every key)
+document.addEventListener("change",e=>{if(e.target?.id==="dailyLimitInput")autoSaveSettings();});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target?.id==="dailyLimitInput"){e.preventDefault();autoSaveSettings();}});
 function applyTheme(value){
   const v=["system","light","dark"].includes(value)?value:"system";
   if(v==="system")document.documentElement.removeAttribute("data-theme");
@@ -3659,7 +3658,12 @@ function openModal(){
   });
 }
 
-function closeModal(){closeUiDropdowns();closeDailyLimitMenu();document.getElementById('modalOverlay').style.display='none';}
+function closeModal(){
+  const overlay=document.getElementById('modalOverlay'),wasOpen=overlay.style.display==='flex';
+  closeUiDropdowns();closeDailyLimitMenu();overlay.style.display='none';
+  if(wasOpen)autoSaveSettings();                                                  // a limit that was typed and not left yet is kept
+}
+// The settings are saved as they are changed (no Save button). Nothing is written when nothing differs from what is saved.
 async function saveSettings(){
   const rawLimit=String(document.getElementById('dailyLimitInput')?.value||'10').trim();
   const unlimited=isUnlimitedText(rawLimit);
@@ -3671,13 +3675,15 @@ async function saveSettings(){
   const theme=document.getElementById('themeSelect')?.value||'system';
   const fontSize=normalizeFontSizePreference(document.getElementById('fontSizeSelect')?.value);
 
-  await VocVocData.updateSettings({difficulty,dailyLimit:lim,theme,fontSize:normalizeFontSizePreference(fontSize)});
+  const saved=VocVocData.getSettings(),next={difficulty,dailyLimit:lim,theme,fontSize};
+  const differs=difficulty!==levelOf(saved.difficulty)||lim!==String(saved.dailyLimit)||theme!==(saved.theme||'system')||fontSize!==normalizeFontSizePreference(saved.fontSize);
+  if(differs)await VocVocData.updateSettings(next);
   document.getElementById('dailyLimitInput').value=lim==='unlimited'?t('unlimited'):lim;
   applyTheme(theme);
   applyFontSize(fontSize);
-  closeModal();
   if(clamped)showError(t("dailyLimitPremium"));
 }
+const autoSaveSettings=()=>saveSettings().catch(reportStorageError);
 let appAlertDismissTimer=null;
 let appAlertCleanupTimer=null;
 function showError(msg,{type="error"}={}){
@@ -4146,17 +4152,23 @@ function renderAllLocal(){
       seen.add(key);return renderWordCard(data);
     }).join("");return;
   }
-  const source=history.map(getHistoryWordData),seen=new Set(),eligible=[];
+  const source=history.map(getHistoryWordData),seen=new Set(),eligible=[],today=new Date().toLocaleDateString("en-CA");
   for(const data of source){
     if(!data)continue;
     const key=normalizeHistoryKey(data.word);if(!key||seen.has(key))continue;
     seen.add(key);
     // the same exclusions renderWordCard applies, decided before building any HTML
-    if(isArchivedWord(data.word)||VocVocData.getWordProgress(data.word)?.status==="memorized")continue;
-    eligible.push(data);
+    if(isArchivedWord(data.word))continue;
+    const progress=VocVocData.getWordProgress(data.word);
+    if(progress?.status==="memorized")continue;
+    const added=new Date(progress?.firstSeenAt||"");
+    eligible.push({data,addedToday:!Number.isNaN(added.getTime())&&added.toLocaleDateString("en-CA")===today,score:VocVocData.studyScore(VocVocData.getWordByText(data.word)),order:eligible.length});
   }
+  // The words added today come first, then the earlier ones; in each group the words with more points are on top (the same points: the newest first, as the list comes).
+  // The order is worked out when the cards are drawn: a point earned while a card is open does not move the cards under the reader's finger.
+  eligible.sort((a,b)=>Number(b.addedToday)-Number(a.addedToday)||b.score-a.score||a.order-b.order);
   const shown=eligible.slice(0,mainCardsShown),rest=eligible.length-shown.length;
-  area.innerHTML=shown.map(data=>renderWordCard(data)).join("")+showMoreButton("cards",rest);
+  area.innerHTML=shown.map(entry=>renderWordCard(entry.data)).join("")+showMoreButton("cards",rest);
 }
 // A word typed in the search box is looked up, never added: it opens in the same window as a related word (with the Add button), whether it
 // is in the user's own list or only in the ready-made words (VocVocWordbase). The user decides whether it goes to the list.
@@ -5245,17 +5257,11 @@ function studyScores(){
 }
 const studyFold=data=>` data-study-fold="explored" data-study-word="${encodeDomText(data?.word||"")}"`;
 
-/* The Points and Tags sections of a word window can be opened and closed (the choice is remembered on this device); closed they take one line. */
-const SECTION_PREF_KEY="VOCVOC_DETAIL_SECTIONS";
-const sectionIsOpen=name=>LocalStorageAdapter.get(SECTION_PREF_KEY,{})?.[name]===true;
-// Opens or closes the section of this kind in every open word window (and remembers it).
-function setSectionOpen(name,open){
-  try{LocalStorageAdapter.set(SECTION_PREF_KEY,{...LocalStorageAdapter.get(SECTION_PREF_KEY,{}),[name]:open});}catch(_){}
-  document.querySelectorAll(`.${name}-section`).forEach(section=>{
-    section.classList.toggle("is-open",open);
-    section.querySelector(":scope > .section-body")?.toggleAttribute("hidden",!open);
-    section.querySelector("[data-section-toggle]")?.setAttribute("aria-expanded",String(open));
-  });
+/* The Points and Tags sections of a word card or window are closed to one line (as high as the folds above them) every time the word is shown, and open and close one at a time. */
+function setSectionOpen(section,open){
+  section.classList.toggle("is-open",open);
+  section.querySelector(":scope > .section-body")?.toggleAttribute("hidden",!open);
+  section.querySelector("[data-section-toggle]")?.setAttribute("aria-expanded",String(open));
 }
 
 // The total in the head is the button that opens and closes the list of what was done.
@@ -5269,7 +5275,7 @@ function studySectionInner(record,open){
 function renderStudySection(data){
   const record=VocVocData.getWordByText(data.word),progress=VocVocData.getWordProgress(data.word);
   if(!record||!progress||progress.status!=="active")return "";
-  const open=sectionIsOpen("study");
+  const open=false;
   return `<div class="section study-section${open?" is-open":""}" data-study-word="${encodeDomText(record.word)}">${studySectionInner(record,open)}</div>`;
 }
 function setScoreTone(element,score){
@@ -5339,7 +5345,7 @@ function tagsSectionInner(record,{open=false,query=""}={}){
 function renderTagsSection(data){
   const progress=VocVocData.getWordProgress(data.word),record=VocVocData.getWordByText(data.word);
   if(!progress||progress.status==="archived"||!record)return "";
-  const open=sectionIsOpen("tags");
+  const open=false;
   return `<div class="section tags-section${open?" is-open":""}" data-tags-word="${encodeDomText(record.word)}">${tagsSectionInner(record,{open})}</div>`;
 }
 const tagSectionState=section=>({open:section.classList.contains("is-open"),query:section.querySelector(".tag-input")?.value||""});
@@ -5377,12 +5383,12 @@ function showWordsWithTag(text){
   if(tag&&!VocVocData.getTagCounts().some(item=>item.tag.startsWith(tag)))showError(t("tagNoWords",{tag}),{type:"info"});
 }
 document.addEventListener("click",event=>{
-  const toggle=event.target.closest("[data-section-toggle]");
-  if(toggle){
+  const head=event.target.closest(".study-section > .section-head,.tags-section > .section-head");
+  if(head){                                                                            // the whole line is the target (the badge or the + is its button)
     event.preventDefault();
-    const name=toggle.dataset.sectionToggle,open=toggle.getAttribute("aria-expanded")!=="true";
-    setSectionOpen(name,open);
-    if(open&&name==="tags")toggle.closest(".tags-section")?.querySelector(".tag-input")?.focus();      // opened with the +: the field is ready
+    const section=head.parentElement,open=!section.classList.contains("is-open");
+    setSectionOpen(section,open);
+    if(open&&section.classList.contains("tags-section"))section.querySelector(".tag-input")?.focus();      // opened: the field is ready
     return;
   }
   const filterBtn=event.target.closest("[data-tag-filter]");

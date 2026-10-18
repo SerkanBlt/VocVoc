@@ -256,12 +256,16 @@ describe('Free allowance per level group, points for words, Premium cards and th
 
 describe('Collapsible Points and Tags sections, the tag panel and the Matching test (static guards)',()=>{
   const screensJs=read('screens.js');
-  it('the Points and Tags sections open and close (remembered on the device): the badge with the total is the toggle of the Points, the + is the toggle of the Tags (no arrows, no "no tags yet" line)',()=>{
-    assert(html.includes('const SECTION_PREF_KEY="VOCVOC_DETAIL_SECTIONS";')&&/function setSectionOpen\(name,open\)/.test(html));
+  it('the Points and Tags sections are closed every time a word is shown (nothing is remembered) and open one at a time: the badge with the total is the toggle of the Points, the + is the toggle of the Tags, the whole line is the target (no arrows, no "no tags yet" line)',()=>{
+    assert(/function setSectionOpen\(section,open\)\{/.test(html)&&!/SECTION_PREF_KEY|VOCVOC_DETAIL_SECTIONS|sectionIsOpen/.test(html),'nothing is remembered');
+    assert(html.includes('const head=event.target.closest(".study-section > .section-head,.tags-section > .section-head");'),'the whole line is the target');
+    assert(html.includes('.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:1.22rem;cursor:pointer}'),'at least as high as the arrow of a fold row (1.22rem), like the folds (a larger text makes both the same height)');
+    assert(/\.section-add\{[^}]*border:0;border-radius:0;background:transparent;/.test(html),'the + has no circle around it');
+    assert(html.includes('padding-top:8px!important;'),'less room above the word of an open card');
     assert(/<button type="button" class="study-total score-\$\{score\}" data-section-toggle="study" aria-expanded="\$\{open\}"/.test(html),'points: the badge is the toggle');
     assert(/<button type="button" class="section-add" data-section-toggle="tags" aria-expanded="\$\{open\}"/.test(html),'tags: the + is the toggle');
     assert(!/section-chevron|sectionToggleButton|data-tag-panel|is-adding|tag-empty|tagsNone/.test(html),'the arrows, the separate tag panel switch and the empty-tags line are gone');
-    assert(html.includes('.tags-section,.study-section{border-top:1px solid var(--border);padding:13px 0 0;margin-top:13px}'),'a separator above the Points and above the Tags, like the folds have');
+    assert(html.includes('.tags-section,.study-section{border-top:1px solid var(--border);padding:13px 0 0;margin:13px 0 0}'),'a separator above the Points and above the Tags, spaced like the folds');
     assert(/document\.addEventListener\("input",event=>\{\s*if\(!event\.target\.classList\?\.contains\("tag-input"\)\)return;/.test(html)&&html.includes('tagExistingHtml(record,event.target.value)'),'typing narrows the tags in use');
     assert(html.includes('data-tag-new=')&&html.includes('aria-disabled="true"'),'a tag that is already on the word cannot be added twice; a new one is offered');
   });
@@ -275,6 +279,18 @@ describe('Collapsible Points and Tags sections, the tag panel and the Matching t
     assert(/const QUIZ_ROUTES=\['test','recall','cloze','match'\];/.test(screensJs)&&screensJs.includes("card('⧉',t('studyMatch')")&&screensJs.includes("match:[getMatchPool,startMatchQuiz]"));
     assert(read('stats.js').includes("q.mode==='match'")&&screensJs.includes("['recall','cloze','match'].includes(quizSession.mode)"),'a finished Matching is recorded as a test of its own kind');
     assert(/for\(let guard=0;pairs\.length<4&&guard<400;guard\+\+\)/.test(html)&&html.includes('Array.from({length:10},()=>'),'ten rounds of four pairs');
+  });
+  it('the cards of the Words page: the words added today first, then the earlier ones, and in each group the words with more points on top',()=>{
+    assert(html.includes('eligible.sort((a,b)=>Number(b.addedToday)-Number(a.addedToday)||b.score-a.score||a.order-b.order);'),'today first, then the points, then the order of the list');
+    assert(html.includes('addedToday:!Number.isNaN(added.getTime())&&added.toLocaleDateString("en-CA")===today')&&html.includes('area.innerHTML=shown.map(entry=>renderWordCard(entry.data)).join("")+showMoreButton("cards",rest);'));
+  });
+  it('Settings: every setting is a panel (name at the left, choice or button at the right), a change is saved at once, there is no Save button, no footer and no line of text under the title',()=>{
+    assert(!/settingsSaveBtn|settingsSubtitle|settings-panel-footer|settingsSub:/.test(html),'no Save button, no subtitle, no footer');
+    assert(html.includes('<label id="archiveShowLabel" for="archiveShowBtn">')&&html.includes('<label id="resetProgressLabel" for="resetProgressBtn">'),'Show archive and Reset progress are rows with a button');
+    assert(html.includes('.settings-panel-body > .settings-row{--ui-control-h:40px;display:flex;align-items:center;justify-content:space-between;'),'the panels');
+    assert(html.includes('const autoSaveSettings=()=>saveSettings().catch(reportStorageError);')&&/if\(change==="difficulty"\|\|change==="theme"\|\|change==="fontSize"\)autoSaveSettings\(\);/.test(html)&&html.includes('data-ui-change="difficulty"'),'the dropdowns save when they change');
+    assert(html.includes('document.addEventListener("change",e=>{if(e.target?.id==="dailyLimitInput")autoSaveSettings();});')&&/closeUiDropdowns\(\);closeDailyLimitMenu\(\);overlay\.style\.display='none';\s*if\(wasOpen\)autoSaveSettings\(\);/.test(html),'a typed limit is saved when the field is left or the dialog closes');
+    assert(/const differs=/.test(html)&&html.includes('if(differs)await VocVocData.updateSettings(next);'),'nothing is written when nothing changed');
   });
   it('the Matching board has rows of one height (a tile as high as the longest one needs, at most twice the usual) and a tile with a long text scrolls inside itself without a scrollbar',()=>{
     assert(html.includes('.match-board{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;')&&html.includes('.match-col{display:contents}'),'equal rows, the two groups placed by row');

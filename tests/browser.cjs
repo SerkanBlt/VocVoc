@@ -208,9 +208,10 @@ async function main(){
   assert.deepEqual(await suggestions(),['#günlük ✓','#selam ✓']);
   await page.locator('#historyDetails .tag-suggest',{hasText:'#selam'}).click({force:true});await pause(200);                       // aria-disabled: a press does nothing
   assert.deepEqual(await tagsOf('Bonjour'),['selam','günlük']);
-  // another word: the section stays open (it is remembered); the field and the tags in use are there, most used first
+  // another word: the section is closed again (it is closed every time a word is shown, like the folds); opened, the field and the tags in use are there, most used first
   await page.evaluate(()=>closeHistoryDetail());await openDetails('Merci');
-  assert.equal(await page.locator(plus).getAttribute('aria-expanded'),'true');assert.equal(await page.locator('#historyDetails .tag-input').isVisible(),true);
+  assert.deepEqual(await page.evaluate(()=>[document.querySelector('#historyDetails [data-section-toggle="tags"]').getAttribute('aria-expanded'),document.querySelector('#historyDetails .tags-section .section-body').hidden]),['false',true]);
+  await page.locator(plus).click();assert.equal(await page.locator('#historyDetails .tag-input').isVisible(),true);
   assert.deepEqual(await suggestions(),['#günlük','#selam']);
   // typing narrows them (accents and case do not matter), so an existing tag is seen before a new one is made; what is typed and does not exist is offered as new
   await page.locator('#historyDetails .tag-input').fill('GUN');assert.deepEqual(await suggestions(),['#günlük','Yeni etiket: gun']);
@@ -252,7 +253,7 @@ async function main(){
   await page.waitForFunction(()=>/“yok” etiketli kelime yok/.test(document.querySelector('.app-alert .app-alert-text')?.textContent||''));
   await page.evaluate(()=>{showError('');document.getElementById('historyFilterInput').value='';renderHistory();});
   // removing a tag; the tags survive a reload and are part of the backup
-  await openDetails('Bonjour');
+  await openDetails('Bonjour');await page.locator(plus).click();
   await page.locator('#historyDetails [data-tag-remove]').first().click();
   await page.waitForFunction(()=>VocVocData.getWordByText('Bonjour').tags?.join()==='günlük');
   const exported=await page.evaluate(()=>VocVocData.export());
@@ -260,16 +261,16 @@ async function main(){
   await page.reload();await ready();assert.deepEqual(await tagsOf('Bonjour'),['günlük']);assert.deepEqual(await tagsOf('Merci'),['selam']);
   // a word keeps at most 12 tags: the field is replaced by a note
   await page.evaluate(()=>VocVocData.setWordTags('Je',Array.from({length:12},(_,i)=>'etiket'+i)));
-  await openDetails('Je');
+  await openDetails('Je');await page.locator(plus).click();
   assert.equal(await page.locator('#historyDetails .tag-input').count(),0);assert.match(await page.locator('#historyDetails .tag-note').textContent(),/en çok 12 etiket/);assert.equal(await page.locator('#historyDetails .tag-note').isVisible(),true);
   await page.evaluate(()=>closeHistoryDetail());
   // removing a tag from a word with 12 gives the field back; the controls have names
-  await openDetails('Je');await page.locator('#historyDetails [data-tag-remove]').first().click();
+  await openDetails('Je');await page.locator(plus).click();await page.locator('#historyDetails [data-tag-remove]').first().click();
   await page.waitForSelector('#historyDetails .tag-input',{state:'visible'});
   assert.equal(await page.evaluate(()=>[...document.querySelectorAll('#historyDetails .tags-section button,#historyDetails .tags-section input')].filter(el=>!(el.getAttribute('aria-label')||el.textContent||'').trim()).length),0);
-  // closed again, the section stays closed after a reload (the choice is remembered on the device)
-  await page.locator(plus).click();await page.reload();await ready();await openDetails('Je');
-  assert.equal(await page.locator(plus).getAttribute('aria-expanded'),'false');
+  // nothing is remembered: after a reload the section of the same word is closed again
+  await page.reload();await ready();await openDetails('Je');
+  assert.equal(await page.locator(plus).getAttribute('aria-expanded'),'false');assert.equal(await page.evaluate(()=>localStorage.getItem('VOCVOC_DETAIL_SECTIONS')),null);
   await context.close();
  }
  record('Tags: closed to one line (the title and a +) until the + is pressed; the field and the tags in use show then and narrow as you type (a tag already on the word is ticked, a new one is offered); added with Enter or a button, removed, found by the History filter and by #tag in the search box, kept in the backup, at most 12 a word, none on a word that is not in the list; no "no tags yet" line');
@@ -327,6 +328,8 @@ async function main(){
   assert.equal(await card('Bonjour').locator('.study-section .section-head button').count(),1);   // and there is nothing else to press in it
   await card('Bonjour').locator('.study-section [data-section-toggle]').click();
   assert.equal(await card('Bonjour').locator('.study-list').isVisible(),true);assert.equal(await card('Bonjour').locator('.study-list li').count(),8);
+  await card('Bonjour').locator('.study-section .section-title').click();assert.equal(await card('Bonjour').locator('.study-list').isHidden(),true);      // the whole line is the button, not only the badge
+  await card('Bonjour').locator('.study-section [data-section-toggle]').click();assert.equal(await card('Bonjour').locator('.study-list').isVisible(),true);
   assert.equal(await card('Bonjour').locator('.study-list li.done').count(),1);
   assert.deepEqual(await card('Bonjour').locator('.study-list .study-points').allTextContents(),['+1','+1','+1','+1','+1','+1','+2','+2']);
   assert.match(await card('Bonjour').locator('.study-list').textContent(),/Kelime listesinden kelime rozetini seçtin[^]*Okunuşunu dinledin[^]*Kelimeyi açıp anlamına baktın[^]*Flip kartında kelimeyi görüp çevirdin[^]*Eşleştirmeyi doğru yaptın[^]*Testte doğru cevapladın/);
@@ -435,6 +438,19 @@ async function main(){
   });
   assert(spacing.meaningToLine>=0&&spacing.meaningToLine<=12,'the line under the meaning is '+spacing.meaningToLine+'px away');
   assert.deepEqual([spacing.points,spacing.tags],[['1px','solid'],['1px','solid']]);
+  // the closed Points and Tags lines are as high as the fold lines above them (also with a larger text), the + is a plain sign at the right end, and the card has little room above its word
+  for(const size of ['normal','large']){
+   await page.evaluate(value=>applyFontSize(value),size);
+   const rows=await page.evaluate(()=>{const open=document.querySelector('#contentArea .main-word-card.open'),h=el=>Math.round(el.getBoundingClientRect().height*10)/10;return {folds:[...open.querySelectorAll('details.fold')].map(h),study:h(open.querySelector('.study-section')),tags:h(open.querySelector('.tags-section'))};});
+   assert(rows.folds.length>=1&&rows.folds.every(height=>Math.abs(height-rows.study)<=0.6&&Math.abs(height-rows.tags)<=0.6),size+': '+JSON.stringify(rows));
+  }
+  await page.evaluate(()=>applyFontSize('normal'));
+  const plusInfo=await page.evaluate(()=>{const open=document.querySelector('#contentArea .main-word-card.open'),button=open.querySelector('.tags-section .section-add'),style=getComputedStyle(button),box=button.getBoundingClientRect(),row=open.querySelector('.tags-section').getBoundingClientRect(),fold=open.querySelector('details.fold').getBoundingClientRect();return {border:style.borderTopWidth,background:style.backgroundColor,rightGap:Math.round(row.right-box.right),sameRight:Math.abs(row.right-fold.right)<1,padTop:parseFloat(getComputedStyle(open).paddingTop)};});
+  assert.deepEqual([plusInfo.border,plusInfo.background,plusInfo.sameRight],['0px','rgba(0, 0, 0, 0)',true]);assert(plusInfo.rightGap>=0&&plusInfo.rightGap<=6,'the + is at the right end: '+plusInfo.rightGap);assert(plusInfo.padTop<=10,'the card has little room above: '+plusInfo.padTop);
+  await page.locator('#contentArea .main-word-card.open .study-section [data-section-toggle]').click();await page.locator('#contentArea .main-word-card.open .tags-section [data-section-toggle]').click();
+  assert.deepEqual(await page.evaluate(()=>[...document.querySelectorAll('#contentArea .main-word-card.open [data-section-toggle]')].map(button=>button.getAttribute('aria-expanded'))),['true','true']);
+  await page.locator('#contentArea .main-word-card.open .main-word-toggle').click();await page.locator('#contentArea .main-word-card .main-word-toggle').nth(1).click();      // another card opens: its Points and Tags are closed, whatever was done in the first one
+  assert.deepEqual(await page.evaluate(()=>[...document.querySelectorAll('#contentArea .main-word-card.open [data-section-toggle]')].map(button=>button.getAttribute('aria-expanded'))),['false','false']);
   await context.close();
  }
  record('Home cards: the word takes the tone of its points in the light and the dark theme (readable, contrast at least 4.5), the border of the card does not change, and "Anlam" starts right under the line');
@@ -650,7 +666,7 @@ async function main(){
    }
    record('offline UI: Test and Recall');
    // Settings persist across an offline reload
-   await page.locator('[onclick="openModal()"]').click();await pick('themeDropdown','dark');await page.locator('#settingsSaveBtn').click();
+   await page.locator('[onclick="openModal()"]').click();await pick('themeDropdown','dark');                                            // no Save button: the choice is saved at once
    assert.equal(await page.evaluate(()=>document.documentElement.getAttribute('data-theme')),'dark');
    await page.waitForFunction(()=>VocVocData.getSettings().theme==='dark');await page.evaluate(()=>VocVocData.flush()); // Save is asynchronous: wait for the commit before reloading
    await page.reload();await ready();
@@ -951,17 +967,17 @@ async function main(){
   // 2) A missing key, language or data layer never makes the interface fail.
   const robust=await page.evaluate(()=>{
    const out={};
-   out.unknownKey=t('definitelyMissingKey');out.vars=t('only {n} left',{n:3});out.nullVars=t('save',null);
-   delete I18N.tr.save;out.keyMissingInLanguage=t('save');I18N.tr.save='Kaydet';           // falls back to English, then restores
+   out.unknownKey=t('definitelyMissingKey');out.vars=t('only {n} left',{n:3});out.nullVars=t('cancel',null);
+   delete I18N.tr.cancel;out.keyMissingInLanguage=t('cancel');I18N.tr.cancel='Vazgeç';           // falls back to English, then restores
    VocVocData.updateSettings({nativeLanguage:'xx'});                                           // a language with no table
    return VocVocData.flush().then(()=>{
-    out.unknownLanguage=t('save');
+    out.unknownLanguage=t('cancel');
     const original=VocVocData.getSettings;VocVocData.getSettings=()=>{throw new Error('unavailable');};                  // data layer not ready
-    try{out.noData=[t('save'),getAppLanguage()];}catch(error){out.noData='THREW '+error.message;}finally{VocVocData.getSettings=original;}
+    try{out.noData=[t('cancel'),getAppLanguage()];}catch(error){out.noData='THREW '+error.message;}finally{VocVocData.getSettings=original;}
     return out;
    });
   });
-  assert.deepEqual(robust,{unknownKey:'definitelyMissingKey',vars:'only 3 left',nullVars:'Kaydet',keyMissingInLanguage:'Save',unknownLanguage:'Save',noData:['Kaydet','tr']});
+  assert.deepEqual(robust,{unknownKey:'definitelyMissingKey',vars:'only 3 left',nullVars:'Vazgeç',keyMissingInLanguage:'Cancel',unknownLanguage:'Cancel',noData:['Vazgeç','tr']});
   await useLanguage('tr');
   record('i18n: unknown key, key missing in one language, unknown language and an unavailable data layer all fall back without throwing');
   // 3) One helper decides what "unlimited" means, in every language.
@@ -1966,6 +1982,71 @@ async function main(){
   await c.close();
   record('Matching: ten rounds of four words and their four meanings (no shared meaning in a round), a wrong try flashes and is listed, a right pair stays together, a pair made without a wrong try earns its word a point, mouse and keyboard, recorded as a test of its own kind; too few words say so; it sits between Fill in the blank and Flip');
  }
+ // ===== Settings: a panel for each setting (its name at the left, its choice or button at the right), saved at once, no Save button, no line of text under the title =====
+ {
+  const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+  await p.goto(url);await ready(p);
+  await p.evaluate(()=>openModal());await p.waitForFunction(()=>getComputedStyle(document.getElementById('modalOverlay')).display==='flex');
+  assert.deepEqual(await p.evaluate(()=>[document.getElementById('settingsSubtitle'),document.getElementById('settingsSaveBtn'),document.querySelector('.settings-panel-footer')]),[null,null,null]);
+  assert.equal(await p.locator('#settingsTitle').textContent(),'Ayarlar');
+  const rows=await p.evaluate(()=>[...document.querySelectorAll('#modalOverlay .settings-panel-body > .settings-row')].map(row=>{const style=getComputedStyle(row),box=row.getBoundingClientRect(),label=(row.querySelector('label')||row.querySelector('summary')).getBoundingClientRect(),control=(row.tagName==='DETAILS'?row.querySelector('summary'):row.querySelector('.ui-dropdown,.ui-combo,.ui-button')).getBoundingClientRect();return {name:(row.querySelector('label')||row.querySelector('summary')).textContent.trim(),panel:parseFloat(style.borderTopWidth)>0&&parseFloat(style.borderTopLeftRadius)>0,labelLeft:label.left<control.left||row.tagName==='DETAILS',controlRight:Math.round(box.right-control.right)<=14,sameLine:Math.abs((label.top+label.height/2)-(control.top+control.height/2))<=4||row.tagName==='DETAILS'};}));
+  assert.deepEqual(rows.map(row=>row.name),['Uygulama dili','Orijinal dil','Öğrenilen dil','Kelime zorluk derecesi','Günlük kelime limiti','Yazı boyutu','Tema','Veri yedeği (JSON)','Arşivi göster','İlerlemeyi Sıfırla']);
+  assert.deepEqual(rows.filter(row=>!(row.panel&&row.labelLeft&&row.controlRight&&row.sameLine)),[],'every setting is a panel: '+JSON.stringify(rows));
+  assert.deepEqual(await p.evaluate(()=>['archiveShowBtn','resetProgressBtn'].map(id=>{const button=document.getElementById(id);return [button.textContent.trim(),button.getAttribute('aria-label'),button.closest('.settings-row').contains(button)];})),[['Aç','Arşivi göster',true],['Sıfırla','İlerlemeyi Sıfırla',true]]);
+  // each change is saved when it is made: the difficulty, the theme, the text size, a limit from the list, a limit that is typed (when the field is left), a typed limit that is still in the field when the dialog closes
+  const pickOption=async(id,value)=>{await p.locator('#'+id+' .ui-dropdown-trigger').click();await p.locator('#'+id+' .ui-dropdown-option[data-value="'+value+'"]').click();};
+  const saved=()=>p.evaluate(()=>{const settings=VocVocData.getSettings();return [settings.difficulty,settings.theme,settings.fontSize,String(settings.dailyLimit)];});
+  await pickOption('difficultyDropdown','B2');await p.waitForFunction(()=>VocVocData.getSettings().difficulty==='B2');
+  await pickOption('themeDropdown','dark');await p.waitForFunction(()=>VocVocData.getSettings().theme==='dark');
+  assert.equal(await p.evaluate(()=>document.documentElement.getAttribute('data-theme')),'dark');
+  await pickOption('fontSizeDropdown','large');await p.waitForFunction(()=>VocVocData.getSettings().fontSize==='large');
+  assert.equal(await p.evaluate(()=>document.documentElement.dataset.fontSize),'large');
+  await p.locator('#dailyLimitCombo .daily-limit-toggle').click();await p.locator('#dailyLimitCombo .ui-dropdown-option[data-value="20"]').click();await p.waitForFunction(()=>String(VocVocData.getSettings().dailyLimit)==='20');
+  await p.locator('#dailyLimitInput').fill('15');await p.locator('#dailyLimitInput').press('Tab');await p.waitForFunction(()=>String(VocVocData.getSettings().dailyLimit)==='15');
+  await p.locator('#dailyLimitInput').fill('12');await p.locator('#modalOverlay .settings-close').click();
+  await p.waitForFunction(()=>String(VocVocData.getSettings().dailyLimit)==='12');
+  assert.deepEqual(await saved(),['B2','dark','large','12']);
+  assert.equal(await p.evaluate(()=>getComputedStyle(document.getElementById('modalOverlay')).display),'none');
+  // what was saved is there after a reload; the free limit still holds (a typed 75 becomes 20 and says why)
+  await p.evaluate(()=>VocVocData.flush());await p.reload();await ready(p);
+  assert.deepEqual(await saved(),['B2','dark','large','12']);
+  await p.evaluate(()=>openModal());await p.locator('#dailyLimitInput').fill('75');await p.locator('#dailyLimitInput').press('Enter');
+  await p.waitForFunction(()=>String(VocVocData.getSettings().dailyLimit)==='20');
+  assert.equal(await p.inputValue('#dailyLimitInput'),'20');
+  // the backup row is a panel that opens
+  await p.locator('#backupControls summary').click();assert.equal(await p.locator('#exportDataBtn').isVisible(),true);
+  await c.close();
+ }
+ record('Settings: a panel for each setting (name at the left, choice or button at the right, also Show archive and Reset progress), no subtitle and no Save button, every change saved at once (difficulty, theme, text size, a limit from the list or typed), a typed limit is kept when the dialog is closed, the free limit still holds');
+ // ===== Words page: the cards are listed with the words added today first and the earlier ones after them; in each group the words with more points are on top =====
+ {
+  context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
+  await page.evaluate(()=>VocVocData.addWordBatch(['w1','w2','w3','w4','w5','w6'].map(word=>({word,meaning:'anlam '+word}))));
+  // w1, w2 and w6 were added today, w3, w4 and w5 on earlier days; the points are 0, 2, 5 (today) and 5, 1, 0 (earlier)
+  await page.evaluate(async()=>{
+   const backup=await VocVocData.export(),ago=hours=>new Date(Date.now()-hours*3600e3).toISOString();
+   const plan={w1:[0,[]],w2:[0,['opened','heard']],w3:[30,['picked','opened','heard','explored','read']],w4:[30,['opened']],w5:[80,[]],w6:[0,['picked','opened','heard','explored','read']]};
+   for(const record of Object.values(backup.words)){const entry=plan[record.word];if(!entry)continue;const [hours,keys]=entry;backup.progress[record.id].firstSeenAt=ago(hours);if(keys.length)record.study=Object.fromEntries(keys.map(key=>[key,true]));}
+   await VocVocData.import(backup);renderHistory();renderAllLocal();
+  });
+  const order=()=>page.evaluate(()=>[...document.querySelectorAll('#contentArea .main-word-card .word-title')].map(node=>node.textContent.trim()).filter(word=>/^w[1-6]$/.test(word)));
+  assert.deepEqual(await order(),['w6','w2','w1','w3','w4','w5']);
+  const titles=await page.evaluate(()=>[...document.querySelectorAll('#contentArea .main-word-card .word-title')].map(node=>node.textContent.trim()));
+  assert.equal(titles.indexOf('w1')<titles.indexOf('w3'),true);                                  // every word of today is above every earlier word, the starters (added today, no points) too
+  assert.equal(['Bonjour','Merci','Je'].every(word=>titles.indexOf(word)<titles.indexOf('w3')),true);
+  // a point earned while the cards are on the screen does not move them; the next time they are drawn the order follows the points (w5 now has 2, w4 has 1)
+  await page.evaluate(async()=>{await VocVocData.markStudy('w5','heard');await VocVocData.markStudy('w5','read');});
+  await page.waitForFunction(()=>VocVocData.getWordByText('w5').study?.read===true);
+  assert.deepEqual(await order(),['w6','w2','w1','w3','w4','w5']);
+  await page.evaluate(()=>renderAllLocal());
+  assert.deepEqual(await order(),['w6','w2','w1','w3','w5','w4']);
+  // a memorized word is not listed, the order of the others stays
+  await page.evaluate(()=>markMemorized('w6'));await page.waitForFunction(()=>VocVocData.getWordProgress('w6').status==='memorized');
+  await page.evaluate(()=>renderAllLocal());
+  assert.deepEqual(await order(),['w2','w1','w3','w5','w4']);
+  await context.close();
+ }
+ record('Words page: the cards list the words added today first and the earlier ones after them, and in each group the words with more points come first (the order is worked out when the cards are drawn)');
  // ===== Six levels in Settings (A1 A2 B1 B2 C1 C2), and the setting of older versions =====
  {
   const c=await browser.newContext({viewport:{width:1000,height:850}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
