@@ -1042,7 +1042,7 @@
 
   /* ---------- render ---------- */
   function render(moveFocus){
-    const route=currentRoute();shown=route;
+    const route=currentRoute(),was=shown;shown=route;
     stopSpeaking();closeDayWords(false);closePhotoView(false);closeConfirm(false);
     // Leaving the study pages ends what they started: a Test that was left is abandoned, an open Flip is closed.
     if(!QUIZ_ROUTES.includes(route)&&quizSession)quizSession=null;
@@ -1051,6 +1051,7 @@
     syncChrome();
     if(route==='words'){                                                           // the existing home screen: search, word cards, the list
       container.classList.remove('v2-away');screen.hidden=true;screen.replaceChildren();delete screen.dataset.route;
+      if(was&&was!=='words')window.renderAllLocal?.();                              // coming back from another page: the cards are drawn again, in the order of the day and the points of now
       return;
     }
     container.classList.add('v2-away');screen.hidden=false;screen.dataset.route=route;

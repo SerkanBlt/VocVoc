@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.17.1">
+  <meta name="vocvoc-shell" content="1.17.2">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -4825,7 +4825,7 @@ function renderQuizQuestionContent(){
   const q=quizSession.questions[quizSession.index],answer=q.word,meaning=String(q.meaning||"").trim();
   const pool=quizSession.pool.filter(x=>normalizeHistoryKey(x.word)!==normalizeHistoryKey(answer));
   const distractors=shuffle(pool).slice(0,3).map(x=>x.word),options=shuffle([answer,...distractors]);
-  const cloze=quizSession.mode==="cloze"&&q.cloze,masked=cloze?"":maskQuizAnswer(meaning,answer);
+  const cloze=quizSession.mode==="cloze"&&q.cloze,masked=cloze?"":quizPrompt(meaning,answer);
   area.innerHTML=`<div class="card quiz-card">
     <div class="quiz-head-v91">
       <div class="quiz-word-v91"${cloze?langAttr():""}>${esc(cloze?q.cloze.text:(masked||meaning||t("chooseWord")))}</div>${cloze&&q.cloze.translation?`<div class="quiz-cloze-hint">${esc(q.cloze.translation)}</div>`:""}
@@ -4887,6 +4887,13 @@ function maskQuizAnswer(text,answer){
     if(common>=4&&common>=Math.ceil(answerNorm.length*.7))return "???"+token.slice(common);
     return token;
   });
+}
+// What a Test or Recall question shows: the meaning without the parts (separated by ;) that are spelled like the word (film, pardon), so the question never has "???" in it.
+// When every part gives the word away the whole meaning is shown, as there would be nothing left to read.
+function quizPrompt(meaning,answer){
+  const text=String(meaning??"").trim();
+  const kept=text.split(";").map(part=>part.trim()).filter(part=>part&&maskQuizAnswer(part,answer)===part);
+  return kept.length?kept.join("; "):text;
 }
 
 // Dahili doğrulama: bu ikisi başarısızsa konsolda açıkça hata verir.
@@ -5691,6 +5698,7 @@ window.VocVocRegression=Object.freeze({
     check("shared popup pointer implementation",enableHistorySwipe.toString().includes("enableWordPopupSwipe")&&enableRelatedWordSwipe.toString().includes("enableWordPopupSwipe"));
     check("Unicode codec",decodeDomText(encodeDomText("Écoute 你好 🌍"))==="Écoute 你好 🌍");
     check("quoted Unicode quiz masking",maskQuizAnswer("'Écouter'","Écoute").includes("???r"));
+    check("quiz question never shows ???",quizPrompt("pardon; affedersiniz","pardon")==="affedersiniz"&&quizPrompt("hizmet; servis; iyilik","service")==="hizmet; iyilik"&&quizPrompt("film","film")==="film"&&!quizPrompt("merhaba; günaydın","bonjour").includes("???"));
     return {passed:results.every(result=>result.passed),results};
   }
 });

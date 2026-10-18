@@ -2026,7 +2026,9 @@ async function main(){
  record('Settings: a panel for each setting (name at the left, choice or button at the right, also Show archive and Reset progress), no subtitle and no Save button, every change saved at once (difficulty, theme, text size, a limit from the list or typed), a typed limit is kept when the dialog is closed, the free limit still holds');
  // ===== Words page: three lists (Today, Yesterday, Earlier) each under a label; in each list more points first, the same points in the order they were pulled =====
  {
-  context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);await ready();
+  context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  await context.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'guest',name:''})));          // signed in as a guest: the new interface has its menu
+  await page.goto(url+'?ui=v2');await ready();
   await page.evaluate(()=>VocVocData.updateSettings({appLanguage:'en'}));await page.reload();await ready();
   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:11},(_,i)=>'w'+(i+1)).map(word=>({word,meaning:'anlam '+word}))));
   // w1, w2 and w6 were pulled today (0, 2 and 5 points); w3 and w4 yesterday at noon (5 and 1), w7 an hour after them (1), w9 and w10 together at 2 pm (1 and 1);
@@ -2062,7 +2064,8 @@ async function main(){
   await page.evaluate(async()=>{await VocVocData.markStudy('w5','heard');await VocVocData.markStudy('w5','read');});
   await page.waitForFunction(()=>VocVocData.getWordByText('w5').study?.read===true);
   assert.deepEqual(await order(),all);
-  await page.evaluate(()=>renderAllLocal());
+  await goTo(page,'Today');assert.deepEqual(await order(),all);                                   // on another page the cards are as they were
+  await goTo(page,'Words');                                                                         // entering the Words page draws the cards again
   assert.deepEqual(await order(),['w6','w2','w1','w3','w4','w7','w9','w10','w11','w5','w8']);
   // a memorized word is not listed, the order of the others stays
   await page.evaluate(()=>markMemorized('w6'));await page.waitForFunction(()=>VocVocData.getWordProgress('w6').status==='memorized');
@@ -2248,8 +2251,9 @@ async function main(){
    await waitPack(p,'12 / 40 kelime eklendi');
    await goTo(p,'Kelimeler');                                          // the cards are on the Words tab
    const titles=await p.locator('#contentArea .main-word-card .word-title').evaluateAll(nodes=>nodes.map(node=>node.textContent));
-   assert.deepEqual(titles.slice(0,3).sort(),['Bonjour','Je','Merci']);                            // the starters were pulled first
-   assert.deepEqual(titles.slice(3,13).sort(),['au revoir',"s'il vous plaît",'oui','non','pardon','eau','pain','café','maison','ami'].sort());   // the new words follow them, in the order they were pulled
+   assert.equal(titles[0],'maison');                                                                // it was opened, so it has a point and the Words page put it on top when it was entered
+   assert.deepEqual(titles.slice(1,4),['Bonjour','Merci','Je']);                                    // the starters were pulled first
+   assert.deepEqual(titles.slice(4,13).sort(),['au revoir',"s'il vous plaît",'oui','non','pardon','eau','pain','café','ami'].sort());   // the new words follow them, in the order they were pulled
    assert.equal(titles.length,13);                                                                  // and the three starters are still there
    assert.equal(seen.gemini,0);                                                                      // no AI, no key needed
    await goTo(p,'Bugün');

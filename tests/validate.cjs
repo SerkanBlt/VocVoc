@@ -289,7 +289,12 @@ describe('Collapsible Points and Tags sections, the tag panel and the Matching t
       assert(html.includes(`groupToday:"${today}",groupYesterday:"${yesterday}",groupEarlier:"${earlier}",`),`${language}: labels of the three lists`);
     }
   });
-  it('the Premium card: the first line says what comes after the first 40 words of each level, the line about sentences from History is gone',()=>{
+  it('Test and Recall questions show the meaning without ???: parts spelled like the word are left out, the whole meaning when nothing else is left; entering the Words page draws the cards again',()=>{
+    assert(html.includes('masked=cloze?"":quizPrompt(meaning,answer);')&&!html.includes('masked=cloze?"":maskQuizAnswer(meaning,answer);'));
+    assert(html.includes('return kept.length?kept.join("; "):text;'),'the whole meaning when every part gives the word away');
+    assert(screensJs.includes("if(was&&was!=='words')window.renderAllLocal?.();"),'coming back to the Words page redraws the cards');
+  });
+  it('the Premium card:the first line says what comes after the first 40 words of each level, the line about sentences from History is gone',()=>{
     assert(screensJs.includes("prem1:'Her seviyede ilk 40 kelimeden sonrası, 10 bine yakın kelime deposu'"),'Turkish line');
     assert(screensJs.includes("free1:'Altı seviyenin (A1–C2) her birinden 40’ar kelime hediye'")&&screensJs.includes("prem1:'Everything after the first 40 words of each level"),'the Free and Premium cards name the same 40 words');
     assert(!/prem2:/.test(screensJs)&&screensJs.includes("list(['prem1','prem3','prem4','prem5'],'v2-premium-list')"),'no sentence line in any language');
