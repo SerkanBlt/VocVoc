@@ -40,6 +40,18 @@ describe('Looking a word up (keys)',()=>{
     assert.equal(Wordbase.lookupInIndex(index,'etre','fr')?.word,'être');
     assert.equal(Wordbase.lookupInIndex(index,'zzz','fr'),null);
   });
+  it('offers words like a dictionary while one types: the words that begin with it (shortest first), then a later part of a phrase; accents, case and article do not matter',()=>{
+    const index=Wordbase.buildIndex({chunks:[{id:'A1-01',level:'A1',words:['maison','mais','maïs','maisonnette','école',"s'il vous plaît",'la mairie']},{id:'A2-01',level:'A2',words:['maintenant']}]},'fr');
+    const offer=(typed,options)=>Wordbase.suggestWords(index,typed,'fr',options).map(item=>item.word);
+    assert.deepEqual(offer('mai'),['mais','maïs','maison','maintenant','maisonnette','la mairie']);
+    assert.deepEqual(offer('MAISO'),['maison','maisonnette']);
+    assert.deepEqual(offer('ecol'),['école']);
+    assert.deepEqual(offer('plai'),["s'il vous plaît"]);
+    assert.deepEqual(offer('le maiso'),['maison','maisonnette'],'the article is left out');
+    assert.deepEqual(offer('mai',{limit:2}),['mais','maïs']);
+    assert.deepEqual(offer('zzz'),[]);
+    assert.deepEqual(Wordbase.suggestWords(index,'maint','fr'),[{word:'maintenant',level:'A2'}],'each word comes with its level');
+  });
   it('knows the order of the levels and what comes after each',()=>{
     assert.deepEqual([...Wordbase.BAND_ORDER],['A1','A2','B1','B2','C1','C2']);
     assert.deepEqual(['A1','A2','B1','B2','C1','C2','X'].map(Wordbase.nextBand),['A2','B1','B2','C1','C2',null,null]);

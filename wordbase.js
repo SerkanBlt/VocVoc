@@ -36,7 +36,7 @@
         if(!folded.has(key))folded.set(key,entry);
         const looser=looseKey(word,target);
         if(!loose.has(looser))loose.set(looser,entry);
-        list.push({word,key:looser});
+        list.push({word,key:looser,level:chunk.level});
       }
     }
     return {exact,folded,loose,list};
@@ -105,6 +105,31 @@
       for(const item of longer)if(out.length<limit)add(item);
     }
     return out.slice(0,limit);
+  }
+  // The words a dictionary offers while one types: the words that begin with what was typed (the shortest first), then the words that have a later part beginning with it
+  // ("plaît" for "s'il vous plaît"). Accents, case, article and punctuation do not matter. [{word,level}], at most `limit`.
+  function suggestWords(index,text,target,{limit=8}={}){
+    const keys=[...new Set(lookupKeys(text,target).map(candidate=>looseKey(candidate,target)).filter(Boolean))];
+    if(!keys.length)return [];
+    const found=[];
+    for(const item of index.list||[]){
+      let rank=9;
+      for(const key of keys){
+        if(item.key===key)rank=Math.min(rank,0);
+        else if(item.key.startsWith(key))rank=Math.min(rank,1);
+        else if(item.key.includes(' '+key))rank=Math.min(rank,2);
+      }
+      if(rank<9)found.push({item,rank});
+    }
+    found.sort((a,b)=>a.rank-b.rank||a.item.key.length-b.item.key.length||a.item.word.localeCompare(b.item.word,target));
+    const seen=new Set(),out=[];
+    for(const {item} of found){
+      const id=String(item.word).normalize('NFC').toLocaleLowerCase(target);
+      if(seen.has(id))continue;
+      seen.add(id);out.push({word:item.word,level:item.level||''});
+      if(out.length>=limit)break;
+    }
+    return out;
   }
   const nextBand=band=>{const at=BAND_ORDER.indexOf(band);return at>=0&&at<BAND_ORDER.length-1?BAND_ORDER[at+1]:null;};
   const copyEntry=entry=>JSON.parse(JSON.stringify({synonyms:[],antonyms:[],examples:[],expressions:[],...entry}));
@@ -212,6 +237,15 @@
         return {status:'found',entry:copyEntry(entry),level:hit.level,similar:similarWords(index,text,target,{limit:5,found:hit.word})};
       }catch(_){return {status:'unavailable'};}
     }
+    // The words to offer under the search box while the user types ({word,level}); nothing while the words are not there. It never starts a download: it runs on every key.
+    function suggest(text,limit=8){
+      if(state.status!=='ready')return [];
+      const target=settings().targetLanguage;
+      try{
+        const index=state.course?state.index:buildIndex({chunks:[{id:'pack',level:state.pack.level||'',words:state.pack.words.map(item=>item.word)}]},target);
+        return suggestWords(index,text,target,{limit});
+      }catch(_){return [];}
+    }
     // A random word of the chosen level, one the user does not have yet when there is one.
     async function random(){
       if(await ready()!=='ready')return unready();
@@ -235,7 +269,7 @@
       for(let band=nextBand(bandOf());band;band=nextBand(band))if(chunksOfBand(band).length)return band;
       return null;
     }
-    return {state,refresh,ready,sync,bandOf,bandOfWord,progress,next,find,random,nextBandOf,hasCourse:()=>!!state.course};
+    return {state,refresh,ready,sync,bandOf,bandOfWord,progress,next,find,suggest,random,nextBandOf,hasCourse:()=>!!state.course};
   }
 
   /* ---------- the page ---------- */
@@ -249,7 +283,7 @@
     if(cache){const hit=await cache.match(url);if(hit)return hit.json();}
     throw new Error('offline');
   }
-  const api={PACK_CACHE,BAND_ORDER,foldText,looseKey,withoutArticle,buildIndex,lookupKeys,lookupInIndex,editDistance,similarWords,nextBand,create};
+  const api={PACK_CACHE,BAND_ORDER,foldText,looseKey,withoutArticle,buildIndex,lookupKeys,lookupInIndex,editDistance,similarWords,suggestWords,nextBand,create};
   if(typeof module==='object'&&module.exports)module.exports=api;
   // VocVocData is a top-level const of the page's own script: visible here by name, not as a property of window.
   if(typeof VocVocData!=='undefined'&&root.VocVocPacks){

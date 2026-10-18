@@ -289,6 +289,12 @@ describe('Collapsible Points and Tags sections, the tag panel and the Matching t
       assert(html.includes(`groupToday:"${today}",groupYesterday:"${yesterday}",groupEarlier:"${earlier}",`),`${language}: labels of the three lists`);
     }
   });
+  it('the search box offers words like a dictionary: a listbox under the combobox, from the third letter, never for a #tag, chosen words go through the normal search',()=>{
+    assert(html.includes('role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="searchSuggest"')&&html.includes('<div id="searchSuggest" class="search-suggest" role="listbox" hidden></div>'));
+    assert(html.includes('const SUGGEST_MIN_LETTERS=3;')&&html.includes('text.startsWith("#")||[...text].length<SUGGEST_MIN_LETTERS'),'three letters, no tags');
+    assert(/function pickSuggestion\(word\)\{[^]*?handleSearch\(\);/.test(html)&&/async function handleSearch\(\)\{\s*closeSuggestions\(\);/.test(html),'a chosen word is searched for like a typed one');
+    assert(read('wordbase.js').includes('if(state.status!==\'ready\')return [];'),'suggest never starts a download');
+  });
   it('Test and Recall questions show the meaning without ???: parts spelled like the word are left out, the whole meaning when nothing else is left; entering the Words page draws the cards again',()=>{
     assert(html.includes('masked=cloze?"":quizPrompt(meaning,answer);')&&!html.includes('masked=cloze?"":maskQuizAnswer(meaning,answer);'));
     assert(html.includes('return kept.length?kept.join("; "):text;'),'the whole meaning when every part gives the word away');

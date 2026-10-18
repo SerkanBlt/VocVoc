@@ -306,9 +306,27 @@ async function main(){
   assert.equal(await title(),'ou');assert(await page.locator('#relatedWordPopup .similar-words .clickable-badge',{hasText:'où'}).count()>0);
   // nonsense has nothing to suggest
   await search('zzzxqjk');await page.waitForSelector('#relatedWordPopup .error-box');assert.equal(await page.locator('#relatedWordPopup .similar-words').count(),0);
+  await page.locator('#relatedWordPopup .word-popup-close').click();
+  // like a dictionary: nothing under three letters; from the third the words that begin with them are listed, picked with the arrow keys + Enter or with the pointer
+  const offered=()=>page.locator('#searchSuggest .search-suggest-word').allTextContents();
+  await page.locator('#searchInput').fill('ma');assert.deepEqual([await offered(),await page.locator('#searchInput').getAttribute('aria-expanded')],[[],'false']);
+  await page.locator('#searchInput').fill('maiso');await page.waitForSelector('#searchSuggest .search-suggest-item');
+  const words=await offered();assert.equal(words[0],'maison');assert.equal(words.length<=8&&words.every(word=>word.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().startsWith('maiso')),true);
+  assert.equal(await page.locator('#searchInput').getAttribute('aria-expanded'),'true');
+  await page.keyboard.press('ArrowDown');assert.equal(await page.locator('#searchSuggest .search-suggest-item').first().getAttribute('aria-selected'),'true');
+  assert.equal(await page.locator('#searchInput').getAttribute('aria-activedescendant'),'searchSuggest0');
+  await page.keyboard.press('Enter');await page.waitForSelector('#relatedWordPopup [data-add-related-word]');
+  assert.equal(await title(),'maison');assert.equal(await page.locator('#searchSuggest .search-suggest-item').count(),0);            // the list is closed and the word window is open
+  await page.locator('#relatedWordPopup .word-popup-close').click();
+  await page.locator('#searchInput').fill('maiso');await page.locator('#searchSuggest .search-suggest-item').first().click();
+  await page.waitForSelector('#relatedWordPopup [data-add-related-word]');assert.equal(await title(),'maison');                          // the pointer does the same
+  await page.locator('#relatedWordPopup .word-popup-close').click();
+  await page.locator('#searchInput').fill('maiso');await page.waitForSelector('#searchSuggest .search-suggest-item');await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#searchSuggest .search-suggest-item').count(),0);                                                     // Escape closes the list
+  await page.locator('#searchInput').fill('#abc');assert.equal(await page.locator('#searchSuggest .search-suggest-item').count(),0);   // a #tag is not a word
   await context.close();
  }
- record('Search: a word already in the list shows only the note (no second Close button); ı, İ and i find île; a typo shows the words that look like it; a found word shows its spelling variants');
+ record('Search: a word already in the list shows only the note (no second Close button); ı, İ and i find île; a typo shows the words that look like it; a found word shows its spelling variants; from the third letter the words that begin with it are listed under the box, picked with the keys or the pointer');
  // Points: a word that is not memorized yet earns 1 for picking its badge in the word list, 1 for listening to its pronunciation, 1 for opening it and seeing its meaning, 1 for opening the example sentences or idioms,
  // 1 for listening to them, 1 for being turned over on a Flip card, 2 for a right pair in the Matching test and 2 for a right answer in a test (10 in all); the chip of the word and the word on its card and in its window take a tone that follows the points
  {
