@@ -19,10 +19,10 @@
 
   /* ---------- plan (simulated) ---------- */
   // 'premium' features are locked on the free plan. There is no AI and no API key: every word comes from the word database (wordbase.js). The free plan holds
-  // up to FREE_BAND_LIMIT words from each of the six levels (A1 … C2: a gift of 100 words each; archived ones count); Premium has no limit.
+  // up to FREE_BAND_LIMIT words from each of the six levels (A1 … C2: a gift of 40 words each; archived ones count); Premium has no limit.
   const FEATURES=Object.freeze({freeWords:'free',badges:'free',stats:'premium',historyAnalysis:'premium',unlimitedWords:'premium',sentenceBuilder:'premium',speech:'premium',dailyGoalOver20:'premium'});
   const FREE_DAILY_LIMIT=20;                                                       // a daily goal above this is a Premium feature
-  const FREE_BAND_LIMIT=100;                                                       // words of each level on the free plan; the index.html side reads bandWordLimit()
+  const FREE_BAND_LIMIT=40;                                                        // words of each level on the free plan; the index.html side reads bandWordLimit()
   const planNow=()=>store.get(PLAN_KEY)==='premium'?'premium':'free';
   const VocVocPlan=Object.freeze({
     features:FEATURES,
@@ -55,8 +55,8 @@
       premiumTitle:'Premium',planLabel:'Mevcut plan',premiumIncludes:'Premium (ücretsiz olanların hepsine ek olarak)',
       priceNote:'Fiyatlar USD cinsindendir. Yıllık abonelikte 2 ay bedavadır.',
       simulate:"Premium'u simüle et",backToFree:'Ücretsiz plana dön',simNote:'Simülasyon: gerçek ödeme alınmaz, hiçbir şey satın alınmaz.',perMonth:'/ ay',perYear:'/ yıl',billingLabel:'Faturalama dönemi',billingMonthly:'Aylık',billingYearly:'Yıllık',twoMonthsFree:'2 ay bedava',yearlyNote:'12 ay yerine 10 ay öde',monthlyEquiv:'Aylık ≈ {price}',
-      free1:'Altı seviyenin (A1–C2) her birinden 100’er kelime hediye',free2:'Kartlar, ezberleme, arşiv ve History',free3:'Test, Hatırla ve Flip',free4:'Arama, rastgele kelime ve eş/zıt anlam etiketlerinden kelime ekleme',free5:'Yedekleme, tema ve 6 arayüz dili',free6:'Rozetler',
-      prem1:'Her seviyede 100. kelimeden sonrası: veritabanının tamamı (A1’den C2’ye)',prem2:"History'den seçtiğin kelimelerle cümle kurma ve anlamını görme",prem3:'Sesli okuma',prem4:'İlerleme istatistikleri ve geçmiş analizi',prem5:'Günlük hedefi 20 kelimenin üzerine çıkarma',
+      free1:'Altı seviyenin (A1–C2) her birinden 40’ar kelime hediye',free2:'Kartlar, ezberleme, arşiv ve History',free3:'Test, Hatırla ve Flip',free4:'Arama, rastgele kelime ve eş/zıt anlam etiketlerinden kelime ekleme',free5:'Yedekleme, tema ve 6 arayüz dili',free6:'Rozetler',
+      prem1:'Her seviyede ilk 40 kelimeden sonrası, 10 bine yakın kelime deposu',prem3:'Sesli okuma',prem4:'İlerleme istatistikleri ve geçmiş analizi',prem5:'Günlük hedefi 20 kelimenin üzerine çıkarma',
       goalTitle:'Günlük hedef',goalValue:'{n} / {m} kelime',goalUnlimited:'Bugün {n} kelime eklendi',addNew:'Yeni Kelime Ekle',goWords:'Kelimelerime Git',statActive:'Aktif',statMemorized:'Ezberlenen',statToday:'Bugün ezberlenen',
       quizClose:'Kapat',quizProgress:'Soru {n}/{total}',quizDone:'Tamamlandı',quizProgressLabel:'Test ilerlemesi',quizNeedActive:'Test için en az 10 aktif kelime gerekir. Şu an {n} var.',quizNeedRecall:'Hatırla için en az 10 ezberlenmiş kelime gerekir. Şu an {n} var.',quizNeedCloze:'Boşluk Doldurma için cümlesi olan en az 10 kelime gerekir. Şu an {n} var.',backToToday:'Bugün ekranına dön',
       statsSummaryTotal:'Toplam kelime',statsMemorized:'Ezberlenen',statsStreak:'Seri (gün)',statsLongest:'En uzun seri',
@@ -87,8 +87,8 @@
       premiumTitle:'Premium',planLabel:'Current plan',premiumIncludes:'Premium (in addition to everything free)',
       priceNote:'Prices are in USD. The yearly subscription has 2 months free.',
       simulate:'Simulate Premium',backToFree:'Back to the free plan',simNote:'Simulation: no real payment is taken and nothing is purchased.',perMonth:'/ month',perYear:'/ year',billingLabel:'Billing period',billingMonthly:'Monthly',billingYearly:'Yearly',twoMonthsFree:'2 months free',yearlyNote:'Pay for 10 months instead of 12',monthlyEquiv:'About {price} a month',
-      free1:'A gift of 100 words from each of the six levels (A1–C2)',free2:'Cards, memorizing, archive and History',free3:'Test, Recall and Flip',free4:'Adding words by search, random word and synonym/antonym tags',free5:'Backup, themes and 6 interface languages',free6:'Badges',
-      prem1:'Everything after the 100th word of each level: the whole database (A1 to C2)',prem2:'Build sentences from words you pick in History and see their meaning',prem3:'Read-aloud',prem4:'Progress statistics and history analysis',prem5:'Daily goal above 20 words',
+      free1:'A gift of 40 words from each of the six levels (A1–C2)',free2:'Cards, memorizing, archive and History',free3:'Test, Recall and Flip',free4:'Adding words by search, random word and synonym/antonym tags',free5:'Backup, themes and 6 interface languages',free6:'Badges',
+      prem1:'Everything after the first 40 words of each level, a word bank of nearly 10,000 words',prem3:'Read-aloud',prem4:'Progress statistics and history analysis',prem5:'Daily goal above 20 words',
       goalTitle:'Daily goal',goalValue:'{n} / {m} words',goalUnlimited:'{n} words added today',addNew:'Add New Words',goWords:'Go to My Words',statActive:'Active',statMemorized:'Memorized',statToday:'Memorized today',
       quizClose:'Close',quizProgress:'Question {n}/{total}',quizDone:'Finished',quizProgressLabel:'Test progress',quizNeedActive:'A Test needs at least 10 active words. You have {n}.',quizNeedRecall:'Recall needs at least 10 memorized words. You have {n}.',quizNeedCloze:'Fill in the blank needs at least 10 words that have an example sentence. You have {n}.',backToToday:'Back to Today',
       statsSummaryTotal:'Total words',statsMemorized:'Memorized',statsStreak:'Streak (days)',statsLongest:'Longest streak',
@@ -119,8 +119,8 @@
       premiumTitle:'Premium',planLabel:'Offre actuelle',premiumIncludes:'Premium (en plus de tout ce qui est gratuit)',
       priceNote:'Les prix sont en USD. L’abonnement annuel offre 2 mois.',
       simulate:'Simuler Premium',backToFree:'Revenir à l’offre gratuite',simNote:'Simulation : aucun vrai paiement n’est prélevé et rien n’est acheté.',perMonth:'/ mois',perYear:'/ an',billingLabel:'Période de facturation',billingMonthly:'Mensuel',billingYearly:'Annuel',twoMonthsFree:'2 mois offerts',yearlyNote:'Payez 10 mois au lieu de 12',monthlyEquiv:'Environ {price} par mois',
-      free1:'Un cadeau de 100 mots dans chacun des six niveaux (A1–C2)',free2:'Cartes, mémorisation, archive et History',free3:'Test, Réviser et Flip',free4:'Ajout de mots par la recherche, le mot au hasard et les étiquettes de synonymes/contraires',free5:'Sauvegarde, thèmes et 6 langues d’interface',free6:'Badges',
-      prem1:'Tout ce qui suit le 100e mot de chaque niveau : toute la base (de A1 à C2)',prem2:'Construire des phrases avec des mots choisis dans History et voir leur sens',prem3:'Lecture à voix haute',prem4:'Statistiques de progression et analyse de l’historique',prem5:'Objectif du jour au-delà de 20 mots',
+      free1:'Un cadeau de 40 mots dans chacun des six niveaux (A1–C2)',free2:'Cartes, mémorisation, archive et History',free3:'Test, Réviser et Flip',free4:'Ajout de mots par la recherche, le mot au hasard et les étiquettes de synonymes/contraires',free5:'Sauvegarde, thèmes et 6 langues d’interface',free6:'Badges',
+      prem1:'Tout ce qui suit les 40 premiers mots de chaque niveau, une banque de près de 10 000 mots',prem3:'Lecture à voix haute',prem4:'Statistiques de progression et analyse de l’historique',prem5:'Objectif du jour au-delà de 20 mots',
       goalTitle:'Objectif du jour',goalValue:'{n} / {m} mots',goalUnlimited:'{n} mots ajoutés aujourd’hui',addNew:'Ajouter de nouveaux mots',goWords:'Aller à mes mots',statActive:'Actifs',statMemorized:'Mémorisés',statToday:'Mémorisés aujourd’hui',
       quizClose:'Fermer',quizProgress:'Question {n}/{total}',quizDone:'Terminé',quizProgressLabel:'Progression du test',quizNeedActive:'Un test demande au moins 10 mots actifs. Vous en avez {n}.',quizNeedRecall:'Réviser demande au moins 10 mots mémorisés. Vous en avez {n}.',quizNeedCloze:'Texte à trous demande au moins 10 mots ayant une phrase d’exemple. Vous en avez {n}.',backToToday:'Retour à Aujourd’hui',
       statsSummaryTotal:'Total des mots',statsMemorized:'Mémorisés',statsStreak:'Série (jours)',statsLongest:'Plus longue série',
@@ -151,8 +151,8 @@
       premiumTitle:'Premium',planLabel:'Aktueller Tarif',premiumIncludes:'Premium (zusätzlich zu allem Kostenlosen)',
       priceNote:'Preise in USD. Beim Jahresabo sind 2 Monate gratis.',
       simulate:'Premium simulieren',backToFree:'Zurück zum kostenlosen Tarif',simNote:'Simulation: Es wird keine echte Zahlung abgebucht und nichts gekauft.',perMonth:'/ Monat',perYear:'/ Jahr',billingLabel:'Abrechnungszeitraum',billingMonthly:'Monatlich',billingYearly:'Jährlich',twoMonthsFree:'2 Monate gratis',yearlyNote:'10 Monate zahlen statt 12',monthlyEquiv:'Etwa {price} pro Monat',
-      free1:'Je 100 Wörter geschenkt aus jeder der sechs Stufen (A1–C2)',free2:'Karten, Lernen, Archiv und History',free3:'Test, Wiederholen und Flip',free4:'Wörter per Suche, Zufallswort und Synonym-/Antonym-Chips hinzufügen',free5:'Sicherung, Designs und 6 Oberflächensprachen',free6:'Abzeichen',
-      prem1:'Alles nach dem 100. Wort jeder Stufe: die ganze Datenbank (A1 bis C2)',prem2:'Sätze aus Wörtern bilden, die Sie in History auswählen, und ihre Bedeutung sehen',prem3:'Vorlesen',prem4:'Fortschrittsstatistiken und Verlaufsanalyse',prem5:'Tagesziel über 20 Wörter',
+      free1:'Je 40 Wörter geschenkt aus jeder der sechs Stufen (A1–C2)',free2:'Karten, Lernen, Archiv und History',free3:'Test, Wiederholen und Flip',free4:'Wörter per Suche, Zufallswort und Synonym-/Antonym-Chips hinzufügen',free5:'Sicherung, Designs und 6 Oberflächensprachen',free6:'Abzeichen',
+      prem1:'Alles nach den ersten 40 Wörtern jeder Stufe, ein Wortschatz von fast 10.000 Wörtern',prem3:'Vorlesen',prem4:'Fortschrittsstatistiken und Verlaufsanalyse',prem5:'Tagesziel über 20 Wörter',
       goalTitle:'Tagesziel',goalValue:'{n} / {m} Wörter',goalUnlimited:'Heute {n} Wörter hinzugefügt',addNew:'Neue Wörter hinzufügen',goWords:'Zu meinen Wörtern',statActive:'Aktiv',statMemorized:'Gelernt',statToday:'Heute gelernt',
       quizClose:'Schließen',quizProgress:'Frage {n}/{total}',quizDone:'Fertig',quizProgressLabel:'Testfortschritt',quizNeedActive:'Ein Test braucht mindestens 10 aktive Wörter. Sie haben {n}.',quizNeedRecall:'Wiederholen braucht mindestens 10 gelernte Wörter. Sie haben {n}.',quizNeedCloze:'Lückentext braucht mindestens 10 Wörter mit einem Beispielsatz. Sie haben {n}.',backToToday:'Zurück zu Heute',
       statsSummaryTotal:'Wörter gesamt',statsMemorized:'Gelernt',statsStreak:'Serie (Tage)',statsLongest:'Längste Serie',
@@ -183,8 +183,8 @@
       premiumTitle:'Premium',planLabel:'Plan actual',premiumIncludes:'Premium (además de todo lo gratuito)',
       priceNote:'Los precios son en USD. La suscripción anual tiene 2 meses gratis.',
       simulate:'Simular Premium',backToFree:'Volver al plan gratuito',simNote:'Simulación: no se cobra ningún pago real y no se compra nada.',perMonth:'/ mes',perYear:'/ año',billingLabel:'Periodo de facturación',billingMonthly:'Mensual',billingYearly:'Anual',twoMonthsFree:'2 meses gratis',yearlyNote:'Paga 10 meses en lugar de 12',monthlyEquiv:'Unos {price} al mes',
-      free1:'Un regalo de 100 palabras de cada uno de los seis niveles (A1–C2)',free2:'Tarjetas, memorizar, archivo e History',free3:'Test, Repasar y Flip',free4:'Añadir palabras con la búsqueda, la palabra al azar y las etiquetas de sinónimos/antónimos',free5:'Copia de seguridad, temas y 6 idiomas de interfaz',free6:'Insignias',
-      prem1:'Todo lo que viene después de la palabra 100 de cada nivel: toda la base (de A1 a C2)',prem2:'Formar frases con palabras que eliges en History y ver su significado',prem3:'Lectura en voz alta',prem4:'Estadísticas de progreso y análisis del historial',prem5:'Objetivo diario de más de 20 palabras',
+      free1:'Un regalo de 40 palabras de cada uno de los seis niveles (A1–C2)',free2:'Tarjetas, memorizar, archivo e History',free3:'Test, Repasar y Flip',free4:'Añadir palabras con la búsqueda, la palabra al azar y las etiquetas de sinónimos/antónimos',free5:'Copia de seguridad, temas y 6 idiomas de interfaz',free6:'Insignias',
+      prem1:'Todo lo que viene después de las primeras 40 palabras de cada nivel, un banco de casi 10 000 palabras',prem3:'Lectura en voz alta',prem4:'Estadísticas de progreso y análisis del historial',prem5:'Objetivo diario de más de 20 palabras',
       goalTitle:'Objetivo diario',goalValue:'{n} / {m} palabras',goalUnlimited:'{n} palabras añadidas hoy',addNew:'Añadir palabras nuevas',goWords:'Ir a mis palabras',statActive:'Activas',statMemorized:'Memorizadas',statToday:'Memorizadas hoy',
       quizClose:'Cerrar',quizProgress:'Pregunta {n}/{total}',quizDone:'Terminado',quizProgressLabel:'Progreso del test',quizNeedActive:'Un test necesita al menos 10 palabras activas. Tienes {n}.',quizNeedRecall:'Repasar necesita al menos 10 palabras memorizadas. Tienes {n}.',quizNeedCloze:'Rellenar huecos necesita al menos 10 palabras con una frase de ejemplo. Tienes {n}.',backToToday:'Volver a Hoy',
       statsSummaryTotal:'Palabras en total',statsMemorized:'Memorizadas',statsStreak:'Racha (días)',statsLongest:'Racha más larga',
@@ -215,8 +215,8 @@
       premiumTitle:'Premium',planLabel:'Piano attuale',premiumIncludes:'Premium (in più rispetto a tutto ciò che è gratuito)',
       priceNote:'I prezzi sono in USD. L’abbonamento annuale ha 2 mesi gratis.',
       simulate:'Simula Premium',backToFree:'Torna al piano gratuito',simNote:'Simulazione: nessun pagamento reale viene addebitato e non si acquista nulla.',perMonth:'/ mese',perYear:'/ anno',billingLabel:'Periodo di fatturazione',billingMonthly:'Mensile',billingYearly:'Annuale',twoMonthsFree:'2 mesi gratis',yearlyNote:'Paga 10 mesi invece di 12',monthlyEquiv:'Circa {price} al mese',
-      free1:'In regalo 100 parole da ciascuno dei sei livelli (A1–C2)',free2:'Carte, memorizzazione, archivio e History',free3:'Test, Ripassa e Flip',free4:'Aggiungere parole con la ricerca, la parola casuale e le etichette di sinonimi/contrari',free5:'Backup, temi e 6 lingue dell’interfaccia',free6:'Badge',
-      prem1:'Tutto ciò che viene dopo la 100ª parola di ogni livello: l’intero database (da A1 a C2)',prem2:'Costruire frasi con le parole scelte in History e vederne il significato',prem3:'Lettura ad alta voce',prem4:'Statistiche sui progressi e analisi della cronologia',prem5:'Obiettivo giornaliero oltre 20 parole',
+      free1:'In regalo 40 parole da ciascuno dei sei livelli (A1–C2)',free2:'Carte, memorizzazione, archivio e History',free3:'Test, Ripassa e Flip',free4:'Aggiungere parole con la ricerca, la parola casuale e le etichette di sinonimi/contrari',free5:'Backup, temi e 6 lingue dell’interfaccia',free6:'Badge',
+      prem1:'Tutto ciò che viene dopo le prime 40 parole di ogni livello, un archivio di quasi 10.000 parole',prem3:'Lettura ad alta voce',prem4:'Statistiche sui progressi e analisi della cronologia',prem5:'Obiettivo giornaliero oltre 20 parole',
       goalTitle:'Obiettivo giornaliero',goalValue:'{n} / {m} parole',goalUnlimited:'{n} parole aggiunte oggi',addNew:'Aggiungi parole nuove',goWords:'Vai alle mie parole',statActive:'Attive',statMemorized:'Memorizzate',statToday:'Memorizzate oggi',
       quizClose:'Chiudi',quizProgress:'Domanda {n}/{total}',quizDone:'Terminato',quizProgressLabel:'Avanzamento del test',quizNeedActive:'Un test richiede almeno 10 parole attive. Ne hai {n}.',quizNeedRecall:'Ripassa richiede almeno 10 parole memorizzate. Ne hai {n}.',quizNeedCloze:'Completa la frase richiede almeno 10 parole con una frase di esempio. Ne hai {n}.',backToToday:'Torna a Oggi',
       statsSummaryTotal:'Parole totali',statsMemorized:'Memorizzate',statsStreak:'Serie (giorni)',statsLongest:'Serie più lunga',
@@ -278,37 +278,37 @@
     terms:{
       tr:{title:'Kullanım Şartları',banner:'Taslak. Yayınlamadan önce hukuki gözden geçirme gerekir.',sections:[
         {h:'Hizmet',p:['VocVoc kelime öğrenmene yardım eden bir uygulamadır ve olduğu gibi sunulur. Kelime veritabanı yapay zekâ yardımıyla hazırlanmıştır; hazır kelimeler hatalı veya eksik olabilir.']},
-        {h:'Ücretsiz plan',p:['Ücretsiz planda her seviyeden (A1–C2) 100’er kelime ekleyebilirsin; Premium bu sınırı kaldırır.']},
+        {h:'Ücretsiz plan',p:['Ücretsiz planda her seviyeden (A1–C2) 40’ar kelime ekleyebilirsin; Premium bu sınırı kaldırır.']},
         {h:'Verilerin',p:['Verilerin cihazında tutulur. Düzenli yedek almak senin sorumluluğundadır; tarayıcı verisinin silinmesi kelimelerini kaybettirebilir.']},
         {h:'Premium abonelik (planlanan)',p:['Abonelik Google Play kurallarına tabidir; iptal ve iade Google Play üzerinden yapılır. Abonelik bittiğinde Premium özellikler kapanır.']},
         {h:'Değişiklikler',p:['Bu şartlar güncellenebilir; önemli değişiklikler uygulamada duyurulur.']}]},
       en:{title:'Terms of Use',banner:'Draft. A legal review is needed before release.',sections:[
         {h:'The service',p:['VocVoc helps you learn words and is provided as is. The word database was prepared with the help of AI; the ready-made words can be wrong or incomplete.']},
-        {h:'Free plan',p:['The free plan lets you keep 100 words from each level (A1–C2); Premium removes this limit.']},
+        {h:'Free plan',p:['The free plan lets you keep 40 words from each level (A1–C2); Premium removes this limit.']},
         {h:'Your data',p:["Your data is kept on your device. Taking regular backups is your responsibility; clearing the browser's data can lose your words."]},
         {h:'Premium subscription (planned)',p:['A subscription is subject to the Google Play rules; cancellation and refunds go through Google Play. When it ends, Premium features stop.']},
         {h:'Changes',p:['These terms may be updated; important changes are announced in the app.']}]},
       fr:{title:'Conditions d’utilisation',banner:'Brouillon. Une relecture juridique est nécessaire avant la publication.',sections:[
         {h:'Le service',p:['VocVoc vous aide à apprendre des mots et est fourni tel quel. La base de mots a été préparée avec l’aide de l’IA ; les mots prêts à l’emploi peuvent être erronés ou incomplets.']},
-        {h:'Plan gratuit',p:['Le plan gratuit permet de garder 100 mots de chaque niveau (A1–C2) ; Premium supprime cette limite.']},
+        {h:'Plan gratuit',p:['Le plan gratuit permet de garder 40 mots de chaque niveau (A1–C2) ; Premium supprime cette limite.']},
         {h:'Vos données',p:['Vos données sont conservées sur votre appareil. Faire des sauvegardes régulières relève de votre responsabilité ; effacer les données du navigateur peut vous faire perdre vos mots.']},
         {h:'Abonnement Premium (prévu)',p:['Un abonnement est soumis aux règles de Google Play ; l’annulation et les remboursements passent par Google Play. À sa fin, les fonctions Premium s’arrêtent.']},
         {h:'Modifications',p:['Ces conditions peuvent être mises à jour ; les changements importants sont annoncés dans l’application.']}]},
       de:{title:'Nutzungsbedingungen',banner:'Entwurf. Vor der Veröffentlichung ist eine rechtliche Prüfung nötig.',sections:[
         {h:'Der Dienst',p:['VocVoc hilft Ihnen beim Wörterlernen und wird ohne Gewähr bereitgestellt. Die Wortdatenbank wurde mit Hilfe von KI erstellt; die fertigen Wörter können falsch oder unvollständig sein.']},
-        {h:'Kostenloser Plan',p:['Im kostenlosen Plan können je 100 Wörter aus jeder Stufe (A1–C2) in Ihrer Liste stehen; Premium hebt diese Grenze auf.']},
+        {h:'Kostenloser Plan',p:['Im kostenlosen Plan können je 40 Wörter aus jeder Stufe (A1–C2) in Ihrer Liste stehen; Premium hebt diese Grenze auf.']},
         {h:'Ihre Daten',p:['Ihre Daten bleiben auf Ihrem Gerät. Regelmäßige Sicherungen liegen in Ihrer Verantwortung; das Löschen der Browserdaten kann Ihre Wörter kosten.']},
         {h:'Premium-Abo (geplant)',p:['Ein Abo unterliegt den Regeln von Google Play; Kündigung und Erstattung laufen über Google Play. Mit seinem Ende enden die Premium-Funktionen.']},
         {h:'Änderungen',p:['Diese Bedingungen können aktualisiert werden; wichtige Änderungen werden in der App angekündigt.']}]},
       es:{title:'Condiciones de uso',banner:'Borrador. Antes de publicar hace falta una revisión legal.',sections:[
         {h:'El servicio',p:['VocVoc te ayuda a aprender palabras y se ofrece tal cual. La base de palabras se preparó con ayuda de la IA; las palabras listas pueden ser incorrectas o incompletas.']},
-        {h:'Plan gratuito',p:['El plan gratuito permite tener 100 palabras de cada nivel (A1–C2); Premium quita este límite.']},
+        {h:'Plan gratuito',p:['El plan gratuito permite tener 40 palabras de cada nivel (A1–C2); Premium quita este límite.']},
         {h:'Tus datos',p:['Tus datos se guardan en tu dispositivo. Hacer copias de seguridad con regularidad es responsabilidad tuya; borrar los datos del navegador puede hacerte perder tus palabras.']},
         {h:'Suscripción Premium (prevista)',p:['Una suscripción está sujeta a las normas de Google Play; la cancelación y los reembolsos se gestionan en Google Play. Cuando termina, las funciones Premium se detienen.']},
         {h:'Cambios',p:['Estas condiciones pueden actualizarse; los cambios importantes se anuncian en la aplicación.']}]},
       it:{title:'Termini d’uso',banner:'Bozza. Prima della pubblicazione serve una revisione legale.',sections:[
         {h:'Il servizio',p:['VocVoc ti aiuta a imparare le parole ed è fornita così com’è. Il database di parole è stato preparato con l’aiuto dell’IA; le parole già pronte possono essere errate o incomplete.']},
-        {h:'Piano gratuito',p:['Il piano gratuito consente 100 parole per ogni livello (A1–C2); Premium toglie questo limite.']},
+        {h:'Piano gratuito',p:['Il piano gratuito consente 40 parole per ogni livello (A1–C2); Premium toglie questo limite.']},
         {h:'I tuoi dati',p:['I tuoi dati restano sul tuo dispositivo. Fare backup regolari è una tua responsabilità; cancellare i dati del browser può farti perdere le parole.']},
         {h:'Abbonamento Premium (previsto)',p:['Un abbonamento è soggetto alle regole di Google Play; disdetta e rimborsi passano da Google Play. Quando termina, le funzioni Premium si fermano.']},
         {h:'Modifiche',p:['Questi termini possono essere aggiornati; le modifiche importanti vengono annunciate nell’app.']}]}
@@ -972,7 +972,7 @@
       h('p',{class:'v2-plan-price'},h('span',{class:'v2-plan-amount',text:money(yearly?PRICE.yearly:PRICE.monthly)}),h('span',{class:'v2-plan-unit',text:t(yearly?'perYear':'perMonth')})),
       yearly?h('p',{class:'v2-plan-sub'},h('s',{text:money(PRICE.yearlyFull)}),' ',t('yearlyNote'),' · ',fill(t('monthlyEquiv'),{price:money(PRICE.yearly/12)})):null,
       h('p',{class:'v2-plan-caption',text:t('premiumIncludes')}),
-      list(['prem1','prem2','prem3','prem4','prem5'],'v2-premium-list'),
+      list(['prem1','prem3','prem4','prem5'],'v2-premium-list'),
       premium
         ?h('button',{type:'button',class:'ui-button v2-plan-btn v2-plan-btn-quiet',onclick:()=>VocVocPlan.set('free')},t('backToFree'))
         :h('button',{type:'button',class:'ui-button v2-plan-btn',onclick:()=>VocVocPlan.set('premium')},t('simulate')));

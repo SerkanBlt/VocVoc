@@ -221,8 +221,8 @@ describe('Tags, similar words, reset and the Profile page (static guards)',()=>{
 
 describe('Free allowance per level group, points for words, Premium cards and the card triangle (static guards)',()=>{
   const screensJs=read('screens.js'),screensCss=read('screens.css');
-  it('the free plan gives 100 words from each of the three level groups; the count comes from the words in the list (archived ones too) per group, not from a counter',()=>{
-    assert(/const FREE_BAND_LIMIT=100;/.test(screensJs)&&/bandWordLimit\(\)\{return planNow\(\)==='premium'\?Infinity:FREE_BAND_LIMIT;\}/.test(screensJs));
+  it('the free plan gives 40 words from each of the six levels; the count comes from the words in the list (archived ones too) per level, not from a counter',()=>{
+    assert(/const FREE_BAND_LIMIT=40;/.test(screensJs)&&/bandWordLimit\(\)\{return planNow\(\)==='premium'\?Infinity:FREE_BAND_LIMIT;\}/.test(screensJs));
     assert(/function bandRoom\(band\)\{[^]*?window\.VocVocWordbase\.progress\(band\)\.used/.test(html),'used = the words of that group that are in the list (archived included)');
     assert(/function progress\(band=bandOf\(\)\)/.test(read('wordbase.js'))&&read('wordbase.js').includes('function bandOfWord(word)'));
     assert(!/wordRoom|wordCap/.test(html),'the old limit on the whole list is gone');
@@ -280,9 +280,19 @@ describe('Collapsible Points and Tags sections, the tag panel and the Matching t
     assert(read('stats.js').includes("q.mode==='match'")&&screensJs.includes("['recall','cloze','match'].includes(quizSession.mode)"),'a finished Matching is recorded as a test of its own kind');
     assert(/for\(let guard=0;pairs\.length<4&&guard<400;guard\+\+\)/.test(html)&&html.includes('Array.from({length:10},()=>'),'ten rounds of four pairs');
   });
-  it('the cards of the Words page: the words added today first, then the earlier ones, and in each group the words with more points on top',()=>{
-    assert(html.includes('eligible.sort((a,b)=>Number(b.addedToday)-Number(a.addedToday)||b.score-a.score||a.order-b.order);'),'today first, then the points, then the order of the list');
-    assert(html.includes('addedToday:!Number.isNaN(added.getTime())&&added.toLocaleDateString("en-CA")===today')&&html.includes('area.innerHTML=shown.map(entry=>renderWordCard(entry.data)).join("")+showMoreButton("cards",rest);'));
+  it('the cards of the Words page: three lists (today, yesterday, earlier) each under a label, in each list the words with more points on top, the same points in the order they were pulled',()=>{
+    assert(html.includes('eligible.sort((a,b)=>a.group-b.group||b.score-a.score||a.pulledAt-b.pulledAt||a.pulledAs-b.pulledAs);'),'the list, then the points, then the time and place of the pull');
+    assert(html.includes('group:day===today?0:day===yesterday?1:2')&&html.includes('yesterday=dayOf(new Date(now.getFullYear(),now.getMonth(),now.getDate()-1))'),'the day of the pull: today, yesterday, earlier');
+    assert(html.includes('class="section-title card-group-label" role="heading" aria-level="2"')&&html.includes('area.innerHTML=html+showMoreButton("cards",rest);'),'a label where a list starts');
+    assert(html.includes('CARD_GROUP_KEYS=["groupToday","groupYesterday","groupEarlier"]'));
+    for(const [language,today,yesterday,earlier] of [['en','Today','Yesterday','Earlier'],['tr','Bugün','Dün','Öncekiler'],['fr','Aujourd’hui','Hier','Plus tôt'],['de','Heute','Gestern','Früher'],['es','Hoy','Ayer','Anteriores'],['it','Oggi','Ieri','Precedenti']]){
+      assert(html.includes(`groupToday:"${today}",groupYesterday:"${yesterday}",groupEarlier:"${earlier}",`),`${language}: labels of the three lists`);
+    }
+  });
+  it('the Premium card: the first line says what comes after the first 40 words of each level, the line about sentences from History is gone',()=>{
+    assert(screensJs.includes("prem1:'Her seviyede ilk 40 kelimeden sonrası, 10 bine yakın kelime deposu'"),'Turkish line');
+    assert(screensJs.includes("free1:'Altı seviyenin (A1–C2) her birinden 40’ar kelime hediye'")&&screensJs.includes("prem1:'Everything after the first 40 words of each level"),'the Free and Premium cards name the same 40 words');
+    assert(!/prem2:/.test(screensJs)&&screensJs.includes("list(['prem1','prem3','prem4','prem5'],'v2-premium-list')"),'no sentence line in any language');
   });
   it('Settings: every setting is a panel (name at the left, choice or button at the right), a change is saved at once, there is no Save button, no footer and no line of text under the title',()=>{
     assert(!/settingsSaveBtn|settingsSubtitle|settings-panel-footer|settingsSub:/.test(html),'no Save button, no subtitle, no footer');
@@ -347,20 +357,20 @@ describe('New interface (prototype)',()=>{
     const {win}=load();
     assert.deepEqual(Object.keys(win).sort(),['VocVocPlan','VocVocScreens','dispatchEvent']);
   });
-  it('the plan rules match the agreed product: Free by default with 100 words from each level group and a 20-word daily goal, stats/sentences/speech/unlimited words are Premium, no AI and no key anywhere',()=>{
+  it('the plan rules match the agreed product: Free by default with 40 words from each level and a 20-word daily goal, stats/sentences/speech/unlimited words are Premium, no AI and no key anywhere',()=>{
     const {win,events,storage}=load(),plan=win.VocVocPlan;
     assert.deepEqual([plan.get(),plan.has('stats'),plan.has('badges'),plan.has('freeWords'),plan.has('unlimitedWords')],['free',false,true,true,false]);
     assert.deepEqual(Object.entries(plan.features).filter(([,need])=>need==='premium').map(([name])=>name).sort(),['dailyGoalOver20','historyAnalysis','sentenceBuilder','speech','stats','unlimitedWords']);
     assert(!('ownKeyActive' in plan)&&!('ownKeyAi' in plan.features)&&!('builtInAi' in plan.features),'the own key and the built-in AI are not part of the plan any more');
     assert.deepEqual([plan.FREE_DAILY_LIMIT,plan.dailyLimitMax()],[20,20],'the free plan keeps the daily goal at 20 words');
-    assert.deepEqual([plan.FREE_BAND_LIMIT,plan.bandWordLimit()],[100,100],'the free plan gives 100 words from each level group');
+    assert.deepEqual([plan.FREE_BAND_LIMIT,plan.bandWordLimit()],[40,40],'the free plan gives 40 words from each level');
     assert(!('wordLimit' in plan)&&!('FREE_WORD_LIMIT' in plan),'no single limit on the whole list any more');
     assert.equal(plan.has('somethingUnknown'),false);
     plan.set('premium');
     assert.deepEqual([plan.dailyLimitMax(),plan.bandWordLimit()],[Infinity,Infinity],'Premium has no limit on the daily goal or the words');
     assert.deepEqual([plan.get(),plan.has('stats'),plan.has('sentenceBuilder'),plan.has('speech'),plan.has('unlimitedWords'),storage.VOCVOC_SIM_PLAN,events.length],['premium',true,true,true,true,'premium',1]);
     plan.set('premium');assert.equal(events.length,1,'setting the same plan again is not a change');
-    plan.set('free');assert.deepEqual([plan.get(),plan.bandWordLimit(),'VOCVOC_SIM_PLAN' in storage,events.length],['free',100,false,2]);
+    plan.set('free');assert.deepEqual([plan.get(),plan.bandWordLimit(),'VOCVOC_SIM_PLAN' in storage,events.length],['free',40,false,2]);
     assert.throws(()=>{'use strict';plan.features.stats='free';},TypeError);
     assert.equal(load({VOCVOC_SIM_PLAN:'garbage'}).win.VocVocPlan.get(),'free');
   });
