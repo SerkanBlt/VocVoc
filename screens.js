@@ -517,12 +517,13 @@
       h('ul',{class:'v2-pills','aria-label':t('addedWords')},words.map(word=>h('li',{},wordPill(word)))));
   }
   // "Add New Words" just added its words, so they are all known at once: the page behind goes blurred and a circle appears in the middle of the screen. Every second the
-  // next word fades in inside the circle and is then thrown out of it in a badge, in a random direction and in slow motion. Every word stays where it landed until the
-  // last one has landed; then the screen waits for a tap (or Escape) to go away. A tap while the words are still coming closes it at once. A word that has landed can be
-  // held and moved around the screen: the others keep out of its way and drift a little with it, and where it is let go is where it stays. There is none when the device
-  // asks for less motion.
-  const FLING_EVERY=1000,FLING_TIME=3200,FLING_LEAVE=450,FLING_GAP=14,FLING_SPACE=8,FLING_EDGE=12,FLING_HINT=72,FLING_APART=50,FLING_TRIES=24,FLING_STEPS=6;
-  const FLING_PASSES=8,FLING_FOLLOW=.18,FLING_REACH=180,FLING_EASE=90,FLING_TAP=6;
+  // next word fades in inside the circle and is then thrown out of it in a badge, in a random direction and in slow motion (FLING_FADE, then FLING_THROW). Every word stays
+  // where it landed until the last one has landed; then the screen waits for a tap (or Escape) to go away. A tap while the words are still coming closes it at once.
+  // A word that has landed can be held and moved around the screen: its meaning shows at the bottom while it is held, the others glide out of its way (slowly, FLING_EASE)
+  // and drift a little with it, and where it is let go is where it stays. A word let go inside the circle fades out at once and goes to the memorized words. There is
+  // none when the device asks for less motion.
+  const FLING_EVERY=1000,FLING_FADE=600,FLING_THROW=2600,FLING_TIME=FLING_FADE+FLING_THROW,FLING_LEAVE=450,FLING_GAP=14,FLING_SPACE=8,FLING_EDGE=12,FLING_HINT=72,FLING_APART=50,FLING_TRIES=24,FLING_STEPS=6;
+  const FLING_PASSES=8,FLING_FOLLOW=.18,FLING_REACH=180,FLING_EASE=500,FLING_TAP=6,FLING_GONE=400;
   let flingRun=null;
   function stopFling(){
     if(!flingRun)return;
@@ -595,16 +596,33 @@
     for(const box of wanted(run)){box.item.x=box.x;box.item.y=box.y;}
     run.drag=null;wake(run);
   }
+  // A word let go inside the circle: it fades out at once (the others no longer keep out of its way) and is put in the memorized words, like the app's own
+  // "memorized" action does.
+  function memorizeDropped(run,item){
+    const at=run.placed.indexOf(item);
+    if(at>=0)run.placed.splice(at,1);
+    run.drag=null;
+    item.node.classList.remove('v2-landed','v2-held');
+    item.node.style.transition='opacity '+FLING_GONE+'ms ease-out';item.node.style.opacity='0';
+    setTimeout(()=>item.node.remove(),FLING_GONE);
+    Promise.resolve().then(()=>markMemorized(item.word)).catch(error=>reportStorageError(error));
+    wake(run);
+  }
+  // The meaning of a word as the app has it (in the native language), for the line at the bottom while a word is held.
+  const meaningOf=word=>{try{const entry=VocVocData.getWordByText(word);return (entry&&entry.meaning)||'';}catch(_){return '';}};
   function holdWords(run){
-    const host=run.host,point=event=>{const box=host.getBoundingClientRect();return {x:event.clientX-box.left-box.width/2,y:event.clientY-box.top-box.height/2};};
+    const host=run.host,orb=run.orb,point=event=>{const box=host.getBoundingClientRect();return {x:event.clientX-box.left-box.width/2,y:event.clientY-box.top-box.height/2};};
+    const inCircle=drag=>Math.hypot(drag.x,drag.y)<=orb.offsetWidth/2;                                                       // the held word's middle is inside the circle
+    const mark=drag=>orb.classList.toggle('v2-over',!!drag&&inCircle(drag));                                                   // the circle shows that letting go here memorizes the word
     host.addEventListener('pointerdown',event=>{
       run.justDragged=false;
       const node=event.target.closest&&event.target.closest('.v2-landed'),item=node&&run.placed.find(entry=>entry.node===node);
       if(!item||run.leaving||run.drag)return;
       event.preventDefault();
-      const at=point(event);
+      const at=point(event),meaning=meaningOf(item.word);
       run.drag={item,id:event.pointerId,grabX:at.x-item.px,grabY:at.y-item.py,from:at,moved:false,x:item.px,y:item.py};
       try{node.setPointerCapture(event.pointerId);}catch(_){}
+      run.meaning.textContent=meaning;host.classList.toggle('v2-holding',!!meaning);
       node.classList.add('v2-held');place(item);wake(run);
     });
     host.addEventListener('pointermove',event=>{
@@ -612,12 +630,14 @@
       if(!drag||event.pointerId!==drag.id)return;
       const at=point(event),area=reach(host,drag.item);
       if(Math.hypot(at.x-drag.from.x,at.y-drag.from.y)>FLING_TAP)drag.moved=true;
-      drag.x=clamp(at.x-drag.grabX,area.left,area.right);drag.y=clamp(at.y-drag.grabY,area.top,area.bottom);wake(run);
+      drag.x=clamp(at.x-drag.grabX,area.left,area.right);drag.y=clamp(at.y-drag.grabY,area.top,area.bottom);mark(drag);wake(run);
     });
     const release=event=>{
       const drag=run.drag;
       if(!drag||event.pointerId!==drag.id)return;
-      run.justDragged=drag.moved;drag.item.node.classList.remove('v2-held');dropWord(run);          // the click that follows a drag is not a tap
+      run.justDragged=drag.moved;                                                                                            // the click that follows a drag is not a tap
+      host.classList.remove('v2-holding');orb.classList.remove('v2-over');drag.item.node.classList.remove('v2-held');
+      if(event.type==='pointerup'&&drag.moved&&inCircle(drag))memorizeDropped(run,drag.item);else dropWord(run);
     };
     host.addEventListener('pointerup',release);host.addEventListener('pointercancel',release);
     host.addEventListener('click',()=>{if(run.justDragged){run.justDragged=false;return;}dismissFling();});
@@ -644,27 +664,29 @@
         if(!best||lap<best.lap){best={degrees,cx,cy,lap};if(lap===0)break;}
       }
     }
-    const item={node:badge,x:best.cx,y:best.cy,px:best.cx,py:best.cy,hx,hy,turn,landed:false};
+    const item={node:badge,word,x:best.cx,y:best.cy,px:best.cx,py:best.cy,hx,hy,turn,landed:false};
     placed.push(item);
     badge.style.setProperty('--dx',Math.round(best.cx)+'px');badge.style.setProperty('--dy',Math.round(best.cy)+'px');badge.style.setProperty('--rot',turn+'deg');
     badge.style.setProperty('--fit',Math.min(.8,orb.offsetWidth*.78/badge.offsetWidth).toFixed(2));
-    badge.addEventListener('animationend',()=>{                                                                              // landed: from now on it is drawn (and can be moved) by the page
+    badge.addEventListener('animationend',event=>{                                                                           // the throw is over (not the fade in): the page draws it from now on and it can be moved
+      if(event.animationName!=='v2-fling'||item.landed)return;
       item.landed=true;item.px=item.x;item.py=item.y;
       badge.style.animation='none';badge.style.opacity='1';badge.classList.add('v2-landed');place(item);
       if(flingRun&&flingRun.drag)wake(flingRun);
-    },{once:true});
+    });
     return best.degrees;
   }
   function playAddedWords(words){
     if(!words.length||(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches))return;
     stopFling();
     const count=h('span',{class:'v2-orb-count'}),orb=h('div',{class:'v2-orb'},count),hint=h('p',{class:'v2-orb-hint',text:t('addedTapClose')});
-    const host=h('div',{id:'v2Orb',class:'v2-orb-host','aria-hidden':'true'},orb,hint);
-    host.style.setProperty('--fling-time',FLING_TIME+'ms');
+    const meaning=h('p',{class:'v2-orb-meaning',lang:getNativeLanguageCode()});                                                  // the meaning of the word that is held, in the place of the hint
+    const host=h('div',{id:'v2Orb',class:'v2-orb-host','aria-hidden':'true'},orb,hint,meaning);
+    host.style.setProperty('--fling-fade',FLING_FADE+'ms');host.style.setProperty('--fling-time',FLING_THROW+'ms');
     document.body.append(host);
     const onKey=event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();dismissFling();}};
     document.addEventListener('keydown',onKey,true);window.addEventListener('hashchange',dismissFling);
-    const placed=[],run=flingRun={host,timers:[],leaving:false,placed,drag:null,frame:0,last:0,justDragged:false,cleanup:[()=>document.removeEventListener('keydown',onKey,true),()=>window.removeEventListener('hashchange',dismissFling),()=>cancelAnimationFrame(run.frame)]};
+    const placed=[],run=flingRun={host,orb,meaning,timers:[],leaving:false,placed,drag:null,frame:0,last:0,justDragged:false,cleanup:[()=>document.removeEventListener('keydown',onKey,true),()=>window.removeEventListener('hashchange',dismissFling),()=>cancelAnimationFrame(run.frame)]};
     holdWords(run);
     let degrees=Math.random()*360;
     words.forEach((word,index)=>run.timers.push(setTimeout(()=>{

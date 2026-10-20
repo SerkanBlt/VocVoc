@@ -2327,7 +2327,7 @@ async function main(){
    assert.deepEqual(flung.map(item=>item.word),pills,'every word that was added, in the order it was added');
    const gaps=flung.slice(1).map((item,index)=>item.at-flung[index].at);
    assert(gaps.every(gap=>gap>=850&&gap<=1400),'one word every second: '+gaps.map(Math.round));
-   assert(flung.every(item=>item.duration==='3.2s'&&item.lang==='fr'),'slow motion: '+JSON.stringify(flung.map(item=>item.duration)));
+   assert(flung.every(item=>item.duration==='0.6s, 2.6s'&&item.lang==='fr'),'slow motion: '+JSON.stringify(flung.map(item=>item.duration)));
    assert(flung.every(item=>item.fontSize>=20),'big words: '+JSON.stringify(flung.map(item=>item.fontSize)));
    // the words that came before stay: when a word comes, all the earlier ones are still there and fully visible; the screen is not done until the last one has landed
    assert(flung.every((item,index)=>item.olderCount===index&&item.olderVisible),'the words do not disappear: '+JSON.stringify(flung.map(item=>[item.olderCount,item.olderVisible])));
@@ -2356,23 +2356,37 @@ async function main(){
    const piled=list=>{const found=[];list.forEach((a,i)=>list.forEach((b,j)=>{if(j>i&&Math.min(a.x+a.w/2,b.x+b.w/2)-Math.max(a.x-a.w/2,b.x-b.w/2)>2&&Math.min(a.y+a.h/2,b.y+b.h/2)-Math.max(a.y-a.h/2,b.y-b.h/2)>2)found.push([i,j]);}));return found;};
    const start=await boxes(),view=geometry.view,hintTop=geometry.hint.top;
    assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-fling')).cursor),'grab');
-   await p.mouse.move(start[0].x,start[0].y);await p.mouse.down();await p.mouse.move(start[1].x,start[1].y,{steps:15});await pause(800);
+   await p.mouse.move(start[0].x,start[0].y);await p.mouse.down();await p.mouse.move(start[1].x,start[1].y,{steps:15});await pause(2200);
    const held=await boxes();
    const wanted={x:Math.min(Math.max(start[1].x,12+held[0].w/2),view[0]-12-held[0].w/2),y:Math.min(Math.max(start[1].y,12+held[0].h/2),view[1]-84-held[0].h/2)};   // where the pointer is, kept inside the screen above the hint (the held word is drawn 6% larger, hence the margin)
    assert(Math.hypot(held[0].x-wanted.x,held[0].y-wanted.y)<14,'the held word follows the pointer: '+JSON.stringify([held[0],wanted]));
    assert(Math.hypot(held[1].x-start[1].x,held[1].y-start[1].y)>10,'the word it was carried onto moved out of its way');
    assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-held')).cursor),'grabbing');
    assert.deepEqual(piled(held),[],'nothing on top of the held word or of each other');
-   await p.mouse.up();await pause(800);
+   // while a word is held its meaning shows at the bottom, in the place of the hint (the others glide out of its way slowly, hence the long waits here)
+   const meaningOfHeld=await p.evaluate(word=>VocVocData.getWordByText(word).meaning,pills[0]);
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-orb-meaning').textContent,getComputedStyle(document.querySelector('.v2-orb-meaning')).opacity,getComputedStyle(document.querySelector('.v2-orb-hint')).opacity]),[meaningOfHeld,'1','0']);
+   assert(meaningOfHeld.length>0,'the word has a meaning');
+   await p.mouse.up();await pause(2200);
+   assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-orb-meaning')).opacity),'0','the meaning goes when the word is let go');
    const dropped=await boxes();
    assert(Math.hypot(dropped[0].x-held[0].x,dropped[0].y-held[0].y)<4,'it stays where it was let go');
    assert.deepEqual(piled(dropped),[],'nothing on top of anything after it is let go');
    assert(dropped.every(box=>box.x-box.w/2>=0&&box.x+box.w/2<=view[0]&&box.y-box.h/2>=0&&box.y+box.h/2<=hintTop),'every word is still inside the screen above the hint');
    assert.equal(await p.locator('#v2Orb:not(.v2-leaving)').count(),1,'carrying a word is not a tap');
+   // a word let go inside the circle fades out at once and goes to the memorized words; the circle shows it while the word is over it
+   const circle=await p.evaluate(()=>{const box=document.querySelector('.v2-orb').getBoundingClientRect();return {x:box.left+box.width/2,y:box.top+box.height/2};});
+   await p.mouse.move(dropped[9].x,dropped[9].y);await p.mouse.down();await p.mouse.move(circle.x,circle.y,{steps:15});await pause(500);
+   assert.equal(await p.locator('.v2-orb.v2-over').count(),1,'the circle shows that the word will be memorized');
+   await p.mouse.up();
+   await p.waitForFunction(()=>document.querySelectorAll('.v2-fling').length===9,null,{timeout:4000});
+   await p.waitForFunction(word=>VocVocData.getWordProgress(word)?.status==='memorized',pills[9],{timeout:4000});
+   assert.equal(await p.locator('.v2-orb.v2-over').count(),0);
+   assert.equal(await p.locator('#v2Orb:not(.v2-leaving)').count(),1,'the screen stays; the other nine words are still there');
    // a tap anywhere takes the screen away (and the page underneath is not tapped); then the card that waited comes
    await p.mouse.click(195,300);
    await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
-   await p.waitForSelector('#v2Celebrate.v2-on .v2-celebrate-name');assert.equal(await p.locator('#v2Celebrate .v2-celebrate-name').textContent(),'Hedef tamam');
+   await p.waitForSelector('#v2Celebrate.v2-on .v2-celebrate-name');assert.equal(await p.locator('#v2Celebrate .v2-celebrate-name').textContent(),'Hedef tamam, İlk adım');   // the daily goal, and the first memorized word
    // a tap while the words are still coming closes it at once; so does Escape
    await p.evaluate(async()=>{VocVocPlan.set('premium');await VocVocData.updateSettings({dailyLimit:'unlimited'});});await p.waitForFunction(()=>!document.querySelector('#v2Celebrate.v2-on'),null,{timeout:8000});   // the free plan stops at 20 words a day
    await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await p.waitForSelector('#v2Orb .v2-fling');
