@@ -22,6 +22,7 @@ async function main(){
  const cspViolations=[],rawNewContext=browser.newContext.bind(browser);
  browser.newContext=async(...args)=>{const c=await rawNewContext(...args);
   await c.addInitScript(()=>document.addEventListener('securitypolicyviolation',e=>{if(!window.__cspExpected)console.error('CSP-VIOLATION '+e.violatedDirective+' '+e.blockedURI);},true));
+  await c.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>new MutationObserver(()=>{const orb=document.getElementById('v2Orb');if(orb&&!window.__keepOrb&&!orb.classList.contains('v2-leaving'))orb.click();}).observe(document.body,{childList:true})));   // the circle of Add New Words waits for a tap: every scenario but its own taps it away at once
   c.on('console',m=>{if(/CSP-VIOLATION|Content Security Policy/i.test(m.text()))cspViolations.push(m.text());});return c;};
  const errors=[];let context=await browser.newContext();await context.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>{window.bootRenderCounts={history:0,content:0};for(const [name,key] of [['renderHistory','history'],['renderAllLocal','content']]){const original=window[name];window[name]=(...args)=>{bootRenderCounts[key]++;return original(...args);};}}));let page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  const ready=async(p=page)=>{await p.waitForFunction(()=>document.getElementById('storageBoot').hidden);await p.evaluate(()=>VocVocData.flush());};
@@ -2298,45 +2299,62 @@ async function main(){
   }
   record('word packs: the pack of the language pair is downloaded once and kept; the Daily button adds its next words in order, without a key, within the daily limit, also offline');
 
-  // Add New Words: the words are known at once, so a circle throws them out one by one (every half second), each in a badge, in a random direction, in slow motion
+  // Add New Words: the words are known at once, so a circle throws them out one by one (every second), each in a big badge, in a random direction, in slow motion;
+  // every word stays where it landed (inside the screen, clear of the circle and of the other words) and, once the last one has landed, the screen waits for a tap
   {
-   const {c,p}=await openPage({course:true});
+   const {c,p}=await openPage({course:true,init:()=>{window.__keepOrb=true;}});          // the other scenarios of the suite dismiss the circle by themselves (see newContext above)
    await p.waitForSelector('.v2-pack-text');
    await p.evaluate(()=>{
     window.__flung=[];
     new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)if(node.classList?.contains('v2-fling')){
-     const orb=document.querySelector('.v2-orb').getBoundingClientRect();
-     window.__flung.push({word:node.textContent,at:performance.now(),dx:parseFloat(node.style.getPropertyValue('--dx')),dy:parseFloat(node.style.getPropertyValue('--dy')),w:node.offsetWidth,h:node.offsetHeight,radius:orb.width/2,duration:getComputedStyle(node).animationDuration,lang:node.lang,view:[innerWidth,innerHeight]});
+     const host=document.getElementById('v2Orb'),older=[...document.querySelectorAll('.v2-fling')].slice(0,-1);
+     window.__flung.push({word:node.textContent,at:performance.now(),duration:getComputedStyle(node).animationDuration,lang:node.lang,fontSize:parseFloat(getComputedStyle(node).fontSize),
+      dx:parseFloat(node.style.getPropertyValue('--dx')),dy:parseFloat(node.style.getPropertyValue('--dy')),olderVisible:older.every(item=>getComputedStyle(item).opacity==='1'),olderCount:older.length,done:host.classList.contains('v2-done')});
     }}).observe(document.body,{childList:true,subtree:true});
    });
    await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();
    await p.waitForSelector('#v2Orb');
-   assert.deepEqual(await p.evaluate(()=>{const host=document.getElementById('v2Orb');return [getComputedStyle(host).pointerEvents,host.getAttribute('aria-hidden'),getComputedStyle(host).position];}),['none','true','fixed']);
-   const middle=await p.evaluate(()=>{const hit=document.elementFromPoint(innerWidth/2,innerHeight/2);return !!hit&&!hit.closest('#v2Orb');});
-   assert.equal(middle,true,'a tap goes through the circle to the page');
-   await p.waitForFunction(()=>window.__flung.length===10,null,{timeout:15000});
+   assert.deepEqual(await p.evaluate(()=>{const host=document.getElementById('v2Orb'),style=getComputedStyle(host);return [style.pointerEvents,style.cursor,style.position,host.getAttribute('aria-hidden')];}),['auto','pointer','fixed','true']);
+   await p.waitForFunction(()=>window.__flung.length===10,null,{timeout:20000});
    const flung=await p.evaluate(()=>window.__flung),pills=await p.locator('.v2-added .history-chip').evaluateAll(nodes=>nodes.map(node=>node.textContent));
    assert.deepEqual(flung.map(item=>item.word),pills,'every word that was added, in the order it was added');
    const gaps=flung.slice(1).map((item,index)=>item.at-flung[index].at);
-   assert(gaps.every(gap=>gap>=380&&gap<=900),'one word every half second: '+gaps.map(Math.round));
+   assert(gaps.every(gap=>gap>=850&&gap<=1400),'one word every second: '+gaps.map(Math.round));
    assert(flung.every(item=>item.duration==='2.6s'&&item.lang==='fr'),'slow motion: '+JSON.stringify(flung.map(item=>item.duration)));
-   // each ends clear of the circle (the nearest point of its badge is past the circle's edge) and inside the screen
-   const reach=item=>Math.hypot(Math.max(Math.abs(item.dx)-item.w/2,0),Math.max(Math.abs(item.dy)-item.h/2,0));
-   assert(flung.every(item=>reach(item)>item.radius),'outside the circle: '+JSON.stringify(flung.map(item=>[Math.round(reach(item)),item.radius])));
-   assert(flung.every(item=>Math.abs(item.dx)+item.w/2<=item.view[0]/2&&Math.abs(item.dy)+item.h/2<=item.view[1]/2),'inside the screen');
-   // random directions, never within 50 degrees of the last one (and not all the same)
+   assert(flung.every(item=>item.fontSize>=20),'big words: '+JSON.stringify(flung.map(item=>item.fontSize)));
+   // the words that came before stay: when a word comes, all the earlier ones are still there and fully visible; the screen is not done until the last one has landed
+   assert(flung.every((item,index)=>item.olderCount===index&&item.olderVisible),'the words do not disappear: '+JSON.stringify(flung.map(item=>[item.olderCount,item.olderVisible])));
+   assert.equal(flung[9].done,false,'not done when the last word starts');
+   assert.equal(await p.evaluate(()=>document.getElementById('v2Orb').classList.contains('v2-done')),false);
+   await p.waitForSelector('#v2Orb.v2-done',{timeout:6000});
+   // after the last word: nothing goes away by itself; the hint says what to do, and a new-badge card (the daily goal is reached) waits for the screen to go
+   await pause(4000);
+   assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('#v2Orb .v2-fling').length,[...document.querySelectorAll('.v2-fling')].every(item=>getComputedStyle(item).opacity==='1'),getComputedStyle(document.querySelector('.v2-orb-hint')).opacity,document.querySelector('.v2-orb-hint').textContent,!!document.querySelector('#v2Celebrate.v2-on'),document.querySelector('.v2-orb-count').textContent]),[10,true,'1','Kapatmak için dokun',false,'10 / 10']);
+   // where they landed: inside the screen above the hint, clear of the circle, clear of each other, in different directions
+   const geometry=await p.evaluate(()=>{
+    const rect=node=>{const box=node.getBoundingClientRect();return {left:box.left,right:box.right,top:box.top,bottom:box.bottom};},orb=document.querySelector('.v2-orb').getBoundingClientRect();
+    return {view:[document.getElementById('v2Orb').clientWidth,document.getElementById('v2Orb').clientHeight],hint:rect(document.querySelector('.v2-orb-hint')),radius:orb.width/2,centre:[orb.left+orb.width/2,orb.top+orb.height/2],words:[...document.querySelectorAll('.v2-fling')].map(rect)};
+   });
+   assert(geometry.words.every(box=>box.left>=0&&box.top>=0&&box.right<=geometry.view[0]&&box.bottom<=geometry.hint.top),'inside the screen, above the hint: '+JSON.stringify(geometry.words.map(box=>[box.left,box.right,box.top,box.bottom].map(Math.round))));
+   const gap=box=>Math.hypot(Math.max(box.left-geometry.centre[0],geometry.centre[0]-box.right,0),Math.max(box.top-geometry.centre[1],geometry.centre[1]-box.bottom,0));
+   assert(geometry.words.every(box=>gap(box)>geometry.radius),'outside the circle: '+JSON.stringify(geometry.words.map(box=>Math.round(gap(box)))));
+   const crossed=[];geometry.words.forEach((a,i)=>geometry.words.forEach((b,j)=>{if(j>i&&Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1)crossed.push([i,j]);}));
+   assert.deepEqual(crossed,[],'no word on top of another');
    const angle=item=>(Math.atan2(item.dx,-item.dy)*180/Math.PI+360)%360,apart=flung.slice(1).map((item,index)=>{const turn=Math.abs(angle(item)-angle(flung[index]));return Math.min(turn,360-turn);});
-   assert(apart.every(turn=>turn>=48),'directions are apart: '+apart.map(Math.round));
+   assert(apart.every(turn=>turn>=48),'directions are apart (never within 50 degrees of the last one): '+apart.map(Math.round));
    assert(new Set(flung.map(item=>Math.round(angle(item)/30))).size>=4,'the words go in different directions');
-   assert.equal(await p.locator('.v2-orb-count').textContent(),'10 / 10');
-   // the circle goes away by itself when the last word has flown
-   await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:12000});
+   // a tap anywhere takes the screen away (and the page underneath is not tapped); then the card that waited comes
+   await p.mouse.click(195,300);
+   await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
+   await p.waitForSelector('#v2Celebrate.v2-on .v2-celebrate-name');assert.equal(await p.locator('#v2Celebrate .v2-celebrate-name').textContent(),'Hedef tamam');
+   // a tap while the words are still coming closes it at once; so does Escape
+   await p.evaluate(async()=>{VocVocPlan.set('premium');await VocVocData.updateSettings({dailyLimit:'unlimited'});});await p.waitForFunction(()=>!document.querySelector('#v2Celebrate.v2-on'),null,{timeout:8000});   // the free plan stops at 20 words a day
+   await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await p.waitForSelector('#v2Orb .v2-fling');
+   assert.equal(await p.evaluate(()=>document.getElementById('v2Orb').classList.contains('v2-done')),false);
+   await p.mouse.click(195,300);await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
+   await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await p.waitForSelector('#v2Orb .v2-fling');
+   await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
    assert.equal(await p.locator('.v2-fling').count(),0);
-   // pressing again while it still runs starts over instead of piling up circles
-   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
-   await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await p.waitForSelector('#v2Orb');
-   await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await pause(700);
-   assert.equal(await p.locator('#v2Orb').count(),1);
    await c.close();
   }
   // a device that asks for less motion gets the words without the circle
@@ -2349,7 +2367,7 @@ async function main(){
    assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('#v2Orb,.v2-fling').length,document.querySelectorAll('.v2-added .history-chip').length]),[0,10]);
    await c.close();
   }
-  record('Add New Words: the added words are thrown out of a circle one every half second, each in a badge, in a random direction and in slow motion, outside the circle and inside the screen; it never blocks a tap and is left out for reduced motion');
+  record('Add New Words: the added words are thrown out of a circle one every second, each in a big badge, in a random direction and in slow motion; they stay where they land (inside the screen, outside the circle, clear of each other) and the screen waits for a tap or Escape after the last one, a tap earlier closes it too; left out for reduced motion');
 
   // a pair without a pack says so; a damaged copy on the device is replaced
   {

@@ -345,15 +345,20 @@ describe('Collapsible Points and Tags sections, the tag panel and the Matching t
     assert(screensJs.includes("{n:badges.filter(badge=>badge.earnedOn).length,m:badges.length}"),'the summary still counts every goal reached');
     assert(/\.v2-tier-dot\{[^}]*background:linear-gradient\(135deg,var\(--badge-from,#2563eb\),#7c3aed\)/.test(css),'the goals reached are gradients ending in purple');
   });
-  it('Add New Words throws every word it added out of a circle, one every half second, in a badge, in a random direction and in slow motion; it never blocks a tap and stops for reduced motion',()=>{
+  it('Add New Words throws every word it added out of a circle, one every second, in a big badge, in a random direction and in slow motion; the words stay on screen (inside it, clear of each other) until the last one has landed, then it waits for a tap; reduced motion has none',()=>{
     const css=read('screens.css');
     const saved=html.indexOf('await VocVocData.addWordBatch(words,{dailyCount:words.length});'),announced=html.indexOf('window.dispatchEvent(new CustomEvent("vocvoc-words-added",{detail:{words:words.map(data=>data.word)}}));');
     assert(saved>0&&announced>saved&&html.indexOf('return {status:"added",words};')>announced,'announced once the words are saved');
-    assert(screensJs.includes("window.addEventListener('vocvoc-words-added'")&&screensJs.includes('const FLING_EVERY=500,')&&screensJs.includes('},index*FLING_EVERY)));'),'one word every half second');
-    assert(screensJs.includes('const degrees=(previous+FLING_APART+Math.random()*(360-2*FLING_APART))%360')&&screensJs.includes('FLING_APART=50')&&screensJs.includes('Math.random()*28-14'),'random direction, never close to the last one');
+    assert(screensJs.includes("window.addEventListener('vocvoc-words-added'")&&screensJs.includes('const FLING_EVERY=1000,')&&screensJs.includes('},index*FLING_EVERY)));'),'one word every second');
+    assert(screensJs.includes('const degrees=(previous+FLING_APART+Math.random()*(360-2*FLING_APART))%360')&&screensJs.includes('FLING_APART=50')&&screensJs.includes('const turn=Math.round(Math.random()*16-8)'),'random direction, never close to the last one');
     assert(screensJs.includes("window.matchMedia('(prefers-reduced-motion: reduce)').matches))return;"),'nothing for reduced motion');
-    assert(/\.v2-orb-host\{[^}]*pointer-events:none/.test(css)&&/\.v2-fling\{[^}]*animation:v2-fling var\(--fling-time,2\.6s\)/.test(css)&&css.includes('@keyframes v2-fling{')&&css.includes('@media(prefers-reduced-motion:reduce){.v2-orb-host{display:none}}'));
-    assert(screensJs.includes("h('div',{id:'v2Orb',class:'v2-orb-host','aria-hidden':'true'},orb)"),'decoration only: the message of the added words is the app\'s own');
+    assert(screensJs.includes('FLING_EDGE=12,FLING_HINT=72,')&&screensJs.includes('halfH-FLING_EDGE-FLING_HINT-hy')&&screensJs.includes('const lap=placed.reduce('),'inside the screen above the hint, clear of the words that landed before');
+    // the words are never faded out; only a tap, Escape, a change of page or a new run takes the screen away, and only after the last word landed does it show the hint
+    assert(/@keyframes v2-fling\{[^]*?\n  100%\{opacity:1;transform:[^\n]*\n\}/.test(css),'the words stay');
+    assert(/\.v2-fling\{[^}]*font-size:1\.3rem[^}]*animation:v2-fling var\(--fling-time,2\.6s\)/.test(css)&&/\.v2-orb-host\{[^}]*cursor:pointer/.test(css)&&!/\.v2-orb-host\{[^}]*pointer-events:none/.test(css)&&/\.v2-orb-host\.v2-leaving\{pointer-events:none/.test(css)&&css.includes('@media(prefers-reduced-motion:reduce){.v2-orb-host{display:none}}'));
+    assert(screensJs.includes("onclick:dismissFling},orb,hint)")&&screensJs.includes("event.key==='Escape'")&&screensJs.includes("window.addEventListener('hashchange',dismissFling)")&&screensJs.includes("host.classList.add('v2-done')")&&screensJs.includes('(words.length-1)*FLING_EVERY+FLING_TIME'),'a tap, Escape or another page closes it; the hint comes when the last word has landed');
+    assert(screensJs.includes("if(celebrationWaiting.length&&!celebrating)showCelebration();},FLING_LEAVE)")&&screensJs.includes('if(!celebrating&&!flingRun)showCelebration();'),'a new-badge card waits for it');
+    assert(screensJs.includes("h('div',{id:'v2Orb',class:'v2-orb-host','aria-hidden':'true',"),'decoration only: the message of the added words is the app\'s own');
   });
 });
 
