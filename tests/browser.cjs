@@ -22,7 +22,7 @@ async function main(){
  const cspViolations=[],rawNewContext=browser.newContext.bind(browser);
  browser.newContext=async(...args)=>{const c=await rawNewContext(...args);
   await c.addInitScript(()=>document.addEventListener('securitypolicyviolation',e=>{if(!window.__cspExpected)console.error('CSP-VIOLATION '+e.violatedDirective+' '+e.blockedURI);},true));
-  await c.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>new MutationObserver(()=>{const orb=document.getElementById('v2Orb');if(orb&&!window.__keepOrb&&!orb.classList.contains('v2-leaving'))orb.click();}).observe(document.body,{childList:true})));   // the circle of Add New Words waits for a tap: every scenario but its own taps it away at once
+  await c.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>new MutationObserver(()=>{const orb=document.getElementById('v2Orb');if(orb&&!window.__keepOrb&&!orb.classList.contains('v2-leaving'))orb.querySelector('.v2-orb-hint').click();}).observe(document.body,{childList:true})));   // the screen of Add New Words stays until its button is pressed: every scenario but its own presses it at once
   c.on('console',m=>{if(/CSP-VIOLATION|Content Security Policy/i.test(m.text()))cspViolations.push(m.text());});return c;};
  const errors=[];let context=await browser.newContext();await context.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>{window.bootRenderCounts={history:0,content:0};for(const [name,key] of [['renderHistory','history'],['renderAllLocal','content']]){const original=window[name];window[name]=(...args)=>{bootRenderCounts[key]++;return original(...args);};}}));let page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  const ready=async(p=page)=>{await p.waitForFunction(()=>document.getElementById('storageBoot').hidden);await p.evaluate(()=>VocVocData.flush());};
@@ -2314,7 +2314,7 @@ async function main(){
    });
    await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();
    await p.waitForSelector('#v2Orb');
-   assert.deepEqual(await p.evaluate(()=>{const host=document.getElementById('v2Orb'),style=getComputedStyle(host);return [style.pointerEvents,style.cursor,style.position,host.getAttribute('aria-hidden')];}),['auto','pointer','fixed','true']);
+   assert.deepEqual(await p.evaluate(()=>{const host=document.getElementById('v2Orb'),style=getComputedStyle(host);return [style.pointerEvents,style.cursor,style.position,host.getAttribute('aria-hidden')];}),['auto','auto','fixed',null]);   // the screen is not a button (and not hidden from assistive technology: its two buttons are not)
    assert.match(await p.evaluate(()=>getComputedStyle(document.getElementById('v2Orb')).backdropFilter),/blur\(8px\)/,'the page behind is blurred');
    // the first word fades in inside the circle (still in its middle, not yet fully there) and is thrown out afterwards
    await p.waitForSelector('#v2Orb .v2-fling');await pause(250);
@@ -2337,6 +2337,8 @@ async function main(){
    // after the last word: nothing goes away by itself; the hint says what to do, and a new-badge card (the daily goal is reached) waits for the screen to go
    await pause(4000);
    assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('#v2Orb .v2-fling').length,[...document.querySelectorAll('.v2-fling')].every(item=>getComputedStyle(item).opacity==='1'),getComputedStyle(document.querySelector('.v2-orb-hint')).opacity,document.querySelector('.v2-orb-hint').textContent,!!document.querySelector('#v2Celebrate.v2-on'),document.querySelector('.v2-orb-count').textContent]),[10,true,'1','Kapatmak için dokun',false,'10 / 10']);
+   // the circle says New Word now (a button), the ring is closed
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-orb-new').textContent,getComputedStyle(document.querySelector('.v2-orb-new')).opacity,document.querySelector('.v2-orb-new').disabled]),['Yeni Kelime','1',false]);
    // where they landed: inside the screen above the hint, clear of the circle, clear of each other, in different directions
    const geometry=await p.evaluate(()=>{
     const rect=node=>{const box=node.getBoundingClientRect();return {left:box.left,right:box.right,top:box.top,bottom:box.bottom};},orb=document.querySelector('.v2-orb').getBoundingClientRect();
@@ -2386,18 +2388,37 @@ async function main(){
    await p.waitForFunction(word=>VocVocData.getWordProgress(word)?.status==='memorized',pills[9],{timeout:4000});
    assert.equal(await p.locator('.v2-orb.v2-over').count(),0);
    assert.equal(await p.locator('#v2Orb:not(.v2-leaving)').count(),1,'the screen stays; the other nine words are still there');
-   // a tap anywhere takes the screen away (and the page underneath is not tapped); then the card that waited comes
-   await p.mouse.click(195,300);
+   // touching the screen does nothing (and the page underneath is not touched); only the button at the bottom takes the screen away; then the card that waited comes
+   await p.mouse.click(195,300);await pause(700);
+   assert.equal(await p.locator('#v2Orb:not(.v2-leaving)').count(),1,'touching the screen does not close it');
+   await p.locator('#v2Orb .v2-orb-hint').click();
    await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
    await p.waitForSelector('#v2Celebrate.v2-on .v2-celebrate-name');assert.equal(await p.locator('#v2Celebrate .v2-celebrate-name').textContent(),'Hedef tamam, İlk adım');   // the daily goal, and the first memorized word
-   // a tap while the words are still coming closes it at once; so does Escape
+   // the button closes it at once while the words are still coming; so does Escape
    await p.evaluate(async()=>{VocVocPlan.set('premium');await VocVocData.updateSettings({dailyLimit:'unlimited'});});await p.waitForFunction(()=>!document.querySelector('#v2Celebrate.v2-on'),null,{timeout:8000});   // the free plan stops at 20 words a day
    await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await p.waitForSelector('#v2Orb .v2-fling');
    assert.equal(await p.evaluate(()=>document.getElementById('v2Orb').classList.contains('v2-done')),false);
-   await p.mouse.click(195,300);await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
+   await p.locator('#v2Orb .v2-orb-hint').click();await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
    await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await p.waitForSelector('#v2Orb .v2-fling');
    await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
    assert.equal(await p.locator('.v2-fling').count(),0);
+   // a word let go in the circle while the words are still coming is replaced by a new one (it does not count towards the daily goal); once every word is out the circle says
+   // New Word and a press brings one more (it does count)
+   const progressCount=()=>p.evaluate(()=>Object.keys(VocVocData.getDb().progress).length),usedToday=()=>p.evaluate(()=>VocVocData.getDailyUsage().count);
+   const wordsBefore=await progressCount(),usedBefore=await usedToday();
+   await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await p.waitForSelector('#v2Orb .v2-fling.v2-landed',{timeout:10000});
+   const landed=await p.evaluate(()=>{const node=document.querySelector('.v2-fling.v2-landed'),box=node.getBoundingClientRect(),orb=document.querySelector('.v2-orb').getBoundingClientRect();return {x:box.left+box.width/2,y:box.top+box.height/2,word:node.textContent,mx:orb.left+orb.width/2,my:orb.top+orb.height/2,done:document.getElementById('v2Orb').classList.contains('v2-done')};});
+   assert.equal(landed.done,false,'the words are still coming');
+   await p.mouse.move(landed.x,landed.y);await p.mouse.down();await p.mouse.move(landed.mx,landed.my,{steps:15});await p.mouse.up();
+   await p.waitForFunction(word=>VocVocData.getWordProgress(word)?.status==='memorized',landed.word,{timeout:4000});
+   await p.waitForSelector('#v2Orb.v2-done',{timeout:30000});
+   assert.deepEqual(await p.evaluate(()=>document.querySelectorAll('#v2Orb .v2-fling').length),10,'ten words on the screen: the memorized one is gone, its replacement is there');
+   assert.deepEqual([await progressCount()-wordsBefore,await usedToday()-usedBefore],[11,10],'eleven words were added, ten of them count towards the daily goal');
+   await p.locator('.v2-orb-new').click();
+   await p.waitForFunction(()=>document.querySelectorAll('#v2Orb .v2-fling').length===11,null,{timeout:8000});
+   await p.waitForSelector('#v2Orb.v2-done',{timeout:10000});
+   assert.deepEqual([await progressCount()-wordsBefore,await usedToday()-usedBefore],[12,11],'the word asked for in the circle counts');
+   await p.locator('#v2Orb .v2-orb-hint').click();await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
    await c.close();
   }
   // a device that asks for less motion gets the words without the circle

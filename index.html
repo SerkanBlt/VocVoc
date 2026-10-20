@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.20.1">
+  <meta name="vocvoc-shell" content="1.21.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -4287,33 +4287,35 @@ function levelOf(value){return VocVocData.normalizeLevel(value);}               
 const freeWordLimitText=band=>t("freeWordLimit",{n:bandCap()===Infinity?(window.VocVocPlan?.FREE_BAND_LIMIT||40):bandCap(),band});
 // "Add new words": the next words of the level the user chose, taken from the ready-made words (VocVocWordbase) and counted towards the daily goal.
 // Returns {status, words}: added | busy | daily-limit | plan-limit | none | unavailable | band-empty | band-done | error. The message for each is shown here.
-async function addNewWords(){
+// Options (the circle of screens.js asks for single words): count = how many (at most 10), more = they come to the screen that is already showing words, replace = they
+// replace words the person has just memorized, so they do not count towards the daily goal (and its limit does not stop them).
+async function addNewWords({count=10,more=false,replace=false}={}){
   if(dailyBusy)return {status:"busy",words:[]};
   dailyBusy=true;
   try{
     quizSession=null;
     showError("");
     const remainingToday=getDailyLimit()-getDailyUsage().count;
-    if(remainingToday<=0){showError(t("dailyLimitReached"));return {status:"daily-limit",words:[]};}
+    if(!replace&&remainingToday<=0){showError(t("dailyLimitReached"));return {status:"daily-limit",words:[]};}
     const wordbase=window.VocVocWordbase,state=wordbase?await wordbase.ready():"offline";
     if(state==="none"){showError(t("wordbaseNone"));return {status:"none",words:[]};}
     if(state!=="ready"){showError(t("wordbaseUnavailable"));return {status:"unavailable",words:[]};}
     const band=wordbase.bandOf(),room=bandRoom(band);                                    // the free plan: how many words of this level are still free
     if(room<=0){showError(freeWordLimitText(band));return {status:"plan-limit",words:[]};}
     let words;
-    try{words=await wordbase.next(Math.min(10,remainingToday,room));}
+    try{words=await wordbase.next(Math.min(Math.min(10,count),replace?Infinity:remainingToday,room));}
     catch(_){showError(t("wordbaseUnavailable"));return {status:"unavailable",words:[]};}
     if(!words.length){                                                                  // nothing left in this level
       if(!wordbase.progress().total){showError(t("levelEmpty"));return {status:"band-empty",words:[]};}   // ...because no word has been written for it
       offerNextLevel();return {status:"band-done",words:[]};                             // ...because every word of it is in the list
     }
-    try{await VocVocData.addWordBatch(words,{dailyCount:words.length});}
+    try{await VocVocData.addWordBatch(words,{dailyCount:replace?0:words.length});}
     catch(error){reportStorageError(error);return {status:"error",words:[]};}
     for(const data of words)rememberWordbaseEntry(data);
     renderHistory();renderAllLocal();
-    showError(t("wordsAdded",{n:words.length}),{type:"info"});
+    if(!more)showError(t("wordsAdded",{n:words.length}),{type:"info"});
     if(room-words.length<=0)showError(freeWordLimitText(band));                        // the last free words of this level were just added
-    window.dispatchEvent(new CustomEvent("vocvoc-words-added",{detail:{words:words.map(data=>data.word)}}));   // screens.js throws them out of a circle, one by one
+    window.dispatchEvent(new CustomEvent("vocvoc-words-added",{detail:{words:words.map(data=>data.word),more}}));   // screens.js throws them out of a circle, one by one
     return {status:"added",words};
   }finally{dailyBusy=false;}
 }
