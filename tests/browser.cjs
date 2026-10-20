@@ -2338,7 +2338,7 @@ async function main(){
    await pause(4000);
    assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('#v2Orb .v2-fling').length,[...document.querySelectorAll('.v2-fling')].every(item=>getComputedStyle(item).opacity==='1'),getComputedStyle(document.querySelector('.v2-orb-hint')).opacity,document.querySelector('.v2-orb-hint').textContent,!!document.querySelector('#v2Celebrate.v2-on'),document.querySelector('.v2-orb-count').textContent]),[10,true,'1','Kapatmak için dokun',false,'10 / 10']);
    // the circle says New Word now (a button), the ring is closed
-   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-orb-new').textContent,getComputedStyle(document.querySelector('.v2-orb-new')).opacity,document.querySelector('.v2-orb-new').disabled]),['Yeni Kelime','1',false]);
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-orb-new').textContent,getComputedStyle(document.querySelector('.v2-orb-new')).opacity,document.querySelector('.v2-orb-new').disabled]),['Yeni 10 Kelime','1',false]);
    // where they landed: inside the screen above the hint, clear of the circle, clear of each other, in different directions
    const geometry=await p.evaluate(()=>{
     const rect=node=>{const box=node.getBoundingClientRect();return {left:box.left,right:box.right,top:box.top,bottom:box.bottom};},orb=document.querySelector('.v2-orb').getBoundingClientRect();
@@ -2379,6 +2379,14 @@ async function main(){
    assert.deepEqual(piled(dropped).filter(pair=>pair.includes(0)),[],'no word is left under the one that was let go');
    assert(dropped.every(box=>box.x-box.w/2>=0&&box.x+box.w/2<=view[0]&&box.y-box.h/2>=0&&box.y+box.h/2<=hintTop),'every word is still inside the screen above the hint');
    assert.equal(await p.locator('#v2Orb:not(.v2-leaving)').count(),1,'carrying a word is not a tap');
+   // a word pushed by hand (let go while it is moving) goes on for a little in the direction it was pushed and stays inside the screen; one let go standing still did not move (above)
+   const resting=await boxes(),roomOf=box=>box.x<view[0]/2?box.x-box.w/2:view[0]-box.x-box.w/2;
+   const pushed=resting.map((box,index)=>[roomOf(box),index]).filter(([,index])=>![0,1,9].includes(index)).sort((a,b)=>b[0]-a[0])[0][1],outward=resting[pushed].x<view[0]/2?-1:1;
+   await p.mouse.move(resting[pushed].x,resting[pushed].y);await p.mouse.down();await p.mouse.move(resting[pushed].x+outward*60,resting[pushed].y,{steps:6});await p.mouse.up();
+   const letGo=(await boxes())[pushed];await pause(1600);
+   const coasted=(await boxes())[pushed];
+   assert(Math.sign(coasted.x-letGo.x)===outward&&Math.abs(coasted.x-letGo.x)>15,'it goes on in the direction it was pushed: '+JSON.stringify([letGo,coasted]));
+   assert(coasted.x-coasted.w/2>=0&&coasted.x+coasted.w/2<=view[0],'and stays inside the screen');
    // a word let go inside the circle fades out at once and goes to the memorized words; the circle shows it while the word is over it
    const circle=await p.evaluate(()=>{const box=document.querySelector('.v2-orb').getBoundingClientRect();return {x:box.left+box.width/2,y:box.top+box.height/2};});
    await p.mouse.move(dropped[9].x,dropped[9].y);await p.mouse.down();await p.mouse.move(circle.x,circle.y,{steps:15});await pause(500);
@@ -2415,9 +2423,9 @@ async function main(){
    assert.deepEqual(await p.evaluate(()=>document.querySelectorAll('#v2Orb .v2-fling').length),10,'ten words on the screen: the memorized one is gone, its replacement is there');
    assert.deepEqual([await progressCount()-wordsBefore,await usedToday()-usedBefore],[11,10],'eleven words were added, ten of them count towards the daily goal');
    await p.locator('.v2-orb-new').click();
-   await p.waitForFunction(()=>document.querySelectorAll('#v2Orb .v2-fling').length===11,null,{timeout:8000});
-   await p.waitForSelector('#v2Orb.v2-done',{timeout:10000});
-   assert.deepEqual([await progressCount()-wordsBefore,await usedToday()-usedBefore],[12,11],'the word asked for in the circle counts');
+   await p.waitForFunction(()=>document.querySelectorAll('#v2Orb .v2-fling').length===20,null,{timeout:20000});
+   await p.waitForSelector('#v2Orb.v2-done',{timeout:30000});
+   assert.deepEqual([await progressCount()-wordsBefore,await usedToday()-usedBefore],[21,20],'the ten words asked for in the circle count (ten by ten)');
    await p.locator('#v2Orb .v2-orb-hint').click();await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
    await c.close();
   }
