@@ -1376,24 +1376,30 @@ async function main(){
    assert.equal(await p.locator('.v2-days').count(),1);                                                // right under the last seven days
    assert.equal(await p.locator('.v2-days').evaluate(node=>node.closest('.v2-card').nextElementSibling.className),'v2-badges-section');
    const names=selector=>p.locator(selector).evaluateAll(nodes=>nodes.map(node=>node.querySelector('h3').textContent));
-   assert.deepEqual((await names('.v2-badge.v2-earned')).sort(),['Bir hafta','Güçlü hafıza','Isınma','Kusursuz','On kelime','İlk adım','İlk test','İlk hatırlama'].sort());
+   // six cards hold the eight goals reached: memorized words, streak days and tests show the goal still ahead (quiet again) with the goals reached under it; the others are done
+   assert.deepEqual((await names('.v2-badge')).sort(),['Bir ay','Düzenli çalışan','Elli kelime','Güçlü hafıza','Kusursuz','İlk hatırlama'].sort());
+   assert.deepEqual((await names('.v2-badge.v2-earned')).sort(),['Güçlü hafıza','Kusursuz','İlk hatırlama'].sort());
+   const tiersOf=title=>p.locator('.v2-badge',{has:p.locator('h3',{hasText:title})}).locator('.v2-tier-name').allTextContents();
+   assert.deepEqual([await tiersOf('Elli kelime'),await tiersOf('Bir ay'),await tiersOf('Düzenli çalışan'),await tiersOf('Kusursuz')],[['İlk adım','On kelime'],['Isınma','Bir hafta'],['İlk test'],[]]);
    assert.match(await p.locator('.v2-earned .v2-badge-date').first().textContent(),/^Kazanıldı: \d{1,2} \p{L}+ \d{4}$/u);
+   assert.match(await p.locator('.v2-tier-date').first().textContent(),/^Kazanıldı: \d{1,2} \p{L}+ \d{4}$/u);
+   const fifty=p.locator('.v2-badge',{has:p.locator('h3',{hasText:'Elli kelime'})});
+   assert.match(await fifty.textContent(),/12 \/ 50/);assert.equal(await fifty.locator('[role="progressbar"]').getAttribute('aria-valuenow'),'12');
+   assert.deepEqual(await fifty.evaluate(card=>[card.classList.contains('v2-earned'),card.querySelector('.v2-badge-icon svg')!==null,getComputedStyle(card.querySelector('.v2-badge-icon')).backgroundImage,[...card.querySelectorAll('.v2-tier-dot')].map(dot=>/^linear-gradient\(135deg, rgb\(\d+, \d+, \d+\), rgb\(124, 58, 237\)\)$/.test(getComputedStyle(dot).backgroundImage))]),[false,true,'none',[true,true]],'quiet again for the next goal, the goals reached are gradients');
    // three tabs: Earned (open, with counts), Started (closest first, with their progress), Waiting (nothing done yet)
    const tabLabels=()=>p.locator('.v2-subtab').evaluateAll(nodes=>nodes.map(node=>node.textContent.replace(/\s+/g,' ').trim()+(node.getAttribute('aria-selected')==='true'?'*':'')));
-   assert.deepEqual(await tabLabels(),['Kazandıkların 8*','Başladıkların 6','Bekleyenler 12']);
+   assert.deepEqual(await tabLabels(),['Kazandıkların 6*','Başladıkların 1','Bekleyenler 10']);
    assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-subtabs').getAttribute('role'),[...document.querySelectorAll('.v2-subtab')].map(tab=>[tab.getAttribute('role'),tab.tabIndex]),document.getElementById('v2BadgePanel').getAttribute('role'),document.getElementById('v2BadgePanel').getAttribute('aria-labelledby')]),['tablist',[['tab',0],['tab',-1],['tab',-1]],'tabpanel','v2BadgeTab-earned']);
    await p.getByRole('tab',{name:/Başladıkların/}).click();
-   assert.deepEqual(await names('.v2-badge'),['Koleksiyoncu','Bir ay','Düzenli çalışan','Elli kelime','Yüz kelime','Kelime ustası']);   // the closest to done first
-   const fifty=p.locator('.v2-badge',{hasText:'Elli kelime'});
-   assert.match(await fifty.textContent(),/12 \/ 50/);assert.equal(await fifty.locator('[role="progressbar"]').getAttribute('aria-valuenow'),'12');
+   assert.deepEqual(await names('.v2-badge'),['Koleksiyoncu']);                                        // started, no goal reached yet (the cards with a goal reached are under Earned)
    await p.getByRole('tab',{name:/Bekleyenler/}).click();
-   assert.deepEqual(await names('.v2-badge'),['Hedef tamam','İlk 10 puan','İlk eşleştirme','Flip meraklısı','Flip tutkunu','Flip ustası','A1 tamam','A2 tamam','B1 tamam','B2 tamam','C1 tamam','C2 tamam']);
-   assert.deepEqual(await tabLabels(),['Kazandıkların 8','Başladıkların 6','Bekleyenler 12*']);
+   assert.deepEqual(await names('.v2-badge'),['Hedef tamam','İlk 10 puan','İlk eşleştirme','Flip meraklısı','A1 tamam','A2 tamam','B1 tamam','B2 tamam','C1 tamam','C2 tamam']);
+   assert.deepEqual(await tabLabels(),['Kazandıkların 6','Başladıkların 1','Bekleyenler 10*']);
    await route(p,'study');await route(p,'today');                                                       // the tab you picked stays picked
-   assert.deepEqual(await tabLabels(),['Kazandıkların 8','Başladıkların 6','Bekleyenler 12*']);
+   assert.deepEqual(await tabLabels(),['Kazandıkların 6','Başladıkların 1','Bekleyenler 10*']);
    // the keyboard moves between the tabs: arrows (they wrap), Home and End; the focus follows
    await p.getByRole('tab',{name:/Bekleyenler/}).focus();await p.keyboard.press('ArrowRight');
-   assert.deepEqual([await p.evaluate(()=>document.activeElement.id),(await tabLabels())[0]],['v2BadgeTab-earned','Kazandıkların 8*']);
+   assert.deepEqual([await p.evaluate(()=>document.activeElement.id),(await tabLabels())[0]],['v2BadgeTab-earned','Kazandıkların 6*']);
    await p.keyboard.press('End');assert.equal(await p.evaluate(()=>document.activeElement.id),'v2BadgeTab-waiting');
    await p.keyboard.press('Home');await p.keyboard.press('ArrowLeft');assert.equal(await p.evaluate(()=>document.activeElement.id),'v2BadgeTab-waiting');
    await p.getByRole('tab',{name:/Kazandıkların/}).click();
@@ -1402,7 +1408,7 @@ async function main(){
    // a badge once earned stays earned when the words behind it are gone
    await p.evaluate(async()=>{for(let i=0;i<12;i++)await VocVocData.setStatus('s'+i,'active');});
    await route(p,'study');await route(p,'today');
-   assert.equal(await p.locator('.v2-badge.v2-earned',{hasText:'On kelime'}).count(),1);
+   assert.equal(await p.locator('.v2-tier-name',{hasText:'On kelime'}).count(),1);                      // the goal reached stays on its card
    await c.close();
   }
   // a profile that already has history and badges is announced when it is a later look (new badges), by two names and a count
@@ -2175,9 +2181,11 @@ async function main(){
   await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('.v2-badges-section');
   await p.locator('#v2BadgeTab-earned').click();                                                       // the tab that was picked when the list was first drawn stays picked
   assert.match(await p.locator('.v2-badges-section p.v2-muted').first().textContent(),/ \/ 26 rozet kazanıldı/);
-  const earned=await p.evaluate(()=>[...document.querySelectorAll('.v2-badges .v2-badge')].map(card=>({name:card.querySelector('h3').textContent,glyph:card.querySelector('.v2-badge-icon').textContent,image:getComputedStyle(card.querySelector('.v2-badge-icon')).backgroundImage})));
+  const earned=await p.evaluate(()=>[...document.querySelectorAll('.v2-badges .v2-badge-icon,.v2-badges .v2-tier-dot')].filter(icon=>!icon.querySelector('svg')).map(icon=>({name:icon.closest('.v2-badge').querySelector('h3').textContent,glyph:icon.textContent,image:getComputedStyle(icon).backgroundImage})));   // a gradient wherever a goal is reached (a card that works towards its next goal has a lock instead)
   assert(earned.every(item=>/^linear-gradient\(135deg, rgb\(\d+, \d+, \d+\), rgb\(124, 58, 237\)\)$/.test(item.image)),'every earned badge ends in purple: '+JSON.stringify(earned.map(item=>item.image)));
   assert.equal(earned.find(item=>item.name==='A1 tamam')?.glyph,'A1');
+  // the three Flip goals are reached: one card, done, showing the last goal with the other two under it
+  assert.deepEqual(await p.evaluate(()=>{const card=[...document.querySelectorAll('.v2-badges .v2-badge')].find(item=>item.querySelector('h3').textContent==='Flip ustası');return card&&[card.classList.contains('v2-earned'),[...card.querySelectorAll('.v2-tier-name')].map(node=>node.textContent)];}),[true,['Flip meraklısı','Flip tutkunu','Flip ustası']]);
   assert(new Set(earned.map(item=>item.image)).size>=5,'the first colours differ from badge to badge');
   await p.evaluate(()=>{location.hash='#/today';});
   // waiting badges are plain (a lock), and the six level badges are among them
@@ -2289,6 +2297,59 @@ async function main(){
    await c.close();
   }
   record('word packs: the pack of the language pair is downloaded once and kept; the Daily button adds its next words in order, without a key, within the daily limit, also offline');
+
+  // Add New Words: the words are known at once, so a circle throws them out one by one (every half second), each in a badge, in a random direction, in slow motion
+  {
+   const {c,p}=await openPage({course:true});
+   await p.waitForSelector('.v2-pack-text');
+   await p.evaluate(()=>{
+    window.__flung=[];
+    new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)if(node.classList?.contains('v2-fling')){
+     const orb=document.querySelector('.v2-orb').getBoundingClientRect();
+     window.__flung.push({word:node.textContent,at:performance.now(),dx:parseFloat(node.style.getPropertyValue('--dx')),dy:parseFloat(node.style.getPropertyValue('--dy')),w:node.offsetWidth,h:node.offsetHeight,radius:orb.width/2,duration:getComputedStyle(node).animationDuration,lang:node.lang,view:[innerWidth,innerHeight]});
+    }}).observe(document.body,{childList:true,subtree:true});
+   });
+   await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();
+   await p.waitForSelector('#v2Orb');
+   assert.deepEqual(await p.evaluate(()=>{const host=document.getElementById('v2Orb');return [getComputedStyle(host).pointerEvents,host.getAttribute('aria-hidden'),getComputedStyle(host).position];}),['none','true','fixed']);
+   const middle=await p.evaluate(()=>{const hit=document.elementFromPoint(innerWidth/2,innerHeight/2);return !!hit&&!hit.closest('#v2Orb');});
+   assert.equal(middle,true,'a tap goes through the circle to the page');
+   await p.waitForFunction(()=>window.__flung.length===10,null,{timeout:15000});
+   const flung=await p.evaluate(()=>window.__flung),pills=await p.locator('.v2-added .history-chip').evaluateAll(nodes=>nodes.map(node=>node.textContent));
+   assert.deepEqual(flung.map(item=>item.word),pills,'every word that was added, in the order it was added');
+   const gaps=flung.slice(1).map((item,index)=>item.at-flung[index].at);
+   assert(gaps.every(gap=>gap>=380&&gap<=900),'one word every half second: '+gaps.map(Math.round));
+   assert(flung.every(item=>item.duration==='2.6s'&&item.lang==='fr'),'slow motion: '+JSON.stringify(flung.map(item=>item.duration)));
+   // each ends clear of the circle (the nearest point of its badge is past the circle's edge) and inside the screen
+   const reach=item=>Math.hypot(Math.max(Math.abs(item.dx)-item.w/2,0),Math.max(Math.abs(item.dy)-item.h/2,0));
+   assert(flung.every(item=>reach(item)>item.radius),'outside the circle: '+JSON.stringify(flung.map(item=>[Math.round(reach(item)),item.radius])));
+   assert(flung.every(item=>Math.abs(item.dx)+item.w/2<=item.view[0]/2&&Math.abs(item.dy)+item.h/2<=item.view[1]/2),'inside the screen');
+   // random directions, never within 50 degrees of the last one (and not all the same)
+   const angle=item=>(Math.atan2(item.dx,-item.dy)*180/Math.PI+360)%360,apart=flung.slice(1).map((item,index)=>{const turn=Math.abs(angle(item)-angle(flung[index]));return Math.min(turn,360-turn);});
+   assert(apart.every(turn=>turn>=48),'directions are apart: '+apart.map(Math.round));
+   assert(new Set(flung.map(item=>Math.round(angle(item)/30))).size>=4,'the words go in different directions');
+   assert.equal(await p.locator('.v2-orb-count').textContent(),'10 / 10');
+   // the circle goes away by itself when the last word has flown
+   await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:12000});
+   assert.equal(await p.locator('.v2-fling').count(),0);
+   // pressing again while it still runs starts over instead of piling up circles
+   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+   await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await p.waitForSelector('#v2Orb');
+   await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await pause(700);
+   assert.equal(await p.locator('#v2Orb').count(),1);
+   await c.close();
+  }
+  // a device that asks for less motion gets the words without the circle
+  {
+   const {c,p}=await openPage({course:true,context:{reducedMotion:'reduce'}});
+   await p.waitForSelector('.v2-pack-text');
+   await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();
+   await p.waitForFunction(()=>document.querySelector('.v2-goal-value')?.textContent==='10 / 10 kelime');
+   await pause(800);
+   assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('#v2Orb,.v2-fling').length,document.querySelectorAll('.v2-added .history-chip').length]),[0,10]);
+   await c.close();
+  }
+  record('Add New Words: the added words are thrown out of a circle one every half second, each in a badge, in a random direction and in slow motion, outside the circle and inside the screen; it never blocks a tap and is left out for reduced motion');
 
   // a pair without a pack says so; a damaged copy on the device is replaced
   {

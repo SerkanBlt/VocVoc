@@ -178,6 +178,41 @@ describe('Badges',()=>{
     assert.equal(new Set(result.badges.map(item=>item.id)).size,result.badges.length);
     for(const item of result.badges)assert(item.target>0&&item.progress>=0&&item.progress<=item.target);
   });
+  describe('cards: badges with a growing goal share one',()=>{
+    const cards=(extra={})=>Stats.groupBadges(Stats.compute(input(extra)).badges);
+    const card=(list,id)=>list.find(item=>item.id===id);
+    it('memorized words, tests, streak days and Flip cards are one card each, with their goals in order; every other badge stands alone',()=>{
+      const list=cards();
+      assert.deepEqual(['memo','test','streak','flip'].map(id=>card(list,id).tiers.map(tier=>tier.id)),[['memo1','memo10','memo50','memo100','memo500'],['test1','test10'],['streak3','streak7','streak30'],['flip10','flip30','flip50']]);
+      assert.equal(list.length,Stats.BADGES.length-4-1-2-2,'26 badges are 26 - (5-1) - (2-1) - (3-1) - (3-1) = 17 cards');
+      for(const single of list.filter(item=>!['memo','test','streak','flip'].includes(item.id)))assert.deepEqual(single.tiers.map(tier=>tier.id),[single.id]);
+      assert.equal(Stats.BADGES.filter(item=>['memo','test','streak','flip'].includes(item.family)).every(item=>/^(memo|test|streak|flip)\d+$/.test(item.id)),true,'the saved ids of the goals did not change');
+    });
+    it('a card that has not reached its first goal shows that goal and no goal reached',()=>{
+      const flip=card(cards({flips:4}),'flip');
+      assert.deepEqual([flip.earned.length,flip.done,flip.next.id,flip.current.id,flip.current.progress,flip.lastEarnedOn],[0,false,'flip10','flip10',4,null]);
+    });
+    it('when a goal is reached the card goes quiet again with the next goal, and the goal reached stays on it',()=>{
+      const flip=card(cards({flips:31}),'flip');
+      assert.deepEqual([flip.earned.map(tier=>tier.id),flip.done,flip.next.id,flip.current.id,flip.current.progress,flip.current.target],[['flip10','flip30'],false,'flip50','flip50',31,51]);
+      assert.equal(flip.lastEarnedOn,TODAY);
+      const memo=card(cards({words:Array.from({length:12},(_,index)=>word('m'+index,'memorized','2026-08-01',`2026-09-${String(index+1).padStart(2,'0')}`))}),'memo');
+      assert.deepEqual([memo.earned.map(tier=>[tier.id,tier.earnedOn]),memo.next.id,memo.current.progress,memo.lastEarnedOn],[[['memo1','2026-09-01'],['memo10','2026-09-10']],'memo50',12,'2026-09-10']);
+    });
+    it('a card whose last goal is reached is done and shows that goal',()=>{
+      const flip=card(cards({flips:51}),'flip');
+      assert.deepEqual([flip.earned.length,flip.done,flip.next,flip.current.id],[3,true,null,'flip50']);
+    });
+    it('a goal remembered from before stays reached, so the card keeps it too',()=>{
+      const test=card(cards({earned:{test1:'2026-08-01',test10:'2026-08-05'}}),'test');
+      assert.deepEqual([test.done,test.earned.map(tier=>tier.earnedOn),test.lastEarnedOn],[true,['2026-08-01','2026-08-05'],'2026-08-05']);
+    });
+    it('a level card keeps its level and a single badge is its own card',()=>{
+      const list=cards({levelsDone:['B1']});
+      assert.deepEqual([card(list,'lvlB1').level,card(list,'lvlB1').done,card(list,'lvlB1').earned.length,card(list,'lvlA1').done],['B1',true,1,false]);
+      assert.deepEqual(Stats.groupBadges(undefined),[]);
+    });
+  });
 });
 
 describe('The activity record',()=>{

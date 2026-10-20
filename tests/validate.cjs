@@ -336,6 +336,25 @@ describe('Collapsible Points and Tags sections, the tag panel and the Matching t
     assert(/\.v2-earned \.v2-badge-icon\{background:linear-gradient\(135deg,var\(--badge-from,#2563eb\),#7c3aed\)/.test(css)&&/\.v2-medal\{[^}]*background:linear-gradient\(135deg,var\(--badge-from,#2563eb\),#7c3aed\)/.test(css),'the second colour of every badge is purple');
     assert(screensJs.includes('levelsDone:levelsDone(db)')&&screensJs.includes('points:pointsOf(db)'));
   });
+  it('badges with a growing goal (memorized words, tests, streak days, Flip cards) are one card each: it goes quiet again with the next goal and keeps the goals reached; the saved ids did not change',()=>{
+    const stats=require('../stats.js'),css=read('screens.css');
+    assert.deepEqual([...new Set(stats.BADGES.filter(badge=>badge.family!==badge.id).map(badge=>badge.family))],['memo','test','streak','flip']);
+    assert.equal(stats.groupBadges(stats.compute({words:[],quizzes:[],today:'2026-10-07'}).badges).length,17);
+    assert(screensJs.includes('VocVocStats.groupBadges(badges)')&&screensJs.includes('function tierList(card)')&&screensJs.includes('card.tiers.length>1&&card.earned.length?tierList(card):null'),'the goals reached are listed on the card');
+    assert(screensJs.includes("earned:cards.filter(card=>card.earned.length).sort((a,b)=>b.lastEarnedOn.localeCompare(a.lastEarnedOn))")&&screensJs.includes("started:cards.filter(card=>!card.earned.length&&card.current.progress>0)"),'a card stays in Earned while it works towards its next goal');
+    assert(screensJs.includes("{n:badges.filter(badge=>badge.earnedOn).length,m:badges.length}"),'the summary still counts every goal reached');
+    assert(/\.v2-tier-dot\{[^}]*background:linear-gradient\(135deg,var\(--badge-from,#2563eb\),#7c3aed\)/.test(css),'the goals reached are gradients ending in purple');
+  });
+  it('Add New Words throws every word it added out of a circle, one every half second, in a badge, in a random direction and in slow motion; it never blocks a tap and stops for reduced motion',()=>{
+    const css=read('screens.css');
+    const saved=html.indexOf('await VocVocData.addWordBatch(words,{dailyCount:words.length});'),announced=html.indexOf('window.dispatchEvent(new CustomEvent("vocvoc-words-added",{detail:{words:words.map(data=>data.word)}}));');
+    assert(saved>0&&announced>saved&&html.indexOf('return {status:"added",words};')>announced,'announced once the words are saved');
+    assert(screensJs.includes("window.addEventListener('vocvoc-words-added'")&&screensJs.includes('const FLING_EVERY=500,')&&screensJs.includes('},index*FLING_EVERY)));'),'one word every half second');
+    assert(screensJs.includes('const degrees=(previous+FLING_APART+Math.random()*(360-2*FLING_APART))%360')&&screensJs.includes('FLING_APART=50')&&screensJs.includes('Math.random()*28-14'),'random direction, never close to the last one');
+    assert(screensJs.includes("window.matchMedia('(prefers-reduced-motion: reduce)').matches))return;"),'nothing for reduced motion');
+    assert(/\.v2-orb-host\{[^}]*pointer-events:none/.test(css)&&/\.v2-fling\{[^}]*animation:v2-fling var\(--fling-time,2\.6s\)/.test(css)&&css.includes('@keyframes v2-fling{')&&css.includes('@media(prefers-reduced-motion:reduce){.v2-orb-host{display:none}}'));
+    assert(screensJs.includes("h('div',{id:'v2Orb',class:'v2-orb-host','aria-hidden':'true'},orb)"),'decoration only: the message of the added words is the app\'s own');
+  });
 });
 
 describe('New interface (prototype)',()=>{

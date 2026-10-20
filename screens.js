@@ -464,11 +464,12 @@
     if(record.seeded&&fresh.length)celebrate(fresh);
   }
   // Appears with a small burst, stays a few seconds and fades away by itself; it never blocks a tap. Badges earned together share one card.
+  // While the words that "Add New Words" added are being thrown out of their circle (flingRun) the card waits: both are in the middle of the screen.
   const CELEBRATE_SHOW=2900,CELEBRATE_LEAVE=450,SPARKS=12;
   let celebrating=false;const celebrationWaiting=[];
   function celebrate(ids){
     celebrationWaiting.push(...ids.filter(id=>!celebrationWaiting.includes(id)));
-    if(!celebrating)showCelebration();
+    if(!celebrating&&!flingRun)showCelebration();
   }
   function showCelebration(){
     const known=currentStats().badges,badges=celebrationWaiting.splice(0).map(id=>known.find(badge=>badge.id===id)).filter(Boolean);
@@ -514,6 +515,47 @@
     if(!words.length)return null;
     return h('div',{class:'v2-added'},h('p',{class:'v2-goal-label',text:t('addedWords')}),
       h('ul',{class:'v2-pills','aria-label':t('addedWords')},words.map(word=>h('li',{},wordPill(word)))));
+  }
+  // "Add New Words" just added its words, so they are all known at once: a circle appears in the middle of the screen and, every half second, throws the next word
+  // out of it in a badge, in a random direction and in slow motion. It never blocks a tap, and there is none when the device asks for less motion.
+  const FLING_EVERY=500,FLING_TIME=2600,FLING_LEAVE=450,FLING_GAP=14,FLING_EDGE=8,FLING_APART=50,FLING_TRIES=24;
+  let flingRun=null;
+  function stopFling(){
+    if(!flingRun)return;
+    flingRun.timers.forEach(clearTimeout);flingRun.host.remove();flingRun=null;
+  }
+  // The badge starts in the middle of the circle and ends clear of it: at least its edge past the circle's, at most where the screen still shows all of it.
+  // The direction is random but never within FLING_APART degrees of the last one and, when the screen allows, one where the badge fits (a long word does not
+  // fit sideways on a narrow screen). Returns the direction used.
+  function throwWord(host,orb,word,previous){
+    const badge=h('span',{class:'v2-fling',lang:getTargetLanguageCode(),text:word});
+    host.append(badge);
+    const half={x:badge.offsetWidth/2,y:badge.offsetHeight/2},room={x:host.clientWidth/2-half.x-FLING_EDGE,y:host.clientHeight/2-half.y-FLING_EDGE};
+    let best=null;
+    for(let tries=0;tries<FLING_TRIES&&!(best&&best.far>best.near);tries++){
+      const degrees=(previous+FLING_APART+Math.random()*(360-2*FLING_APART))%360,radians=degrees*Math.PI/180,dx=Math.sin(radians),dy=-Math.cos(radians);
+      const near=orb.offsetWidth/2+Math.abs(dx)*half.x+Math.abs(dy)*half.y+FLING_GAP;               // the badge's reach in this direction, past the circle
+      const far=Math.min(Math.abs(dx)>1e-3?room.x/Math.abs(dx):Infinity,Math.abs(dy)>1e-3?room.y/Math.abs(dy):Infinity);
+      if(!best||far-near>best.far-best.near)best={degrees,dx,dy,near,far};
+    }
+    const distance=best.far>best.near?best.near+Math.random()*(best.far-best.near):best.near;
+    badge.style.setProperty('--dx',Math.round(best.dx*distance)+'px');badge.style.setProperty('--dy',Math.round(best.dy*distance)+'px');
+    badge.style.setProperty('--rot',Math.round(Math.random()*28-14)+'deg');
+    return best.degrees;
+  }
+  function playAddedWords(words){
+    if(!words.length||(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches))return;
+    stopFling();
+    const count=h('span',{class:'v2-orb-count'}),orb=h('div',{class:'v2-orb'},count),host=h('div',{id:'v2Orb',class:'v2-orb-host','aria-hidden':'true'},orb);
+    host.style.setProperty('--fling-time',FLING_TIME+'ms');
+    document.body.append(host);
+    const run=flingRun={host,timers:[]};
+    let degrees=Math.random()*360;
+    words.forEach((word,index)=>run.timers.push(setTimeout(()=>{
+      count.textContent=(index+1)+' / '+words.length;
+      degrees=throwWord(host,orb,word,degrees);
+    },index*FLING_EVERY)));
+    run.timers.push(setTimeout(()=>{host.classList.add('v2-leaving');run.timers.push(setTimeout(()=>{if(flingRun!==run)return;stopFling();if(celebrationWaiting.length&&!celebrating)showCelebration();},FLING_LEAVE));},(words.length-1)*FLING_EVERY+FLING_TIME));   // a new-badge card that was waiting comes now
   }
   // A word as a pill: the app's own delegated handler opens its panel, like a chip of the History list.
   const wordPill=(word,extra,faded)=>h('button',{type:'button',class:'history-chip ui-pill v2-wordpill'+(faded?' v2-faded':''),'data-history-word':encodeDomText(word)},h('span',{lang:getTargetLanguageCode(),text:word}),extra?[' ',extra]:null);
@@ -879,25 +921,34 @@
   const BADGE_FROM={memorized:'#15803d',collected:'#1d4ed8',tests:'#0f766e',perfect:'#b45309',recall:'#0e7490',streak:'#c2410c',goal:'#be185d',points:'#a16207',recallTests:'#0369a1',matchTests:'#be123c',flips:'#4d7c0f'};     // all with white on top at 4.5:1 or more (the purple end is 5.7:1)
   const LEVEL_FROM={A1:'#1d4ed8',A2:'#0e7490',B1:'#047857',B2:'#4d7c0f',C1:'#b45309',C2:'#b91c1c'};
   const badgeFrom=badge=>badge.kind==='level'?(LEVEL_FROM[badge.level]||'#2563eb'):(BADGE_FROM[badge.kind]||'#2563eb');
-  function badgeCard(badge){
-    const done=!!badge.earnedOn;
-    const bar=done?null:h('div',{class:'v2-bar v2-bar-thin',role:'progressbar','aria-label':t('b_'+badge.id),'aria-valuemin':'0','aria-valuemax':String(badge.target),'aria-valuenow':String(badge.progress)},h('span'));
-    bar?.style.setProperty('--p',Math.round(badge.progress/badge.target*100)+'%');
-    return h('li',{class:'v2-badge'+(done?' v2-earned':'')},
-      h('span',{class:'v2-badge-icon'+(done&&badge.kind==='level'?' v2-glyph-text':''),'aria-hidden':'true',style:done?'--badge-from:'+badgeFrom(badge):null},done?glyphOf(badge):icon('lock')),
-      h('div',{class:'v2-badge-body'},h('h3',{text:t('b_'+badge.id)}),h('p',{class:'v2-muted',text:t('bd_'+badge.id)}),
-        done?h('p',{class:'v2-badge-date',text:fill(t('badgeEarned'),{date:formatDay(badge.earnedOn)})}):h('p',{class:'v2-muted',text:fill(t('badgeProgress'),{n:badge.progress,m:badge.target})}),
-        bar));
+  // A card is one family of badges (VocVocStats.groupBadges). While a goal is still ahead it is quiet (a lock and the progress towards that goal) and the goals
+  // reached so far stay on it as small gradients; when every goal is reached the card is a gradient itself.
+  function tierList(card){
+    return h('ul',{class:'v2-tiers'},card.earned.map(tier=>h('li',{class:'v2-tier'},
+      h('span',{class:'v2-tier-dot','aria-hidden':'true',style:'--badge-from:'+badgeFrom(tier),text:glyphOf(tier)}),
+      h('span',{class:'v2-tier-text'},h('span',{class:'v2-tier-name',text:t('b_'+tier.id)}),h('span',{class:'v2-tier-date',text:fill(t('badgeEarned'),{date:formatDay(tier.earnedOn)})})))));
   }
-  // Three tabs: the badges you have earned (newest first), the ones you have started (closest first) and the ones still waiting. The tab you pick stays picked.
+  function badgeCard(card){
+    const goal=card.current,done=card.done;
+    const bar=done?null:h('div',{class:'v2-bar v2-bar-thin',role:'progressbar','aria-label':t('b_'+goal.id),'aria-valuemin':'0','aria-valuemax':String(goal.target),'aria-valuenow':String(goal.progress)},h('span'));
+    bar?.style.setProperty('--p',Math.round(goal.progress/goal.target*100)+'%');
+    return h('li',{class:'v2-badge'+(done?' v2-earned':'')},
+      h('span',{class:'v2-badge-icon'+(done&&goal.kind==='level'?' v2-glyph-text':''),'aria-hidden':'true',style:done?'--badge-from:'+badgeFrom(goal):null},done?glyphOf(goal):icon('lock')),
+      h('div',{class:'v2-badge-body'},h('h3',{text:t('b_'+goal.id)}),h('p',{class:'v2-muted',text:t('bd_'+goal.id)}),
+        done?h('p',{class:'v2-badge-date',text:fill(t('badgeEarned'),{date:formatDay(goal.earnedOn)})}):h('p',{class:'v2-muted',text:fill(t('badgeProgress'),{n:goal.progress,m:goal.target})}),
+        bar,
+        card.tiers.length>1&&card.earned.length?tierList(card):null));
+  }
+  // Three tabs: the cards with a goal reached (the newest first; one that is quiet again for its next goal stays here), the ones started but with no goal reached yet
+  // (closest first) and the ones still waiting. The tab you pick stays picked.
   let badgeTab=null;
   const BADGE_TABS=[['earned','badgesEarned','badgesNoneEarned'],['started','badgesStarted','badgesNoneStarted'],['waiting','badgesWaiting','badgesNoneWaiting']];
-  function badgeGroups(badges){
-    const ratio=badge=>badge.progress/badge.target;
+  function badgeGroups(cards){
+    const ratio=card=>card.current.progress/card.current.target;
     return {
-      earned:badges.filter(badge=>badge.earnedOn).sort((a,b)=>b.earnedOn.localeCompare(a.earnedOn)),
-      started:badges.filter(badge=>!badge.earnedOn&&badge.progress>0).sort((a,b)=>ratio(b)-ratio(a)),
-      waiting:badges.filter(badge=>!badge.earnedOn&&badge.progress<=0)
+      earned:cards.filter(card=>card.earned.length).sort((a,b)=>b.lastEarnedOn.localeCompare(a.lastEarnedOn)),
+      started:cards.filter(card=>!card.earned.length&&card.current.progress>0).sort((a,b)=>ratio(b)-ratio(a)),
+      waiting:cards.filter(card=>!card.earned.length&&card.current.progress<=0)
     };
   }
   function selectBadgeTab(id,{focus=false}={}){
@@ -907,7 +958,7 @@
     if(focus)fresh.querySelector('[role="tab"][aria-selected="true"]')?.focus({preventScroll:true});
   }
   function badgesSection(){                                                      // the whole list, at the end of Today
-    const badges=currentStats().badges,groups=badgeGroups(badges);
+    const badges=currentStats().badges,groups=badgeGroups(VocVocStats.groupBadges(badges));
     if(!badgeTab)badgeTab=groups.earned.length?'earned':(groups.started.length?'started':'waiting');
     const tabs=BADGE_TABS.map(([id])=>id);
     const move=(event,id)=>{                                                       // arrows, Home and End move between the tabs
@@ -917,7 +968,7 @@
     };
     const [,,noneKey]=BADGE_TABS.find(([id])=>id===badgeTab),list=groups[badgeTab];
     return h('section',{class:'v2-badges-section','aria-labelledby':'v2BadgesTitle'},h('h2',{id:'v2BadgesTitle',text:t('badgesTitle')}),
-      h('p',{class:'v2-muted',text:fill(t('badgesSummary'),{n:groups.earned.length,m:badges.length})}),
+      h('p',{class:'v2-muted',text:fill(t('badgesSummary'),{n:badges.filter(badge=>badge.earnedOn).length,m:badges.length})}),
       h('div',{class:'v2-subtabs',role:'tablist','aria-label':t('badgesTitle')},BADGE_TABS.map(([id,key])=>
         h('button',{type:'button',role:'tab',id:'v2BadgeTab-'+id,class:'v2-subtab','aria-selected':String(id===badgeTab),'aria-controls':'v2BadgePanel',tabindex:id===badgeTab?'0':'-1',onclick:()=>selectBadgeTab(id),onkeydown:event=>move(event,id)},
           h('span',{text:t(key)}),' ',h('span',{class:'v2-subtab-count',text:String(groups[id].length)})))),
@@ -1241,6 +1292,7 @@
     wordbase?.refresh();
     window.addEventListener('vocvoc-wordbase-changed',refreshDashboard);
     window.addEventListener('vocvoc-flipped',()=>{writeActivity(VocVocStats.appendFlip(readActivity()));evaluateBadges();});     // a Flip card was turned over: it counts for the Flip badges
+    window.addEventListener('vocvoc-words-added',event=>playAddedWords((event.detail&&event.detail.words)||[]));     // "Add New Words" (the button on Today or the one in the bar) added these words
     window.addEventListener('vocvoc-activity-reset',()=>{dailyWords=[];refreshDashboard();});
     window.addEventListener('vocvoc-storage-committed',refreshDashboard);
     window.addEventListener('vocvoc-data-adopted',refreshDashboard);

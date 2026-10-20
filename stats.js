@@ -6,17 +6,18 @@
   const MAX_QUIZZES=300,MAX_WRONG=10,MAX_WORD=60,MAX_DAY_WORDS=200,MAX_FLIPS=1000000;
   const LEVELS=['A1','A2','B1','B2','C1','C2'];
   const KINDS=['memorized','collected','tests','perfect','recall','streak','goal','points','recallTests','matchTests','flips','level'];
-  // id, what it counts, how many are needed (and, for a level, which one). "More than 10 Flip cards" is 11.
+  // id, what it counts, how many are needed, and the family. Badges of one family count the same thing towards a growing goal (1, 10, 50 … words) and share one card:
+  // when a goal is reached the card goes quiet again with the next goal, and the goals reached stay on it (see groupBadges). The others stand alone.
+  // "More than 10 Flip cards" is 11.
   const BADGES=Object.freeze([
-    ['memo1','memorized',1],['memo10','memorized',10],['memo50','memorized',50],['memo100','memorized',100],['memo500','memorized',500],
+    ['memo1','memorized',1,'memo'],['memo10','memorized',10,'memo'],['memo50','memorized',50,'memo'],['memo100','memorized',100,'memo'],['memo500','memorized',500,'memo'],
     ['words50','collected',50],
-    ['test1','tests',1],['test10','tests',10],['perfect','perfect',1],['recall8','recall',1],
-    ['streak3','streak',3],['streak7','streak',7],['streak30','streak',30],
+    ['test1','tests',1,'test'],['test10','tests',10,'test'],['perfect','perfect',1],['recall8','recall',1],
+    ['streak3','streak',3,'streak'],['streak7','streak',7,'streak'],['streak30','streak',30,'streak'],
     ['goal1','goal',1],
     ['points10','points',10],['recall1','recallTests',1],['match1','matchTests',1],
-    ['flip10','flips',11],['flip30','flips',31],['flip50','flips',51],
-    ...LEVELS.map(level=>['lvl'+level,'level',1,level])
-  ].map(([id,kind,target,level])=>Object.freeze(level?{id,kind,target,level}:{id,kind,target})));
+    ['flip10','flips',11,'flip'],['flip30','flips',31,'flip'],['flip50','flips',51,'flip']
+  ].map(([id,kind,target,family=id])=>Object.freeze({id,kind,target,family})).concat(LEVELS.map(level=>Object.freeze({id:'lvl'+level,kind:'level',target:1,family:'lvl'+level,level}))));
   const KNOWN=new Set(BADGES.map(badge=>badge.id));
   const DAY=/^\d{4}-\d{2}-\d{2}$/;
 
@@ -141,7 +142,7 @@
       const derived=progress>=badge.target?(date||today):null;                       // earned now (the date it happened, if the data still knows it)
       const earnedOn=earnedBefore[badge.id]||derived;                                // once earned, always earned
       if(derived&&!earnedBefore[badge.id])newlyEarned.push(badge.id);
-      badges.push({id:badge.id,kind:badge.kind,target:badge.target,...(badge.level?{level:badge.level}:{}),progress:earnedOn?badge.target:Math.min(progress,badge.target),earnedOn});
+      badges.push({id:badge.id,kind:badge.kind,target:badge.target,family:badge.family,...(badge.level?{level:badge.level}:{}),progress:earnedOn?badge.target:Math.min(progress,badge.target),earnedOn});
     }
     return {
       summary:{total:active+memorized,active,memorized,archived,memorizedToday:memorizedByDay.get(today)||0,addedToday:addedByDay.get(today)||0,streak:{current,longest},activeDays:activity.size},
@@ -152,7 +153,21 @@
     };
   }
 
-  const api=Object.freeze({BADGES,KINDS,LEVELS,MAX_QUIZZES,localDay,addDays,compute,appendQuiz,appendFlip,normalizeRecord,withBadges});
+  // The badges of compute() as cards: one per family, goals in order. A card shows the goal still ahead (next) and, with it, every goal reached (earned);
+  // when none is left (done) it shows the last one. lastEarnedOn is the day of the newest goal reached.
+  function groupBadges(badges){
+    const families=new Map();
+    for(const badge of badges||[]){
+      if(!families.has(badge.family))families.set(badge.family,{id:badge.family,kind:badge.kind,...(badge.level?{level:badge.level}:{}),tiers:[]});
+      families.get(badge.family).tiers.push(badge);
+    }
+    return [...families.values()].map(card=>{
+      const tiers=[...card.tiers].sort((a,b)=>a.target-b.target),earned=tiers.filter(tier=>tier.earnedOn),next=tiers.find(tier=>!tier.earnedOn)||null;
+      return {...card,tiers,earned,next,done:!next,current:next||tiers[tiers.length-1],lastEarnedOn:earned.reduce((day,tier)=>tier.earnedOn>day?tier.earnedOn:day,'')||null};
+    });
+  }
+
+  const api=Object.freeze({BADGES,KINDS,LEVELS,MAX_QUIZZES,localDay,addDays,compute,groupBadges,appendQuiz,appendFlip,normalizeRecord,withBadges});
   root.VocVocStats=api;
   if(typeof module==='object'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

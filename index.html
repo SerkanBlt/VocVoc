@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.17.3">
+  <meta name="vocvoc-shell" content="1.18.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -4313,6 +4313,7 @@ async function addNewWords(){
     renderHistory();renderAllLocal();
     showError(t("wordsAdded",{n:words.length}),{type:"info"});
     if(room-words.length<=0)showError(freeWordLimitText(band));                        // the last free words of this level were just added
+    window.dispatchEvent(new CustomEvent("vocvoc-words-added",{detail:{words:words.map(data=>data.word)}}));   // screens.js throws them out of a circle, one by one
     return {status:"added",words};
   }finally{dailyBusy=false;}
 }
