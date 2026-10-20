@@ -2362,7 +2362,10 @@ async function main(){
    assert(Math.hypot(held[0].x-wanted.x,held[0].y-wanted.y)<14,'the held word follows the pointer: '+JSON.stringify([held[0],wanted]));
    assert(Math.hypot(held[1].x-start[1].x,held[1].y-start[1].y)>10,'the word it was carried onto moved out of its way');
    assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-held')).cursor),'grabbing');
-   assert.deepEqual(piled(held),[],'nothing on top of the held word or of each other');
+   assert.deepEqual(piled(held).filter(pair=>pair.includes(0)),[],'no word is left under the held one');
+   const reachOf=(point,from,to)=>{const lx=to.x-from.x,ly=to.y-from.y,t=Math.max(0,Math.min(1,((point.x-from.x)*lx+(point.y-from.y)*ly)/(lx*lx+ly*ly||1)));return Math.hypot(point.x-(from.x+t*lx),point.y-(from.y+t*ly));};   // how far a word is from the straight way the held one was carried
+   const untouched=index=>reachOf(start[index],start[0],start[1])>start[0].w/2+start[index].w/2+start[0].h+start[index].h+40;
+   assert(held.every((box,index)=>index<2||!untouched(index)||Math.hypot(box.x-start[index].x,box.y-start[index].y)<2),'only a word the held one lies on moves: the others stay still');
    // while a word is held its meaning shows at the bottom, in the place of the hint (the others glide out of its way slowly, hence the long waits here)
    const meaningOfHeld=await p.evaluate(word=>VocVocData.getWordByText(word).meaning,pills[0]);
    assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-orb-meaning').textContent,getComputedStyle(document.querySelector('.v2-orb-meaning')).opacity,getComputedStyle(document.querySelector('.v2-orb-hint')).opacity]),[meaningOfHeld,'1','0']);
@@ -2371,7 +2374,7 @@ async function main(){
    assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-orb-meaning')).opacity),'0','the meaning goes when the word is let go');
    const dropped=await boxes();
    assert(Math.hypot(dropped[0].x-held[0].x,dropped[0].y-held[0].y)<4,'it stays where it was let go');
-   assert.deepEqual(piled(dropped),[],'nothing on top of anything after it is let go');
+   assert.deepEqual(piled(dropped).filter(pair=>pair.includes(0)),[],'no word is left under the one that was let go');
    assert(dropped.every(box=>box.x-box.w/2>=0&&box.x+box.w/2<=view[0]&&box.y-box.h/2>=0&&box.y+box.h/2<=hintTop),'every word is still inside the screen above the hint');
    assert.equal(await p.locator('#v2Orb:not(.v2-leaving)').count(),1,'carrying a word is not a tap');
    // a word let go inside the circle fades out at once and goes to the memorized words; the circle shows it while the word is over it

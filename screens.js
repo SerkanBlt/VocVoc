@@ -519,11 +519,11 @@
   // "Add New Words" just added its words, so they are all known at once: the page behind goes blurred and a circle appears in the middle of the screen. Every second the
   // next word fades in inside the circle and is then thrown out of it in a badge, in a random direction and in slow motion (FLING_FADE, then FLING_THROW). Every word stays
   // where it landed until the last one has landed; then the screen waits for a tap (or Escape) to go away. A tap while the words are still coming closes it at once.
-  // A word that has landed can be held and moved around the screen: its meaning shows at the bottom while it is held, the others glide out of its way (slowly, FLING_EASE)
-  // and drift a little with it, and where it is let go is where it stays. A word let go inside the circle fades out at once and goes to the memorized words. There is
+  // A word that has landed can be held and moved around the screen: its meaning shows at the bottom while it is held, and a word it lies on glides out of its way
+  // (slowly, FLING_EASE; nothing else moves), and where it is let go is where it stays. A word let go inside the circle fades out at once and goes to the memorized words. There is
   // none when the device asks for less motion.
   const FLING_EVERY=1000,FLING_FADE=600,FLING_THROW=2600,FLING_TIME=FLING_FADE+FLING_THROW,FLING_LEAVE=450,FLING_GAP=14,FLING_SPACE=8,FLING_EDGE=12,FLING_HINT=72,FLING_APART=50,FLING_TRIES=24,FLING_STEPS=6;
-  const FLING_PASSES=8,FLING_FOLLOW=.18,FLING_REACH=180,FLING_EASE=500,FLING_TAP=6,FLING_GONE=400;
+  const FLING_PASSES=6,FLING_EASE=500,FLING_TAP=6,FLING_GONE=400;
   let flingRun=null;
   function stopFling(){
     if(!flingRun)return;
@@ -544,36 +544,27 @@
     const halfW=host.clientWidth/2,halfH=host.clientHeight/2,[left,right]=span(FLING_EDGE+box.hx-halfW,halfW-FLING_EDGE-box.hx),[top,bottom]=span(FLING_EDGE+box.hy-halfH,halfH-FLING_EDGE-FLING_HINT-box.hy);
     return {left,right,top,bottom};
   }
-  // Boxes that overlap are pushed apart along the axis on which they overlap least, a few passes so that a push goes on to the next word; the box at index `held` (if any)
-  // does not move. Every other box stays where limits(box) allows.
-  function separate(boxes,held,limits){
-    for(let pass=0;pass<FLING_PASSES;pass++){
-      let moved=false;
-      for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){
-        const a=boxes[i],b=boxes[j],px=a.hx+b.hx+FLING_SPACE-Math.abs(a.x-b.x),py=a.hy+b.hy+FLING_SPACE-Math.abs(a.y-b.y);
-        if(px<=0||py<=0)continue;
-        const alongX=px<py,push=(alongX?px:py)*((alongX?b.x-a.x:b.y-a.y)||1),mine=i===held?0:(j===held?1:.5);
-        if(alongX){a.x-=push*mine;b.x+=push*(1-mine);}else{a.y-=push*mine;b.y+=push*(1-mine);}
-        moved=true;
-      }
-      boxes.forEach((box,index)=>{if(index===held)return;const area=limits(box);box.x=clamp(box.x,area.left,area.right);box.y=clamp(box.y,area.top,area.bottom);});
-      if(!moved)break;
-    }
+  // How far a box (centre x, y, half width hx, half height hy) has to move to be clear of the held one, along the axis on which they overlap least; null when they
+  // do not overlap.
+  function away(box,held){
+    const needX=box.hx+held.hx+FLING_SPACE,needY=box.hy+held.hy+FLING_SPACE,dx=box.x-held.x,dy=box.y-held.y,px=needX-Math.abs(dx),py=needY-Math.abs(dy);
+    if(px<=0||py<=0)return null;
+    return px<py?{x:px*(dx<0?-1:1),y:0}:{x:0,y:py*(dy<0?-1:1)};
   }
   // A landed word is drawn at (px, py), measured from the screen's middle, tilted as it landed; the one being held is a little larger.
   const place=item=>{item.node.style.transform='translate(calc(-50% + '+item.px.toFixed(1)+'px),calc(-50% + '+item.py.toFixed(1)+'px)) rotate('+item.turn+'deg)'+(flingRun&&flingRun.drag&&flingRun.drag.item===item?' scale(1.06)':'');};
-  // Where the landed words want to be: at home, except that the held word is where the pointer has it, the others keep clear of it and the nearer they are to it
-  // the more they go along with it.
+  // Where the landed words want to be: at home. The held word is where the pointer has it. A word whose home lies under the held one gives way, from where it is now,
+  // by the little that makes it clear of it (and stays there while the held word is over its home); nothing else moves.
   function wanted(run){
-    const drag=run.drag,boxes=run.placed.filter(item=>item.landed).map(item=>({item,x:item.x,y:item.y,hx:item.hx,hy:item.hy})),held=drag?boxes.findIndex(box=>box.item===drag.item):-1;
-    if(held<0)return boxes;
-    const grip=drag.item,pull={x:drag.x-grip.x,y:drag.y-grip.y};
-    boxes.forEach((box,index)=>{
-      if(index===held){box.x=drag.x;box.y=drag.y;return;}
-      const along=Math.exp(-Math.hypot(box.x-grip.x,box.y-grip.y)/FLING_REACH)*FLING_FOLLOW;
-      box.x+=pull.x*along;box.y+=pull.y*along;
-    });
-    separate(boxes,held,box=>reach(run.host,box));
+    const drag=run.drag,boxes=run.placed.filter(item=>item.landed).map(item=>({item,x:item.x,y:item.y,hx:item.hx,hy:item.hy}));
+    if(!drag)return boxes;
+    const held={x:drag.x,y:drag.y,hx:drag.item.hx,hy:drag.item.hy};
+    for(const box of boxes){
+      if(box.item===drag.item){box.x=drag.x;box.y=drag.y;continue;}
+      if(!away(box,held))continue;
+      const push=away({x:box.item.px,y:box.item.py,hx:box.hx,hy:box.hy},held)||{x:0,y:0},area=reach(run.host,box);
+      box.x=clamp(box.item.px+push.x,area.left,area.right);box.y=clamp(box.item.py+push.y,area.top,area.bottom);
+    }
     return boxes;
   }
   function tick(now){
@@ -591,9 +582,20 @@
     if(moving)run.frame=requestAnimationFrame(tick);else run.last=0;
   }
   const wake=run=>{if(!run.frame)run.frame=requestAnimationFrame(tick);};
-  // Let go: the words stay where the others were pushed to.
+  // Let go: the word stays where it is. A word whose home lies under it gets a new home: the nearest clear place from where it is now.
   function dropWord(run){
-    for(const box of wanted(run)){box.item.x=box.x;box.item.y=box.y;}
+    const drag=run.drag,held={x:drag.x,y:drag.y,hx:drag.item.hx,hy:drag.item.hy};
+    drag.item.x=drag.x;drag.item.y=drag.y;
+    for(const item of run.placed){
+      if(item===drag.item||!item.landed||!away({x:item.x,y:item.y,hx:item.hx,hy:item.hy},held))continue;
+      const spot={x:item.px,y:item.py,hx:item.hx,hy:item.hy},area=reach(run.host,spot);
+      for(let pass=0;pass<FLING_PASSES;pass++){
+        const push=away(spot,held);
+        if(!push)break;
+        spot.x=clamp(spot.x+push.x,area.left,area.right);spot.y=clamp(spot.y+push.y,area.top,area.bottom);
+      }
+      item.x=spot.x;item.y=spot.y;
+    }
     run.drag=null;wake(run);
   }
   // A word let go inside the circle: it fades out at once (the others no longer keep out of its way) and is put in the memorized words, like the app's own
