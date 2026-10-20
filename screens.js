@@ -516,10 +516,13 @@
     return h('div',{class:'v2-added'},h('p',{class:'v2-goal-label',text:t('addedWords')}),
       h('ul',{class:'v2-pills','aria-label':t('addedWords')},words.map(word=>h('li',{},wordPill(word)))));
   }
-  // "Add New Words" just added its words, so they are all known at once: a circle appears in the middle of the screen and, every second, throws the next word out of
-  // it in a badge, in a random direction and in slow motion. Every word stays where it landed until the last one has landed; then the screen waits for a tap (or
-  // Escape) to go away. A tap while the words are still coming closes it at once. There is none when the device asks for less motion.
-  const FLING_EVERY=1000,FLING_TIME=2600,FLING_LEAVE=450,FLING_GAP=14,FLING_SPACE=8,FLING_EDGE=12,FLING_HINT=72,FLING_APART=50,FLING_TRIES=24,FLING_STEPS=6;
+  // "Add New Words" just added its words, so they are all known at once: the page behind goes blurred and a circle appears in the middle of the screen. Every second the
+  // next word fades in inside the circle and is then thrown out of it in a badge, in a random direction and in slow motion. Every word stays where it landed until the
+  // last one has landed; then the screen waits for a tap (or Escape) to go away. A tap while the words are still coming closes it at once. A word that has landed can be
+  // held and moved around the screen: the others keep out of its way and drift a little with it, and where it is let go is where it stays. There is none when the device
+  // asks for less motion.
+  const FLING_EVERY=1000,FLING_TIME=3200,FLING_LEAVE=450,FLING_GAP=14,FLING_SPACE=8,FLING_EDGE=12,FLING_HINT=72,FLING_APART=50,FLING_TRIES=24,FLING_STEPS=6;
+  const FLING_PASSES=8,FLING_FOLLOW=.18,FLING_REACH=180,FLING_EASE=90,FLING_TAP=6;
   let flingRun=null;
   function stopFling(){
     if(!flingRun)return;
@@ -533,43 +536,136 @@
   }
   // Two boxes (centre x, y and half width hx, half height hy): how much of them lies on the same ground.
   const overlap=(a,b)=>Math.max(0,Math.min(a.x+a.hx,b.x+b.hx)-Math.max(a.x-a.hx,b.x-b.hx))*Math.max(0,Math.min(a.y+a.hy,b.y+b.hy)-Math.max(a.y-a.hy,b.y-b.hy));
-  // The badge starts in the middle of the circle and lands clear of it, wholly inside the screen (above the hint at the bottom), and clear of the badges that
-  // landed before it when the screen has room. The direction is random but never within FLING_APART degrees of the last one. Returns the direction used.
+  const clamp=(value,low,high)=>Math.min(Math.max(value,low),high);
+  const span=(low,high)=>low<=high?[low,high]:[0,0];
+  // Where the centre of a box may be: wholly inside the screen, FLING_EDGE from its edge and above the hint at the bottom (x and y are measured from the screen's middle).
+  function reach(host,box){
+    const halfW=host.clientWidth/2,halfH=host.clientHeight/2,[left,right]=span(FLING_EDGE+box.hx-halfW,halfW-FLING_EDGE-box.hx),[top,bottom]=span(FLING_EDGE+box.hy-halfH,halfH-FLING_EDGE-FLING_HINT-box.hy);
+    return {left,right,top,bottom};
+  }
+  // Boxes that overlap are pushed apart along the axis on which they overlap least, a few passes so that a push goes on to the next word; the box at index `held` (if any)
+  // does not move. Every other box stays where limits(box) allows.
+  function separate(boxes,held,limits){
+    for(let pass=0;pass<FLING_PASSES;pass++){
+      let moved=false;
+      for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){
+        const a=boxes[i],b=boxes[j],px=a.hx+b.hx+FLING_SPACE-Math.abs(a.x-b.x),py=a.hy+b.hy+FLING_SPACE-Math.abs(a.y-b.y);
+        if(px<=0||py<=0)continue;
+        const alongX=px<py,push=(alongX?px:py)*((alongX?b.x-a.x:b.y-a.y)||1),mine=i===held?0:(j===held?1:.5);
+        if(alongX){a.x-=push*mine;b.x+=push*(1-mine);}else{a.y-=push*mine;b.y+=push*(1-mine);}
+        moved=true;
+      }
+      boxes.forEach((box,index)=>{if(index===held)return;const area=limits(box);box.x=clamp(box.x,area.left,area.right);box.y=clamp(box.y,area.top,area.bottom);});
+      if(!moved)break;
+    }
+  }
+  // A landed word is drawn at (px, py), measured from the screen's middle, tilted as it landed; the one being held is a little larger.
+  const place=item=>{item.node.style.transform='translate(calc(-50% + '+item.px.toFixed(1)+'px),calc(-50% + '+item.py.toFixed(1)+'px)) rotate('+item.turn+'deg)'+(flingRun&&flingRun.drag&&flingRun.drag.item===item?' scale(1.06)':'');};
+  // Where the landed words want to be: at home, except that the held word is where the pointer has it, the others keep clear of it and the nearer they are to it
+  // the more they go along with it.
+  function wanted(run){
+    const drag=run.drag,boxes=run.placed.filter(item=>item.landed).map(item=>({item,x:item.x,y:item.y,hx:item.hx,hy:item.hy})),held=drag?boxes.findIndex(box=>box.item===drag.item):-1;
+    if(held<0)return boxes;
+    const grip=drag.item,pull={x:drag.x-grip.x,y:drag.y-grip.y};
+    boxes.forEach((box,index)=>{
+      if(index===held){box.x=drag.x;box.y=drag.y;return;}
+      const along=Math.exp(-Math.hypot(box.x-grip.x,box.y-grip.y)/FLING_REACH)*FLING_FOLLOW;
+      box.x+=pull.x*along;box.y+=pull.y*along;
+    });
+    separate(boxes,held,box=>reach(run.host,box));
+    return boxes;
+  }
+  function tick(now){
+    const run=flingRun;
+    if(!run)return;
+    run.frame=0;
+    const dt=run.last?Math.min(now-run.last,64):16,ease=1-Math.exp(-dt/FLING_EASE);
+    run.last=now;
+    let moving=!!run.drag;
+    for(const box of wanted(run)){
+      const item=box.item,held=!!run.drag&&run.drag.item===item,x=held?box.x:item.px+(box.x-item.px)*ease,y=held?box.y:item.py+(box.y-item.py)*ease;
+      if(Math.abs(box.x-x)>.3||Math.abs(box.y-y)>.3)moving=true;
+      item.px=x;item.py=y;place(item);
+    }
+    if(moving)run.frame=requestAnimationFrame(tick);else run.last=0;
+  }
+  const wake=run=>{if(!run.frame)run.frame=requestAnimationFrame(tick);};
+  // Let go: the words stay where the others were pushed to.
+  function dropWord(run){
+    for(const box of wanted(run)){box.item.x=box.x;box.item.y=box.y;}
+    run.drag=null;wake(run);
+  }
+  function holdWords(run){
+    const host=run.host,point=event=>{const box=host.getBoundingClientRect();return {x:event.clientX-box.left-box.width/2,y:event.clientY-box.top-box.height/2};};
+    host.addEventListener('pointerdown',event=>{
+      run.justDragged=false;
+      const node=event.target.closest&&event.target.closest('.v2-landed'),item=node&&run.placed.find(entry=>entry.node===node);
+      if(!item||run.leaving||run.drag)return;
+      event.preventDefault();
+      const at=point(event);
+      run.drag={item,id:event.pointerId,grabX:at.x-item.px,grabY:at.y-item.py,from:at,moved:false,x:item.px,y:item.py};
+      try{node.setPointerCapture(event.pointerId);}catch(_){}
+      node.classList.add('v2-held');place(item);wake(run);
+    });
+    host.addEventListener('pointermove',event=>{
+      const drag=run.drag;
+      if(!drag||event.pointerId!==drag.id)return;
+      const at=point(event),area=reach(host,drag.item);
+      if(Math.hypot(at.x-drag.from.x,at.y-drag.from.y)>FLING_TAP)drag.moved=true;
+      drag.x=clamp(at.x-drag.grabX,area.left,area.right);drag.y=clamp(at.y-drag.grabY,area.top,area.bottom);wake(run);
+    });
+    const release=event=>{
+      const drag=run.drag;
+      if(!drag||event.pointerId!==drag.id)return;
+      run.justDragged=drag.moved;drag.item.node.classList.remove('v2-held');dropWord(run);          // the click that follows a drag is not a tap
+    };
+    host.addEventListener('pointerup',release);host.addEventListener('pointercancel',release);
+    host.addEventListener('click',()=>{if(run.justDragged){run.justDragged=false;return;}dismissFling();});
+  }
+  // The badge fades in inside the circle (small enough to fit it), then is thrown out: it lands clear of the circle, wholly inside the screen (above the hint at the
+  // bottom) and clear of the badges that landed before it when the screen has room. The direction is random but never within FLING_APART degrees of the last one.
+  // `placed` is the list of the words so far; returns the direction used.
   function throwWord(host,orb,word,placed,previous){
     const badge=h('span',{class:'v2-fling',lang:getTargetLanguageCode(),text:word});
     host.append(badge);
     const turn=Math.round(Math.random()*16-8),sin=Math.abs(Math.sin(turn*Math.PI/180)),cos=Math.cos(turn*Math.PI/180);
     const hx=(badge.offsetWidth*cos+badge.offsetHeight*sin)/2,hy=(badge.offsetWidth*sin+badge.offsetHeight*cos)/2;          // half of the box the tilted badge needs
-    const halfW=host.clientWidth/2,halfH=host.clientHeight/2,radius=orb.offsetWidth/2;
-    const span=(low,high)=>low<=high?[low,high]:[0,0];                                                                        // where the badge's centre may be
-    const [left,right]=span(FLING_EDGE+hx-halfW,halfW-FLING_EDGE-hx),[top,bottom]=span(FLING_EDGE+hy-halfH,halfH-FLING_EDGE-FLING_HINT-hy);
+    const radius=orb.offsetWidth/2,{left,right,top,bottom}=reach(host,{hx,hy});                                               // where the badge's centre may be
     const clear=(cx,cy)=>Math.hypot(Math.max(Math.abs(cx)-hx,0),Math.max(Math.abs(cy)-hy,0))>=radius+FLING_GAP;
     let best=null;
     for(let tries=0;tries<FLING_TRIES&&!(best&&best.lap===0);tries++){
       const degrees=(previous+FLING_APART+Math.random()*(360-2*FLING_APART))%360,radians=degrees*Math.PI/180,dx=Math.sin(radians),dy=-Math.cos(radians);
       const far=Math.min(dx>1e-3?right/dx:dx<-1e-3?left/dx:Infinity,dy>1e-3?bottom/dy:dy<-1e-3?top/dy:Infinity);          // as far as the screen shows all of it
       let near=0;while(near<=far&&!clear(dx*near,dy*near))near+=4;                                                           // as near as it is clear of the circle
-      if(near>far){if(!best)best={degrees,cx:Math.min(Math.max(dx*(radius+hx+hy),left),right),cy:Math.min(Math.max(dy*(radius+hx+hy),top),bottom),lap:Infinity};continue;}
+      if(near>far){if(!best)best={degrees,cx:clamp(dx*(radius+hx+hy),left,right),cy:clamp(dy*(radius+hx+hy),top,bottom),lap:Infinity};continue;}
       for(let step=0;step<FLING_STEPS;step++){
         const distance=near+Math.random()*(far-near),cx=dx*distance,cy=dy*distance;
         const lap=placed.reduce((sum,other)=>sum+overlap({x:cx,y:cy,hx,hy},{x:other.x,y:other.y,hx:other.hx+FLING_SPACE,hy:other.hy+FLING_SPACE}),0);
         if(!best||lap<best.lap){best={degrees,cx,cy,lap};if(lap===0)break;}
       }
     }
-    placed.push({x:best.cx,y:best.cy,hx,hy});
+    const item={node:badge,x:best.cx,y:best.cy,px:best.cx,py:best.cy,hx,hy,turn,landed:false};
+    placed.push(item);
     badge.style.setProperty('--dx',Math.round(best.cx)+'px');badge.style.setProperty('--dy',Math.round(best.cy)+'px');badge.style.setProperty('--rot',turn+'deg');
+    badge.style.setProperty('--fit',Math.min(.8,orb.offsetWidth*.78/badge.offsetWidth).toFixed(2));
+    badge.addEventListener('animationend',()=>{                                                                              // landed: from now on it is drawn (and can be moved) by the page
+      item.landed=true;item.px=item.x;item.py=item.y;
+      badge.style.animation='none';badge.style.opacity='1';badge.classList.add('v2-landed');place(item);
+      if(flingRun&&flingRun.drag)wake(flingRun);
+    },{once:true});
     return best.degrees;
   }
   function playAddedWords(words){
     if(!words.length||(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches))return;
     stopFling();
     const count=h('span',{class:'v2-orb-count'}),orb=h('div',{class:'v2-orb'},count),hint=h('p',{class:'v2-orb-hint',text:t('addedTapClose')});
-    const host=h('div',{id:'v2Orb',class:'v2-orb-host','aria-hidden':'true',onclick:dismissFling},orb,hint);
+    const host=h('div',{id:'v2Orb',class:'v2-orb-host','aria-hidden':'true'},orb,hint);
     host.style.setProperty('--fling-time',FLING_TIME+'ms');
     document.body.append(host);
     const onKey=event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();dismissFling();}};
     document.addEventListener('keydown',onKey,true);window.addEventListener('hashchange',dismissFling);
-    const run=flingRun={host,timers:[],leaving:false,cleanup:[()=>document.removeEventListener('keydown',onKey,true),()=>window.removeEventListener('hashchange',dismissFling)]},placed=[];
+    const placed=[],run=flingRun={host,timers:[],leaving:false,placed,drag:null,frame:0,last:0,justDragged:false,cleanup:[()=>document.removeEventListener('keydown',onKey,true),()=>window.removeEventListener('hashchange',dismissFling),()=>cancelAnimationFrame(run.frame)]};
+    holdWords(run);
     let degrees=Math.random()*360;
     words.forEach((word,index)=>run.timers.push(setTimeout(()=>{
       count.textContent=(index+1)+' / '+words.length;

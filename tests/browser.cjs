@@ -2315,12 +2315,19 @@ async function main(){
    await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();
    await p.waitForSelector('#v2Orb');
    assert.deepEqual(await p.evaluate(()=>{const host=document.getElementById('v2Orb'),style=getComputedStyle(host);return [style.pointerEvents,style.cursor,style.position,host.getAttribute('aria-hidden')];}),['auto','pointer','fixed','true']);
+   assert.match(await p.evaluate(()=>getComputedStyle(document.getElementById('v2Orb')).backdropFilter),/blur\(8px\)/,'the page behind is blurred');
+   // the first word fades in inside the circle (still in its middle, not yet fully there) and is thrown out afterwards
+   await p.waitForSelector('#v2Orb .v2-fling');await pause(250);
+   const fade=await p.evaluate(()=>{const word=document.querySelector('.v2-fling').getBoundingClientRect(),orb=document.querySelector('.v2-orb').getBoundingClientRect();return {off:Math.hypot(word.left+word.width/2-(orb.left+orb.width/2),word.top+word.height/2-(orb.top+orb.height/2)),opacity:Number(getComputedStyle(document.querySelector('.v2-fling')).opacity),inside:word.width<=orb.width};});
+   assert(fade.off<3&&fade.opacity>0&&fade.opacity<1&&fade.inside,'it fades in inside the circle: '+JSON.stringify(fade));
+   await pause(1800);
+   assert(await p.evaluate(()=>{const word=document.querySelector('.v2-fling').getBoundingClientRect(),orb=document.querySelector('.v2-orb').getBoundingClientRect();return Math.hypot(word.left+word.width/2-(orb.left+orb.width/2),word.top+word.height/2-(orb.top+orb.height/2))>orb.width/2;}),'and then it leaves the circle');
    await p.waitForFunction(()=>window.__flung.length===10,null,{timeout:20000});
    const flung=await p.evaluate(()=>window.__flung),pills=await p.locator('.v2-added .history-chip').evaluateAll(nodes=>nodes.map(node=>node.textContent));
    assert.deepEqual(flung.map(item=>item.word),pills,'every word that was added, in the order it was added');
    const gaps=flung.slice(1).map((item,index)=>item.at-flung[index].at);
    assert(gaps.every(gap=>gap>=850&&gap<=1400),'one word every second: '+gaps.map(Math.round));
-   assert(flung.every(item=>item.duration==='2.6s'&&item.lang==='fr'),'slow motion: '+JSON.stringify(flung.map(item=>item.duration)));
+   assert(flung.every(item=>item.duration==='3.2s'&&item.lang==='fr'),'slow motion: '+JSON.stringify(flung.map(item=>item.duration)));
    assert(flung.every(item=>item.fontSize>=20),'big words: '+JSON.stringify(flung.map(item=>item.fontSize)));
    // the words that came before stay: when a word comes, all the earlier ones are still there and fully visible; the screen is not done until the last one has landed
    assert(flung.every((item,index)=>item.olderCount===index&&item.olderVisible),'the words do not disappear: '+JSON.stringify(flung.map(item=>[item.olderCount,item.olderVisible])));
@@ -2343,6 +2350,25 @@ async function main(){
    const angle=item=>(Math.atan2(item.dx,-item.dy)*180/Math.PI+360)%360,apart=flung.slice(1).map((item,index)=>{const turn=Math.abs(angle(item)-angle(flung[index]));return Math.min(turn,360-turn);});
    assert(apart.every(turn=>turn>=48),'directions are apart (never within 50 degrees of the last one): '+apart.map(Math.round));
    assert(new Set(flung.map(item=>Math.round(angle(item)/30))).size>=4,'the words go in different directions');
+   // a landed word can be held and carried across the screen: it follows the pointer (kept inside the screen above the hint), the others keep out of its way, nothing is
+   // on top of anything while it is held or after it is let go, it stays where it is let go, and none of this closes the screen
+   const boxes=()=>p.evaluate(()=>[...document.querySelectorAll('.v2-fling')].map(node=>{const box=node.getBoundingClientRect();return {x:box.left+box.width/2,y:box.top+box.height/2,w:box.width,h:box.height};}));
+   const piled=list=>{const found=[];list.forEach((a,i)=>list.forEach((b,j)=>{if(j>i&&Math.min(a.x+a.w/2,b.x+b.w/2)-Math.max(a.x-a.w/2,b.x-b.w/2)>2&&Math.min(a.y+a.h/2,b.y+b.h/2)-Math.max(a.y-a.h/2,b.y-b.h/2)>2)found.push([i,j]);}));return found;};
+   const start=await boxes(),view=geometry.view,hintTop=geometry.hint.top;
+   assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-fling')).cursor),'grab');
+   await p.mouse.move(start[0].x,start[0].y);await p.mouse.down();await p.mouse.move(start[1].x,start[1].y,{steps:15});await pause(800);
+   const held=await boxes();
+   const wanted={x:Math.min(Math.max(start[1].x,12+held[0].w/2),view[0]-12-held[0].w/2),y:Math.min(Math.max(start[1].y,12+held[0].h/2),view[1]-84-held[0].h/2)};   // where the pointer is, kept inside the screen above the hint (the held word is drawn 6% larger, hence the margin)
+   assert(Math.hypot(held[0].x-wanted.x,held[0].y-wanted.y)<14,'the held word follows the pointer: '+JSON.stringify([held[0],wanted]));
+   assert(Math.hypot(held[1].x-start[1].x,held[1].y-start[1].y)>10,'the word it was carried onto moved out of its way');
+   assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-held')).cursor),'grabbing');
+   assert.deepEqual(piled(held),[],'nothing on top of the held word or of each other');
+   await p.mouse.up();await pause(800);
+   const dropped=await boxes();
+   assert(Math.hypot(dropped[0].x-held[0].x,dropped[0].y-held[0].y)<4,'it stays where it was let go');
+   assert.deepEqual(piled(dropped),[],'nothing on top of anything after it is let go');
+   assert(dropped.every(box=>box.x-box.w/2>=0&&box.x+box.w/2<=view[0]&&box.y-box.h/2>=0&&box.y+box.h/2<=hintTop),'every word is still inside the screen above the hint');
+   assert.equal(await p.locator('#v2Orb:not(.v2-leaving)').count(),1,'carrying a word is not a tap');
    // a tap anywhere takes the screen away (and the page underneath is not tapped); then the card that waited comes
    await p.mouse.click(195,300);
    await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
