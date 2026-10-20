@@ -2338,7 +2338,12 @@ async function main(){
    await pause(4000);
    assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('#v2Orb .v2-fling').length,[...document.querySelectorAll('.v2-fling')].every(item=>getComputedStyle(item).opacity==='1'),getComputedStyle(document.querySelector('.v2-orb-hint')).opacity,document.querySelector('.v2-orb-hint').textContent,!!document.querySelector('#v2Celebrate.v2-on'),document.querySelector('.v2-orb-count').textContent]),[10,true,'1','Kapatmak için dokun',false,'10 / 10']);
    // the circle says New Word now (a button), the ring is closed
-   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-orb-new').textContent,getComputedStyle(document.querySelector('.v2-orb-new')).opacity,document.querySelector('.v2-orb-new').disabled]),['Yeni 10 Kelime','1',false]);
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-orb-new').textContent,getComputedStyle(document.querySelector('.v2-orb-new')).opacity,document.querySelector('.v2-orb-new').disabled]),['Yeni Kelimeler','1',false]);
+   // in two lines: "Yeni" above "Kelimeler", both inside the circle
+   assert.deepEqual(await p.evaluate(()=>{const lines=[...document.querySelectorAll('.v2-orb-new span')].map(node=>node.getBoundingClientRect()),orb=document.querySelector('.v2-orb').getBoundingClientRect();return [lines.length,lines[1].top>=lines[0].bottom-1,lines.every(box=>box.left>=orb.left&&box.right<=orb.right)];}),[2,true,true]);
+   // the ten words of the first batch share one gradient
+   const gradientOf=()=>p.evaluate(()=>[...document.querySelectorAll('#v2Orb .v2-fling')].map(node=>node.style.getPropertyValue('--grad-from')+'>'+node.style.getPropertyValue('--grad-to')));
+   assert.equal(new Set(await gradientOf()).size,1,'a batch comes in one gradient');
    // where they landed: inside the screen above the hint, clear of the circle, clear of each other, in different directions
    const geometry=await p.evaluate(()=>{
     const rect=node=>{const box=node.getBoundingClientRect();return {left:box.left,right:box.right,top:box.top,bottom:box.bottom};},orb=document.querySelector('.v2-orb').getBoundingClientRect();
@@ -2426,6 +2431,9 @@ async function main(){
    await p.waitForFunction(()=>document.querySelectorAll('#v2Orb .v2-fling').length===20,null,{timeout:20000});
    await p.waitForSelector('#v2Orb.v2-done',{timeout:30000});
    assert.deepEqual([await progressCount()-wordsBefore,await usedToday()-usedBefore],[21,20],'the ten words asked for in the circle count (ten by ten)');
+   // every batch has a gradient of its own: the first ten (the replacement has the colours of the word it replaced) and the ten asked for in the circle
+   const gradients=await gradientOf();
+   assert(new Set(gradients.slice(0,10)).size===1&&new Set(gradients.slice(10)).size===1&&gradients[0]!==gradients[10]&&gradients.every(value=>/^#[0-9a-f]{6}>#[0-9a-f]{6}$/.test(value)),'a gradient for each batch: '+JSON.stringify(gradients));
    await p.locator('#v2Orb .v2-orb-hint').click();await p.waitForFunction(()=>!document.getElementById('v2Orb'),null,{timeout:4000});
    await c.close();
   }

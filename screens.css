@@ -274,7 +274,8 @@ body.v2 #relatedWordPopup.open{z-index:620}
 .v2-orb-host.v2-holding .v2-orb-meaning{opacity:1}
 .v2-orb{transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
 /* once every word is out and has landed the circle says "New Word" and a press brings one more */
-.v2-orb-new{grid-area:1/1;position:relative;width:var(--orb);height:var(--orb);margin:0;padding:0;border:0;border-radius:50%;background:transparent;color:var(--text);font:inherit;font-size:1.2rem;font-weight:800;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .4s ease}
+.v2-orb-new{grid-area:1/1;position:relative;width:var(--orb);height:var(--orb);margin:0;padding:0;border:0;border-radius:50%;background:transparent;color:var(--text);font:inherit;font-size:1.25rem;font-weight:800;line-height:1.2;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .4s ease}
+.v2-orb-new span{display:block}      /* the label is in two lines */
 .v2-orb-new:focus-visible{outline:3px solid var(--primary);outline-offset:-6px}
 .v2-orb-host.v2-done .v2-orb-new{opacity:1;pointer-events:auto}
 .v2-orb-host.v2-done .v2-orb-new:disabled{opacity:.5}
@@ -285,7 +286,7 @@ body:has(#v2Orb) .app-alert-layer{z-index:12500!important}
 .v2-orb.v2-over{transform:scale(1.1);border-color:var(--v2-green);box-shadow:0 0 0 6px color-mix(in srgb,var(--v2-green) 35%,transparent),0 18px 55px rgba(0,0,0,.22)}
 .v2-orb.v2-over .v2-orb-count{visibility:hidden}
 .v2-orb.v2-over::after{content:"\2713";position:absolute;inset:0;display:grid;place-items:center;color:var(--v2-green);font-size:2.6rem;font-weight:800}
-.v2-fling{position:absolute;left:50%;top:50%;box-sizing:border-box;max-width:calc(100vw - 40px);padding:9px 20px;border-radius:999px;background:linear-gradient(to top right,var(--v2-grad-green),var(--v2-grad-purple));color:#fff;font-size:1.3rem;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 6px 18px rgba(0,0,0,.28);opacity:0;pointer-events:none;animation:v2-fling-in var(--fling-fade,.6s) ease-out both,v2-fling var(--fling-time,2.6s) cubic-bezier(.2,.7,.3,1) var(--fling-fade,.6s) forwards}
+.v2-fling{position:absolute;left:50%;top:50%;box-sizing:border-box;max-width:calc(100vw - 40px);padding:9px 20px;border-radius:999px;background:linear-gradient(to top right,var(--grad-from,var(--v2-grad-green)),var(--grad-to,var(--v2-grad-purple)));color:#fff;font-size:1.3rem;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 6px 18px rgba(0,0,0,.28);opacity:0;pointer-events:none;animation:v2-fling-in var(--fling-fade,.6s) ease-out both,v2-fling var(--fling-time,2.6s) cubic-bezier(.2,.7,.3,1) var(--fling-fade,.6s) forwards}
 /* a word that has landed (the page takes over from the animation) can be held and moved; the one being held lies on top and is a little larger */
 .v2-fling.v2-landed{pointer-events:auto;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
 .v2-fling.v2-held{z-index:2;cursor:grabbing;box-shadow:0 14px 30px rgba(0,0,0,.4)}
