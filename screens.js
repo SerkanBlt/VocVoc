@@ -666,9 +666,9 @@
     }
     run.drag=null;wake(run);
   }
-  // The colours a batch of words comes in (first, second; a gradient to the upper right): all soft pastels with dark text on them (4.5:1 or more). Every batch of words that
+  // The colours a batch of words comes in (first, second; a gradient to the upper right): all dark pastels (muted, not bright) running to black, with white text on them (4.5:1 or more on the first colour). Every batch of words that
   // arrives gets one of them at random, never the one the batch before had; a word that replaces a memorized one keeps the colours of the word it replaces.
-  const FLING_GRADIENTS=[['#bbf7d0','#ddd6fe'],['#fed7aa','#fbcfe8'],['#bfdbfe','#a7f3d0'],['#fecdd3','#c7d2fe'],['#fde68a','#fecaca'],['#99f6e4','#bae6fd'],['#fbcfe8','#ddd6fe'],['#d9f99d','#a7f3d0'],['#a5f3fc','#c7d2fe'],['#f5d0fe','#bfdbfe']];
+  const FLING_GRADIENTS=[['#4f7a62','#000000'],['#4f6f96','#000000'],['#a0586b','#000000'],['#7a6aa6','#000000'],['#9a5f48','#000000'],['#3f7773','#000000'],['#85702f','#000000'],['#93507f','#000000'],['#5a5f9e','#000000'],['#5f7237','#000000']];
   const randomGradient=avoid=>{const choices=FLING_GRADIENTS.filter(pair=>pair!==avoid);return choices[Math.floor(Math.random()*choices.length)];};
   // Every word that is still to come out of the circle waits in run.queue (with its colours) and comes a second after the last one (run.pump is the timer of the next). run.busy counts
   // the words that are wanted but have not arrived yet.

@@ -290,7 +290,7 @@ body:has(#v2Orb) .app-alert-layer{z-index:12500!important}
 .v2-orb-host.v2-dragging .v2-orb-count{visibility:hidden}
 .v2-orb-host.v2-dragging .v2-orb-new{opacity:0;pointer-events:none}
 .v2-orb.v2-over .v2-orb-memo{color:var(--v2-green)}
-.v2-fling{position:absolute;left:50%;top:50%;box-sizing:border-box;max-width:calc(100vw - 40px);padding:9px 20px;border-radius:999px;background:linear-gradient(to top right,var(--grad-from,#bbf7d0),var(--grad-to,#ddd6fe));color:#1e293b;font-size:1.3rem;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 6px 18px rgba(0,0,0,.28);opacity:0;pointer-events:none;animation:v2-fling-in var(--fling-fade,.6s) ease-out both,v2-fling var(--fling-time,2.6s) cubic-bezier(.2,.7,.3,1) var(--fling-fade,.6s) forwards}
+.v2-fling{position:absolute;left:50%;top:50%;box-sizing:border-box;max-width:calc(100vw - 40px);padding:9px 20px;border-radius:999px;background:linear-gradient(to top right,var(--grad-from,#4f7a62),var(--grad-to,#000000));color:#fff;border:1px solid rgba(255,255,255,.28);font-size:1.3rem;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 6px 18px rgba(0,0,0,.28);opacity:0;pointer-events:none;animation:v2-fling-in var(--fling-fade,.6s) ease-out both,v2-fling var(--fling-time,2.6s) cubic-bezier(.2,.7,.3,1) var(--fling-fade,.6s) forwards}
 /* a word that has landed (the page takes over from the animation) can be held and moved; the one being held lies on top and is a little larger */
 .v2-fling.v2-landed{pointer-events:auto;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
 .v2-fling.v2-held{z-index:2;cursor:grabbing;box-shadow:0 14px 30px rgba(0,0,0,.4)}
