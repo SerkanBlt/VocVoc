@@ -89,7 +89,7 @@ async function syncExternalCommit(detail){
 let pwaRegistration=null,pwaReloadRequested=false;
 function showPwaUpdate(external=false){
   let host=document.getElementById('pwaUpdate');if(!host){host=document.createElement('div');host.id='pwaUpdate';host.setAttribute('role','status');document.body.append(host);}
-  host.replaceChildren();host.dataset.kind=external?'external':'update';const panel=document.createElement('div');panel.className='ui-panel';const label=document.createElement('span');label.textContent=pwaText(external?'conflict':'update');panel.append(label);
+  host.replaceChildren();host.dataset.kind=external?'external':'update';const panel=document.createElement('div');panel.className='app-alert';const label=document.createElement('span');label.className='app-alert-text';label.textContent=pwaText(external?'conflict':'update');panel.append(label);
   const reload=document.createElement('button');reload.className='ui-button ui-button-secondary';reload.textContent=pwaText('reload');reload.onclick=async()=>{
     if(operationBusy()){showError(pwaText('busy'));return;}
     document.querySelector('.container').inert=true;await VocVocData.flush();
@@ -99,7 +99,7 @@ function showPwaUpdate(external=false){
       // (and ignore a late takeover) instead of leaving it inert forever.
       setTimeout(()=>{if(!pwaReloadRequested)return;pwaReloadRequested=false;document.querySelector('.container').inert=false;showError(pwaText('updateStuck'));},PWA_ACTIVATE_TIMEOUT_MS);
     }else location.reload();
-  };panel.append(reload);const later=document.createElement('button');later.className='ui-panel-close';later.textContent='×';later.setAttribute('aria-label',pwaText('later'));later.onclick=()=>host.remove();panel.append(later);host.append(panel);
+  };panel.append(reload);const later=document.createElement('button');later.className='app-alert-close';later.textContent='×';later.setAttribute('aria-label',pwaText('later'));later.onclick=()=>host.remove();panel.append(later);host.append(panel);
 }
 // Ask the browser to exempt this origin from eviction; otherwise warn in the backup section.
 async function updatePersistNotice(){

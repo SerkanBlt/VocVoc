@@ -598,7 +598,7 @@ async function main(){
   // --- 5: banner dismissed, every tab closed: the update still arrives by itself, the database is untouched
   {
    const {c,p}=await installed();const before=await p.evaluate(()=>({revision:VocVocStorage.adapter.revision,words:Object.keys(VocVocData.getDb().words).length}));
-   await deploy(p,null);await p.waitForFunction(()=>!!pwaRegistration.waiting);await p.waitForSelector('#pwaUpdate');await p.locator('#pwaUpdate .ui-panel-close').click();await p.close();
+   await deploy(p,null);await p.waitForFunction(()=>!!pwaRegistration.waiting);await p.waitForSelector('#pwaUpdate');await p.locator('#pwaUpdate .app-alert-close').click();await p.close();
    // Once the last client is gone the browser activates the waiting worker by itself. Watch that from a page OUTSIDE the scope
    // (it is not controlled, so it does not hold the old worker alive), and only then open the app again, as a user would.
    const watcher=await c.newPage();await watcher.goto(base+'/baseline.html');

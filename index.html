@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.26.0">
+  <meta name="vocvoc-shell" content="1.26.1">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -1435,7 +1435,7 @@ textarea{
   transform:translateX(-50%) translateY(0)!important;
 }
 /* One style for every message that pops up (errors, notices, the new-version banner): a card with a bar at its left edge, the page's own colours, one size of text. */
-.app-alert,#pwaUpdate .ui-panel{
+.app-alert{
   box-sizing:border-box!important;
   border:1px solid var(--border)!important;
   border-left:4px solid var(--primary)!important;
@@ -1449,11 +1449,19 @@ textarea{
 .app-alert{
   pointer-events:auto!important;
   display:flex!important;
-  align-items:flex-start!important;
+  align-items:center!important;
   gap:12px!important;
   width:100%!important;
   padding:12px 14px!important;
   backdrop-filter:blur(14px)!important;
+}
+/* a message may carry one action (the new-version banner has Reload): it sits between the text and the close button, one line high like the text */
+.app-alert .ui-button{
+  flex:none!important;
+  width:auto!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:0 16px!important;
 }
 .app-alert-text{
   flex:1 1 auto!important;
@@ -2195,8 +2203,7 @@ body{
 <style>
 #storageBoot{display:grid;}
 #storageBoot[hidden],#storageBoot button[hidden]{display:none;}
-#pwaUpdate{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:10001;max-width:calc(100vw - 32px);}
-#pwaUpdate .ui-panel{padding:12px 52px 12px 16px;display:flex;align-items:center;gap:12px;}
+#pwaUpdate{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:10001;width:min(680px,calc(100vw - 24px));}
 .settings-hint{margin:6px 0 0;font-size:.82em;line-height:1.35;color:var(--text-muted,inherit);}
 .settings-hint[hidden]{display:none;}
 .show-more-btn{flex:0 0 100%;margin-top:var(--ui-panel-gap,12px);}
