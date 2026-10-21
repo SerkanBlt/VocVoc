@@ -962,8 +962,8 @@
   /* ---------- routing ---------- */
   const TABS=['today','words','study','stats','profile'];                        // the entries of the menu
   const QUIZ_ROUTES=['test','recall','cloze','match'];
-  const ROUTES=[...TABS,'test','recall','cloze','match','flip','premium','help','privacy','terms','about'];
-  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',profile:'profile',test:'study',recall:'study',cloze:'study',match:'study',flip:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
+  const ROUTES=[...TABS,'settings','test','recall','cloze','match','flip','premium','help','privacy','terms','about'];
+  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',profile:'profile',settings:'settings',test:'study',recall:'study',cloze:'study',match:'study',flip:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
   let shown=null,internalNavigations=0,screen=null,container=null,auth=null,root=null;
   const currentRoute=()=>{const route=location.hash.replace(/^#\/?/,'');return ROUTES.includes(route)?route:'today';};
   function navigate(route){
@@ -1254,7 +1254,7 @@
         h('input',{type:'file',id:'v2PhotoInput',accept:'image/*',hidden:true,onchange:event=>chosePhoto(event.target)})),
       h('ul',{class:'v2-rows'},
         row(t('rowPremium'),()=>navigate('premium'),'›'),
-        row(t('rowSettings'),()=>{openModal();},'›')),
+        row(t('rowSettings'),()=>navigate('settings'),'›')),
       h('ul',{class:'v2-rows'},
         row(t('rowHelp'),()=>navigate('help'),'›'),row(t('rowPrivacy'),()=>navigate('privacy'),'›'),row(t('rowTerms'),()=>navigate('terms'),'›'),row(t('rowAbout'),()=>navigate('about'),'›')),
       h('ul',{class:'v2-rows'},
@@ -1305,6 +1305,25 @@
       h('ul',{class:'v2-rows'},[['rowHelp','help'],['rowPrivacy','privacy'],['rowTerms','terms']].map(([key,route])=>
         h('li',{},h('button',{type:'button',class:'v2-row',onclick:()=>navigate(route)},h('span',{text:t(key)}),h('span',{class:'v2-row-end',text:'›'}))))));
   }
+  /* ---------- Settings, a page like the others ---------- */
+  // The settings themselves (the panels with their dropdowns, the backup, archive and reset rows) are the app's own markup: the body of the Settings panel in index.html, with
+  // its ids and handlers. This page shows that same body in place of the old full-screen dialog and gives it back to the dialog when the page is left (the old interface
+  // still opens it as a dialog). A limit that was typed and not left yet is saved when the page is left.
+  function settingsScreen(){
+    const body=document.querySelector('.settings-panel-body');
+    if(typeof syncSettingsPanel==='function')syncSettingsPanel();                    // the panels show what is saved
+    const node=page(heading(t('rowSettings')),body);
+    node.classList.add('v2-settings');
+    return node;
+  }
+  function leaveSettings(){
+    const body=document.querySelector('#v2Screen .settings-panel-body');
+    if(!body)return;
+    if(typeof closeUiDropdowns==='function')closeUiDropdowns();
+    if(typeof closeDailyLimitMenu==='function')closeDailyLimitMenu();
+    if(typeof autoSaveSettings==='function')autoSaveSettings();
+    document.querySelector('#modalOverlay .settings-modal')?.append(body);
+  }
   function build(route){
     switch(route){
       case 'today':return todayScreen();
@@ -1312,6 +1331,7 @@
       case 'test':case 'recall':case 'cloze':case 'match':return quizScreen(route);
       case 'stats':return statsScreen();
       case 'profile':return profileScreen();
+      case 'settings':return settingsScreen();
       case 'premium':return premiumScreen();
       case 'help':case 'privacy':case 'terms':return textPage(route);
       case 'about':return aboutScreen();
@@ -1326,7 +1346,7 @@
   // What the bar says next to VocVoc: the title of the page that is open.
   function pageTitle(route){
     if(route==='help'||route==='privacy'||route==='terms')return (PAGES[route][lang()]||PAGES[route].en).title;
-    return t({today:'today',words:'words',study:'studyTitle',stats:'statsTitle',profile:'profileTitle',premium:'premiumTitle',about:'aboutTitle',test:'studyTest',recall:'studyRecall',cloze:'studyCloze',match:'studyMatch',flip:'studyFlip'}[route]||'today');
+    return t({today:'today',words:'words',study:'studyTitle',stats:'statsTitle',profile:'profileTitle',settings:'rowSettings',premium:'premiumTitle',about:'aboutTitle',test:'studyTest',recall:'studyRecall',cloze:'studyCloze',match:'studyMatch',flip:'studyFlip'}[route]||'today');
   }
   function syncChrome(){
     const route=shown||currentRoute(),current=TAB_OF[route],name=readProfile()?.name||t('guest');
@@ -1354,6 +1374,7 @@
   /* ---------- render ---------- */
   function render(moveFocus){
     const route=currentRoute(),was=shown;shown=route;
+    if(was==='settings'&&route!=='settings')leaveSettings();
     stopSpeaking();closeDayWords(false);closePhotoView(false);closeConfirm(false);
     // Leaving the study pages ends what they started: a Test that was left is abandoned, an open Flip is closed.
     if(!QUIZ_ROUTES.includes(route)&&quizSession)quizSession=null;
@@ -1537,7 +1558,7 @@
       h('nav',{class:'v2-drawer-panel'},
         h('div',{class:'v2-drawer-head'},h('span',{class:'v2-brand',text:'VocVoc'}),h('button',{type:'button',class:'v2-drawer-close',onclick:()=>setDrawer(false)},'×')),
         h('ul',{class:'v2-nav-list'},TABS.map(route=>h('li',{},entry(route,route,()=>{setDrawer(false);navigate(route);})))),
-        h('div',{class:'v2-drawer-foot'},entry('settings','rowSettings',()=>{setDrawer(false);openModal();}))));
+        h('div',{class:'v2-drawer-foot'},entry('settings','rowSettings',()=>{setDrawer(false);navigate('settings');}))));
     drawerItems=[...drawer.querySelectorAll('.v2-nav-item')];
     root=h('div',{id:'v2Root',class:'v2-root'},bar,screen,drawer);
     auth=h('div',{id:'v2Auth',class:'v2-auth',role:'dialog','aria-modal':'true','aria-labelledby':'v2AuthTitle'});
@@ -1551,6 +1572,7 @@
     evaluateBadges();
     wordbase?.refresh();
     window.addEventListener('vocvoc-wordbase-changed',refreshDashboard);
+    window.openModal=()=>navigate('settings');                                                                              // Settings is a page here: whatever opens it (the old bar button, a test) comes to it
     window.addEventListener('vocvoc-flipped',()=>{writeActivity(VocVocStats.appendFlip(readActivity()));evaluateBadges();});     // a Flip card was turned over: it counts for the Flip badges
     window.addEventListener('vocvoc-words-added',event=>{
       const detail=event.detail||{},words=detail.words||[];

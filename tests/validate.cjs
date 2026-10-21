@@ -345,6 +345,14 @@ describe('Collapsible Points and Tags sections, the tag panel and the Matching t
     assert(screensJs.includes("{n:badges.filter(badge=>badge.earnedOn).length,m:badges.length}"),'the summary still counts every goal reached');
     assert(/\.v2-tier-dot\{[^}]*background:linear-gradient\(135deg,var\(--badge-from,#2563eb\),#7c3aed\)/.test(css),'the goals reached are gradients ending in purple');
   });
+  it('Settings is a page like the others in the new interface: the route, the menu entry, the profile row and openModal all lead to it; the page shows the app\'s own panels and gives them back to the old dialog',()=>{
+    const css=read('screens.css');
+    assert(screensJs.includes("const ROUTES=[...TABS,'settings',")&&screensJs.includes("settings:'settings',test:'study'")&&screensJs.includes("case 'settings':return settingsScreen();")&&screensJs.includes("settings:'rowSettings',premium:'premiumTitle'"),'a route with a title and a menu entry');
+    assert(screensJs.includes("function settingsScreen(){")&&screensJs.includes("const body=document.querySelector('.settings-panel-body');")&&screensJs.includes("node.classList.add('v2-settings');")&&screensJs.includes('function leaveSettings(){')&&screensJs.includes("document.querySelector('#modalOverlay .settings-modal')?.append(body);")&&screensJs.includes("if(was==='settings'&&route!=='settings')leaveSettings();"),'the same panels are shown in the page and given back');
+    assert(screensJs.includes("row(t('rowSettings'),()=>navigate('settings'),'›')")&&screensJs.includes("entry('settings','rowSettings',()=>{setDrawer(false);navigate('settings');})")&&screensJs.includes("window.openModal=()=>navigate('settings');")&&!screensJs.includes('openModal();}'),'every way in leads to the page');
+    assert(html.includes('function syncSettingsPanel(){')&&html.includes('requestAnimationFrame(syncSettingsPanel);')&&html.includes('input.closest("#v2Screen")'),'the dialog and the page fill the panels the same way');
+    assert(/\.v2-settings \.settings-panel-body\{flex:none!important;overflow:visible!important/.test(css),'the panels scroll with the page');
+  });
   it('Add New Words throws every word it added out of a circle, one every second, in a big badge, in a random direction and in slow motion; the words stay on screen (inside it, clear of each other); the only way out is the button at the bottom; a word let go in the circle is replaced while the words are still coming; once every word is out the circle says New Word; reduced motion has none',()=>{
     const css=read('screens.css');
     const saved=html.indexOf('await VocVocData.addWordBatch(words,{dailyCount:words.length});'),announced=html.indexOf('window.dispatchEvent(new CustomEvent("vocvoc-words-added",{detail:{words:words.map(data=>data.word),more,replace}}));');

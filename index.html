@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.24.2">
+  <meta name="vocvoc-shell" content="1.25.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -3551,7 +3551,7 @@ function syncDailyLimitLocks(){
 window.addEventListener("vocvoc-plan-changed",()=>{
   syncDailyLimitLocks();
   const input=document.getElementById("dailyLimitInput");
-  if(input&&document.getElementById("modalOverlay")?.style.display==="flex")input.value=shownDailyLimit(VocVocData.getSettings().dailyLimit);   // the plan changed with Settings open
+  if(input&&(document.getElementById("modalOverlay")?.style.display==="flex"||input.closest("#v2Screen")))input.value=shownDailyLimit(VocVocData.getSettings().dailyLimit);   // the plan changed with Settings open (as a dialog or as a page)
 });
 function chooseDailyLimit(value){
   if(dailyOptionLocked(value)){closeDailyLimitMenu();showError(t("dailyLimitPremium"));return;}
@@ -3646,25 +3646,27 @@ document.addEventListener('DOMContentLoaded',async()=>{
   deferStartup(()=>{syncSavedWordsToHistory().catch(reportStorageError);});
   }catch(error){showStorageBootError(error);}  // classified there: storage error or interface error
 });
+// The panels of Settings show what is saved. Used by the dialog (below) and by the Settings page of the new interface (screens.js), which shows the same panels.
+function syncSettingsPanel(){
+  document.getElementById("nativeLanguageSelect").value=getNativeLanguageCode();
+  document.getElementById("targetLanguageSelect").value=getTargetLanguageCode();
+  document.getElementById("appLanguageSelect").value=getAppLanguage();
+  syncUiDropdown("appLanguageDropdown",getAppLanguage());
+  syncUiDropdown("nativeLanguageDropdown",getNativeLanguageCode());
+  syncUiDropdown("targetLanguageDropdown",getTargetLanguageCode());
+  syncUiDropdown("difficultyDropdown",document.getElementById("difficultySelect").value);
+  syncUiDropdown("themeDropdown",document.getElementById("themeSelect").value);
+  syncUiDropdown("fontSizeDropdown",document.getElementById("fontSizeSelect").value);
+  document.getElementById("dailyLimitInput").value=shownDailyLimit(VocVocData.getSettings().dailyLimit||"10");
+  syncDailyLimitLocks();
+  syncDailyLimitSelection();
+  refreshArchiveButtonState();
+}
 function openModal(){
   const overlay=document.getElementById("modalOverlay");
   overlay.style.display="flex";
   // Let the full-screen Settings surface paint first; sync only lightweight state after.
-  requestAnimationFrame(()=>{
-    document.getElementById("nativeLanguageSelect").value=getNativeLanguageCode();
-    document.getElementById("targetLanguageSelect").value=getTargetLanguageCode();
-    document.getElementById("appLanguageSelect").value=getAppLanguage();
-    syncUiDropdown("appLanguageDropdown",getAppLanguage());
-    syncUiDropdown("nativeLanguageDropdown",getNativeLanguageCode());
-    syncUiDropdown("targetLanguageDropdown",getTargetLanguageCode());
-    syncUiDropdown("difficultyDropdown",document.getElementById("difficultySelect").value);
-    syncUiDropdown("themeDropdown",document.getElementById("themeSelect").value);
-    syncUiDropdown("fontSizeDropdown",document.getElementById("fontSizeSelect").value);
-    document.getElementById("dailyLimitInput").value=shownDailyLimit(VocVocData.getSettings().dailyLimit||"10");
-    syncDailyLimitLocks();
-    syncDailyLimitSelection();
-    refreshArchiveButtonState();
-  });
+  requestAnimationFrame(syncSettingsPanel);
 }
 
 function closeModal(){

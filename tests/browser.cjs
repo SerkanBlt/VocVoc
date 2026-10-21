@@ -1576,11 +1576,24 @@ async function main(){
    assert.deepEqual(await p.evaluate(()=>[document.activeElement.className,document.querySelector('.container').inert,document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.getElementById('v2Drawer').inert]),['v2-menu-btn',false,false,false,true]);
    await p.locator('.v2-menu-btn').click();await p.locator('.v2-scrim').click({position:{x:370,y:400}});
    await p.waitForFunction(()=>!document.getElementById('v2Drawer').classList.contains('v2-open'));
-   // Settings opens the app's own Settings, and the menu is closed behind it
+   // Settings is a page like the others (the app's own panels shown in the page, not a dialog), and the menu is closed behind it
    await p.locator('.v2-menu-btn').click();await p.locator('.v2-nav-settings').click();
-   await p.waitForFunction(()=>getComputedStyle(document.getElementById('modalOverlay')).display==='flex');
+   await p.waitForSelector('#v2Screen[data-route="settings"] .settings-panel-body');
    assert.equal(await p.evaluate(()=>document.getElementById('v2Drawer').classList.contains('v2-open')),false);
-   await p.evaluate(()=>closeModal());
+   assert.deepEqual(await p.evaluate(()=>[location.hash,document.querySelector('.v2-bar-title').textContent,document.querySelector('#v2Screen h1').textContent,document.querySelector('.v2-nav-settings').getAttribute('aria-current'),getComputedStyle(document.getElementById('modalOverlay')).display,document.querySelectorAll('#modalOverlay .settings-panel-body').length,document.querySelectorAll('#v2Screen .settings-panel-body > .settings-row').length,document.getElementById('v2Screen').dataset.route]),['#/settings','Ayarlar','Ayarlar','page','none',0,10,'settings']);
+   // the panels are the same as ever and work in the page: a choice is saved at once
+   await p.locator('#themeDropdown .ui-dropdown-trigger').click();await p.locator('#themeDropdown .ui-dropdown-option[data-value="dark"]').click();
+   await p.waitForFunction(()=>VocVocData.getSettings().theme==='dark');
+   // a limit that was typed and not left yet is saved when the page is left, and the panels go back to the old dialog (the old interface still has them)
+   await p.locator('#dailyLimitInput').fill('14');
+   await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"]');
+   await p.waitForFunction(()=>String(VocVocData.getSettings().dailyLimit)==='14');
+   assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('#modalOverlay .settings-panel-body').length,document.querySelectorAll('#v2Screen .settings-panel-body').length]),[1,0]);
+   // whatever opens Settings (the old bar button, the profile page row) comes to the page
+   await p.evaluate(()=>openModal());await p.waitForSelector('#v2Screen[data-route="settings"] .settings-panel-body');
+   await p.evaluate(()=>{location.hash='#/profile';});await p.waitForSelector('#v2Screen[data-route="profile"]');
+   await p.locator('#v2Screen .v2-row',{hasText:'Ayarlar'}).click();await p.waitForSelector('#v2Screen[data-route="settings"] .settings-panel-body');
+   await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"]');
    await c.close();
   }
   {
@@ -1809,12 +1822,13 @@ async function main(){
   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] h1');
   const snapshot=()=>p.evaluate(()=>({bar:document.querySelector('.v2-bar-title').textContent,heading:document.querySelector('#v2Screen h1')?.textContent,menu:[...document.querySelectorAll('.v2-nav-label')].map(node=>node.textContent),menuButton:document.querySelector('.v2-menu-btn').getAttribute('aria-label'),avatar:document.querySelector('.v2-avatar-btn').getAttribute('aria-label'),daily:document.querySelector('.v2-goal .ui-button')?.textContent,pageLang:document.querySelector('.v2-page')?.lang}));
   assert.deepEqual(await snapshot(),{bar:'Bugün',heading:'Bugün',menu:['Bugün','Kelimeler','Çalış','İstatistik','Profil','Ayarlar'],menuButton:'Menü',avatar:'Profil: Ayşe',daily:'Yeni Kelime Ekle',pageLang:'tr'});
-  // through the real Settings dialog: the bar, the menu and the page change at once (the menu and the bar used to stay in the old language)
-  await p.locator('.v2-menu-btn').click();await p.locator('.v2-nav-settings').click();await p.waitForFunction(()=>getComputedStyle(document.getElementById('modalOverlay')).display==='flex');
+  // through the real Settings page: the bar, the menu and the page itself (Settings) change at once (the menu and the bar used to stay in the old language)
+  await p.locator('.v2-menu-btn').click();await p.locator('.v2-nav-settings').click();await p.waitForSelector('#v2Screen[data-route="settings"] #appLanguageDropdown');
   await p.locator('#appLanguageDropdown .ui-dropdown-trigger').click();await p.locator('#appLanguageDropdown .ui-dropdown-option[data-value="en"]').click();
-  await p.waitForFunction(()=>document.querySelector('.v2-bar-title').textContent==='Today');
-  assert.deepEqual(await snapshot(),{bar:'Today',heading:'Today',menu:['Today','Words','Study','Stats','Profile','Settings'],menuButton:'Menu',avatar:'Profile: Ayşe',daily:'Add New Words',pageLang:'en'});
-  await p.evaluate(()=>closeModal());
+  await p.waitForFunction(()=>document.querySelector('.v2-bar-title').textContent==='Settings');
+  assert.deepEqual(await snapshot(),{bar:'Settings',heading:'Settings',menu:['Today','Words','Study','Stats','Profile','Settings'],menuButton:'Menu',avatar:'Profile: Ayşe',pageLang:'en'});
+  await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] h1');
+  assert.equal(await p.evaluate(()=>document.querySelector('.v2-goal-add').textContent),'Add New Words');
   // another page: a change made while it is open redraws it in the new language and keeps its place
   await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
   assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Recall','Fill in the blank','Matching','Flip']);
@@ -1873,8 +1887,8 @@ async function main(){
   await p.evaluate(()=>{for(const details of document.querySelectorAll('#historyDetails details.fold'))details.open=true;});
   await check('#historyDetails .word-panel-scroll-body','the word panel');
   await p.evaluate(()=>closeHistoryDetail());
-  await p.evaluate(()=>openModal());await p.waitForFunction(()=>getComputedStyle(document.getElementById('modalOverlay')).display==='flex');
-  await check('#modalOverlay .settings-panel-body','Settings');
+  await p.evaluate(()=>openModal());await p.waitForSelector('#v2Screen[data-route="settings"] .settings-panel-body');
+  await check('#v2Screen','Settings');                                                                     // the page of Settings (its panels scroll with the page)
   assert.equal(await p.evaluate(()=>[document.documentElement,document.body].every(node=>getComputedStyle(node).scrollbarWidth==='none')),true);
   await c.close();
   record('scrollbars: none is drawn on any page, list, dialog or panel of the new interface, and each of them still scrolls');
@@ -2587,7 +2601,7 @@ async function main(){
    assert.match(await p.locator('.app-alert-text').textContent(),/Premium ile açılır/);
    // Premium: nothing is tagged, any limit can be chosen and kept
    await p.evaluate(()=>{showError('');VocVocPlan.set('premium');openModal();});
-   await p.waitForFunction(()=>document.querySelectorAll('.daily-limit-menu .ui-dropdown-option.locked').length===0&&document.getElementById('modalOverlay').style.display==='flex');
+   await p.waitForFunction(()=>document.querySelectorAll('.daily-limit-menu .ui-dropdown-option.locked').length===0&&!!document.querySelector('#v2Screen[data-route="settings"] #dailyLimitInput'));
    await p.evaluate(()=>toggleDailyLimitMenu());await p.locator('.daily-limit-menu .ui-dropdown-option[data-value="100"]').click();
    assert.equal(await p.evaluate(()=>document.getElementById('dailyLimitInput').value),'100');
    await p.evaluate(()=>saveSettings());

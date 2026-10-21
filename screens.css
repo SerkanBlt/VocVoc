@@ -304,6 +304,9 @@ body:has(#v2Orb) .app-alert-layer{z-index:12500!important}
 @keyframes v2-orb-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.v2-orb-host{display:none}}
 
+/* Settings as a page: the app's own panels (name at the left, choice at the right), scrolling with the page instead of in a panel of their own */
+.v2-settings .settings-panel-body{flex:none!important;overflow:visible!important;padding:0 0 max(24px,env(safe-area-inset-bottom))!important}
+
 /* Badges in three tabs */
 .v2-subtabs{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 12px;padding:4px;background:var(--accent-bg);border:1px solid var(--border);border-radius:24px}   /* when the labels do not fit in one row (wider letters, a larger system font) the tabs go to a second row instead of being cut off */
 .v2-subtab{flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 6px;border:0;border-radius:999px;background:transparent;color:var(--text);font:inherit;font-size:.9rem;font-weight:600;white-space:nowrap;cursor:pointer}
