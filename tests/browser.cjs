@@ -2377,13 +2377,27 @@ async function main(){
    const meaningOfHeld=await p.evaluate(word=>VocVocData.getWordByText(word).meaning,pills[0]);
    assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-orb-meaning').textContent,getComputedStyle(document.querySelector('.v2-orb-meaning')).opacity,getComputedStyle(document.querySelector('.v2-orb-hint')).opacity]),[meaningOfHeld,'1','0']);
    assert(meaningOfHeld.length>0,'the word has a meaning');
+   // and the circle says "Ezberimde" in place of "Yeni Kelimeler" while the word is held
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-orb-memo').textContent,getComputedStyle(document.querySelector('.v2-orb-memo')).opacity,getComputedStyle(document.querySelector('.v2-orb-new')).opacity]),['Ezberimde','1','0']);
    await p.mouse.up();await pause(2200);
    assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-orb-meaning')).opacity),'0','the meaning goes when the word is let go');
+   assert.deepEqual(await p.evaluate(()=>[getComputedStyle(document.querySelector('.v2-orb-memo')).opacity,getComputedStyle(document.querySelector('.v2-orb-new')).opacity]),['0','1'],'the circle says New Words again when it is let go');
    const dropped=await boxes();
    assert(Math.hypot(dropped[0].x-held[0].x,dropped[0].y-held[0].y)<4,'it stays where it was let go');
    assert.deepEqual(piled(dropped).filter(pair=>pair.includes(0)),[],'no word is left under the one that was let go');
    assert(dropped.every(box=>box.x-box.w/2>=0&&box.x+box.w/2<=view[0]&&box.y-box.h/2>=0&&box.y+box.h/2<=hintTop),'every word is still inside the screen above the hint');
    assert.equal(await p.locator('#v2Orb:not(.v2-leaving)').count(),1,'carrying a word is not a tap');
+   // held by its ear: a word grabbed near one end sags around that point (it turns), and it turns back to the tilt it landed with when it is let go; grabbed in the middle it does not turn
+   const angleOf=index=>p.evaluate(at=>{const matrix=new DOMMatrix(getComputedStyle(document.querySelectorAll('.v2-fling')[at]).transform);return Math.atan2(matrix.b,matrix.a)*180/Math.PI;},index);
+   const hanging=await boxes(),earIndex=[2,3,4,5,6].find(index=>hanging[index].w>90)??3,ear=hanging[earIndex],landedAngle=await angleOf(earIndex);
+   await p.mouse.move(ear.x-ear.w*.35,ear.y);await p.mouse.down();await pause(1200);
+   const sagged=await angleOf(earIndex);
+   assert(Math.abs(sagged-landedAngle)>6,'grabbed by one end the word sags around that point: '+JSON.stringify([landedAngle,sagged]));
+   await p.mouse.up();await pause(2200);
+   assert(Math.abs(await angleOf(earIndex)-landedAngle)<1.5,'it turns back to the tilt it landed with');
+   await p.mouse.move(ear.x,ear.y);await p.mouse.down();await pause(900);
+   assert(Math.abs(await angleOf(earIndex)-landedAngle)<4,'grabbed in the middle it hardly turns');
+   await p.mouse.up();await pause(500);
    // a word pushed by hand (let go while it is moving) goes on for a little in the direction it was pushed and stays inside the screen; one let go standing still did not move (above)
    const resting=await boxes(),roomOf=box=>box.x<view[0]/2?box.x-box.w/2:view[0]-box.x-box.w/2;
    const pushed=resting.map((box,index)=>[roomOf(box),index]).filter(([,index])=>![0,1,9].includes(index)).sort((a,b)=>b[0]-a[0])[0][1],outward=resting[pushed].x<view[0]/2?-1:1;

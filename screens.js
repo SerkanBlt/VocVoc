@@ -43,7 +43,7 @@
   /* ---------- texts (one table per interface language: tr, en, fr, de, es, it; a missing text falls back to English) ---------- */
   const TEXT={
     tr:{
-      nav:'Ana gezinme',today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistik',profile:'Profil',back:'Geri',menu:'Menü',menuClose:'Menüyü kapat',addedWords:'Eklenen kelimeler',addedTapClose:'Kapatmak için dokun',orbNewWord:'Yeni Kelimeler',photoAdd:'Fotoğraf ekle',photoChange:'Fotoğrafı değiştir',photoRemove:'Fotoğrafı kaldır',photoView:'Profil fotoğrafını büyüt',photoRemoveTitle:'Fotoğraf kaldırılsın mı?',photoRemoveText:'Profil fotoğrafın bu cihazdan silinir. İstersen sonra yeniden ekleyebilirsin.',photoRemoveYes:'Kaldır',photoTitle:'Profil fotoğrafı',photoHelp:'Sürükleyerek yerleştir, iki parmakla veya kaydırıcıyla yakınlaştır. Dairenin içinde kalan kısım kullanılır.',photoZoom:'Yakınlaştır',photoStage:'Fotoğraf alanı: oklarla kaydır, + ve - ile yakınlaştır',photoSave:'Kaydet',photoCancel:'Vazgeç',photoBad:'Bu dosya bir resim olarak açılamadı. En fazla 15 MB bir resim seç.',photoSaveFailed:'Fotoğraf kaydedilemedi: bu cihazda yeterli yer yok.',dayWordsLabel:'{day}, {kind}: {n} kelime. Kelimeleri göster',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} kelime',dayWordsMore:'ve {n} kelime daha',
+      nav:'Ana gezinme',today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistik',profile:'Profil',back:'Geri',menu:'Menü',menuClose:'Menüyü kapat',addedWords:'Eklenen kelimeler',addedTapClose:'Kapatmak için dokun',orbNewWord:'Yeni Kelimeler',orbMemorized:'Ezberimde',photoAdd:'Fotoğraf ekle',photoChange:'Fotoğrafı değiştir',photoRemove:'Fotoğrafı kaldır',photoView:'Profil fotoğrafını büyüt',photoRemoveTitle:'Fotoğraf kaldırılsın mı?',photoRemoveText:'Profil fotoğrafın bu cihazdan silinir. İstersen sonra yeniden ekleyebilirsin.',photoRemoveYes:'Kaldır',photoTitle:'Profil fotoğrafı',photoHelp:'Sürükleyerek yerleştir, iki parmakla veya kaydırıcıyla yakınlaştır. Dairenin içinde kalan kısım kullanılır.',photoZoom:'Yakınlaştır',photoStage:'Fotoğraf alanı: oklarla kaydır, + ve - ile yakınlaştır',photoSave:'Kaydet',photoCancel:'Vazgeç',photoBad:'Bu dosya bir resim olarak açılamadı. En fazla 15 MB bir resim seç.',photoSaveFailed:'Fotoğraf kaydedilemedi: bu cihazda yeterli yer yok.',dayWordsLabel:'{day}, {kind}: {n} kelime. Kelimeleri göster',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} kelime',dayWordsMore:'ve {n} kelime daha',
       authTitle:'VocVoc',authSub:'Kelimelerini cihazında öğren ve tekrar et.',authName:'Görünen ad (isteğe bağlı)',authGoogle:'Google ile devam et (simülasyon)',authGuest:'Misafir olarak devam et',
       authNote:'Simülasyon: gerçek hesap ve sunucu yok. Bilgilerin yalnızca bu cihazda kalır.',demoName:'Demo Kullanıcı',
       studyTitle:'Çalış',studyMatch:'Eşleştirme',studyMatchSub:'{n} aktif kelimeyle 10 tur, her turda 4 eşleme',quizNeedMatch:'Eşleştirme için en az 10 aktif kelime gerekir. Şu an {n} var.',modeMatch:'Eşleştirme',studyTest:'Test',studyTestSub:'{n} aktif kelimeden 10 soru',studyRecall:'Hatırla',studyRecallSub:'{n} ezberlediğin kelimeyi sına',studyFlip:'Flip',studyFlipSub:'Kartları çevirerek tekrar et',studyCloze:'Boşluk Doldurma',studyClozeSub:'{n} kelimenin cümlesinden 10 soru',flipAuto:'Kart değişince kelimeyi otomatik oku',flipAutoLocked:'Otomatik okuma (Premium)',flipMore:'Kelime panelini aç',
@@ -75,7 +75,7 @@
       aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutWords:'Hazır kelimelerin sırası, hermitdave/FrequencyWords sıklık listesinden (CC BY-SA 4.0) yararlanılarak belirlendi.',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
     },
     en:{
-      nav:'Main navigation',today:'Today',words:'Words',study:'Study',stats:'Stats',profile:'Profile',back:'Back',menu:'Menu',menuClose:'Close menu',addedWords:'Added words',addedTapClose:'Tap to close',orbNewWord:'New Words',photoAdd:'Add a photo',photoChange:'Change photo',photoRemove:'Remove photo',photoView:'Enlarge the profile photo',photoRemoveTitle:'Remove the photo?',photoRemoveText:'Your profile photo is deleted from this device. You can add it again later.',photoRemoveYes:'Remove',photoTitle:'Profile photo',photoHelp:'Drag to place it, pinch or use the slider to zoom. The part inside the circle is used.',photoZoom:'Zoom',photoStage:'Photo area: arrow keys move it, + and - zoom',photoSave:'Save',photoCancel:'Cancel',photoBad:'This file could not be opened as a picture. Choose a picture of up to 15 MB.',photoSaveFailed:'The photo could not be saved: there is not enough room on this device.',dayWordsLabel:'{day}, {kind}: {n} words. Show the words',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} words',dayWordsMore:'and {n} more',
+      nav:'Main navigation',today:'Today',words:'Words',study:'Study',stats:'Stats',profile:'Profile',back:'Back',menu:'Menu',menuClose:'Close menu',addedWords:'Added words',addedTapClose:'Tap to close',orbNewWord:'New Words',orbMemorized:'Memorized',photoAdd:'Add a photo',photoChange:'Change photo',photoRemove:'Remove photo',photoView:'Enlarge the profile photo',photoRemoveTitle:'Remove the photo?',photoRemoveText:'Your profile photo is deleted from this device. You can add it again later.',photoRemoveYes:'Remove',photoTitle:'Profile photo',photoHelp:'Drag to place it, pinch or use the slider to zoom. The part inside the circle is used.',photoZoom:'Zoom',photoStage:'Photo area: arrow keys move it, + and - zoom',photoSave:'Save',photoCancel:'Cancel',photoBad:'This file could not be opened as a picture. Choose a picture of up to 15 MB.',photoSaveFailed:'The photo could not be saved: there is not enough room on this device.',dayWordsLabel:'{day}, {kind}: {n} words. Show the words',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} words',dayWordsMore:'and {n} more',
       authTitle:'VocVoc',authSub:'Learn and review your words on your device.',authName:'Display name (optional)',authGoogle:'Continue with Google (simulation)',authGuest:'Continue as guest',
       authNote:'Simulation: there is no real account or server. Your information stays on this device.',demoName:'Demo user',
       studyTitle:'Study',studyMatch:'Matching',studyMatchSub:'10 rounds of 4 pairs from {n} active words',quizNeedMatch:'Matching needs at least 10 active words. You have {n}.',modeMatch:'Matching',studyTest:'Test',studyTestSub:'10 questions from {n} active words',studyRecall:'Recall',studyRecallSub:'Quiz yourself on {n} memorized words',studyFlip:'Flip',studyFlipSub:'Review by flipping cards',studyCloze:'Fill in the blank',studyClozeSub:'10 questions from the sentences of {n} words',flipAuto:'Read the word by itself when the card changes',flipAutoLocked:'Automatic reading (Premium)',flipMore:'Open the word panel',
@@ -107,7 +107,7 @@
       aboutTitle:'About',version:'Version',uiMode:'Interface',uiProto:'New interface (prototype)',aboutWords:'The order of the ready-made words is based on the frequency list hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Sign-in, Premium and payment in this version are simulations: there is no real account, server or payment.'
     },
     fr:{
-      nav:'Navigation principale',today:'Aujourd’hui',words:'Mots',study:'Étudier',stats:'Statistiques',profile:'Profil',back:'Retour',menu:'Menu',menuClose:'Fermer le menu',addedWords:'Mots ajoutés',addedTapClose:'Touchez pour fermer',orbNewWord:'Nouveaux mots',photoAdd:'Ajouter une photo',photoChange:'Changer la photo',photoRemove:'Supprimer la photo',photoView:'Agrandir la photo de profil',photoRemoveTitle:'Supprimer la photo ?',photoRemoveText:'Votre photo de profil est effacée de cet appareil. Vous pourrez la rajouter plus tard.',photoRemoveYes:'Supprimer',photoTitle:'Photo de profil',photoHelp:'Faites glisser pour la placer, pincez ou utilisez le curseur pour zoomer. La partie à l’intérieur du cercle est utilisée.',photoZoom:'Zoom',photoStage:'Zone de la photo : les flèches la déplacent, + et - zooment',photoSave:'Enregistrer',photoCancel:'Annuler',photoBad:'Ce fichier n’a pas pu être ouvert comme image. Choisissez une image de 15 Mo maximum.',photoSaveFailed:'La photo n’a pas pu être enregistrée : il n’y a pas assez de place sur cet appareil.',dayWordsLabel:'{day}, {kind} : {n} mots. Afficher les mots',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} mots',dayWordsMore:'et {n} de plus',
+      nav:'Navigation principale',today:'Aujourd’hui',words:'Mots',study:'Étudier',stats:'Statistiques',profile:'Profil',back:'Retour',menu:'Menu',menuClose:'Fermer le menu',addedWords:'Mots ajoutés',addedTapClose:'Touchez pour fermer',orbNewWord:'Nouveaux mots',orbMemorized:'Mémorisé',photoAdd:'Ajouter une photo',photoChange:'Changer la photo',photoRemove:'Supprimer la photo',photoView:'Agrandir la photo de profil',photoRemoveTitle:'Supprimer la photo ?',photoRemoveText:'Votre photo de profil est effacée de cet appareil. Vous pourrez la rajouter plus tard.',photoRemoveYes:'Supprimer',photoTitle:'Photo de profil',photoHelp:'Faites glisser pour la placer, pincez ou utilisez le curseur pour zoomer. La partie à l’intérieur du cercle est utilisée.',photoZoom:'Zoom',photoStage:'Zone de la photo : les flèches la déplacent, + et - zooment',photoSave:'Enregistrer',photoCancel:'Annuler',photoBad:'Ce fichier n’a pas pu être ouvert comme image. Choisissez une image de 15 Mo maximum.',photoSaveFailed:'La photo n’a pas pu être enregistrée : il n’y a pas assez de place sur cet appareil.',dayWordsLabel:'{day}, {kind} : {n} mots. Afficher les mots',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} mots',dayWordsMore:'et {n} de plus',
       authTitle:'VocVoc',authSub:'Apprenez et révisez vos mots sur votre appareil.',authName:'Nom affiché (facultatif)',authGoogle:'Continuer avec Google (simulation)',authGuest:'Continuer en tant qu’invité',
       authNote:'Simulation : il n’y a ni vrai compte ni serveur. Vos informations restent sur cet appareil.',demoName:'Utilisateur démo',
       studyTitle:'Étudier',studyMatch:'Association',studyMatchSub:'10 manches de 4 paires avec {n} mots actifs',quizNeedMatch:'L’association demande au moins 10 mots actifs. Vous en avez {n}.',modeMatch:'Association',studyTest:'Test',studyTestSub:'10 questions parmi {n} mots actifs',studyRecall:'Réviser',studyRecallSub:'Testez-vous sur {n} mots mémorisés',studyFlip:'Flip',studyFlipSub:'Révisez en retournant des cartes',studyCloze:'Texte à trous',studyClozeSub:'10 questions tirées des phrases de {n} mots',flipAuto:'Lire le mot automatiquement quand la carte change',flipAutoLocked:'Lecture automatique (Premium)',flipMore:'Ouvrir la fiche du mot',
@@ -139,7 +139,7 @@
       aboutTitle:'À propos',version:'Version',uiMode:'Interface',uiProto:'Nouvelle interface (prototype)',aboutWords:'L’ordre des mots prêts à l’emploi s’appuie sur la liste de fréquence hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'La connexion, Premium et le paiement de cette version sont des simulations : il n’y a ni vrai compte, ni serveur, ni paiement.'
     },
     de:{
-      nav:'Hauptnavigation',today:'Heute',words:'Wörter',study:'Lernen',stats:'Statistik',profile:'Profil',back:'Zurück',menu:'Menü',menuClose:'Menü schließen',addedWords:'Hinzugefügte Wörter',addedTapClose:'Zum Schließen tippen',orbNewWord:'Neue Wörter',photoAdd:'Foto hinzufügen',photoChange:'Foto ändern',photoRemove:'Foto entfernen',photoView:'Profilfoto vergrößern',photoRemoveTitle:'Foto entfernen?',photoRemoveText:'Ihr Profilfoto wird von diesem Gerät gelöscht. Sie können es später wieder hinzufügen.',photoRemoveYes:'Entfernen',photoTitle:'Profilfoto',photoHelp:'Zum Platzieren ziehen, zum Zoomen zwei Finger oder den Regler verwenden. Der Teil im Kreis wird verwendet.',photoZoom:'Zoom',photoStage:'Fotobereich: Pfeiltasten verschieben, + und - zoomen',photoSave:'Speichern',photoCancel:'Abbrechen',photoBad:'Diese Datei konnte nicht als Bild geöffnet werden. Wählen Sie ein Bild bis 15 MB.',photoSaveFailed:'Das Foto konnte nicht gespeichert werden: Auf diesem Gerät ist nicht genug Platz.',dayWordsLabel:'{day}, {kind}: {n} Wörter. Wörter anzeigen',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} Wörter',dayWordsMore:'und {n} weitere',
+      nav:'Hauptnavigation',today:'Heute',words:'Wörter',study:'Lernen',stats:'Statistik',profile:'Profil',back:'Zurück',menu:'Menü',menuClose:'Menü schließen',addedWords:'Hinzugefügte Wörter',addedTapClose:'Zum Schließen tippen',orbNewWord:'Neue Wörter',orbMemorized:'Gelernt',photoAdd:'Foto hinzufügen',photoChange:'Foto ändern',photoRemove:'Foto entfernen',photoView:'Profilfoto vergrößern',photoRemoveTitle:'Foto entfernen?',photoRemoveText:'Ihr Profilfoto wird von diesem Gerät gelöscht. Sie können es später wieder hinzufügen.',photoRemoveYes:'Entfernen',photoTitle:'Profilfoto',photoHelp:'Zum Platzieren ziehen, zum Zoomen zwei Finger oder den Regler verwenden. Der Teil im Kreis wird verwendet.',photoZoom:'Zoom',photoStage:'Fotobereich: Pfeiltasten verschieben, + und - zoomen',photoSave:'Speichern',photoCancel:'Abbrechen',photoBad:'Diese Datei konnte nicht als Bild geöffnet werden. Wählen Sie ein Bild bis 15 MB.',photoSaveFailed:'Das Foto konnte nicht gespeichert werden: Auf diesem Gerät ist nicht genug Platz.',dayWordsLabel:'{day}, {kind}: {n} Wörter. Wörter anzeigen',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} Wörter',dayWordsMore:'und {n} weitere',
       authTitle:'VocVoc',authSub:'Lernen und wiederholen Sie Ihre Wörter auf Ihrem Gerät.',authName:'Anzeigename (optional)',authGoogle:'Mit Google fortfahren (Simulation)',authGuest:'Als Gast fortfahren',
       authNote:'Simulation: Es gibt kein echtes Konto und keinen Server. Ihre Daten bleiben auf diesem Gerät.',demoName:'Demo-Nutzer',
       studyTitle:'Lernen',studyMatch:'Zuordnen',studyMatchSub:'10 Runden mit je 4 Paaren aus {n} aktiven Wörtern',quizNeedMatch:'Zuordnen braucht mindestens 10 aktive Wörter. Sie haben {n}.',modeMatch:'Zuordnen',studyTest:'Test',studyTestSub:'10 Fragen aus {n} aktiven Wörtern',studyRecall:'Wiederholen',studyRecallSub:'Testen Sie sich an {n} gelernten Wörtern',studyFlip:'Flip',studyFlipSub:'Mit umgedrehten Karten wiederholen',studyCloze:'Lückentext',studyClozeSub:'10 Fragen aus den Sätzen von {n} Wörtern',flipAuto:'Wort beim Kartenwechsel automatisch vorlesen',flipAutoLocked:'Automatisches Vorlesen (Premium)',flipMore:'Wortfenster öffnen',
@@ -171,7 +171,7 @@
       aboutTitle:'Über',version:'Version',uiMode:'Oberfläche',uiProto:'Neue Oberfläche (Prototyp)',aboutWords:'Die Reihenfolge der fertigen Wörter beruht auf der Häufigkeitsliste hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Anmeldung, Premium und Zahlung in dieser Version sind Simulationen: Es gibt kein echtes Konto, keinen Server und keine Zahlung.'
     },
     es:{
-      nav:'Navegación principal',today:'Hoy',words:'Palabras',study:'Estudiar',stats:'Estadísticas',profile:'Perfil',back:'Atrás',menu:'Menú',menuClose:'Cerrar menú',addedWords:'Palabras añadidas',addedTapClose:'Toca para cerrar',orbNewWord:'Palabras nuevas',photoAdd:'Añadir foto',photoChange:'Cambiar foto',photoRemove:'Quitar foto',photoView:'Ampliar la foto de perfil',photoRemoveTitle:'¿Quitar la foto?',photoRemoveText:'Tu foto de perfil se borra de este dispositivo. Puedes volver a añadirla más tarde.',photoRemoveYes:'Quitar',photoTitle:'Foto de perfil',photoHelp:'Arrastra para colocarla; pellizca o usa el control deslizante para ampliar. Se usa la parte que queda dentro del círculo.',photoZoom:'Zoom',photoStage:'Zona de la foto: las flechas la mueven, + y - amplían',photoSave:'Guardar',photoCancel:'Cancelar',photoBad:'Este archivo no se pudo abrir como imagen. Elige una imagen de hasta 15 MB.',photoSaveFailed:'No se pudo guardar la foto: no hay espacio suficiente en este dispositivo.',dayWordsLabel:'{day}, {kind}: {n} palabras. Mostrar las palabras',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} palabras',dayWordsMore:'y {n} más',
+      nav:'Navegación principal',today:'Hoy',words:'Palabras',study:'Estudiar',stats:'Estadísticas',profile:'Perfil',back:'Atrás',menu:'Menú',menuClose:'Cerrar menú',addedWords:'Palabras añadidas',addedTapClose:'Toca para cerrar',orbNewWord:'Palabras nuevas',orbMemorized:'Memorizado',photoAdd:'Añadir foto',photoChange:'Cambiar foto',photoRemove:'Quitar foto',photoView:'Ampliar la foto de perfil',photoRemoveTitle:'¿Quitar la foto?',photoRemoveText:'Tu foto de perfil se borra de este dispositivo. Puedes volver a añadirla más tarde.',photoRemoveYes:'Quitar',photoTitle:'Foto de perfil',photoHelp:'Arrastra para colocarla; pellizca o usa el control deslizante para ampliar. Se usa la parte que queda dentro del círculo.',photoZoom:'Zoom',photoStage:'Zona de la foto: las flechas la mueven, + y - amplían',photoSave:'Guardar',photoCancel:'Cancelar',photoBad:'Este archivo no se pudo abrir como imagen. Elige una imagen de hasta 15 MB.',photoSaveFailed:'No se pudo guardar la foto: no hay espacio suficiente en este dispositivo.',dayWordsLabel:'{day}, {kind}: {n} palabras. Mostrar las palabras',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} palabras',dayWordsMore:'y {n} más',
       authTitle:'VocVoc',authSub:'Aprende y repasa tus palabras en tu dispositivo.',authName:'Nombre visible (opcional)',authGoogle:'Continuar con Google (simulación)',authGuest:'Continuar como invitado',
       authNote:'Simulación: no hay cuenta ni servidor reales. Tu información se queda en este dispositivo.',demoName:'Usuario de prueba',
       studyTitle:'Estudiar',studyMatch:'Emparejar',studyMatchSub:'10 rondas de 4 parejas con {n} palabras activas',quizNeedMatch:'Emparejar necesita al menos 10 palabras activas. Tienes {n}.',modeMatch:'Emparejar',studyTest:'Test',studyTestSub:'10 preguntas de {n} palabras activas',studyRecall:'Repasar',studyRecallSub:'Ponte a prueba con {n} palabras memorizadas',studyFlip:'Flip',studyFlipSub:'Repasa dando la vuelta a las tarjetas',studyCloze:'Rellenar huecos',studyClozeSub:'10 preguntas con las frases de {n} palabras',flipAuto:'Leer la palabra sola al cambiar de tarjeta',flipAutoLocked:'Lectura automática (Premium)',flipMore:'Abrir el panel de la palabra',
@@ -203,7 +203,7 @@
       aboutTitle:'Acerca de',version:'Versión',uiMode:'Interfaz',uiProto:'Interfaz nueva (prototipo)',aboutWords:'El orden de las palabras listas se basa en la lista de frecuencia hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'El inicio de sesión, Premium y el pago de esta versión son simulaciones: no hay cuenta, servidor ni pago reales.'
     },
     it:{
-      nav:'Navigazione principale',today:'Oggi',words:'Parole',study:'Studia',stats:'Statistiche',profile:'Profilo',back:'Indietro',menu:'Menu',menuClose:'Chiudi il menu',addedWords:'Parole aggiunte',addedTapClose:'Tocca per chiudere',orbNewWord:'Parole nuove',photoAdd:'Aggiungi una foto',photoChange:'Cambia foto',photoRemove:'Rimuovi foto',photoView:'Ingrandisci la foto del profilo',photoRemoveTitle:'Rimuovere la foto?',photoRemoveText:'La tua foto del profilo viene eliminata da questo dispositivo. Potrai aggiungerla di nuovo più tardi.',photoRemoveYes:'Rimuovi',photoTitle:'Foto del profilo',photoHelp:'Trascina per posizionarla, pizzica o usa il cursore per ingrandire. Viene usata la parte dentro il cerchio.',photoZoom:'Zoom',photoStage:'Area della foto: le frecce la spostano, + e - ingrandiscono',photoSave:'Salva',photoCancel:'Annulla',photoBad:'Questo file non si può aprire come immagine. Scegli un’immagine fino a 15 MB.',photoSaveFailed:'Non è stato possibile salvare la foto: su questo dispositivo non c’è abbastanza spazio.',dayWordsLabel:'{day}, {kind}: {n} parole. Mostra le parole',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} parole',dayWordsMore:'e altre {n}',
+      nav:'Navigazione principale',today:'Oggi',words:'Parole',study:'Studia',stats:'Statistiche',profile:'Profilo',back:'Indietro',menu:'Menu',menuClose:'Chiudi il menu',addedWords:'Parole aggiunte',addedTapClose:'Tocca per chiudere',orbNewWord:'Parole nuove',orbMemorized:'Memorizzato',photoAdd:'Aggiungi una foto',photoChange:'Cambia foto',photoRemove:'Rimuovi foto',photoView:'Ingrandisci la foto del profilo',photoRemoveTitle:'Rimuovere la foto?',photoRemoveText:'La tua foto del profilo viene eliminata da questo dispositivo. Potrai aggiungerla di nuovo più tardi.',photoRemoveYes:'Rimuovi',photoTitle:'Foto del profilo',photoHelp:'Trascina per posizionarla, pizzica o usa il cursore per ingrandire. Viene usata la parte dentro il cerchio.',photoZoom:'Zoom',photoStage:'Area della foto: le frecce la spostano, + e - ingrandiscono',photoSave:'Salva',photoCancel:'Annulla',photoBad:'Questo file non si può aprire come immagine. Scegli un’immagine fino a 15 MB.',photoSaveFailed:'Non è stato possibile salvare la foto: su questo dispositivo non c’è abbastanza spazio.',dayWordsLabel:'{day}, {kind}: {n} parole. Mostra le parole',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} parole',dayWordsMore:'e altre {n}',
       authTitle:'VocVoc',authSub:'Impara e ripassa le tue parole sul tuo dispositivo.',authName:'Nome visualizzato (facoltativo)',authGoogle:'Continua con Google (simulazione)',authGuest:'Continua come ospite',
       authNote:'Simulazione: non esistono un account o un server reali. Le tue informazioni restano su questo dispositivo.',demoName:'Utente demo',
       studyTitle:'Studia',studyMatch:'Abbina',studyMatchSub:'10 round da 4 coppie con {n} parole attive',quizNeedMatch:'Abbinare richiede almeno 10 parole attive. Ne hai {n}.',modeMatch:'Abbina',studyTest:'Test',studyTestSub:'10 domande da {n} parole attive',studyRecall:'Ripassa',studyRecallSub:'Mettiti alla prova su {n} parole memorizzate',studyFlip:'Flip',studyFlipSub:'Ripassa girando le carte',studyCloze:'Completa la frase',studyClozeSub:'10 domande dalle frasi di {n} parole',flipAuto:'Leggi la parola da sola quando cambia la carta',flipAutoLocked:'Lettura automatica (Premium)',flipMore:'Apri il pannello della parola',
@@ -525,6 +525,8 @@
   const FLING_EVERY=1000,FLING_FADE=600,FLING_THROW=2600,FLING_LEAVE=450,FLING_GAP=14,FLING_SPACE=8,FLING_EDGE=12,FLING_HINT=72,FLING_APART=50,FLING_TRIES=24,FLING_STEPS=6;
   const FLING_PASSES=6,FLING_EASE=500,FLING_TAP=6,FLING_GONE=400;
   const FLING_COAST=260,FLING_REST=20,FLING_FLICK=150,FLING_SPEED=2400,FLING_TRAIL=100,FLING_IDLE=80;      // a word let go while it moves goes on for a little (ms, px/s)
+  const FLING_GRAVITY=600,FLING_SPRING=14,FLING_TWIST=3,FLING_ACCEL=12000,FLING_SMOOTH=35,FLING_SWING=1.1;  // a word held by one point sags and swings around it (px/s², 1/s², 1/s, px/s², ms, rad)
+  const FLING_SETTLE=40,FLING_SETTLE_DAMP=8;                                                                  // and turns back to the tilt it landed with when it is let go (1/s², 1/s)
   let flingRun=null;
   function stopFling(){
     if(!flingRun)return;
@@ -553,7 +555,7 @@
     return px<py?{x:px*(dx<0?-1:1),y:0}:{x:0,y:py*(dy<0?-1:1)};
   }
   // A landed word is drawn at (px, py), measured from the screen's middle, tilted as it landed; the one being held is a little larger.
-  const place=item=>{item.node.style.transform='translate(calc(-50% + '+item.px.toFixed(1)+'px),calc(-50% + '+item.py.toFixed(1)+'px)) rotate('+item.turn+'deg)'+(flingRun&&flingRun.drag&&flingRun.drag.item===item?' scale(1.06)':'');};
+  const place=item=>{item.node.style.transform='translate(calc(-50% + '+item.px.toFixed(1)+'px),calc(-50% + '+item.py.toFixed(1)+'px)) rotate('+item.rot.toFixed(2)+'deg)'+(flingRun&&flingRun.drag&&flingRun.drag.item===item?' scale(1.06)':'');};
   // Where the landed words want to be: at home. The held word is where the pointer has it. A word whose home lies under the held one gives way, from where it is now,
   // by the little that makes it clear of it (and stays there while the held word is over its home); nothing else moves.
   function wanted(run){
@@ -573,7 +575,7 @@
   // The held word is let go for good: inside the circle it is memorized (when it was let go on purpose), anywhere else it stays where it is.
   function finishDrag(run,onPurpose){
     const drag=run.drag;
-    run.host.classList.remove('v2-holding','v2-over');run.orb.classList.remove('v2-over');drag.item.node.classList.remove('v2-held');
+    run.host.classList.remove('v2-holding','v2-dragging','v2-over');run.orb.classList.remove('v2-over');drag.item.node.classList.remove('v2-held');
     if(onPurpose&&drag.moved&&inCircle(run,drag))memorizeDropped(run,drag.item);else dropWord(run);
   }
   // How fast the pointer was going when it was let go (px/s), from the last 100 ms of its way; nothing when it had stopped.
@@ -600,6 +602,36 @@
     markOver(run,drag);
     if(Math.hypot(drag.vx,drag.vy)<FLING_REST)finishDrag(run,true);
   }
+  // Half of the box a word of this size needs when it is tilted by `degrees`.
+  const tiltBox=(item,degrees)=>{const sin=Math.abs(Math.sin(degrees*Math.PI/180)),cos=Math.abs(Math.cos(degrees*Math.PI/180));return {hx:(item.w*cos+item.h*sin)/2,hy:(item.w*sin+item.h*cos)/2};};
+  // The held word hangs from the point it was grabbed by (the pivot), as if held by its ear: gravity makes it sag around that point, and when the pointer speeds up or
+  // slows down sideways it swings, held back by a spring towards the tilt it landed with and slowed by a little damping. Grabbed in the middle it does not swing.
+  function swing(run,drag,dt){
+    const item=drag.item,seconds=Math.max(dt,4)/1000,base=item.turn*Math.PI/180;
+    const speed=(drag.target.x-drag.pivot.x)/seconds,push=clamp((speed-drag.pv)/seconds,-FLING_ACCEL,FLING_ACCEL);                // the pivot's sideways speed and acceleration
+    drag.pa+=(push-drag.pa)*(1-Math.exp(-dt/FLING_SMOOTH));drag.pv=speed;drag.pivot.x=drag.target.x;drag.pivot.y=drag.target.y;
+    const steps=Math.max(1,Math.ceil(dt/8)),step=seconds/steps;
+    for(let i=0;i<steps;i++){
+      const sin=Math.sin(drag.angle),cos=Math.cos(drag.angle),rx=drag.lx*cos-drag.ly*sin,ry=drag.lx*sin+drag.ly*cos;           // from the pivot to the word's middle
+      const alpha=(rx*FLING_GRAVITY+ry*drag.pa)/drag.inertia-FLING_SPRING*(drag.angle-base)-FLING_TWIST*drag.omega;
+      drag.omega+=alpha*step;drag.angle+=drag.omega*step;
+      if(Math.abs(drag.angle-base)>FLING_SWING){drag.angle=base+Math.sign(drag.angle-base)*FLING_SWING;drag.omega=0;}
+    }
+    item.rot=drag.angle*180/Math.PI;item.omega=drag.omega*180/Math.PI;Object.assign(item,tiltBox(item,item.rot));
+    const sin=Math.sin(drag.angle),cos=Math.cos(drag.angle),area=reach(run.host,item);
+    drag.x=clamp(drag.pivot.x+drag.lx*cos-drag.ly*sin,area.left,area.right);drag.y=clamp(drag.pivot.y+drag.lx*sin+drag.ly*cos,area.top,area.bottom);
+  }
+  // A word that is not held turns back to the tilt it landed with: a spring with a little damping (it overshoots once). Returns true while it is still turning.
+  function relax(item,dt){
+    if(Math.abs(item.rot-item.turn)<.05&&Math.abs(item.omega)<.5){
+      if(item.rot!==item.turn){item.rot=item.turn;item.omega=0;Object.assign(item,tiltBox(item,item.rot));}
+      return false;
+    }
+    const steps=Math.max(1,Math.ceil(dt/8)),step=dt/1000/steps;
+    for(let i=0;i<steps;i++){item.omega+=(-FLING_SETTLE*(item.rot-item.turn)-FLING_SETTLE_DAMP*item.omega)*step;item.rot+=item.omega*step;}
+    Object.assign(item,tiltBox(item,item.rot));
+    return true;
+  }
   function tick(now){
     const run=flingRun;
     if(!run)return;
@@ -607,10 +639,12 @@
     const dt=run.last?Math.min(now-run.last,64):16,ease=1-Math.exp(-dt/FLING_EASE);
     run.last=now;
     coast(run,dt);
+    if(run.drag&&!run.drag.coast){swing(run,run.drag,dt);markOver(run,run.drag);}                                               // the word hangs from the pointer: it may sag into the circle by itself
     let moving=!!run.drag;
     for(const box of wanted(run)){
-      const item=box.item,held=!!run.drag&&run.drag.item===item,x=held?box.x:item.px+(box.x-item.px)*ease,y=held?box.y:item.py+(box.y-item.py)*ease;
+      const item=box.item,held=!!run.drag&&run.drag.item===item,pivoted=held&&!run.drag.coast,x=held?box.x:item.px+(box.x-item.px)*ease,y=held?box.y:item.py+(box.y-item.py)*ease;
       if(Math.abs(box.x-x)>.3||Math.abs(box.y-y)>.3)moving=true;
+      if(!pivoted&&relax(item,dt))moving=true;
       item.px=x;item.py=y;place(item);
     }
     if(moving){if(!run.frame)run.frame=requestAnimationFrame(tick);}else if(!run.frame)run.last=0;
@@ -632,9 +666,9 @@
     }
     run.drag=null;wake(run);
   }
-  // The colours a batch of words comes in (first, second; a gradient to the upper right): all dark enough for white text (4.5:1 or more). Every batch of words that
+  // The colours a batch of words comes in (first, second; a gradient to the upper right): all soft pastels with dark text on them (4.5:1 or more). Every batch of words that
   // arrives gets one of them at random, never the one the batch before had; a word that replaces a memorized one keeps the colours of the word it replaces.
-  const FLING_GRADIENTS=[['#15803d','#6d28d9'],['#c2410c','#6d28d9'],['#1d4ed8','#0f766e'],['#be123c','#4338ca'],['#b45309','#b91c1c'],['#0f766e','#1e40af'],['#be185d','#6d28d9'],['#4d7c0f','#047857'],['#0e7490','#4338ca'],['#a21caf','#1d4ed8']];
+  const FLING_GRADIENTS=[['#bbf7d0','#ddd6fe'],['#fed7aa','#fbcfe8'],['#bfdbfe','#a7f3d0'],['#fecdd3','#c7d2fe'],['#fde68a','#fecaca'],['#99f6e4','#bae6fd'],['#fbcfe8','#ddd6fe'],['#d9f99d','#a7f3d0'],['#a5f3fc','#c7d2fe'],['#f5d0fe','#bfdbfe']];
   const randomGradient=avoid=>{const choices=FLING_GRADIENTS.filter(pair=>pair!==avoid);return choices[Math.floor(Math.random()*choices.length)];};
   // Every word that is still to come out of the circle waits in run.queue (with its colours) and comes a second after the last one (run.pump is the timer of the next). run.busy counts
   // the words that are wanted but have not arrived yet.
@@ -693,18 +727,20 @@
       if(!item||run.leaving)return;
       if(run.drag){if(!run.drag.coast)return;finishDrag(run,false);}                                                          // a word that was still coasting is caught
       event.preventDefault();
-      const at=point(event),meaning=meaningOf(item.word);
-      run.drag={item,id:event.pointerId,grabX:at.x-item.px,grabY:at.y-item.py,from:at,moved:false,x:item.px,y:item.py,coast:false,vx:0,vy:0,trail:[{t:event.timeStamp,x:at.x,y:at.y}]};
+      const at=point(event),meaning=meaningOf(item.word),rad=item.rot*Math.PI/180,gx=item.px-at.x,gy=item.py-at.y;          // gx, gy: from the grab point to the word's middle
+      const lx=gx*Math.cos(rad)+gy*Math.sin(rad),ly=-gx*Math.sin(rad)+gy*Math.cos(rad);                                       // the same in the word's own directions
+      run.drag={item,id:event.pointerId,from:at,moved:false,x:item.px,y:item.py,coast:false,vx:0,vy:0,trail:[{t:event.timeStamp,x:at.x,y:at.y}],
+        pivot:{x:at.x,y:at.y},target:{x:at.x,y:at.y},pv:0,pa:0,lx,ly,angle:rad,omega:item.omega*Math.PI/180,inertia:(item.w*item.w+item.h*item.h)/12+lx*lx+ly*ly};
       try{node.setPointerCapture(event.pointerId);}catch(_){}
-      run.meaning.textContent=meaning;host.classList.toggle('v2-holding',!!meaning);
+      run.meaning.textContent=meaning;host.classList.toggle('v2-holding',!!meaning);host.classList.add('v2-dragging');             // the circle says what letting go in it does
       node.classList.add('v2-held');place(item);wake(run);
     });
     host.addEventListener('pointermove',event=>{
       const drag=run.drag;
       if(!drag||drag.coast||event.pointerId!==drag.id)return;
-      const at=point(event),area=reach(host,drag.item);
+      const at=point(event);
       if(Math.hypot(at.x-drag.from.x,at.y-drag.from.y)>FLING_TAP)drag.moved=true;
-      drag.x=clamp(at.x-drag.grabX,area.left,area.right);drag.y=clamp(at.y-drag.grabY,area.top,area.bottom);
+      drag.target.x=at.x;drag.target.y=at.y;                                                                                  // the pivot goes there; the frame loop swings the word around it
       drag.trail.push({t:event.timeStamp,x:at.x,y:at.y});if(drag.trail.length>12)drag.trail.shift();
       markOver(run,drag);wake(run);
     });
@@ -714,7 +750,7 @@
       const speed=event.type==='pointerup'?flick(drag,event.timeStamp):{x:0,y:0};
       if(Math.hypot(speed.x,speed.y)>=FLING_FLICK){                                                                           // let go while it was moving: it goes on for a little
         drag.coast=true;drag.vx=speed.x;drag.vy=speed.y;
-        host.classList.remove('v2-holding');drag.item.node.classList.remove('v2-held');
+        host.classList.remove('v2-holding','v2-dragging');drag.item.node.classList.remove('v2-held');
         wake(run);return;
       }
       finishDrag(run,event.type==='pointerup');
@@ -744,7 +780,7 @@
         if(!best||lap<best.lap){best={degrees,cx,cy,lap};if(lap===0)break;}
       }
     }
-    const item={node:badge,word,gradient,x:best.cx,y:best.cy,px:best.cx,py:best.cy,hx,hy,turn,landed:false};
+    const item={node:badge,word,gradient,x:best.cx,y:best.cy,px:best.cx,py:best.cy,hx,hy,turn,rot:turn,omega:0,w:badge.offsetWidth,h:badge.offsetHeight,landed:false};
     placed.push(item);
     badge.style.setProperty('--dx',Math.round(best.cx)+'px');badge.style.setProperty('--dy',Math.round(best.cy)+'px');badge.style.setProperty('--rot',turn+'deg');
     badge.style.setProperty('--fit',Math.min(.8,orb.offsetWidth*.78/badge.offsetWidth).toFixed(2));
@@ -759,7 +795,8 @@
   function playAddedWords(words){
     if(!words.length||(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches))return;
     stopFling();
-    const first=randomGradient(null),count=h('span',{class:'v2-orb-count'}),orb=h('div',{class:'v2-orb','aria-hidden':'true'},count);
+    const first=randomGradient(null),count=h('span',{class:'v2-orb-count'}),memo=h('span',{class:'v2-orb-memo',text:t('orbMemorized')});
+    const orb=h('div',{class:'v2-orb','aria-hidden':'true'},count,memo);                                                         // memo: what the circle says while a word is held
     const label=t('orbNewWord').split(' '),lines=label.length>1?[label[0],label.slice(1).join(' ')]:label;                     // "New Words" is written in two lines
     const newWord=h('button',{type:'button',class:'v2-orb-new'},lines.map((line,index)=>[index?' ':null,h('span',{text:line})]));   // in the circle once every word is out: asks for ten more
     const hint=h('button',{type:'button',class:'v2-orb-hint',onclick:dismissFling,text:t('addedTapClose')});                  // the only way out (besides Escape)
