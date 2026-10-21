@@ -447,13 +447,8 @@
     statsCache={db,raw,day,goal,course,value};
     return value;
   }
-  let toastTimer=0;
-  function toast(text){
-    let node=document.getElementById('v2Toast');
-    if(!node){node=h('div',{id:'v2Toast',class:'v2-toast',role:'status'});document.body.append(node);}
-    node.textContent=text;node.classList.add('v2-show');
-    clearTimeout(toastTimer);toastTimer=setTimeout(()=>node.classList.remove('v2-show'),4500);
-  }
+  // The app has one kind of message, in one style (showError in index.html, at the top of the screen, with a close button): the new interface uses it too.
+  function toast(text){showError(text,{type:'info'});}
   // Badges earned since last time are saved with the day they were really earned. The very first look only records what the data already
   // shows (no fanfare for things done long ago); after that every new badge is announced.
   function evaluateBadges(){

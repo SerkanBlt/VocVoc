@@ -353,6 +353,12 @@ describe('Collapsible Points and Tags sections, the tag panel and the Matching t
     assert(html.includes('function syncSettingsPanel(){')&&html.includes('requestAnimationFrame(syncSettingsPanel);')&&html.includes('input.closest("#v2Screen")'),'the dialog and the page fill the panels the same way');
     assert(/\.v2-settings \.settings-panel-body\{flex:none!important;overflow:visible!important/.test(css),'the panels scroll with the page');
   });
+  it('every message that pops up has one style: the new interface has no toast of its own (it uses showError), the card has no error or notice colours and the new-version banner wears the same card',()=>{
+    const css=read('screens.css');
+    assert(screensJs.includes("function toast(text){showError(text,{type:'info'});}")&&!/v2-toast|toastTimer|v2Toast/.test(screensJs+css),'one message function');
+    assert(html.includes('.app-alert,#pwaUpdate .ui-panel{')&&html.includes('border-left:4px solid var(--primary)!important;')&&html.includes('background:var(--card-bg)!important;')&&!html.includes('app-alert-info{')&&!/\.app-alert\{[^}]*--danger/.test(html),'one card, whatever the message says');
+    assert(html.includes('role="'+String.fromCharCode(36)+'{type==="error"?"alert":"status"}"'),'notices are status messages, errors are alerts (for assistive technology only)');
+  });
   it('Add New Words throws every word it added out of a circle, one every second, in a big badge, in a random direction and in slow motion; the words stay on screen (inside it, clear of each other); the only way out is the button at the bottom; a word let go in the circle is replaced while the words are still coming; once every word is out the circle says New Word; reduced motion has none',()=>{
     const css=read('screens.css');
     const saved=html.indexOf('await VocVocData.addWordBatch(words,{dailyCount:words.length});'),announced=html.indexOf('window.dispatchEvent(new CustomEvent("vocvoc-words-added",{detail:{words:words.map(data=>data.word),more,replace}}));');

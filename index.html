@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.25.0">
+  <meta name="vocvoc-shell" content="1.26.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -1434,19 +1434,25 @@ textarea{
   opacity:1!important;
   transform:translateX(-50%) translateY(0)!important;
 }
+/* One style for every message that pops up (errors, notices, the new-version banner): a card with a bar at its left edge, the page's own colours, one size of text. */
+.app-alert,#pwaUpdate .ui-panel{
+  box-sizing:border-box!important;
+  border:1px solid var(--border)!important;
+  border-left:4px solid var(--primary)!important;
+  border-radius:var(--ui-radius)!important;
+  background:var(--card-bg)!important;
+  color:var(--text)!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.18)!important;
+  font-size:.92rem!important;
+  line-height:1.4!important;
+}
 .app-alert{
   pointer-events:auto!important;
-  box-sizing:border-box!important;
   display:flex!important;
   align-items:flex-start!important;
   gap:12px!important;
   width:100%!important;
   padding:12px 14px!important;
-  border:1px solid color-mix(in srgb,var(--danger) 42%,var(--border))!important;
-  border-radius:var(--ui-radius)!important;
-  background:color-mix(in srgb,var(--danger) 8%,var(--card-bg))!important;
-  color:var(--text)!important;
-  box-shadow:0 14px 40px rgba(0,0,0,.18)!important;
   backdrop-filter:blur(14px)!important;
 }
 .app-alert-text{
@@ -1469,7 +1475,6 @@ textarea{
   cursor:pointer!important;
 }
 .app-alert-close:hover{color:var(--text)!important}
-.app-alert.app-alert-info{border-color:color-mix(in srgb,var(--success) 45%,var(--border))!important;background:color-mix(in srgb,var(--success) 9%,var(--card-bg))!important}
 
 #errorArea{
   position:relative!important;
@@ -3719,7 +3724,7 @@ function showError(msg,{type="error"}={}){
 
 
   if(layer){
-    layer.innerHTML=`<div class="app-alert app-alert-${type}" role="alert">
+    layer.innerHTML=`<div class="app-alert app-alert-${type}" role="${type==="error"?"alert":"status"}">
       <span class="app-alert-text">${safe}</span>
       <button type="button" class="app-alert-close" aria-label="${t("alertClose")}" onclick="showError('')">×</button>
     </div>`;

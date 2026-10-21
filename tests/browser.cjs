@@ -1405,7 +1405,7 @@ async function main(){
    await p.keyboard.press('Home');await p.keyboard.press('ArrowLeft');assert.equal(await p.evaluate(()=>document.activeElement.id),'v2BadgeTab-waiting');
    await p.getByRole('tab',{name:/Kazandıkların/}).click();
    // the first look recorded them silently (no announcement), with the days they were really earned
-   assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Toast')?.classList.contains('v2-show')||false,Object.keys(JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges).length,JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded]),[false,8,true]);
+   assert.deepEqual(await p.evaluate(()=>[document.getElementById('appAlertLayer').classList.contains('show'),Object.keys(JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).badges).length,JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded]),[false,8,true]);
    // a badge once earned stays earned when the words behind it are gone
    await p.evaluate(async()=>{for(let i=0;i<12;i++)await VocVocData.setStatus('s'+i,'active');});
    await route(p,'study');await route(p,'today');
@@ -1737,8 +1737,8 @@ async function main(){
    assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-avatar-dot').textContent,document.querySelector('.v2-avatar-dot canvas'),document.querySelector('.v2-avatar-open'),document.querySelectorAll('#v2Screen .ui-button').length]),['A',null,null,0]);
    assert.deepEqual(await photoButtons(),[['Fotoğraf ekle','Fotoğraf ekle','',true]]);
    // bad files are refused with a message, no dialog: not a picture, and too large
-   await choose({type:'image/png',text:'this is not a picture'});await p.waitForFunction(()=>/resim olarak açılamadı/.test(document.getElementById('v2Toast')?.textContent||''));
-   await choose({type:'image/png',size:16*1024*1024});await p.waitForFunction(()=>/resim olarak açılamadı/.test(document.getElementById('v2Toast')?.textContent||''));
+   await choose({type:'image/png',text:'this is not a picture'});await p.waitForFunction(()=>/resim olarak açılamadı/.test(document.querySelector('.app-alert-text')?.textContent||''));
+   await choose({type:'image/png',size:16*1024*1024});await p.waitForFunction(()=>/resim olarak açılamadı/.test(document.querySelector('.app-alert-text')?.textContent||''));
    assert.deepEqual([await p.locator('#v2Crop').count(),await saved()],[0,null]);
    // the dialog: modal, the page behind it is out of reach, the picture covers the round window from the start
    await choose();await p.waitForSelector('#v2Crop');
@@ -2691,7 +2691,7 @@ async function main(){
    const labels=await p.locator('#historyDetails .v2-speak').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('aria-label')));
    assert(labels.length>=3&&labels.every(label=>label==='Sesli oku (Premium)'),JSON.stringify(labels));      // title, an example, an expression: locked on Free
    await p.locator('#historyDetails .v2-speak').first().click();
-   await p.waitForFunction(()=>/Premium/.test(document.getElementById('v2Toast')?.textContent||'')&&document.getElementById('v2Toast').classList.contains('v2-show'));
+   await p.waitForFunction(()=>/Premium/.test(document.querySelector('.app-alert-text')?.textContent||'')&&document.getElementById('appAlertLayer').classList.contains('show'));
    assert.deepEqual(await calls(),[]);                                                                // a free user does not start speech
    await p.evaluate(()=>VocVocPlan.set('premium'));
    assert.equal(await p.locator('#historyDetails .v2-speak').first().getAttribute('aria-label'),'Sesli oku: Bonjour');
@@ -2754,14 +2754,14 @@ async function main(){
    await noFrench.p.evaluate(()=>{localStorage.setItem('VOCVOC_SIM_PLAN','premium');});await noFrench.p.reload();await ready(noFrench.p);
    await noFrench.p.evaluate(()=>toggleHistoryDetail('Bonjour'));await noFrench.p.waitForSelector('#historyDetails.open .v2-speak');
    await noFrench.p.locator('#historyDetails .v2-speak').first().click();
-   await noFrench.p.waitForFunction(()=>document.getElementById('v2Toast')?.textContent==='Bu cihazda Fransızca sesi yok.');
+   await noFrench.p.waitForFunction(()=>document.querySelector('.app-alert-text')?.textContent==='Bu cihazda Fransızca sesi yok.');
    assert.deepEqual((await noFrench.p.evaluate(()=>window.__speech)).filter(call=>call.text),[]);
    await noFrench.c.close();
    const none=await openPage({init:speechMock,initArg:[null]});
    await none.p.evaluate(()=>{localStorage.setItem('VOCVOC_SIM_PLAN','premium');});await none.p.reload();await ready(none.p);
    await none.p.evaluate(()=>toggleHistoryDetail('Bonjour'));await none.p.waitForSelector('#historyDetails.open .v2-speak');
    await none.p.locator('#historyDetails .v2-speak').first().click();
-   await none.p.waitForFunction(()=>document.getElementById('v2Toast')?.textContent==='Bu tarayıcı sesli okumayı desteklemiyor.');
+   await none.p.waitForFunction(()=>document.querySelector('.app-alert-text')?.textContent==='Bu tarayıcı sesli okumayı desteklemiyor.');
    await none.c.close();
   }
   record('read-aloud: locked on Free, the device voice for the word, example, main card and Flip on Premium, the same text pressed again is read slower, faster, slower ..., the button of a card in its header row, stop on leaving, clear messages without a voice');
@@ -2775,7 +2775,7 @@ async function main(){
    const lock=p.locator('#flipOverlay [data-flip-face="front"] .v2-flip-auto');
    // Free: the lock is there but locked; pressing says why and nothing changes
    assert.equal(await lock.getAttribute('aria-pressed'),'false');
-   await lock.click();await p.waitForFunction(()=>/Premium/.test(document.getElementById('v2Toast')?.textContent||''));
+   await lock.click();await p.waitForFunction(()=>/Premium/.test(document.querySelector('.app-alert-text')?.textContent||''));
    assert.equal(await lock.getAttribute('aria-pressed'),'false');
    await p.evaluate(()=>VocVocPlan.set('premium'));
    // where they are: the speaker, the lock to its right on the same line, the three dots at the lower left; round, one tap big
