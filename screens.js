@@ -72,7 +72,7 @@
       packTitle:'Hazır kelimeler',packLevelA1:'Başlangıç (A1)',packProgress:'{n} / {m} kelime eklendi',packLoading:'Paket indiriliyor…',packOffline:'Paket indirilemedi. İnternete bağlanınca yeniden denenir.',
       packNone:'Bu dil çifti için kelime veritabanı henüz yok.',packDone:'Paketteki tüm kelimeleri ekledin.',packLevelA2:'Temel (A2)',packLevelB1:'Orta (B1)',packLevelB2:'Orta üstü (B2)',packLevelC1:'İleri (C1)',packLevelC2:'Uzman (C2)',courseDone:'Bu seviyedeki tüm kelimeleri listene aldın. Yeni Kelime Ekle’ye basınca bir sonraki seviyeye geçmek isteyip istemediğin sorulur.',courseSoon:'Bu seviyenin kelimeleri henüz hazırlanıyor. Ayarlar’dan başka bir seviye seçebilirsin.',
       speakLabel:'Sesli oku: {text}',speakLocked:'Sesli okuma Premium ile açılır.',speakLockedLabel:'Sesli oku (Premium)',speakNoVoice:'Bu cihazda {language} sesi yok.',speakNone:'Bu tarayıcı sesli okumayı desteklemiyor.',speedNormal:'normal',speedSlow:'yavaş',speakSpeed:'{text} ({speed})',
-      aboutTitle:'Hakkında',version:'Sürüm',uiMode:'Arayüz',uiProto:'Yeni arayüz (prototip)',aboutWords:'Hazır kelimelerin sırası, hermitdave/FrequencyWords sıklık listesinden (CC BY-SA 4.0) yararlanılarak belirlendi.',aboutSim:'Bu sürümdeki giriş, Premium ve ödeme ekranları simülasyondur: gerçek hesap, sunucu veya ödeme yoktur.'
+      aboutTitle:'Hakkında',version:'Sürüm',aboutWords:'Hazır kelimelerin sırası, hermitdave/FrequencyWords sıklık listesinden (CC BY-SA 4.0) yararlanılarak belirlendi.',aboutSim:'Bu sürümde Premium ve ödeme ekranları simülasyondur: gerçek ödeme veya sunucu yoktur.',docUpdated:'Son güncelleme',docContents:'Bu sayfada',docDraft:'Taslak',leadHelp:'VocVoc’u kullanmak için kısa bir rehber.',leadPrivacy:'Neyin nerede saklandığını açıklar.',leadTerms:'VocVoc’u kullanırken geçerli kurallar.',aboutData:'Veriler',aboutDataValue:'Yalnızca bu cihazda',aboutCredits:'Kaynaklar'
     },
     en:{
       nav:'Main navigation',today:'Today',words:'Words',study:'Study',stats:'Stats',profile:'Profile',back:'Back',menu:'Menu',menuClose:'Close menu',addedWords:'Added words',addedTapClose:'Tap to close',orbNewWord:'New Words',orbMemorized:'Memorized',photoAdd:'Add a photo',photoChange:'Change photo',photoRemove:'Remove photo',photoView:'Enlarge the profile photo',photoRemoveTitle:'Remove the photo?',photoRemoveText:'Your profile photo is deleted from this device. You can add it again later.',photoRemoveYes:'Remove',photoTitle:'Profile photo',photoHelp:'Drag to place it, pinch or use the slider to zoom. The part inside the circle is used.',photoZoom:'Zoom',photoStage:'Photo area: arrow keys move it, + and - zoom',photoSave:'Save',photoCancel:'Cancel',photoBad:'This file could not be opened as a picture. Choose a picture of up to 15 MB.',photoSaveFailed:'The photo could not be saved: there is not enough room on this device.',dayWordsLabel:'{day}, {kind}: {n} words. Show the words',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} words',dayWordsMore:'and {n} more',
@@ -104,7 +104,7 @@
       packTitle:'Ready-made words',packLevelA1:'Beginner (A1)',packProgress:'{n} / {m} words added',packLoading:'Downloading the pack…',packOffline:'The pack could not be downloaded. It is tried again when you are online.',
       packNone:'There is no word database for this language pair yet.',packDone:'You have added every word of the pack.',packLevelA2:'Elementary (A2)',packLevelB1:'Intermediate (B1)',packLevelB2:'Upper intermediate (B2)',packLevelC1:'Advanced (C1)',packLevelC2:'Proficient (C2)',courseDone:'You have added all the words of this level. Press Add New Words and you will be asked whether to move to the next level.',courseSoon:'The words of this level are still being prepared. You can choose another level in Settings.',
       speakLabel:'Read aloud: {text}',speakLocked:'Read-aloud comes with Premium.',speakLockedLabel:'Read aloud (Premium)',speakNoVoice:'There is no {language} voice on this device.',speakNone:'This browser does not support read-aloud.',speedNormal:'normal',speedSlow:'slow',speakSpeed:'{text} ({speed})',
-      aboutTitle:'About',version:'Version',uiMode:'Interface',uiProto:'New interface (prototype)',aboutWords:'The order of the ready-made words is based on the frequency list hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Sign-in, Premium and payment in this version are simulations: there is no real account, server or payment.'
+      aboutTitle:'About',version:'Version',aboutWords:'The order of the ready-made words is based on the frequency list hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Premium and payment in this version are simulations: there is no real payment or server.',docUpdated:'Last updated',docContents:'On this page',docDraft:'Draft',leadHelp:'A short guide to using VocVoc.',leadPrivacy:'Explains what is stored and where.',leadTerms:'The rules that apply when you use VocVoc.',aboutData:'Your data',aboutDataValue:'Only on this device',aboutCredits:'Credits'
     },
     fr:{
       nav:'Navigation principale',today:'Aujourd’hui',words:'Mots',study:'Étudier',stats:'Statistiques',profile:'Profil',back:'Retour',menu:'Menu',menuClose:'Fermer le menu',addedWords:'Mots ajoutés',addedTapClose:'Touchez pour fermer',orbNewWord:'Nouveaux mots',orbMemorized:'Mémorisé',photoAdd:'Ajouter une photo',photoChange:'Changer la photo',photoRemove:'Supprimer la photo',photoView:'Agrandir la photo de profil',photoRemoveTitle:'Supprimer la photo ?',photoRemoveText:'Votre photo de profil est effacée de cet appareil. Vous pourrez la rajouter plus tard.',photoRemoveYes:'Supprimer',photoTitle:'Photo de profil',photoHelp:'Faites glisser pour la placer, pincez ou utilisez le curseur pour zoomer. La partie à l’intérieur du cercle est utilisée.',photoZoom:'Zoom',photoStage:'Zone de la photo : les flèches la déplacent, + et - zooment',photoSave:'Enregistrer',photoCancel:'Annuler',photoBad:'Ce fichier n’a pas pu être ouvert comme image. Choisissez une image de 15 Mo maximum.',photoSaveFailed:'La photo n’a pas pu être enregistrée : il n’y a pas assez de place sur cet appareil.',dayWordsLabel:'{day}, {kind} : {n} mots. Afficher les mots',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} mots',dayWordsMore:'et {n} de plus',
@@ -136,7 +136,7 @@
       packTitle:'Mots prêts à l’emploi',packLevelA1:'Débutant (A1)',packProgress:'{n} / {m} mots ajoutés',packLoading:'Téléchargement du pack…',packOffline:'Le pack n’a pas pu être téléchargé. Une nouvelle tentative a lieu dès que vous êtes en ligne.',
       packNone:'Il n’y a pas encore de base de mots pour cette paire de langues.',packDone:'Vous avez ajouté tous les mots du pack.',packLevelA2:'Élémentaire (A2)',packLevelB1:'Intermédiaire (B1)',packLevelB2:'Intermédiaire supérieur (B2)',packLevelC1:'Avancé (C1)',packLevelC2:'Maîtrise (C2)',courseDone:'Vous avez ajouté tous les mots de ce niveau. En appuyant sur Ajouter de nouveaux mots, on vous demandera si vous voulez passer au niveau suivant.',courseSoon:'Les mots de ce niveau sont encore en préparation. Vous pouvez choisir un autre niveau dans les Réglages.',
       speakLabel:'Lire à voix haute : {text}',speakLocked:'La lecture à voix haute est réservée à Premium.',speakLockedLabel:'Lire à voix haute (Premium)',speakNoVoice:'Aucune voix {language} sur cet appareil.',speakNone:'Ce navigateur ne prend pas en charge la lecture à voix haute.',speedNormal:'normale',speedSlow:'lente',speakSpeed:'{text} ({speed})',
-      aboutTitle:'À propos',version:'Version',uiMode:'Interface',uiProto:'Nouvelle interface (prototype)',aboutWords:'L’ordre des mots prêts à l’emploi s’appuie sur la liste de fréquence hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'La connexion, Premium et le paiement de cette version sont des simulations : il n’y a ni vrai compte, ni serveur, ni paiement.'
+      aboutTitle:'À propos',version:'Version',aboutWords:'L’ordre des mots prêts à l’emploi s’appuie sur la liste de fréquence hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Premium et le paiement de cette version sont des simulations : il n’y a ni vrai paiement ni serveur.',docUpdated:'Dernière mise à jour',docContents:'Sur cette page',docDraft:'Brouillon',leadHelp:'Un court guide pour utiliser VocVoc.',leadPrivacy:'Explique ce qui est conservé et où.',leadTerms:'Les règles qui s’appliquent à l’utilisation de VocVoc.',aboutData:'Vos données',aboutDataValue:'Uniquement sur cet appareil',aboutCredits:'Crédits'
     },
     de:{
       nav:'Hauptnavigation',today:'Heute',words:'Wörter',study:'Lernen',stats:'Statistik',profile:'Profil',back:'Zurück',menu:'Menü',menuClose:'Menü schließen',addedWords:'Hinzugefügte Wörter',addedTapClose:'Zum Schließen tippen',orbNewWord:'Neue Wörter',orbMemorized:'Gelernt',photoAdd:'Foto hinzufügen',photoChange:'Foto ändern',photoRemove:'Foto entfernen',photoView:'Profilfoto vergrößern',photoRemoveTitle:'Foto entfernen?',photoRemoveText:'Ihr Profilfoto wird von diesem Gerät gelöscht. Sie können es später wieder hinzufügen.',photoRemoveYes:'Entfernen',photoTitle:'Profilfoto',photoHelp:'Zum Platzieren ziehen, zum Zoomen zwei Finger oder den Regler verwenden. Der Teil im Kreis wird verwendet.',photoZoom:'Zoom',photoStage:'Fotobereich: Pfeiltasten verschieben, + und - zoomen',photoSave:'Speichern',photoCancel:'Abbrechen',photoBad:'Diese Datei konnte nicht als Bild geöffnet werden. Wählen Sie ein Bild bis 15 MB.',photoSaveFailed:'Das Foto konnte nicht gespeichert werden: Auf diesem Gerät ist nicht genug Platz.',dayWordsLabel:'{day}, {kind}: {n} Wörter. Wörter anzeigen',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} Wörter',dayWordsMore:'und {n} weitere',
@@ -168,7 +168,7 @@
       packTitle:'Fertige Wörter',packLevelA1:'Anfänger (A1)',packProgress:'{n} / {m} Wörter hinzugefügt',packLoading:'Paket wird heruntergeladen…',packOffline:'Das Paket konnte nicht heruntergeladen werden. Es wird erneut versucht, sobald Sie online sind.',
       packNone:'Für dieses Sprachpaar gibt es noch keine Wortdatenbank.',packDone:'Sie haben alle Wörter des Pakets hinzugefügt.',packLevelA2:'Grundstufe (A2)',packLevelB1:'Mittelstufe (B1)',packLevelB2:'Gehobene Mittelstufe (B2)',packLevelC1:'Fortgeschritten (C1)',packLevelC2:'Experte (C2)',courseDone:'Sie haben alle Wörter dieser Stufe hinzugefügt. Bei „Neue Wörter hinzufügen“ werden Sie gefragt, ob Sie zur nächsten Stufe wechseln möchten.',courseSoon:'Die Wörter dieser Stufe werden noch vorbereitet. Wählen Sie in den Einstellungen eine andere Stufe.',
       speakLabel:'Vorlesen: {text}',speakLocked:'Vorlesen gibt es mit Premium.',speakLockedLabel:'Vorlesen (Premium)',speakNoVoice:'Auf diesem Gerät gibt es keine {language}-Stimme.',speakNone:'Dieser Browser unterstützt kein Vorlesen.',speedNormal:'normal',speedSlow:'langsam',speakSpeed:'{text} ({speed})',
-      aboutTitle:'Über',version:'Version',uiMode:'Oberfläche',uiProto:'Neue Oberfläche (Prototyp)',aboutWords:'Die Reihenfolge der fertigen Wörter beruht auf der Häufigkeitsliste hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Anmeldung, Premium und Zahlung in dieser Version sind Simulationen: Es gibt kein echtes Konto, keinen Server und keine Zahlung.'
+      aboutTitle:'Über',version:'Version',aboutWords:'Die Reihenfolge der fertigen Wörter beruht auf der Häufigkeitsliste hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Premium und Zahlung in dieser Version sind Simulationen: Es gibt keine echte Zahlung und keinen Server.',docUpdated:'Zuletzt aktualisiert',docContents:'Auf dieser Seite',docDraft:'Entwurf',leadHelp:'Ein kurzer Leitfaden zur Nutzung von VocVoc.',leadPrivacy:'Erklärt, was wo gespeichert wird.',leadTerms:'Die Regeln für die Nutzung von VocVoc.',aboutData:'Ihre Daten',aboutDataValue:'Nur auf diesem Gerät',aboutCredits:'Quellen'
     },
     es:{
       nav:'Navegación principal',today:'Hoy',words:'Palabras',study:'Estudiar',stats:'Estadísticas',profile:'Perfil',back:'Atrás',menu:'Menú',menuClose:'Cerrar menú',addedWords:'Palabras añadidas',addedTapClose:'Toca para cerrar',orbNewWord:'Palabras nuevas',orbMemorized:'Memorizado',photoAdd:'Añadir foto',photoChange:'Cambiar foto',photoRemove:'Quitar foto',photoView:'Ampliar la foto de perfil',photoRemoveTitle:'¿Quitar la foto?',photoRemoveText:'Tu foto de perfil se borra de este dispositivo. Puedes volver a añadirla más tarde.',photoRemoveYes:'Quitar',photoTitle:'Foto de perfil',photoHelp:'Arrastra para colocarla; pellizca o usa el control deslizante para ampliar. Se usa la parte que queda dentro del círculo.',photoZoom:'Zoom',photoStage:'Zona de la foto: las flechas la mueven, + y - amplían',photoSave:'Guardar',photoCancel:'Cancelar',photoBad:'Este archivo no se pudo abrir como imagen. Elige una imagen de hasta 15 MB.',photoSaveFailed:'No se pudo guardar la foto: no hay espacio suficiente en este dispositivo.',dayWordsLabel:'{day}, {kind}: {n} palabras. Mostrar las palabras',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} palabras',dayWordsMore:'y {n} más',
@@ -200,7 +200,7 @@
       packTitle:'Palabras listas',packLevelA1:'Principiante (A1)',packProgress:'{n} / {m} palabras añadidas',packLoading:'Descargando el paquete…',packOffline:'No se pudo descargar el paquete. Se vuelve a intentar cuando tengas conexión.',
       packNone:'Todavía no hay base de palabras para este par de idiomas.',packDone:'Has añadido todas las palabras del paquete.',packLevelA2:'Elemental (A2)',packLevelB1:'Intermedio (B1)',packLevelB2:'Intermedio alto (B2)',packLevelC1:'Avanzado (C1)',packLevelC2:'Dominio (C2)',courseDone:'Has añadido todas las palabras de este nivel. Al pulsar Añadir palabras nuevas se te preguntará si quieres pasar al siguiente nivel.',courseSoon:'Las palabras de este nivel aún se están preparando. Puedes elegir otro nivel en Ajustes.',
       speakLabel:'Leer en voz alta: {text}',speakLocked:'La lectura en voz alta llega con Premium.',speakLockedLabel:'Leer en voz alta (Premium)',speakNoVoice:'No hay voz de {language} en este dispositivo.',speakNone:'Este navegador no admite la lectura en voz alta.',speedNormal:'normal',speedSlow:'lenta',speakSpeed:'{text} ({speed})',
-      aboutTitle:'Acerca de',version:'Versión',uiMode:'Interfaz',uiProto:'Interfaz nueva (prototipo)',aboutWords:'El orden de las palabras listas se basa en la lista de frecuencia hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'El inicio de sesión, Premium y el pago de esta versión son simulaciones: no hay cuenta, servidor ni pago reales.'
+      aboutTitle:'Acerca de',version:'Versión',aboutWords:'El orden de las palabras listas se basa en la lista de frecuencia hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Premium y el pago de esta versión son simulaciones: no hay pago ni servidor reales.',docUpdated:'Última actualización',docContents:'En esta página',docDraft:'Borrador',leadHelp:'Una guía breve para usar VocVoc.',leadPrivacy:'Explica qué se guarda y dónde.',leadTerms:'Las normas que se aplican al usar VocVoc.',aboutData:'Tus datos',aboutDataValue:'Solo en este dispositivo',aboutCredits:'Créditos'
     },
     it:{
       nav:'Navigazione principale',today:'Oggi',words:'Parole',study:'Studia',stats:'Statistiche',profile:'Profilo',back:'Indietro',menu:'Menu',menuClose:'Chiudi il menu',addedWords:'Parole aggiunte',addedTapClose:'Tocca per chiudere',orbNewWord:'Parole nuove',orbMemorized:'Memorizzato',photoAdd:'Aggiungi una foto',photoChange:'Cambia foto',photoRemove:'Rimuovi foto',photoView:'Ingrandisci la foto del profilo',photoRemoveTitle:'Rimuovere la foto?',photoRemoveText:'La tua foto del profilo viene eliminata da questo dispositivo. Potrai aggiungerla di nuovo più tardi.',photoRemoveYes:'Rimuovi',photoTitle:'Foto del profilo',photoHelp:'Trascina per posizionarla, pizzica o usa il cursore per ingrandire. Viene usata la parte dentro il cerchio.',photoZoom:'Zoom',photoStage:'Area della foto: le frecce la spostano, + e - ingrandiscono',photoSave:'Salva',photoCancel:'Annulla',photoBad:'Questo file non si può aprire come immagine. Scegli un’immagine fino a 15 MB.',photoSaveFailed:'Non è stato possibile salvare la foto: su questo dispositivo non c’è abbastanza spazio.',dayWordsLabel:'{day}, {kind}: {n} parole. Mostra le parole',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} parole',dayWordsMore:'e altre {n}',
@@ -232,10 +232,11 @@
       packTitle:'Parole già pronte',packLevelA1:'Principiante (A1)',packProgress:'{n} / {m} parole aggiunte',packLoading:'Download del pacchetto…',packOffline:'Non è stato possibile scaricare il pacchetto. Si riprova quando sei online.',
       packNone:'Non c’è ancora un database di parole per questa coppia di lingue.',packDone:'Hai aggiunto tutte le parole del pacchetto.',packLevelA2:'Elementare (A2)',packLevelB1:'Intermedio (B1)',packLevelB2:'Intermedio superiore (B2)',packLevelC1:'Avanzato (C1)',packLevelC2:'Padronanza (C2)',courseDone:'Hai aggiunto tutte le parole di questo livello. Premendo Aggiungi parole nuove ti verrà chiesto se vuoi passare al livello successivo.',courseSoon:'Le parole di questo livello sono ancora in preparazione. Puoi scegliere un altro livello nelle Impostazioni.',
       speakLabel:'Leggi ad alta voce: {text}',speakLocked:'La lettura ad alta voce è inclusa in Premium.',speakLockedLabel:'Leggi ad alta voce (Premium)',speakNoVoice:'Su questo dispositivo non c’è una voce {language}.',speakNone:'Questo browser non supporta la lettura ad alta voce.',speedNormal:'normale',speedSlow:'lenta',speakSpeed:'{text} ({speed})',
-      aboutTitle:'Informazioni',version:'Versione',uiMode:'Interfaccia',uiProto:'Nuova interfaccia (prototipo)',aboutWords:'L’ordine delle parole pronte si basa sull’elenco di frequenza hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Accesso, Premium e pagamento in questa versione sono simulazioni: non esistono un account, un server o un pagamento reali.'
+      aboutTitle:'Informazioni',version:'Versione',aboutWords:'L’ordine delle parole pronte si basa sull’elenco di frequenza hermitdave/FrequencyWords (CC BY-SA 4.0).',aboutSim:'Premium e pagamento in questa versione sono simulazioni: non esistono un pagamento o un server reali.',docUpdated:'Ultimo aggiornamento',docContents:'In questa pagina',docDraft:'Bozza',leadHelp:'Una breve guida per usare VocVoc.',leadPrivacy:'Spiega cosa viene conservato e dove.',leadTerms:'Le regole che valgono quando usi VocVoc.',aboutData:'I tuoi dati',aboutDataValue:'Solo su questo dispositivo',aboutCredits:'Crediti'
     }
   };
   // Long texts. They describe what the app does today and are DRAFTS: contact details, controller name, age limit and a legal review are still missing.
+  const DOCS_UPDATED='2026-10-31';                                              // shown as "Last updated" on Help, Privacy Policy and Terms of Use: change it whenever their texts change
   const PAGES={
     privacy:{
       tr:{title:'Gizlilik Politikası',banner:'Taslak. Yayınlamadan önce iletişim bilgileri, veri sorumlusu, yaş sınırı ve hukuki gözden geçirme eklenmelidir.',sections:[
@@ -411,7 +412,10 @@
     more:'<circle cx="5" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="19" cy="12" r="1.7" fill="currentColor"/>',
     speaker:'<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M18.5 5.5a9 9 0 010 13"/>',
     edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>',
-    trash:'<path d="M3 6h18"/><path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>'
+    trash:'<path d="M3 6h18"/><path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+    shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
+    doc:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/>',
+    help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .5c0 1.5-2.5 2-2.5 3.5"/><path d="M12 17h.01"/>'
   };
   function icon(name){const span=h('span',{class:'v2-icon','aria-hidden':'true'});span.innerHTML='<svg viewBox="0 0 24 24" focusable="false">'+ICONS[name]+'</svg>';return span;}
 
@@ -1292,19 +1296,47 @@
       h('div',{class:'v2-plans'},freeCard,paidCard),
       h('p',{class:'v2-muted',text:t('priceNote')}),h('p',{class:'v2-muted',text:t('simNote')}));
   }
-  function textPage(kind){
-    const content=PAGES[kind][lang()]||PAGES[kind].en;
-    return page(backButton(),heading(content.title),content.banner?h('p',{class:'v2-note',text:content.banner}):null,
-      content.sections.map(section=>[h('h2',{text:section.h}),section.p.map(text=>h('p',{text}))]));
+  // Help, Privacy Policy and Terms of Use share one look: a header (what the page is for, when it was last changed, a Draft tag), the draft notice, and the text.
+  // The legal pages are numbered section cards with a contents list; Help is a list of folding questions (the first is open).
+  const DOC_LOOK={help:{icon:'help',lead:()=>t('leadHelp')},privacy:{icon:'shield',lead:()=>t('leadPrivacy')},terms:{icon:'doc',lead:()=>t('leadTerms')}};
+  function docDate(){try{return new Date(DOCS_UPDATED+'T12:00:00').toLocaleDateString(lang(),{day:'numeric',month:'long',year:'numeric'});}catch(_){return DOCS_UPDATED;}}
+  function jumpToSection(index){
+    const title=document.getElementById('v2doc-h-'+index);if(!title)return;
+    const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    title.closest('section')?.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+    title.focus({preventScroll:true});
   }
+  function textPage(kind){
+    const content=PAGES[kind][lang()]||PAGES[kind].en,look=DOC_LOOK[kind],sections=content.sections,folds=kind==='help';
+    const hero=h('header',{class:'v2-doc-hero'},
+      h('span',{class:'v2-doc-glyph'},icon(look.icon)),
+      h('div',{class:'v2-doc-hero-text'},
+        h('p',{class:'v2-doc-lead',text:look.lead()}),
+        h('p',{class:'v2-doc-meta'},h('span',{text:t('docUpdated')+': '+docDate()}),content.banner?h('span',{class:'v2-doc-chip',text:t('docDraft')}):null)));
+    const toc=!folds&&sections.length>=4
+      ?h('nav',{class:'v2-doc-toc','aria-label':t('docContents')},h('p',{class:'v2-doc-toc-title','aria-hidden':'true',text:t('docContents')}),
+          h('ol',{},sections.map((section,index)=>h('li',{},h('button',{type:'button',onclick:()=>jumpToSection(index)},h('span',{class:'v2-doc-num','aria-hidden':'true',text:String(index+1)}),section.h)))))
+      :null;
+    const body=folds
+      ?h('div',{class:'v2-doc-folds'},sections.map((section,index)=>h('details',{class:'v2-doc-fold',open:index===0},
+          h('summary',{text:section.h}),h('div',{class:'v2-doc-fold-body'},section.p.map(text=>h('p',{text}))))))
+      :sections.map((section,index)=>h('section',{class:'v2-doc-section','aria-labelledby':'v2doc-h-'+index},
+          h('h2',{id:'v2doc-h-'+index,tabindex:'-1'},h('span',{class:'v2-doc-num','aria-hidden':'true',text:String(index+1)}),section.h),
+          section.p.map(text=>h('p',{text}))));
+    return page(backButton(),heading(content.title),hero,content.banner?h('p',{class:'v2-note',text:content.banner}):null,toc,body);
+  }
+  // About: what the app is and which version this is. The other documents are reached from the Profile page, not from here.
   function aboutScreen(){
     const version=document.querySelector('meta[name="vocvoc-shell"]')?.content||'?';
     return page(backButton(),heading(t('aboutTitle')),
-      h('div',{class:'v2-card'},h('p',{},h('strong',{text:'VocVoc'})),h('p',{text:t('version')+': '+version}),h('p',{text:t('uiMode')+': '+t('uiProto')})),
-      h('p',{class:'v2-note',text:t('aboutSim')}),
-      h('p',{class:'v2-note',text:t('aboutWords')}),
-      h('ul',{class:'v2-rows'},[['rowHelp','help'],['rowPrivacy','privacy'],['rowTerms','terms']].map(([key,route])=>
-        h('li',{},h('button',{type:'button',class:'v2-row',onclick:()=>navigate(route)},h('span',{text:t(key)}),h('span',{class:'v2-row-end',text:'›'}))))));
+      h('header',{class:'v2-about-hero'},
+        h('img',{class:'v2-about-logo',src:'./icons/icon-192.png',alt:'',width:'72',height:'72'}),
+        h('p',{class:'v2-about-name',text:'VocVoc'}),h('p',{class:'v2-about-tag',text:t('authSub')})),
+      h('dl',{class:'v2-card v2-facts'},
+        h('div',{},h('dt',{text:t('version')}),h('dd',{text:version})),
+        h('div',{},h('dt',{text:t('aboutData')}),h('dd',{text:t('aboutDataValue')}))),
+      h('section',{class:'v2-card'},h('h2',{text:t('aboutCredits')}),h('p',{text:t('aboutWords')})),
+      h('p',{class:'v2-note',text:t('aboutSim')}));
   }
   /* ---------- Settings, a page like the others ---------- */
   // The settings themselves (the panels with their dropdowns, the backup, archive and reset rows) are the app's own markup: the body of the Settings panel in index.html, with

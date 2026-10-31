@@ -440,6 +440,14 @@ describe('New interface (prototype)',()=>{
     assert(!/google-sim|authGoogle|authGuest|demoName|modeGoogle|modeGuest/.test(screensCode),'no simulated Google or guest sign-in is left');
     assert(/PROFILE_KEY='VOCVOC_PROFILE'/.test(screensCode)&&/validEmail\(value\.email\)/.test(screensCode),'a stored profile counts only with a name and a valid email');
   });
+  it('Help, Privacy Policy, Terms and About are document pages; About does not link to the other three',()=>{
+    const start=screensJs.indexOf('function aboutScreen()'),end=screensJs.indexOf('/* ---------- Settings, a page like the others');
+    assert(start>0&&end>start,'the About page and the marker after it are in the file');
+    const about=screensJs.slice(start,end);
+    assert(about.length>200&&!/navigate\(|rowHelp|rowPrivacy|rowTerms|uiProto/.test(about),'About shows the app, not links to the other documents');
+    assert(/DOCS_UPDATED='\d{4}-\d{2}-\d{2}'/.test(screensJs),'the pages carry the date of their last change');
+    assert(/'aria-label':t\('docContents'\)/.test(screensJs)&&/class:'v2-doc-fold'/.test(screensJs)&&/class:'v2-doc-section'/.test(screensJs));
+  });
   it('the plan rules match the agreed product: Free by default with 40 words from each level and a 20-word daily goal, stats/sentences/speech/unlimited words are Premium, no AI and no key anywhere',()=>{
     const {win,events,storage}=load(),plan=win.VocVocPlan;
     assert.deepEqual([plan.get(),plan.has('stats'),plan.has('badges'),plan.has('freeWords'),plan.has('unlimitedWords')],['free',false,true,true,false]);

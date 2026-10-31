@@ -1294,12 +1294,23 @@ async function main(){
   record('new interface: plan and profile survive a reload, the route comes from the address, and the back button returns to the previous page');
 
   // the text pages say what the app really does, and are marked as drafts
-  for(const [row,heading,expected] of [['Gizlilik Politikası','Gizlilik Politikası',/Kelime veritabanı/],['Kullanım Şartları','Kullanım Şartları',/Google Play/],['Yardım','Yardım',/Ezberimde/],['Hakkında','Hakkında',/Sürüm: \d+\.\d+\.\d+/]]){
+  for(const [row,heading,expected] of [['Gizlilik Politikası','Gizlilik Politikası',/Kelime veritabanı/],['Kullanım Şartları','Kullanım Şartları',/Google Play/],['Yardım','Yardım',/Ezberimde/],['Hakkında','Hakkında',/Sürüm\s*\d+\.\d+\.\d+/]]){
    await page.locator('#v2Screen').getByRole('button',{name:new RegExp(row)}).click();
    assert.equal(await page.locator('#v2Screen h1').textContent(),heading);assert.match(await page.locator('#v2Screen').textContent(),expected);
    if(/Gizlilik|Kullanım/.test(row))assert.match(await page.locator('#v2Screen .v2-note').first().textContent(),/Taslak/);
    await page.goBack();
   }
+  // the pages look like documents: the legal pages are numbered cards with a contents list, Help is a list of folding questions, About does not repeat the other three
+  await page.evaluate(()=>{location.hash='#/privacy';});await page.waitForSelector('#v2Screen[data-route="privacy"] .v2-doc-section');
+  assert.deepEqual(await page.evaluate(()=>[document.querySelectorAll('.v2-doc-section').length,document.querySelectorAll('.v2-doc-section h2').length,document.querySelectorAll('.v2-doc-toc button').length,document.querySelector('.v2-doc-chip')?.textContent,/\d{4}/.test(document.querySelector('.v2-doc-meta').textContent),document.querySelector('.v2-doc-toc').getAttribute('aria-label')]),[5,5,5,'Taslak',true,'Bu sayfada']);
+  await page.locator('.v2-doc-toc button').nth(3).click();await pause(800);
+  assert.deepEqual(await page.evaluate(()=>[document.activeElement.id,document.getElementById('v2doc-h-3').getBoundingClientRect().top<innerHeight]),['v2doc-h-3',true]);
+  await page.evaluate(()=>{location.hash='#/help';});await page.waitForSelector('#v2Screen[data-route="help"] .v2-doc-fold');
+  assert.deepEqual(await page.evaluate(()=>[document.querySelectorAll('.v2-doc-fold').length,[...document.querySelectorAll('.v2-doc-fold')].map(node=>node.open).join(),document.querySelector('.v2-doc-chip'),document.querySelector('.v2-doc-toc')]),[9,'true,false,false,false,false,false,false,false,false',null,null]);
+  await page.locator('.v2-doc-fold summary').nth(1).click();assert.equal(await page.evaluate(()=>document.querySelectorAll('.v2-doc-fold[open]').length),2,'the questions fold open one by one');
+  await page.evaluate(()=>{location.hash='#/about';});await page.waitForSelector('#v2Screen[data-route="about"] .v2-facts');
+  assert.deepEqual(await page.evaluate(()=>[document.querySelectorAll('#v2Screen .v2-row,#v2Screen .v2-rows').length,[...document.querySelectorAll('#v2Screen button')].map(node=>node.textContent),document.querySelector('.v2-about-name').textContent,[...document.querySelectorAll('.v2-facts dt')].map(node=>node.textContent).join(),document.querySelector('.v2-about-logo').naturalWidth>0]),[0,['‹ Geri'],'VocVoc','Sürüm,Veriler',true]);
+  await page.evaluate(()=>{location.hash='#/profile';});await page.waitForSelector('#v2Screen[data-route="profile"] .v2-rows');
   // signing out only asks again; the learning data stays. The Profile page has no way back to the old interface (?ui=v1 still turns the new one off).
   const wordCount=await page.evaluate(()=>VocVocData.getWords().length);
   await page.getByRole('button',{name:/Çıkış yap/}).click();await page.waitForSelector('#v2Auth.v2-open');
@@ -1888,6 +1899,7 @@ async function main(){
    for(const route of ['today','study','stats','profile','premium','help','privacy','terms','about']){
     await p.evaluate(target=>{location.hash='#/'+target;},route);await p.waitForSelector(`#v2Screen[data-route="${route}"] h1`,{state:'attached'});
     leftovers.push(...await p.evaluate(target=>{
+     document.querySelectorAll('#v2Screen details').forEach(node=>{node.open=true;});           // the folds of Help hide their text until opened
      const {TEXT,PAGES}=VocVocScreens,language=document.documentElement.lang,text=document.getElementById('v2Screen').innerText;
      const english=Object.entries(TEXT.en).filter(([key,value])=>value.length>14&&!/\{/.test(value)&&value!==TEXT[language][key]).map(([,value])=>value);
      if(PAGES[target])for(const section of PAGES[target].en.sections)english.push(...section.p.filter(paragraph=>paragraph!==PAGES[target][language].sections[PAGES[target].en.sections.indexOf(section)].p[section.p.indexOf(paragraph)]));
@@ -2936,7 +2948,9 @@ async function main(){
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
    ['#/profile',[['.v2-profile-name'],['.v2-chip'],['.v2-profile-head .v2-muted'],['.v2-row'],['.v2-row-end'],['.v2-row[data-danger]'],['.v2-page > .v2-muted']]],
    ['#/premium',[['.v2-back'],['.v2-plan-free .v2-plan-name'],['.v2-plan-free .v2-plan-amount'],['.v2-plan-free .v2-plan-unit'],['.v2-plan-free .v2-feature-list li'],['.v2-plan-premium .v2-plan-name'],['.v2-plan-premium .v2-plan-amount'],['.v2-plan-premium .v2-plan-unit'],['.v2-plan-premium .v2-plan-sub'],['.v2-plan-premium .v2-plan-caption'],['.v2-plan-premium .v2-feature-list li'],['.v2-plan-premium .v2-plan-ribbon'],['.v2-billing-btn[aria-pressed="true"]'],['.v2-billing-btn[aria-pressed="false"]'],['.v2-plan-premium .v2-billing-tag'],['.v2-plan-premium .v2-plan-btn'],['.v2-page > .v2-muted']]],
-   ['#/privacy',[['.v2-note'],['.v2-page h2'],['.v2-page p:not(.v2-note)']]]];
+   ['#/privacy',[['.v2-note'],['.v2-page h2'],['.v2-page p:not(.v2-note)'],['.v2-doc-lead'],['.v2-doc-meta'],['.v2-doc-chip'],['.v2-doc-toc-title'],['.v2-doc-toc button'],['.v2-doc-num'],['.v2-doc-section p']]],
+   ['#/help',[['.v2-doc-fold summary'],['.v2-doc-fold-body p'],['.v2-doc-lead'],['.v2-doc-meta']]],
+   ['#/about',[['.v2-about-name'],['.v2-about-tag'],['.v2-facts dt'],['.v2-facts dd'],['.v2-card h2'],['.v2-card p'],['.v2-note']]]];
   let measured=0;
   for(const colorScheme of ['light','dark']){
    context=await browser.newContext({viewport:{width:390,height:844},colorScheme});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
