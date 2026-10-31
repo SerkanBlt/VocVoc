@@ -1546,7 +1546,7 @@
   const newWatchId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
   function watchLabel(item){
     if(item.title)return item.title;
-    try{const url=new URL(item.url);const path=url.pathname==='/'?'':url.pathname;return (url.hostname.replace(/^www\./,'')+path+url.search).slice(0,80);}catch(_){return item.url;}
+    try{const url=new URL(item.url);const path=url.pathname==='/'?'':url.pathname;return url.hostname.replace(/^www\./,'')+path+url.search;}catch(_){return item.url;}   // the whole address; a long one is cut with … by the stylesheet
   }
   let watching=null;                                                             // the open panel: {node,list,selected,editing,paint} (or null)
   function closeWatch(restoreFocus=true){
@@ -1602,9 +1602,9 @@
       const label=watchLabel(item),selected=state.selected===item.id;
       return h('li',{class:'v2-watch-item'+(item.done?' v2-watch-done':'')+(selected?' v2-watch-selected':'')},
         h('input',{type:'checkbox',class:'v2-watch-check',checked:item.done,'aria-label':fill(t('watchDoneLabel'),{name:label}),onchange:event=>{item.done=event.target.checked;save();state.focusAfter='check:'+item.id;paint();}}),
-        h('button',{type:'button',class:'v2-watch-main','aria-pressed':String(selected),'data-watch-id':item.id,onclick:()=>{state.selected=selected?null:item.id;state.focusAfter='main:'+item.id;paint();}},
-          h('span',{class:'v2-watch-name',text:label}),
-          item.title?h('span',{class:'v2-watch-url',text:watchLabel({title:'',url:item.url})}):null),
+        // one line: the title, or the address when there is no title; the hover tip (title attribute) always has the whole of it, title and address
+        h('button',{type:'button',class:'v2-watch-main','aria-pressed':String(selected),'data-watch-id':item.id,title:item.title?item.title+'\n'+item.url:item.url,onclick:()=>{state.selected=selected?null:item.id;state.focusAfter='main:'+item.id;paint();}},
+          h('span',{class:'v2-watch-name',text:label})),
         h('button',{type:'button',class:'v2-watch-icon','data-watch-edit':item.id,'aria-label':t('watchEdit')+': '+label,title:t('watchEdit'),onclick:()=>{state.editing=item.id;paint();}},icon('edit')),
         h('button',{type:'button',class:'v2-watch-icon','aria-label':t('watchDelete')+': '+label,title:t('watchDelete'),onclick:()=>{
           const index=state.list.indexOf(item);state.list.splice(index,1);if(state.selected===item.id)state.selected=null;save();

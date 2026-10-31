@@ -2879,6 +2879,11 @@ async function main(){
   await p.locator('#v2WatchUrlIn').fill('https://example.com/video');await p.getByRole('button',{name:'Ekle'}).click();
   assert.deepEqual((await stored()).map(item=>[item.title,item.url,item.done]),[['Podcast','https://example.com/podcast',false],['','https://example.com/video',false]]);
   assert.deepEqual(await p.evaluate(()=>[[...document.querySelectorAll('.v2-watch-name')].map(node=>node.textContent),document.querySelector('.v2-watch-empty').hidden,document.getElementById('v2WatchAddError').textContent,document.activeElement.id]),[['Podcast','example.com/video'],true,'','v2WatchTitleIn']);
+  // one line per link (the title, or the address without a title); the hover tip has the whole of it; a long address is cut with an ellipsis and the row is no taller
+  assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('.v2-watch-url').length,[...document.querySelectorAll('.v2-watch-main')].map(node=>node.title)]),[0,['Podcast\nhttps://example.com/podcast','https://example.com/video']]);
+  await p.locator('#v2WatchUrlIn').fill('https://example.com/'+'long-segment-'.repeat(25));await p.getByRole('button',{name:'Ekle'}).click();
+  assert.deepEqual(await p.evaluate(()=>{const rows=[...document.querySelectorAll('.v2-watch-item')],name=rows[2].querySelector('.v2-watch-name'),style=getComputedStyle(name);return [rows.length,Math.round(rows[2].getBoundingClientRect().height)===Math.round(rows[1].getBoundingClientRect().height),name.scrollWidth>name.clientWidth,style.textOverflow,style.whiteSpace,rows[2].querySelector('.v2-watch-main').title.length>300];}),[3,true,true,'ellipsis','nowrap',true]);
+  await p.locator('.v2-watch-item').nth(2).getByRole('button',{name:/^Sil: /}).click();
   // ticking strikes the name through and is remembered
   await p.getByRole('checkbox',{name:'Tamamlandı: Podcast'}).check();
   assert.deepEqual([(await stored())[0].done,await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-watch-done .v2-watch-name')).textDecorationLine)],[true,'line-through']);
