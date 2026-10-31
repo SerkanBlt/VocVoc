@@ -25,7 +25,11 @@ async function main(){
  let oldUiByDefault=true;
  const oldUiScript=()=>{try{if(localStorage.getItem('VOCVOC_UI')===null)localStorage.setItem('VOCVOC_UI','v1');}catch(_){}};
  chromium.launchPersistentContext=async(...args)=>{const c=await rawPersistent(...args);if(oldUiByDefault)await c.addInitScript(oldUiScript);return c;};
+ // The app adds the default Watch/Listen list (watchlist/default.json) to every browser at start-up. Scenarios that count links start without it (an empty file);
+ // the scenario about the default list turns this off for its own context.
+ let emptyDefaultWatchlist=true;
  browser.newContext=async(...args)=>{const c=await rawNewContext(...args);if(oldUiByDefault)await c.addInitScript(oldUiScript);
+  if(emptyDefaultWatchlist)await c.route('**/watchlist/default.json',route=>route.fulfill({status:200,contentType:'application/json',body:'{"items":[]}'}));
   await c.addInitScript(()=>document.addEventListener('securitypolicyviolation',e=>{if(!window.__cspExpected)console.error('CSP-VIOLATION '+e.violatedDirective+' '+e.blockedURI);},true));
   await c.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>new MutationObserver(()=>{const orb=document.getElementById('v2Orb');if(orb&&!window.__keepOrb&&!orb.classList.contains('v2-leaving'))orb.querySelector('.v2-orb-hint').click();}).observe(document.body,{childList:true})));   // the screen of Add New Words stays until its button is pressed: every scenario but its own presses it at once
   c.on('console',m=>{if(/CSP-VIOLATION|Content Security Policy/i.test(m.text()))cspViolations.push(m.text());});return c;};
@@ -2926,6 +2930,48 @@ async function main(){
   assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.querySelector('[data-v2-focus="watch"] .v2-study-sub').textContent,document.activeElement.getAttribute('data-v2-focus')]),[false,false,'1 bağlantı','watch']);
   record('new interface: the Watch/Listen list sits between Flip and the last tests; web links are added (only http/https), ticked off (struck through), edited, deleted, chosen and opened in a new tab; kept after a reload');
   await c.close();
+ }
+ // ===== New interface: the default Watch/Listen list comes from watchlist/default.json =====
+ {
+  const file=JSON.parse(fs.readFileSync(path.join(root,'watchlist/default.json'),'utf8')),count=file.items.length;
+  const open=async(own)=>{
+   emptyDefaultWatchlist=false;const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();emptyDefaultWatchlist=true;
+   p.on('pageerror',e=>errors.push(e.message));
+   await c.addInitScript(own=>{localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'}));if(own&&!localStorage.getItem('VOCVOC_WATCHLIST_V1'))localStorage.setItem('VOCVOC_WATCHLIST_V1',JSON.stringify(own));},own||null);
+   return {c,p};
+  };
+  const list=p=>p.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_WATCHLIST_V1')||'[]'));
+  {
+   const {c,p}=await open();
+   await p.goto(url+'?ui=v2#/study');await ready(p);await p.waitForFunction(n=>JSON.parse(localStorage.getItem('VOCVOC_WATCHLIST_V1')||'[]').length===n,count);
+   let items=await list(p);
+   assert.deepEqual([items.length,items[0].title,items[0].url,items[0].done,items[count-1].url],[count,file.items[0].title,file.items[0].url,false,file.items[count-1].url],'every link of the file, oldest first, none ticked');
+   await p.waitForFunction(text=>document.querySelector('[data-v2-focus="watch"] .v2-study-sub')?.textContent===text,count+' bağlantı');   // the card shows the count at once
+   // a reload offers nothing twice
+   await p.reload();await ready(p);await pause(500);assert.equal((await list(p)).length,count);
+   // a link the learner deleted does not come back; a link added to the file later comes once
+   await p.locator('[data-v2-focus="watch"]').click();await p.waitForSelector('#v2Watch .v2-watch-item');
+   await p.getByRole('button',{name:/^Sil: /}).first().click();await p.keyboard.press('Escape');await p.waitForSelector('#v2Watch',{state:'detached'});
+   await p.route('**/watchlist/default.json',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({items:[...file.items,{title:'Yeni video',url:'https://www.youtube.com/watch?v=AAAAAAAAAAA'}]})}));
+   await p.reload();await ready(p);await p.waitForFunction(()=>JSON.parse(localStorage.getItem('VOCVOC_WATCHLIST_V1')).some(item=>item.url.endsWith('AAAAAAAAAAA')));
+   items=await list(p);assert.deepEqual([items.length,items.some(item=>item.url===file.items[0].url),items.at(-1).title],[count,false,'Yeni video']);
+   await p.reload();await ready(p);await pause(500);assert.equal((await list(p)).length,count,'the new link came once');
+   // a file that cannot be used changes nothing
+   await p.route('**/watchlist/default.json',route=>route.fulfill({status:200,contentType:'application/json',body:'this is not json'}));
+   await p.reload();await ready(p);await pause(500);assert.equal((await list(p)).length,count);
+   await p.route('**/watchlist/default.json',route=>route.fulfill({status:404,body:'missing'}));
+   await p.reload();await ready(p);await pause(500);assert.equal((await list(p)).length,count);
+   await c.close();
+  }
+  {
+   // the learner already has a list: it stays as it is, ticks included, and the default links come after it
+   const {c,p}=await open([{id:'mine',title:'Benim bağlantım',url:'https://example.com/mine',done:true}]);
+   await p.goto(url+'?ui=v2#/study');await ready(p);await p.waitForFunction(n=>JSON.parse(localStorage.getItem('VOCVOC_WATCHLIST_V1')||'[]').length===n,count+1);
+   const items=await list(p);
+   assert.deepEqual([items[0].id,items[0].title,items[0].done,items[1].url],['mine','Benim bağlantım',true,file.items[0].url]);
+   await c.close();
+  }
+  record('new interface: the default Watch/Listen list is read from watchlist/default.json (oldest first), added once, a deleted link stays deleted, a new line in the file comes once, a broken file changes nothing, the learner\'s own list is kept');
  }
  // ===== New interface: WCAG AA contrast of its screens, light and dark =====
  {

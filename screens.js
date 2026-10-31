@@ -1577,6 +1577,31 @@
     }catch(_){return [];}
   }
   const writeWatch=list=>store.set(WATCH_KEY,JSON.stringify(list));
+  // The default list: watchlist/default.json (a file of its own, built with tools/watchlist-from-csv.js and editable by hand). At start-up the app adds
+  // to the learner's list the links it has not offered this browser before. What was offered is remembered (WATCH_SEEN_KEY), so a link the learner
+  // deleted does not come back, a link added to the file later reaches everyone once, and nothing the learner changed is touched. Offline: tried again next time.
+  const WATCH_DEFAULT_URL='./watchlist/default.json',WATCH_SEEN_KEY='VOCVOC_WATCHLIST_SEEN_V1',WATCH_SEEN_MAX=5000;
+  function readWatchSeen(){try{const value=JSON.parse(store.get(WATCH_SEEN_KEY)||'[]');return Array.isArray(value)?value.filter(url=>typeof url==='string').slice(0,WATCH_SEEN_MAX):[];}catch(_){return [];}}
+  async function addDefaultWatch(){
+    if(typeof navigator!=='undefined'&&navigator.onLine===false)return;
+    let file=null;
+    try{const response=await fetch(WATCH_DEFAULT_URL,{cache:'no-cache'});if(response.ok)file=await response.json();}catch(_){return;}
+    if(!file||!Array.isArray(file.items)||watching)return;                         // not usable, or the list is open on screen (it would overwrite the change): next time
+    const seen=new Set(readWatchSeen()),list=readWatch(),have=new Set(list.map(item=>item.url));
+    let added=0,offered=0;
+    for(const entry of file.items){
+      const url=entry&&normalizeWatchUrl(entry.url);
+      if(!url||seen.has(url))continue;
+      if(list.length>=WATCH_MAX||seen.size>=WATCH_SEEN_MAX)break;                   // no room: the rest is offered when there is
+      seen.add(url);offered++;
+      if(have.has(url))continue;
+      have.add(url);list.push({id:newWatchId(),title:String(entry.title||'').replace(/\s+/g,' ').trim().slice(0,WATCH_TITLE_MAX),url,done:false});added++;
+    }
+    if(!offered)return;
+    if(added)writeWatch(list);
+    store.set(WATCH_SEEN_KEY,JSON.stringify([...seen]));
+    if(added&&shown==='study')render(false);                                        // the count on the card
+  }
   const newWatchId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
   function watchLabel(item){
     if(item.title)return item.title;
@@ -1780,9 +1805,10 @@
       if(shown==='words'||QUIZ_ROUTES.includes(shown)||shown==='flip')return;
       const top=screen.scrollTop;render(false);screen.scrollTop=top;
     });
-    window.addEventListener('online',()=>{if(wordbase?.state.status==='offline')wordbase.refresh();});
+    window.addEventListener('online',()=>{if(wordbase?.state.status==='offline')wordbase.refresh();addDefaultWatch();});
     startSpeech();
     render(false);
+    addDefaultWatch();
     if(!readProfile())openAuth();
   }
   // The app's own start-up (database, migration) finishes first; its boot cover goes away when it is done.

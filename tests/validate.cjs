@@ -420,7 +420,10 @@ describe('New interface (prototype)',()=>{
     assert.equal((screensCode.match(/innerHTML/g)||[]).length,1,'only the icon helper may use innerHTML');
     assert(!/\beval\(|new Function\(/.test(screensCode));
     // the new interface has no network call of its own: the words come through wordbase.js
-    assert.equal((screensCode.match(/\bfetch\(/g)||[]).length,0,'screens.js does not open network connections');
+    // the one network call of this file reads the default Watch/Listen list from this origin (watchlist/default.json); the words come through wordbase.js
+    assert.deepEqual([...screensCode.matchAll(/\bfetch\(([^,)]*)/g)].map(match=>match[1]),['WATCH_DEFAULT_URL'],'screens.js opens no network connection but the one for the default list');
+    assert(/WATCH_DEFAULT_URL='\.\/watchlist\/default\.json'/.test(screensCode),'the default list is a file of this origin');
+    assert(!/XMLHttpRequest|WebSocket|EventSource|sendBeacon/.test(screensCode));
     assert(/body\.v2/.test(screensCss)&&!/^\s*(?:body|html|\.container)\s*\{/m.test(screensCss),'the stylesheet must not restyle the default interface');
   });
   it('the hooks the new interface relies on are in the app: the Test draws into a named host, and it announces drawing and adopted data',()=>{
@@ -453,6 +456,21 @@ describe('New interface (prototype)',()=>{
     const contacts=[];
     for(const kind of ['privacy','help'])for(const language of ['de','en','es','fr','it','tr'])contacts.push(PAGES[kind][language].sections.at(-1).p.join());
     assert.deepEqual([...new Set(contacts)],['serbalta@gmail.com'],'the last section of Help and of the Privacy Policy is the support e-mail in every language');
+  });
+  it('the default Watch/Listen list is a file of its own with usable links, oldest first, no duplicates, and fits the list',()=>{
+    const file=JSON.parse(read('watchlist/default.json')),items=file.items;
+    assert(Array.isArray(items)&&items.length>0,'the default list has links');
+    assert(items.length<=200,'the list holds at most 200 links (the rest could never be added)');
+    const seen=new Set();
+    for(const item of items){
+      const url=new URL(item.url);
+      assert(url.protocol==='https:'||url.protocol==='http:',`only web addresses: ${item.url}`);
+      assert(!seen.has(item.url),`a link twice: ${item.url}`);seen.add(item.url);
+      assert(typeof item.title==='string'&&item.title.trim()&&item.title.length<=120,`a title of 1 to 120 characters: ${item.url}`);
+    }
+    const dates=items.map(item=>item.published).filter(Boolean);
+    assert.deepEqual(dates,[...dates].sort(),'the links are in order, oldest first');
+    assert(!/watchlist\//.test(precacheList().join()),'the default list is read from the network, so it can change without a new version of the app');
   });
   it('the plan rules match the agreed product: Free by default with 40 words from each level and a 20-word daily goal, stats/sentences/speech/unlimited words are Premium, no AI and no key anywhere',()=>{
     const {win,events,storage}=load(),plan=win.VocVocPlan;
