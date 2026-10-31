@@ -527,7 +527,7 @@
   // "New 10 Words" and a press brings ten more (ten by ten).
   // A word that has landed can be held and moved around the screen: its meaning shows at the bottom while it is held, and a word it lies on glides out of its way
   // (slowly, FLING_EASE; nothing else moves), and where it is let go is where it stays (a word pushed by hand, let go while it moves, goes on for a little first). A word let go inside the circle fades out at once and goes to the memorized words (while the words are still coming a new word comes in its place). There is none when the device asks for less motion.
-  const FLING_EVERY=1000,FLING_FADE=600,FLING_THROW=2600,FLING_LEAVE=450,FLING_GAP=14,FLING_SPACE=8,FLING_EDGE=12,FLING_HINT=72,FLING_APART=50,FLING_TRIES=24,FLING_STEPS=6;
+  const FLING_EVERY=1000,FLING_FADE=600,FLING_THROW=2600,FLING_LEAVE=450,FLING_GAP=14,FLING_SPACE=8,FLING_EDGE=12,FLING_HINT=72,FLING_APART=50,FLING_TRIES=24,FLING_STEPS=6,FLING_GRID=10;
   const FLING_PASSES=6,FLING_EASE=500,FLING_TAP=6,FLING_GONE=400;
   const FLING_COAST=260,FLING_REST=20,FLING_FLICK=150,FLING_SPEED=2400,FLING_TRAIL=100,FLING_IDLE=80;      // a word let go while it moves goes on for a little (ms, px/s)
   const FLING_GRAVITY=600,FLING_SPRING=14,FLING_TWIST=3,FLING_ACCEL=12000,FLING_SMOOTH=35,FLING_SWING=1.1;  // a word held by one point sags and swings around it (px/s², 1/s², 1/s, px/s², ms, rad)
@@ -778,12 +778,27 @@
       const degrees=(previous+FLING_APART+Math.random()*(360-2*FLING_APART))%360,radians=degrees*Math.PI/180,dx=Math.sin(radians),dy=-Math.cos(radians);
       const far=Math.min(dx>1e-3?right/dx:dx<-1e-3?left/dx:Infinity,dy>1e-3?bottom/dy:dy<-1e-3?top/dy:Infinity);          // as far as the screen shows all of it
       let near=0;while(near<=far&&!clear(dx*near,dy*near))near+=4;                                                           // as near as it is clear of the circle
-      if(near>far){if(!best)best={degrees,cx:clamp(dx*(radius+hx+hy),left,right),cy:clamp(dy*(radius+hx+hy),top,bottom),lap:Infinity};continue;}
+      if(near>far){
+        if(!best){const cx=clamp(dx*(radius+hx+hy),left,right),cy=clamp(dy*(radius+hx+hy),top,bottom);best={degrees:(Math.atan2(cx,-cy)*180/Math.PI+360)%360,cx,cy,lap:Infinity};}   // the direction it really ends up in once the edges have clamped it
+        continue;
+      }
       for(let step=0;step<FLING_STEPS;step++){
         const distance=near+Math.random()*(far-near),cx=dx*distance,cy=dy*distance;
         const lap=placed.reduce((sum,other)=>sum+overlap({x:cx,y:cy,hx,hy},{x:other.x,y:other.y,hx:other.hx+FLING_SPACE,hy:other.hy+FLING_SPACE}),0);
         if(!best||lap<best.lap){best={degrees,cx,cy,lap};if(lap===0)break;}
       }
+    }
+    // The random tries found no free place (the screen is filling up, or the words are wide): look through the whole screen on a grid before settling for the least overlap,
+    // and keep the direction apart from the last one when a free place allows it.
+    if(best.lap>0){
+      const free=[];
+      for(let cy=top;cy<=bottom;cy+=FLING_GRID)for(let cx=left;cx<=right;cx+=FLING_GRID){
+        if(!clear(cx,cy))continue;
+        const lap=placed.reduce((sum,other)=>sum+overlap({x:cx,y:cy,hx,hy},{x:other.x,y:other.y,hx:other.hx+FLING_SPACE,hy:other.hy+FLING_SPACE}),0);
+        if(lap===0){const degrees=(Math.atan2(cx,-cy)*180/Math.PI+360)%360,turned=Math.abs(degrees-previous)%360;free.push({degrees,cx,cy,lap:0,apart:Math.min(turned,360-turned)>=FLING_APART});}
+      }
+      const pool=free.some(spot=>spot.apart)?free.filter(spot=>spot.apart):free;
+      if(pool.length)best=pool[Math.floor(Math.random()*pool.length)];
     }
     const item={node:badge,word,gradient,x:best.cx,y:best.cy,px:best.cx,py:best.cy,hx,hy,turn,rot:turn,omega:0,w:badge.offsetWidth,h:badge.offsetHeight,landed:false};
     placed.push(item);

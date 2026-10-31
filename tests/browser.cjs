@@ -2376,8 +2376,10 @@ async function main(){
   // every word stays where it landed (inside the screen, clear of the circle and of the other words) and, once the last one has landed, the screen waits for a tap
   {
    // The circle throws the words in random directions and puts each where there is room, so a run with other random numbers can end with two words that touch or with
-   // a word that is not where the checks below look for it: this page gets a fixed series of random numbers, the same on every machine (mulberry32).
-   const {c,p}=await openPage({course:true,init:()=>{window.__keepOrb=true;let seed=20261031;Math.random=()=>{seed=(seed+0x6D2B79F5)|0;let t=Math.imul(seed^(seed>>>15),1|seed);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}});          // the other scenarios of the suite dismiss the circle by themselves (see newContext above)
+   // a word that is not where the checks below look for it: this page gets a fixed series of random numbers, the same on every machine (mulberry32), and the words are set
+   // in a font every machine has with the same letter widths (Arial; Liberation Sans, which Chrome brings to Linux, is metric-compatible), so that the words are as wide
+   // here as on CI and the room they need is the same.
+   const {c,p}=await openPage({course:true,init:()=>{window.__keepOrb=true;document.addEventListener('DOMContentLoaded',()=>{const style=document.createElement('style');style.textContent='.v2-fling,.v2-orb-count,.v2-orb-memo,.v2-orb-new,.v2-orb-hint,.v2-orb-meaning{font-family:Arial,"Liberation Sans",sans-serif!important}';document.head.append(style);});let seed=20261031;Math.random=()=>{seed=(seed+0x6D2B79F5)|0;let t=Math.imul(seed^(seed>>>15),1|seed);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}});          // the other scenarios of the suite dismiss the circle by themselves (see newContext above)
    await p.waitForSelector('.v2-pack-text');
    await p.evaluate(()=>{
     window.__flung=[];
