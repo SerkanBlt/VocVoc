@@ -417,7 +417,7 @@
     doc:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/>',
     help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .5c0 1.5-2.5 2-2.5 3.5"/><path d="M12 17h.01"/>',
     plus:'<path d="M12 5v14"/><path d="M5 12h14"/>',
-    play:'<path d="M8 5.5v13l11-6.5z" fill="currentColor"/>'
+    play:'<path d="M7 4.5v15l12.5-7.5z"/>'
   };
   function icon(name){const span=h('span',{class:'v2-icon','aria-hidden':'true'});span.innerHTML='<svg viewBox="0 0 24 24" focusable="false">'+ICONS[name]+'</svg>';return span;}
 
@@ -1693,7 +1693,7 @@
         h('button',{type:'button',class:'v2-watch-icon','aria-label':t('watchDelete')+': '+label,title:t('watchDelete'),onclick:()=>{
           const index=state.list.indexOf(item);state.list.splice(index,1);save();
           const next=state.list[Math.min(index,state.list.length-1)];state.focusAfter=next?'open:'+next.id:plusButton;paint();}},icon('trash')),
-        h('button',{type:'button',class:'v2-watch-icon v2-watch-play','data-watch-open':item.id,'aria-label':t('watchOpen')+': '+label,title:t('watchOpen'),onclick:()=>openWatchLink(item)},icon('play')));
+        h('button',{type:'button',class:'v2-watch-icon','data-watch-open':item.id,'aria-label':t('watchOpen')+': '+label,title:t('watchOpen'),onclick:()=>openWatchLink(item)},icon('play')));
     };
     function paint(){
       listNode.replaceChildren(...state.list.map(item=>state.editing===item.id?editRow(item):itemRow(item)));

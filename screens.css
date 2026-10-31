@@ -396,9 +396,6 @@ body.v2 .example-item .fr-text .v2-speak,body.v2 .expression-item .fr-text .v2-s
 .v2-watch-icon .v2-icon svg{display:block;width:18px;height:18px}
 .v2-watch-plus{color:var(--text)}
 .v2-watch-plus .v2-icon svg{width:22px;height:22px}
-.v2-watch-play{background:var(--primary);color:var(--bg);width:32px;height:32px;margin-left:2px}
-.v2-watch-play:hover{color:var(--bg);filter:brightness(1.1)}
-.v2-watch-play .v2-icon svg{width:16px;height:16px}
 /* Help, Privacy Policy, Terms of Use */
 .v2-doc-hero{display:flex;align-items:center;gap:14px;padding:16px;margin:0 0 14px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--ui-panel-radius,16px)}
 .v2-doc-glyph{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--primary);color:var(--bg)}
