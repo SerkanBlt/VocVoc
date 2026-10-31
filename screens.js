@@ -244,37 +244,37 @@
         {h:'Cihazında saklananlar',p:['Kelime listen, ezber ve arşiv durumun, ayarların ve (eklediysen) profil fotoğrafın tarayıcının yerel depolamasında (IndexedDB ve localStorage) tutulur ve bize gönderilmez.','Yedeği sen dışa aktarırsın; dosya senin kontrolündedir. Verileri silmek için Ayarlar\'daki "İlerlemeyi sıfırla"yı kullan ya da uygulamanın/tarayıcının verilerini temizle.']},
         {h:'Kelime veritabanı',p:['Kelimeler, uygulamanın kendi sunucusundan indirilen dosyalardan gelir ve cihazında saklanır. Arama kutusuna yazdığın veya dokunduğun kelime hiçbir yere gönderilmez; arama cihazında yapılır.','Dosyaları indirmek, uygulamayı barındıran sunucuya yapılan sıradan bir web isteğidir; bu istekte kelimelerin ya da listen yer almaz.']},
         {h:'Premium (planlanan)',p:['Premium abonelik Google Play üzerinden satın alınır; ödeme bilgilerini biz görmeyiz. Bu bölüm Premium yayınlanmadan önce güncellenecektir. Bu sürümde gerçek ödeme ve sunucu yoktur (simülasyon).']},
-        {h:'İletişim',p:['[destek e-postası eklenecek]']}]},
+        {h:'İletişim',p:['serbalta@gmail.com']}]},
       en:{title:'Privacy Policy',banner:'Draft. Contact details, the data controller, an age limit and a legal review must be added before release.',sections:[
         {h:'In short',p:['VocVoc has no accounts, ads, tracking or analytics. Your words, progress and settings are stored only on this device.']},
         {h:'What stays on your device',p:["Your word list, memorized and archive status, settings and (if you added one) profile photo are kept in the browser's local storage (IndexedDB and localStorage) and are not sent to us.",'You export backups yourself; the file is under your control. To delete your data use "Reset progress" in Settings or clear the app\'s or browser\'s data.']},
         {h:'Word database',p:['The words come from files that the app downloads from its own server and keeps on your device. A word you type in the search box or tap is not sent anywhere: the lookup happens on your device.','Downloading the files is an ordinary web request to the server that hosts the app; it does not include your words or your list.']},
         {h:'Premium (planned)',p:['A Premium subscription is bought through Google Play; we do not see your payment details. This section will be updated before Premium is released. This version has no real payment or server (simulation).']},
-        {h:'Contact',p:['[support e-mail to be added]']}]},
+        {h:'Contact',p:['serbalta@gmail.com']}]},
       fr:{title:'Politique de confidentialité',banner:'Brouillon. Les coordonnées, le responsable du traitement, une limite d’âge et une relecture juridique doivent être ajoutés avant la publication.',sections:[
         {h:'En bref',p:['VocVoc n’a ni comptes, ni publicité, ni suivi, ni analyses. Vos mots, votre progression et vos réglages sont stockés uniquement sur cet appareil.']},
         {h:'Ce qui reste sur votre appareil',p:['Votre liste de mots, l’état mémorisé et archivé, vos réglages et (si vous en avez ajouté une) votre photo de profil sont conservés dans le stockage local du navigateur (IndexedDB et localStorage) et ne nous sont pas envoyés.','Vous exportez vous-même les sauvegardes ; le fichier reste sous votre contrôle. Pour supprimer vos données, utilisez « Réinitialiser la progression » dans les Réglages ou effacez les données de l’application ou du navigateur.']},
         {h:'Base de mots',p:['Les mots viennent de fichiers que l’application télécharge depuis son propre serveur et conserve sur votre appareil. Un mot saisi dans la zone de recherche ou touché n’est envoyé nulle part : la recherche se fait sur votre appareil.','Le téléchargement des fichiers est une requête web ordinaire vers le serveur qui héberge l’application ; elle ne contient ni vos mots ni votre liste.']},
         {h:'Premium (prévu)',p:['L’abonnement Premium s’achète via Google Play ; nous ne voyons pas vos informations de paiement. Cette section sera mise à jour avant la sortie de Premium. Cette version n’a ni vrai paiement ni serveur (simulation).']},
-        {h:'Contact',p:['[adresse e-mail d’assistance à ajouter]']}]},
+        {h:'Contact',p:['serbalta@gmail.com']}]},
       de:{title:'Datenschutzerklärung',banner:'Entwurf. Kontaktdaten, der Verantwortliche, eine Altersgrenze und eine rechtliche Prüfung müssen vor der Veröffentlichung ergänzt werden.',sections:[
         {h:'Kurz gesagt',p:['VocVoc hat keine Konten, keine Werbung, kein Tracking und keine Analysen. Ihre Wörter, Ihr Fortschritt und Ihre Einstellungen werden nur auf diesem Gerät gespeichert.']},
         {h:'Was auf Ihrem Gerät bleibt',p:['Ihre Wortliste, der Status „gelernt“ und „archiviert“, Ihre Einstellungen und (falls hinzugefügt) Ihr Profilfoto liegen im lokalen Speicher des Browsers (IndexedDB und localStorage) und werden nicht an uns gesendet.','Sicherungen exportieren Sie selbst; die Datei liegt in Ihrer Hand. Zum Löschen Ihrer Daten verwenden Sie „Fortschritt zurücksetzen“ in den Einstellungen oder löschen die Daten der App bzw. des Browsers.']},
         {h:'Wortdatenbank',p:['Die Wörter stammen aus Dateien, die die App von ihrem eigenen Server lädt und auf Ihrem Gerät speichert. Ein Wort, das Sie im Suchfeld eingeben oder antippen, wird nirgendwohin gesendet: Die Suche läuft auf Ihrem Gerät.','Das Laden der Dateien ist eine gewöhnliche Webanfrage an den Server, der die App bereitstellt; sie enthält weder Ihre Wörter noch Ihre Liste.']},
         {h:'Premium (geplant)',p:['Ein Premium-Abo wird über Google Play gekauft; Ihre Zahlungsdaten sehen wir nicht. Dieser Abschnitt wird vor der Veröffentlichung von Premium aktualisiert. Diese Version hat keine echte Zahlung und keinen Server (Simulation).']},
-        {h:'Kontakt',p:['[Support-E-Mail wird ergänzt]']}]},
+        {h:'Kontakt',p:['serbalta@gmail.com']}]},
       es:{title:'Política de privacidad',banner:'Borrador. Antes de publicar hay que añadir los datos de contacto, el responsable del tratamiento, un límite de edad y una revisión legal.',sections:[
         {h:'En breve',p:['VocVoc no tiene cuentas, anuncios, seguimiento ni analíticas. Tus palabras, tu progreso y tus ajustes se guardan solo en este dispositivo.']},
         {h:'Lo que se queda en tu dispositivo',p:['Tu lista de palabras, el estado de memorizada y archivada, tus ajustes y (si la añadiste) tu foto de perfil se guardan en el almacenamiento local del navegador (IndexedDB y localStorage) y no se nos envían.','Las copias de seguridad las exportas tú; el archivo queda bajo tu control. Para borrar tus datos usa «Restablecer progreso» en Ajustes o borra los datos de la aplicación o del navegador.']},
         {h:'Base de palabras',p:['Las palabras vienen de archivos que la aplicación descarga de su propio servidor y guarda en tu dispositivo. Una palabra que escribes en el cuadro de búsqueda o que tocas no se envía a ningún sitio: la búsqueda se hace en tu dispositivo.','Descargar los archivos es una petición web normal al servidor que aloja la aplicación; no incluye tus palabras ni tu lista.']},
         {h:'Premium (previsto)',p:['La suscripción Premium se compra a través de Google Play; no vemos tus datos de pago. Esta sección se actualizará antes de lanzar Premium. Esta versión no tiene pago real ni servidor (simulación).']},
-        {h:'Contacto',p:['[se añadirá el correo de soporte]']}]},
+        {h:'Contacto',p:['serbalta@gmail.com']}]},
       it:{title:'Informativa sulla privacy',banner:'Bozza. Prima della pubblicazione vanno aggiunti i recapiti, il titolare del trattamento, un limite di età e una revisione legale.',sections:[
         {h:'In breve',p:['VocVoc non ha account, pubblicità, tracciamento né analisi. Le tue parole, i tuoi progressi e le tue impostazioni sono salvati solo su questo dispositivo.']},
         {h:'Cosa resta sul tuo dispositivo',p:['La tua lista di parole, lo stato memorizzata e archiviata, le impostazioni e (se l’hai aggiunta) la foto del profilo sono conservati nella memoria locale del browser (IndexedDB e localStorage) e non ci vengono inviati.','I backup li esporti tu; il file resta sotto il tuo controllo. Per cancellare i tuoi dati usa «Azzera progressi» nelle Impostazioni oppure cancella i dati dell’app o del browser.']},
         {h:'Database di parole',p:['Le parole provengono da file che l’app scarica dal proprio server e conserva sul tuo dispositivo. Una parola che digiti nella casella di ricerca o che tocchi non viene inviata da nessuna parte: la ricerca avviene sul tuo dispositivo.','Scaricare i file è una normale richiesta web al server che ospita l’app; non include le tue parole né la tua lista.']},
         {h:'Premium (previsto)',p:['L’abbonamento Premium si acquista tramite Google Play; non vediamo i tuoi dati di pagamento. Questa sezione sarà aggiornata prima del rilascio di Premium. Questa versione non ha pagamenti reali né server (simulazione).']},
-        {h:'Contatti',p:['[l’e-mail di supporto sarà aggiunta]']}]}
+        {h:'Contatti',p:['serbalta@gmail.com']}]}
     },
     terms:{
       tr:{title:'Kullanım Şartları',banner:'Taslak. Yayınlamadan önce hukuki gözden geçirme gerekir.',sections:[
@@ -324,7 +324,7 @@
         {h:'İnternetsiz kullanım',p:['Kayıtlı kelimeler, Test, Hatırla ve Flip internetsiz çalışır. Kelime veritabanının bir bölümü ilk kullanıldığında indirilir; indirilen bölümler internetsiz de kullanılır, henüz indirilmemiş bölümler için internet gerekir.']},
         {h:'Güncelleme uyarısı',p:['"Yeni sürüm hazır" bandında Yenile\'ye basınca "önce açık işlemi tamamlayın" uyarısı çıkarsa devam eden bir Test veya açık bir pencere vardır; onu bitirip tekrar dene.']},
         {h:'Premium (simülasyon)',p:['Bu sürümde Premium bir simülasyondur: Profil, Premium ekranından açıp kapatabilirsin. Gerçek ödeme veya sunucu yoktur.']},
-        {h:'Destek',p:['[destek e-postası eklenecek]']}]},
+        {h:'Destek',p:['serbalta@gmail.com']}]},
       en:{title:'Help',sections:[
         {h:'Adding words',p:['Type a word in the search box and press the search button. The word opens in a window from the word database; it is not added to your list until you press "Add to my list". Tapping a synonym or antonym tag opens the same window.','The "Add New Words" button adds 10 new words at once from the level you chose; the random button shows one word (it is not added unless you add it). When the words of a level run out you are asked whether to move to the next level.']},
         {h:'Cards and swiping',p:['On the home screen, swipe a card right to mark it memorized, or left to close it.','In the History window and in Flip, swiping right memorizes and swiping left un-memorizes.']},
@@ -334,7 +334,7 @@
         {h:'Offline',p:['Saved words, Test, Recall and Flip work without internet. A part of the word database is downloaded the first time it is used; downloaded parts work offline, parts not downloaded yet need internet.']},
         {h:'Update notice',p:['If tapping Reload on the "New version ready" bar says "finish the current operation first", a Test is running or a window is open; finish it and try again.']},
         {h:'Premium (simulation)',p:['In this version Premium is a simulation: switch it on and off in Profile, Premium. There is no real payment or server.']},
-        {h:'Support',p:['[support e-mail to be added]']}]},
+        {h:'Support',p:['serbalta@gmail.com']}]},
       fr:{title:'Aide',sections:[
         {h:'Ajouter des mots',p:['Saisissez un mot dans la zone de recherche et appuyez sur le bouton de recherche. Le mot s’ouvre dans une fenêtre depuis la base de mots ; il n’est ajouté à votre liste que lorsque vous appuyez sur « Ajouter à ma liste ». Toucher une étiquette de synonyme ou de contraire ouvre la même fenêtre.','Le bouton « Ajouter de nouveaux mots » ajoute d’un coup 10 nouveaux mots du niveau choisi ; le bouton aléatoire montre un mot (il n’est ajouté que si vous l’ajoutez). Quand les mots d’un niveau sont épuisés, on vous demande si vous voulez passer au niveau suivant.']},
         {h:'Cartes et balayage',p:['Sur l’écran d’accueil, balayez une carte vers la droite pour la marquer comme mémorisée, ou vers la gauche pour la fermer.','Dans la fenêtre History et dans Flip, balayer vers la droite mémorise et balayer vers la gauche annule la mémorisation.']},
@@ -344,7 +344,7 @@
         {h:'Hors connexion',p:['Les mots enregistrés, Test, Réviser et Flip fonctionnent sans internet. Une partie de la base de mots est téléchargée à sa première utilisation ; les parties téléchargées fonctionnent hors connexion, les autres demandent internet.']},
         {h:'Avis de mise à jour',p:['Si l’appui sur Recharger dans la bannière « Nouvelle version prête » affiche « terminez d’abord l’opération en cours », un test est en cours ou une fenêtre est ouverte ; terminez-le puis réessayez.']},
         {h:'Premium (simulation)',p:['Dans cette version, Premium est une simulation : activez-le ou désactivez-le dans Profil, Premium. Il n’y a ni vrai paiement ni serveur.']},
-        {h:'Assistance',p:['[adresse e-mail d’assistance à ajouter]']}]},
+        {h:'Assistance',p:['serbalta@gmail.com']}]},
       de:{title:'Hilfe',sections:[
         {h:'Wörter hinzufügen',p:['Geben Sie ein Wort in das Suchfeld ein und tippen Sie auf die Suchtaste. Das Wort öffnet sich aus der Wortdatenbank in einem Fenster; es kommt erst in Ihre Liste, wenn Sie auf „Zu meiner Liste“ tippen. Ein Antippen von Synonym- oder Antonym-Chips öffnet dasselbe Fenster.','Die Taste „Neue Wörter hinzufügen“ fügt auf einmal 10 neue Wörter der gewählten Stufe hinzu; die Zufallstaste zeigt ein Wort (es wird nur hinzugefügt, wenn Sie es hinzufügen). Sind die Wörter einer Stufe aufgebraucht, werden Sie gefragt, ob Sie zur nächsten Stufe wechseln möchten.']},
         {h:'Karten und Wischen',p:['Auf dem Startbildschirm wischen Sie eine Karte nach rechts, um sie als gelernt zu markieren, oder nach links, um sie zu schließen.','Im History-Fenster und in Flip lernt Wischen nach rechts das Wort, Wischen nach links nimmt es zurück.']},
@@ -354,7 +354,7 @@
         {h:'Offline',p:['Gespeicherte Wörter, Test, Wiederholen und Flip funktionieren ohne Internet. Ein Teil der Wortdatenbank wird bei der ersten Nutzung geladen; geladene Teile funktionieren offline, noch nicht geladene brauchen Internet.']},
         {h:'Update-Hinweis',p:['Wenn nach dem Tippen auf Neu laden in der Leiste „Neue Version bereit“ „zuerst den laufenden Vorgang beenden“ erscheint, läuft ein Test oder ein Fenster ist offen; beenden Sie das und versuchen Sie es erneut.']},
         {h:'Premium (Simulation)',p:['In dieser Version ist Premium eine Simulation: Schalten Sie es unter Profil, Premium ein und aus. Es gibt keine echte Zahlung und keinen Server.']},
-        {h:'Support',p:['[Support-E-Mail wird ergänzt]']}]},
+        {h:'Support',p:['serbalta@gmail.com']}]},
       es:{title:'Ayuda',sections:[
         {h:'Añadir palabras',p:['Escribe una palabra en el cuadro de búsqueda y pulsa el botón de buscar. La palabra se abre en una ventana desde la base de palabras; no se añade a tu lista hasta que pulses «Añadir a mi lista». Al tocar una etiqueta de sinónimo o antónimo se abre la misma ventana.','El botón «Añadir palabras nuevas» añade 10 palabras nuevas de una vez del nivel que elegiste; el botón aleatorio muestra una palabra (solo se añade si tú la añades). Cuando se acaban las palabras de un nivel, se te pregunta si quieres pasar al siguiente.']},
         {h:'Tarjetas y deslizar',p:['En la pantalla de inicio, desliza una tarjeta a la derecha para marcarla como memorizada, o a la izquierda para cerrarla.','En la ventana History y en Flip, deslizar a la derecha memoriza y deslizar a la izquierda quita la marca.']},
@@ -364,7 +364,7 @@
         {h:'Sin conexión',p:['Las palabras guardadas, Test, Repasar y Flip funcionan sin internet. Una parte de la base de palabras se descarga la primera vez que se usa; las partes descargadas funcionan sin conexión, las demás necesitan internet.']},
         {h:'Aviso de actualización',p:['Si al pulsar Recargar en la barra «Nueva versión lista» aparece «termina primero la operación en curso», hay un test en marcha o una ventana abierta; termínalo y vuelve a intentarlo.']},
         {h:'Premium (simulación)',p:['En esta versión Premium es una simulación: actívalo y desactívalo en Perfil, Premium. No hay pago real ni servidor.']},
-        {h:'Soporte',p:['[se añadirá el correo de soporte]']}]},
+        {h:'Soporte',p:['serbalta@gmail.com']}]},
       it:{title:'Aiuto',sections:[
         {h:'Aggiungere parole',p:['Scrivi una parola nella casella di ricerca e tocca il pulsante di ricerca. La parola si apre in una finestra dal database di parole; non viene aggiunta alla tua lista finché non tocchi «Aggiungi alla mia lista». Toccando un’etichetta di sinonimo o contrario si apre la stessa finestra.','Il pulsante «Aggiungi parole nuove» aggiunge 10 parole nuove alla volta dal livello scelto; il pulsante casuale mostra una parola (viene aggiunta solo se la aggiungi tu). Quando le parole di un livello finiscono, ti viene chiesto se vuoi passare al livello successivo.']},
         {h:'Carte e scorrimento',p:['Nella schermata iniziale, scorri una carta a destra per segnarla come memorizzata, o a sinistra per chiuderla.','Nella finestra History e in Flip, scorrere a destra memorizza e scorrere a sinistra toglie il segno.']},
@@ -374,7 +374,7 @@
         {h:'Offline',p:['Le parole salvate, Test, Ripassa e Flip funzionano senza internet. Una parte del database di parole viene scaricata al primo utilizzo; le parti scaricate funzionano offline, quelle non ancora scaricate richiedono internet.']},
         {h:'Avviso di aggiornamento',p:['Se toccando Ricarica nella barra «Nuova versione pronta» compare «prima termina l’operazione in corso», c’è un test in corso o una finestra aperta; terminalo e riprova.']},
         {h:'Premium (simulazione)',p:['In questa versione Premium è una simulazione: attivalo e disattivalo in Profilo, Premium. Non c’è un pagamento reale né un server.']},
-        {h:'Supporto',p:['[l’e-mail di supporto sarà aggiunta]']}]}
+        {h:'Supporto',p:['serbalta@gmail.com']}]}
     }
   };
   // "Reset progress" (and a change of language) wipes the words, so the finished tests and the earned badges go with them. Works whether or not the new interface is on.
@@ -1306,6 +1306,8 @@
     title.closest('section')?.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
     title.focus({preventScroll:true});
   }
+  // A paragraph that is just an e-mail address is a mailto link.
+  const paragraph=text=>EMAIL_PATTERN.test(text)?h('p',{},h('a',{class:'v2-doc-link',href:'mailto:'+text,text})):h('p',{text});
   function textPage(kind){
     const content=PAGES[kind][lang()]||PAGES[kind].en,look=DOC_LOOK[kind],sections=content.sections,folds=kind==='help';
     const hero=h('header',{class:'v2-doc-hero'},
@@ -1319,10 +1321,10 @@
       :null;
     const body=folds
       ?h('div',{class:'v2-doc-folds'},sections.map((section,index)=>h('details',{class:'v2-doc-fold',open:index===0},
-          h('summary',{text:section.h}),h('div',{class:'v2-doc-fold-body'},section.p.map(text=>h('p',{text}))))))
+          h('summary',{text:section.h}),h('div',{class:'v2-doc-fold-body'},section.p.map(paragraph)))))
       :sections.map((section,index)=>h('section',{class:'v2-doc-section','aria-labelledby':'v2doc-h-'+index},
           h('h2',{id:'v2doc-h-'+index,tabindex:'-1'},h('span',{class:'v2-doc-num','aria-hidden':'true',text:String(index+1)}),section.h),
-          section.p.map(text=>h('p',{text}))));
+          section.p.map(paragraph)));
     return page(backButton(),heading(content.title),hero,content.banner?h('p',{class:'v2-note',text:content.banner}):null,toc,body);
   }
   // About: what the app is and which version this is. The other documents are reached from the Profile page, not from here.

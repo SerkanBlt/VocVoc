@@ -447,6 +447,12 @@ describe('New interface (prototype)',()=>{
     assert(about.length>200&&!/navigate\(|rowHelp|rowPrivacy|rowTerms|uiProto/.test(about),'About shows the app, not links to the other documents');
     assert(/DOCS_UPDATED='\d{4}-\d{2}-\d{2}'/.test(screensJs),'the pages carry the date of their last change');
     assert(/'aria-label':t\('docContents'\)/.test(screensJs)&&/class:'v2-doc-fold'/.test(screensJs)&&/class:'v2-doc-section'/.test(screensJs));
+    const {PAGES}=load().win.VocVocScreens,placeholders=[];
+    for(const [kind,page] of Object.entries(PAGES))for(const [language,content] of Object.entries(page))for(const section of content.sections)for(const text of section.p)if(/^\[.*\]$/.test(text))placeholders.push(`${kind}/${language}: ${text}`);
+    assert.deepEqual(placeholders,[],'a page still has a [placeholder] where its contact should be');
+    const contacts=[];
+    for(const kind of ['privacy','help'])for(const language of ['de','en','es','fr','it','tr'])contacts.push(PAGES[kind][language].sections.at(-1).p.join());
+    assert.deepEqual([...new Set(contacts)],['serbalta@gmail.com'],'the last section of Help and of the Privacy Policy is the support e-mail in every language');
   });
   it('the plan rules match the agreed product: Free by default with 40 words from each level and a 20-word daily goal, stats/sentences/speech/unlimited words are Premium, no AI and no key anywhere',()=>{
     const {win,events,storage}=load(),plan=win.VocVocPlan;

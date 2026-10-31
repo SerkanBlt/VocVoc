@@ -422,6 +422,8 @@ body.v2 .example-item .fr-text .v2-speak,body.v2 .expression-item .fr-text .v2-s
 .v2-doc-fold[open] summary::after{transform:rotate(-90deg)}
 .v2-doc-fold summary:focus-visible{outline-offset:-2px}
 .v2-doc-fold-body{padding:0 16px 6px}
+.v2-doc-link{color:var(--primary);font-weight:600;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+.v2-doc-link:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px}
 @media(prefers-reduced-motion:reduce){.v2-doc-fold summary::after{transition:none}}
 /* About */
 .v2-about-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:18px 16px 14px}

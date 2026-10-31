@@ -1303,10 +1303,12 @@ async function main(){
   // the pages look like documents: the legal pages are numbered cards with a contents list, Help is a list of folding questions, About does not repeat the other three
   await page.evaluate(()=>{location.hash='#/privacy';});await page.waitForSelector('#v2Screen[data-route="privacy"] .v2-doc-section');
   assert.deepEqual(await page.evaluate(()=>[document.querySelectorAll('.v2-doc-section').length,document.querySelectorAll('.v2-doc-section h2').length,document.querySelectorAll('.v2-doc-toc button').length,document.querySelector('.v2-doc-chip')?.textContent,/\d{4}/.test(document.querySelector('.v2-doc-meta').textContent),document.querySelector('.v2-doc-toc').getAttribute('aria-label')]),[5,5,5,'Taslak',true,'Bu sayfada']);
+  assert.deepEqual(await page.evaluate(()=>[...document.querySelectorAll('.v2-doc-section a')].map(link=>[link.textContent,link.getAttribute('href')])),[['serbalta@gmail.com','mailto:serbalta@gmail.com']]);   // the contact is a real address, not a placeholder
   await page.locator('.v2-doc-toc button').nth(3).click();await pause(800);
   assert.deepEqual(await page.evaluate(()=>[document.activeElement.id,document.getElementById('v2doc-h-3').getBoundingClientRect().top<innerHeight]),['v2doc-h-3',true]);
   await page.evaluate(()=>{location.hash='#/help';});await page.waitForSelector('#v2Screen[data-route="help"] .v2-doc-fold');
   assert.deepEqual(await page.evaluate(()=>[document.querySelectorAll('.v2-doc-fold').length,[...document.querySelectorAll('.v2-doc-fold')].map(node=>node.open).join(),document.querySelector('.v2-doc-chip'),document.querySelector('.v2-doc-toc')]),[9,'true,false,false,false,false,false,false,false,false',null,null]);
+  assert.equal(await page.evaluate(()=>document.querySelector('.v2-doc-fold-body a')?.getAttribute('href')),'mailto:serbalta@gmail.com');
   await page.locator('.v2-doc-fold summary').nth(1).click();assert.equal(await page.evaluate(()=>document.querySelectorAll('.v2-doc-fold[open]').length),2,'the questions fold open one by one');
   await page.evaluate(()=>{location.hash='#/about';});await page.waitForSelector('#v2Screen[data-route="about"] .v2-facts');
   assert.deepEqual(await page.evaluate(()=>[document.querySelectorAll('#v2Screen .v2-row,#v2Screen .v2-rows').length,[...document.querySelectorAll('#v2Screen button')].map(node=>node.textContent),document.querySelector('.v2-about-name').textContent,[...document.querySelectorAll('.v2-facts dt')].map(node=>node.textContent).join(),document.querySelector('.v2-about-logo').naturalWidth>0]),[0,['‹ Geri'],'VocVoc','Sürüm,Veriler',true]);
@@ -2948,7 +2950,7 @@ async function main(){
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
    ['#/profile',[['.v2-profile-name'],['.v2-chip'],['.v2-profile-head .v2-muted'],['.v2-row'],['.v2-row-end'],['.v2-row[data-danger]'],['.v2-page > .v2-muted']]],
    ['#/premium',[['.v2-back'],['.v2-plan-free .v2-plan-name'],['.v2-plan-free .v2-plan-amount'],['.v2-plan-free .v2-plan-unit'],['.v2-plan-free .v2-feature-list li'],['.v2-plan-premium .v2-plan-name'],['.v2-plan-premium .v2-plan-amount'],['.v2-plan-premium .v2-plan-unit'],['.v2-plan-premium .v2-plan-sub'],['.v2-plan-premium .v2-plan-caption'],['.v2-plan-premium .v2-feature-list li'],['.v2-plan-premium .v2-plan-ribbon'],['.v2-billing-btn[aria-pressed="true"]'],['.v2-billing-btn[aria-pressed="false"]'],['.v2-plan-premium .v2-billing-tag'],['.v2-plan-premium .v2-plan-btn'],['.v2-page > .v2-muted']]],
-   ['#/privacy',[['.v2-note'],['.v2-page h2'],['.v2-page p:not(.v2-note)'],['.v2-doc-lead'],['.v2-doc-meta'],['.v2-doc-chip'],['.v2-doc-toc-title'],['.v2-doc-toc button'],['.v2-doc-num'],['.v2-doc-section p']]],
+   ['#/privacy',[['.v2-note'],['.v2-page h2'],['.v2-page p:not(.v2-note)'],['.v2-doc-lead'],['.v2-doc-meta'],['.v2-doc-chip'],['.v2-doc-toc-title'],['.v2-doc-toc button'],['.v2-doc-num'],['.v2-doc-section p'],['.v2-doc-link']]],
    ['#/help',[['.v2-doc-fold summary'],['.v2-doc-fold-body p'],['.v2-doc-lead'],['.v2-doc-meta']]],
    ['#/about',[['.v2-about-name'],['.v2-about-tag'],['.v2-facts dt'],['.v2-facts dd'],['.v2-card h2'],['.v2-card p'],['.v2-note']]]];
   let measured=0;
