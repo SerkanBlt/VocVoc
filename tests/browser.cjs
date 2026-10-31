@@ -1164,7 +1164,26 @@ async function main(){
   // a profile without an email (anything an older version saved) is asked again
   await page.evaluate(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe'})));await page.reload();await ready();await page.waitForSelector('#v2Auth.v2-open');
   await signIn(page,'Ayşe','ayse@example.com');await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});   // the scenarios below go on signed in
-  record('new interface: on by default without ?ui=v2; the first-run form asks for a display name and an email (both required, validated), blocks what is behind it, replaces the simulated sign-in and is remembered');
+  // the details can be edited from the Profile page: the form comes with what is saved, checks as the first run did, Cancel and Escape leave everything as it was
+  await page.evaluate(()=>{location.hash='#/profile';});await page.waitForSelector('#v2Screen[data-route="profile"] [data-v2-focus="editProfile"]');
+  const profileNow=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_PROFILE')));
+  await page.getByRole('button',{name:'Bilgilerimi düzenle'}).click();await page.waitForSelector('#v2Auth.v2-open');
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2AuthTitle').textContent,document.getElementById('v2AuthName').value,document.getElementById('v2AuthEmail').value,document.getElementById('v2Root').inert,document.querySelectorAll('#v2Auth .ui-button').length]),['Bilgilerimi düzenle','Ayşe','ayse@example.com',true,2]);
+  await page.locator('#v2AuthEmail').fill('yanlis');await page.getByRole('button',{name:'Kaydet'}).click();
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2AuthEmailError').textContent,document.getElementById('v2Auth').classList.contains('v2-open')]),['Geçerli bir e-posta adresi yaz.',true]);
+  await page.keyboard.press('Escape');await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  assert.deepEqual([await profileNow(),await page.evaluate(()=>document.activeElement.getAttribute('data-v2-focus'))],[{name:'Ayşe',email:'ayse@example.com'},'editProfile']);
+  await page.getByRole('button',{name:'Bilgilerimi düzenle'}).click();await page.waitForSelector('#v2Auth.v2-open');
+  await page.locator('#v2AuthName').fill('Zeynep');await page.getByRole('button',{name:'Vazgeç'}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  assert.deepEqual(await profileNow(),{name:'Ayşe',email:'ayse@example.com'});
+  await page.getByRole('button',{name:'Bilgilerimi düzenle'}).click();await page.waitForSelector('#v2Auth.v2-open');
+  await page.locator('#v2AuthName').fill('Zeynep');await page.locator('#v2AuthEmail').fill('zeynep@example.com');await page.getByRole('button',{name:'Kaydet'}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  assert.deepEqual(await profileNow(),{name:'Zeynep',email:'zeynep@example.com'});
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Root').inert,document.querySelector('.v2-profile-name').textContent,document.querySelector('.v2-profile-mode').textContent,document.querySelector('.v2-avatar-dot').textContent,document.querySelector('.v2-avatar-btn').getAttribute('aria-label'),window.location.hash,document.activeElement.getAttribute('data-v2-focus')]),[false,'Zeynep','zeynep@example.com','Z','Profil: Zeynep','#/profile','editProfile']);
+  await page.getByRole('button',{name:'Bilgilerimi düzenle'}).click();await page.waitForSelector('#v2Auth.v2-open');   // back to the name the scenarios below expect
+  await page.locator('#v2AuthName').fill('Ayşe');await page.locator('#v2AuthEmail').fill('ayse@example.com');await page.locator('#v2AuthEmail').press('Enter');await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  await page.evaluate(()=>{location.hash='#/today';});await page.waitForSelector('#v2Screen[data-route="today"] h1');   // and on the page the next scenario starts from
+  record('new interface: on by default without ?ui=v2; the first-run form asks for a display name and an email (both required, validated), blocks what is behind it, replaces the simulated sign-in, is remembered and can be edited from the Profile page (Cancel and Escape change nothing)');
 
   // menu: the entries the tab bar had (Badges moved into Today), Settings last; Words is the existing home screen (search, word cards, the list), Today and the others are pages
   const entries=()=>page.evaluate(()=>[...document.querySelectorAll('.v2-nav-item')].map(item=>item.textContent+(item.getAttribute('aria-current')==='page'?'*':'')));

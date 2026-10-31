@@ -50,7 +50,7 @@
       statsTitle:'İstatistikler',badgesTitle:'Rozetler',
       lockedTitle:'Premium özelliği',lockedStats:'Günlük etkinlik, test başarısı, öğrenme eğrisi ve seri gibi istatistikler Premium ile açılır.',goPremium:"Premium'a geç",
       profileTitle:'Profil',planFree:'Ücretsiz',planPremium:'Premium (simülasyon)',
-      rowPremium:'Premium',rowSettings:'Ayarlar',rowHelp:'Yardım',rowPrivacy:'Gizlilik Politikası',rowTerms:'Kullanım Şartları',rowAbout:'Hakkında',
+      rowPremium:'Premium',rowEditProfile:'Bilgilerimi düzenle',rowSettings:'Ayarlar',rowHelp:'Yardım',rowPrivacy:'Gizlilik Politikası',rowTerms:'Kullanım Şartları',rowAbout:'Hakkında',
       signOut:'Çıkış yap',signOutNote:'Çıkış, kelimelerini ve ilerlemeni silmez.',
       premiumTitle:'Premium',planLabel:'Mevcut plan',premiumIncludes:'Premium (ücretsiz olanların hepsine ek olarak)',
       priceNote:'Fiyatlar USD cinsindendir. Yıllık abonelikte 2 ay bedavadır.',
@@ -82,7 +82,7 @@
       statsTitle:'Statistics',badgesTitle:'Badges',
       lockedTitle:'Premium feature',lockedStats:'Statistics such as daily activity, test accuracy, the learning curve and streaks come with Premium.',goPremium:'Go Premium',
       profileTitle:'Profile',planFree:'Free',planPremium:'Premium (simulation)',
-      rowPremium:'Premium',rowSettings:'Settings',rowHelp:'Help',rowPrivacy:'Privacy Policy',rowTerms:'Terms of Use',rowAbout:'About',
+      rowPremium:'Premium',rowEditProfile:'Edit my details',rowSettings:'Settings',rowHelp:'Help',rowPrivacy:'Privacy Policy',rowTerms:'Terms of Use',rowAbout:'About',
       signOut:'Sign out',signOutNote:'Signing out does not delete your words or progress.',
       premiumTitle:'Premium',planLabel:'Current plan',premiumIncludes:'Premium (in addition to everything free)',
       priceNote:'Prices are in USD. The yearly subscription has 2 months free.',
@@ -114,7 +114,7 @@
       statsTitle:'Statistiques',badgesTitle:'Badges',
       lockedTitle:'Fonction Premium',lockedStats:'Les statistiques comme l’activité quotidienne, la réussite aux tests, la courbe d’apprentissage et les séries sont réservées à Premium.',goPremium:'Passer à Premium',
       profileTitle:'Profil',planFree:'Gratuit',planPremium:'Premium (simulation)',
-      rowPremium:'Premium',rowSettings:'Réglages',rowHelp:'Aide',rowPrivacy:'Politique de confidentialité',rowTerms:'Conditions d’utilisation',rowAbout:'À propos',
+      rowPremium:'Premium',rowEditProfile:'Modifier mes informations',rowSettings:'Réglages',rowHelp:'Aide',rowPrivacy:'Politique de confidentialité',rowTerms:'Conditions d’utilisation',rowAbout:'À propos',
       signOut:'Se déconnecter',signOutNote:'Se déconnecter ne supprime ni vos mots ni votre progression.',
       premiumTitle:'Premium',planLabel:'Offre actuelle',premiumIncludes:'Premium (en plus de tout ce qui est gratuit)',
       priceNote:'Les prix sont en USD. L’abonnement annuel offre 2 mois.',
@@ -146,7 +146,7 @@
       statsTitle:'Statistik',badgesTitle:'Abzeichen',
       lockedTitle:'Premium-Funktion',lockedStats:'Statistiken wie tägliche Aktivität, Testergebnisse, Lernkurve und Serien gibt es mit Premium.',goPremium:'Premium holen',
       profileTitle:'Profil',planFree:'Kostenlos',planPremium:'Premium (Simulation)',
-      rowPremium:'Premium',rowSettings:'Einstellungen',rowHelp:'Hilfe',rowPrivacy:'Datenschutzerklärung',rowTerms:'Nutzungsbedingungen',rowAbout:'Über',
+      rowPremium:'Premium',rowEditProfile:'Meine Angaben bearbeiten',rowSettings:'Einstellungen',rowHelp:'Hilfe',rowPrivacy:'Datenschutzerklärung',rowTerms:'Nutzungsbedingungen',rowAbout:'Über',
       signOut:'Abmelden',signOutNote:'Beim Abmelden werden Ihre Wörter und Ihr Fortschritt nicht gelöscht.',
       premiumTitle:'Premium',planLabel:'Aktueller Tarif',premiumIncludes:'Premium (zusätzlich zu allem Kostenlosen)',
       priceNote:'Preise in USD. Beim Jahresabo sind 2 Monate gratis.',
@@ -178,7 +178,7 @@
       statsTitle:'Estadísticas',badgesTitle:'Insignias',
       lockedTitle:'Función Premium',lockedStats:'Las estadísticas, como la actividad diaria, el acierto en los tests, la curva de aprendizaje y las rachas, llegan con Premium.',goPremium:'Pasar a Premium',
       profileTitle:'Perfil',planFree:'Gratis',planPremium:'Premium (simulación)',
-      rowPremium:'Premium',rowSettings:'Ajustes',rowHelp:'Ayuda',rowPrivacy:'Política de privacidad',rowTerms:'Condiciones de uso',rowAbout:'Acerca de',
+      rowPremium:'Premium',rowEditProfile:'Editar mis datos',rowSettings:'Ajustes',rowHelp:'Ayuda',rowPrivacy:'Política de privacidad',rowTerms:'Condiciones de uso',rowAbout:'Acerca de',
       signOut:'Cerrar sesión',signOutNote:'Cerrar sesión no borra tus palabras ni tu progreso.',
       premiumTitle:'Premium',planLabel:'Plan actual',premiumIncludes:'Premium (además de todo lo gratuito)',
       priceNote:'Los precios son en USD. La suscripción anual tiene 2 meses gratis.',
@@ -210,7 +210,7 @@
       statsTitle:'Statistiche',badgesTitle:'Badge',
       lockedTitle:'Funzione Premium',lockedStats:'Statistiche come attività giornaliera, risultati dei test, curva di apprendimento e serie sono incluse in Premium.',goPremium:'Passa a Premium',
       profileTitle:'Profilo',planFree:'Gratuito',planPremium:'Premium (simulazione)',
-      rowPremium:'Premium',rowSettings:'Impostazioni',rowHelp:'Aiuto',rowPrivacy:'Informativa sulla privacy',rowTerms:'Termini d’uso',rowAbout:'Informazioni',
+      rowPremium:'Premium',rowEditProfile:'Modifica i miei dati',rowSettings:'Impostazioni',rowHelp:'Aiuto',rowPrivacy:'Informativa sulla privacy',rowTerms:'Termini d’uso',rowAbout:'Informazioni',
       signOut:'Esci',signOutNote:'Uscire non cancella le tue parole né i tuoi progressi.',
       premiumTitle:'Premium',planLabel:'Piano attuale',premiumIncludes:'Premium (in più rispetto a tutto ciò che è gratuito)',
       priceNote:'I prezzi sono in USD. L’abbonamento annuale ha 2 mesi gratis.',
@@ -1238,7 +1238,7 @@
   function profileScreen(){
     const profile=readProfile()||{name:'',email:''};
     const name=profile.name;
-    const row=(label,run,end,danger)=>h('li',{},h('button',{type:'button',class:'v2-row','data-danger':danger?'':null,onclick:run},h('span',{text:label}),end?h('span',{class:'v2-row-end',text:end}):null));
+    const row=(label,run,end,danger,focusKey)=>h('li',{},h('button',{type:'button',class:'v2-row','data-danger':danger?'':null,'data-v2-focus':focusKey||null,onclick:run},h('span',{text:label}),end?h('span',{class:'v2-row-end',text:end}):null));
     return page(heading(t('profileTitle')),
       h('div',{class:'v2-card'},
         h('div',{class:'v2-profile-head'},
@@ -1252,6 +1252,7 @@
           h('div',{},h('p',{class:'v2-profile-name',text:name}),h('div',{},chipFor(VocVocPlan.get())),h('p',{class:'v2-muted v2-profile-mode',text:profile.email}))),
         h('input',{type:'file',id:'v2PhotoInput',accept:'image/*',hidden:true,onchange:event=>chosePhoto(event.target)})),
       h('ul',{class:'v2-rows'},
+        row(t('rowEditProfile'),openEditProfile,'›',false,'editProfile'),
         row(t('rowPremium'),()=>navigate('premium'),'›'),
         row(t('rowSettings'),()=>navigate('settings'),'›')),
       h('ul',{class:'v2-rows'},
@@ -1522,17 +1523,22 @@
   /* ---------- simulated sign-in ---------- */
   function setBackgroundInert(inert){root.inert=inert;if(container)container.inert=inert;}
   // First run (and after signing out): the display name and the email are asked for, both required. They are kept on this device only.
-  function openAuth(prefill){
+  // The same form, opened from the Profile page, edits the saved details (with Cancel, and Escape) instead of starting the app.
+  let authEditing=false;
+  function openAuth(prefill,edit=false){
+    authEditing=edit;
     const known=prefill||{name:readLegacyName(),email:''};
     const field=(id,label,type,value,autocomplete)=>h('div',{class:'v2-field'},
       h('label',{for:id,text:label}),
       h('input',{id,class:'ui-input',type,maxlength:type==='email'?'254':'40',autocomplete,value,'aria-required':'true','aria-describedby':id+'Error',onkeydown:event=>{if(event.key==='Enter'){event.preventDefault();finishAuth();}}}),
       h('p',{id:id+'Error',class:'v2-field-error',role:'alert'}));
     auth.replaceChildren(h('div',{class:'v2-auth-card',lang:lang()},
-      h('h1',{id:'v2AuthTitle',tabindex:'-1',text:t('authTitle')}),h('p',{text:t('authSub')}),
+      h('h1',{id:'v2AuthTitle',tabindex:'-1',text:t(edit?'rowEditProfile':'authTitle')}),edit?null:h('p',{text:t('authSub')}),
       field('v2AuthName',t('authName'),'text',known.name,'name'),
       field('v2AuthEmail',t('authEmail'),'email',known.email,'email'),
-      h('div',{class:'v2-auth-buttons'},h('button',{type:'button',class:'ui-button ui-button-success',onclick:finishAuth},t('authContinue'))),
+      h('div',{class:'v2-auth-buttons'},
+        h('button',{type:'button',class:'ui-button ui-button-success',onclick:finishAuth},t(edit?'photoSave':'authContinue')),
+        edit?h('button',{type:'button',class:'ui-button ui-button-secondary',onclick:closeEditProfile},t('photoCancel')):null),
       h('p',{class:'v2-note',text:t('authNote')})));
     auth.classList.add('v2-open');setBackgroundInert(true);
     auth.querySelector('#v2AuthTitle').focus({preventScroll:true});
@@ -1546,10 +1552,18 @@
     if(badName||badEmail){(badName?nameInput:emailInput).focus({preventScroll:true});return;}
     store.set(PROFILE_KEY,JSON.stringify({name,email}));
     store.remove(LEGACY_PROFILE_KEY);
+    const editing=authEditing;authEditing=false;
     auth.classList.remove('v2-open');auth.replaceChildren();setBackgroundInert(false);
+    if(editing){syncChrome();render(false);screen.querySelector('[data-v2-focus="editProfile"]')?.focus({preventScroll:true});return;}
     navigate('today');
     syncChrome();
   }
+  function closeEditProfile(){
+    if(!authEditing)return;
+    authEditing=false;auth.classList.remove('v2-open');auth.replaceChildren();setBackgroundInert(false);
+    screen.querySelector('[data-v2-focus="editProfile"]')?.focus({preventScroll:true});
+  }
+  function openEditProfile(){const profile=readProfile();if(profile)openAuth(profile,true);}
   function signOut(){const previous=readProfile();store.remove(PROFILE_KEY);store.remove(PHOTO_KEY);photo=null;openAuth(previous);}
 
   /* ---------- start ---------- */
@@ -1577,6 +1591,7 @@
     loadPhoto();
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('v2-open')){event.preventDefault();setDrawer(false);}},true);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&crop){event.preventDefault();closeCrop();}},true);
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&authEditing){event.preventDefault();closeEditProfile();}},true);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&(asking||viewer)){event.preventDefault();if(asking)closeConfirm();else closePhotoView();}},true);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&dayPopup&&!document.querySelector('.word-popup-overlay.open')){event.preventDefault();closeDayWords();}},true);
     // Today follows every change of the data
