@@ -2888,27 +2888,37 @@ async function main(){
   // the card sits after Flip and before the last tests, and looks like the other cards
   assert.deepEqual(await p.evaluate(()=>{const cards=[...document.querySelectorAll('#v2Screen .v2-study-card')],watch=document.querySelector('[data-v2-focus="watch"]'),last=[...document.querySelectorAll('#v2Screen h2')].find(node=>node.textContent==='Son testler');const after=(a,b)=>!!(a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING);return [cards.indexOf(watch),cards.length,after(cards[cards.length-2],watch),after(watch,last),watch.querySelector('.v2-study-title').textContent,watch.querySelector('.v2-study-sub').textContent,watch.className===cards[0].className];}),[5,6,true,true,'İzleme/Dinleme Listesi','0 bağlantı',true]);
   await p.locator('[data-v2-focus="watch"]').click();await p.waitForSelector('#v2Watch');
-  assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Watch').getAttribute('role'),document.getElementById('v2Watch').getAttribute('aria-modal'),document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.activeElement.id,document.querySelector('.v2-watch-empty').hidden,document.querySelector('.v2-watch-card > .v2-actions .ui-button').disabled]),['dialog','true',true,true,'v2WatchTitleIn',false,true]);
-  // only http(s) addresses get in; a bare address gets https://
-  await p.locator('#v2WatchUrlIn').fill('javascript:alert(1)');await p.getByRole('button',{name:'Ekle'}).click();
-  assert.deepEqual([await p.locator('#v2WatchAddError').textContent(),await stored(),await p.evaluate(()=>document.activeElement.id)],['Geçerli bir web adresi yaz (https://…).',null,'v2WatchUrlIn']);
-  await p.locator('#v2WatchUrlIn').fill('file:///c:/secret');await p.getByRole('button',{name:'Ekle'}).click();assert.equal(await stored(),null);
-  await p.locator('#v2WatchTitleIn').fill('Podcast');await p.locator('#v2WatchUrlIn').fill('example.com/podcast');await p.locator('#v2WatchUrlIn').press('Enter');
-  await p.locator('#v2WatchUrlIn').fill('https://example.com/video');await p.getByRole('button',{name:'Ekle'}).click();
+  // the panel: the title with + (new link) and × (close) on its right; the list below; no form and no button at the bottom, nothing to choose first
+  assert.deepEqual(await p.evaluate(()=>{const head=document.querySelector('.v2-watch-head'),plus=document.querySelector('.v2-watch-plus').getBoundingClientRect(),close=document.querySelector('.v2-watch-close').getBoundingClientRect(),title=document.getElementById('v2WatchTitle').getBoundingClientRect();return [document.getElementById('v2Watch').getAttribute('role'),document.getElementById('v2Watch').getAttribute('aria-modal'),document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.querySelector('.v2-watch-empty').hidden,!!document.getElementById('v2WatchUrlIn'),!!document.querySelector('.v2-watch-card > .v2-actions'),[...document.querySelectorAll('.v2-watch-head-actions button')].map(node=>node.getAttribute('aria-label')),title.right<=plus.left&&plus.right<=close.left+1&&Math.abs(close.right-head.getBoundingClientRect().right)<=2];}),['dialog','true',true,true,false,false,false,['Yeni bağlantı ekle','Kapat'],true]);
+  const openAdd=async()=>{await p.getByRole('button',{name:'Yeni bağlantı ekle'}).click();await p.waitForSelector('#v2WatchAdd');};
+  const addLink=async(title,address)=>{await openAdd();await p.locator('#v2WatchTitleIn').fill(title);await p.locator('#v2WatchUrlIn').fill(address);await p.getByRole('button',{name:'Ekle',exact:true}).click();};
+  // + opens the form of a new link as a panel above the list (the list cannot be reached meanwhile); only http(s) addresses get in
+  await openAdd();
+  assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2WatchAdd').getAttribute('role'),document.getElementById('v2WatchAdd').getAttribute('aria-modal'),document.getElementById('v2Watch').inert,document.getElementById('v2WatchAddHeading').textContent,document.activeElement.id,document.getElementById('v2WatchTitleIn').value+document.getElementById('v2WatchUrlIn').value]),['dialog','true',true,'Yeni bağlantı ekle','v2WatchTitleIn','']);
+  await p.locator('#v2WatchUrlIn').fill('javascript:alert(1)');await p.getByRole('button',{name:'Ekle',exact:true}).click();
+  assert.deepEqual([await p.locator('#v2WatchAddError').textContent(),await stored(),await p.evaluate(()=>[document.activeElement.id,!!document.getElementById('v2WatchAdd')])],['Geçerli bir web adresi yaz (https://…).',null,['v2WatchUrlIn',true]]);
+  await p.locator('#v2WatchUrlIn').fill('file:///c:/secret');await p.getByRole('button',{name:'Ekle',exact:true}).click();assert.equal(await stored(),null);
+  await p.keyboard.press('Escape');await p.waitForSelector('#v2WatchAdd',{state:'detached'});          // Escape closes the form, not the list
+  assert.deepEqual(await p.evaluate(()=>[!!document.getElementById('v2Watch'),document.getElementById('v2Watch').inert,document.activeElement.className.includes('v2-watch-plus')]),[true,false,true]);
+  await openAdd();await p.locator('#v2WatchTitleIn').fill('Not added');await p.getByRole('button',{name:'Vazgeç'}).click();await p.waitForSelector('#v2WatchAdd',{state:'detached'});
+  assert.equal(await stored(),null);
+  await openAdd();assert.equal(await p.locator('#v2WatchTitleIn').inputValue(),'','the form opens empty');
+  await p.locator('#v2WatchTitleIn').fill('Podcast');await p.locator('#v2WatchUrlIn').fill('example.com/podcast');await p.locator('#v2WatchUrlIn').press('Enter');await p.waitForSelector('#v2WatchAdd',{state:'detached'});
+  await addLink('','https://example.com/video');await p.waitForSelector('#v2WatchAdd',{state:'detached'});
   assert.deepEqual((await stored()).map(item=>[item.title,item.url,item.done]),[['Podcast','https://example.com/podcast',false],['','https://example.com/video',false]]);
-  assert.deepEqual(await p.evaluate(()=>[[...document.querySelectorAll('.v2-watch-name')].map(node=>node.textContent),document.querySelector('.v2-watch-empty').hidden,document.getElementById('v2WatchAddError').textContent,document.activeElement.id]),[['Podcast','example.com/video'],true,'','v2WatchTitleIn']);
+  assert.deepEqual(await p.evaluate(()=>[[...document.querySelectorAll('.v2-watch-name')].map(node=>node.textContent),document.querySelector('.v2-watch-empty').hidden,document.activeElement.getAttribute('aria-label')]),[['Podcast','example.com/video'],true,'İzle: example.com/video']);   // the new link is shown and its Watch button has the focus
   // one line per link (the title, or the address without a title); the hover tip has the whole of it; a long address is cut with an ellipsis and the row is no taller
   assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('.v2-watch-url').length,[...document.querySelectorAll('.v2-watch-main')].map(node=>node.title)]),[0,['Podcast\nhttps://example.com/podcast','https://example.com/video']]);
-  await p.locator('#v2WatchUrlIn').fill('https://example.com/'+'long-segment-'.repeat(25));await p.getByRole('button',{name:'Ekle'}).click();
+  await addLink('','https://example.com/'+'long-segment-'.repeat(25));await p.waitForSelector('#v2WatchAdd',{state:'detached'});
   assert.deepEqual(await p.evaluate(()=>{const rows=[...document.querySelectorAll('.v2-watch-item')],name=rows[2].querySelector('.v2-watch-name'),style=getComputedStyle(name);return [rows.length,Math.round(rows[2].getBoundingClientRect().height)===Math.round(rows[1].getBoundingClientRect().height),name.scrollWidth>name.clientWidth,style.textOverflow,style.whiteSpace,rows[2].querySelector('.v2-watch-main').title.length>300];}),[3,true,true,'ellipsis','nowrap',true]);
   await p.locator('.v2-watch-item').nth(2).getByRole('button',{name:/^Sil: /}).click();
+  // each link's box ends with Edit, Delete and, to the right of Delete, Watch; nothing needs choosing first
+  assert.deepEqual(await p.evaluate(()=>{const row=document.querySelector('.v2-watch-item'),buttons=[...row.querySelectorAll('button')],boxes=buttons.map(node=>node.getBoundingClientRect()),rowBox=row.getBoundingClientRect();return [buttons.map(node=>node.getAttribute('aria-label')),boxes[1].right<=boxes[2].left+1,boxes[2].right<=rowBox.right+0.5&&boxes[2].left>=rowBox.left,document.querySelectorAll('#v2Watch [aria-pressed]').length];}),[['Düzenle: Podcast','Sil: Podcast','İzle: Podcast'],true,true,0]);
   // ticking strikes the name through and is remembered
   await p.getByRole('checkbox',{name:'Tamamlandı: Podcast'}).check();
   assert.deepEqual([(await stored())[0].done,await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-watch-done .v2-watch-name')).textDecorationLine)],[true,'line-through']);
-  // choosing a link enables "Watch", which opens it in a new tab (the default browser of the device)
-  await p.getByRole('button',{name:'example.com/video',exact:true}).click();
-  assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-watch-main[aria-pressed="true"]')?.textContent.includes('example.com/video'),document.querySelector('.v2-watch-card > .v2-actions .ui-button').disabled]),[true,false]);
-  const [popup]=await Promise.all([c.waitForEvent('page'),p.getByRole('button',{name:'İzle',exact:true}).click()]);
+  // Watch opens that link in a new tab (the default browser of the device)
+  const [popup]=await Promise.all([c.waitForEvent('page'),p.getByRole('button',{name:'İzle: example.com/video',exact:true}).click()]);
   await popup.waitForLoadState();assert.equal(popup.url(),'https://example.com/video');await popup.close();
   // edit: the fields come with the saved values, a bad address is refused, Escape leaves the edit (not the panel), Enter saves
   await p.getByRole('button',{name:'Düzenle: Podcast'}).click();
@@ -2922,13 +2932,13 @@ async function main(){
   assert.deepEqual((await stored()).map(item=>[item.title,item.url,item.done]),[['Fransızca podcast','https://example.com/fr',true],['','https://example.com/video',false]]);
   // delete
   await p.getByRole('button',{name:'Sil: example.com/video'}).click();
-  assert.deepEqual([(await stored()).length,await p.evaluate(()=>document.querySelectorAll('.v2-watch-item').length),await p.evaluate(()=>document.querySelector('.v2-watch-main[aria-pressed="true"]'))],[1,1,null]);
+  assert.deepEqual([(await stored()).length,await p.evaluate(()=>document.querySelectorAll('.v2-watch-item').length)],[1,1]);
   // it is all still there after a reload; Escape closes the panel, the card says how many, focus is back on it
   await p.reload();await ready(p);await p.locator('[data-v2-focus="watch"]').click();await p.waitForSelector('#v2Watch');
   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-watch-name').textContent,!!document.querySelector('.v2-watch-done'),document.querySelectorAll('.v2-watch-item').length]),['Fransızca podcast',true,1]);
   await p.keyboard.press('Escape');await p.waitForSelector('#v2Watch',{state:'detached'});
   assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.querySelector('[data-v2-focus="watch"] .v2-study-sub').textContent,document.activeElement.getAttribute('data-v2-focus')]),[false,false,'1 bağlantı','watch']);
-  record('new interface: the Watch/Listen list sits between Flip and the last tests; web links are added (only http/https), ticked off (struck through), edited, deleted, chosen and opened in a new tab; kept after a reload');
+  record('new interface: the Watch/Listen list sits between Flip and the last tests; a + beside × opens the form of a new link as a panel (only http/https; Escape and Cancel close it); each link has Edit, Delete and Watch in its box; links are ticked off (struck through), edited, deleted and opened in a new tab; kept after a reload');
   await c.close();
  }
  // ===== New interface: the default Watch/Listen list comes from watchlist/default.json =====
