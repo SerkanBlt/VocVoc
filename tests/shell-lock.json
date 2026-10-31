@@ -1,6 +1,6 @@
 {
-  "version": "1.26.1",
-  "fingerprint": "ac53126b7d8edc45d2fa84640fed358c70155bf578fe4ad19488671a786d85ee",
+  "version": "1.27.0",
+  "fingerprint": "166343f99c034864a4a474e2fc4b2548207d51e75b76769de824e87a0c006f32",
   "files": [
     "a11y.js",
     "icons/apple-touch-icon.png",

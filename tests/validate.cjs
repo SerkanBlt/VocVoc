@@ -407,6 +407,7 @@ describe('New interface (prototype)',()=>{
   const screensJs=read('screens.js'),screensCss=read('screens.css'),screensCode=screensJs.replace(/\/\*[^]*?\*\//g,'');   // code without the comments
   // Run screens.js on its own, as a page that did not ask for the new interface would: it must only define the plan helper.
   function load(storage={}){
+    if(!('VOCVOC_UI' in storage))storage.VOCVOC_UI='v1';          // the new interface is on by default; these unit tests run without a DOM, so they start with it off
     const events=[],win={dispatchEvent:event=>events.push(event)};
     const sandbox={window:win,location:{search:'',hash:''},URLSearchParams,CustomEvent:class{constructor(type,init){this.type=type;this.detail=init?.detail;}},
       localStorage:{getItem:key=>key in storage?storage[key]:null,setItem:(key,value)=>{storage[key]=String(value);},removeItem:key=>{delete storage[key];}}};
@@ -429,9 +430,15 @@ describe('New interface (prototype)',()=>{
     assert(html.includes('document.dispatchEvent(new CustomEvent("vocvoc-quiz-rendered"))'));
     assert(/async function adoptExternalChange\(\)\{[^]*?window\.dispatchEvent\(new CustomEvent\("vocvoc-data-adopted"\)\);\s*\}/.test(html));
   });
-  it('does nothing visible unless asked: without ?ui=v2 it only defines the plan helper',()=>{
-    const {win}=load();
+  it('is on by default and does nothing visible only when ?ui=v1 was remembered: then it only defines the plan helper',()=>{
+    assert(/store\.get\(UI_KEY\)!=='v1'/.test(screensCode),'the new interface is enabled unless the stored choice is v1');
+    const {win,storage}=load();
     assert.deepEqual(Object.keys(win).sort(),['VocVocPlan','VocVocScreens','dispatchEvent']);
+    assert.equal(storage.VOCVOC_UI,'v1');
+  });
+  it('the first-run profile is a display name and an email, not a simulated sign-in',()=>{
+    assert(!/google-sim|authGoogle|authGuest|demoName|modeGoogle|modeGuest/.test(screensCode),'no simulated Google or guest sign-in is left');
+    assert(/PROFILE_KEY='VOCVOC_PROFILE'/.test(screensCode)&&/validEmail\(value\.email\)/.test(screensCode),'a stored profile counts only with a name and a valid email');
   });
   it('the plan rules match the agreed product: Free by default with 40 words from each level and a 20-word daily goal, stats/sentences/speech/unlimited words are Premium, no AI and no key anywhere',()=>{
     const {win,events,storage}=load(),plan=win.VocVocPlan;

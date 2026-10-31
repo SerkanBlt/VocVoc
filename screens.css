@@ -99,6 +99,9 @@ body.v2 .top-chrome header{display:none}
 .v2-field{display:block;text-align:left;margin:0 0 14px}
 .v2-field label{display:block;font-size:.85rem;font-weight:600;color:var(--text-muted);margin-bottom:6px}
 .v2-field input{width:100%}
+.v2-field .v2-field-error,.v2-auth-card .v2-field-error{margin:6px 0 0;font-size:.85rem;line-height:1.35;color:var(--text);min-height:0}
+.v2-field .v2-field-error:empty{display:none}
+.v2-field input[aria-invalid="true"]{border-color:var(--primary)}
 .v2-auth-buttons{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
 
 /* Today. The Test / Recall / Flip row of the old home screen (the Words tab) is not needed: those live in the Study tab. */

@@ -1,10 +1,10 @@
 'use strict';
-/* New interface (prototype): tab bar, screens, simulated sign-in and simulated Free/Premium plan.
-   Opt-in: open the app with ?ui=v2 (remembered; ?ui=v1 turns it off). Without it this file only defines VocVocPlan
-   and does nothing else, so the default interface and its tests are unaffected. Nothing here is real: there is no account, server or payment.
+/* New interface: menu, screens, the first-run profile (display name and email, kept on this device) and the simulated Free/Premium plan.
+   On by default on every device; ?ui=v1 turns it off (remembered), ?ui=v2 turns it back on. With it off this file only defines VocVocPlan
+   and does nothing else. There is no server and no payment: the plan is a simulation and the profile never leaves this browser.
    The existing home screen (search, word cards, the list) is the "Words" tab; the other tabs, Today included, are full-screen pages drawn over it. No inline handlers, no innerHTML with data. */
 (function(){
-  const UI_KEY='VOCVOC_UI',PLAN_KEY='VOCVOC_SIM_PLAN',PROFILE_KEY='VOCVOC_SIM_PROFILE',BILLING_KEY='VOCVOC_SIM_BILLING';
+  const UI_KEY='VOCVOC_UI',PLAN_KEY='VOCVOC_SIM_PLAN',PROFILE_KEY='VOCVOC_PROFILE',LEGACY_PROFILE_KEY='VOCVOC_SIM_PROFILE',BILLING_KEY='VOCVOC_SIM_BILLING';
   // The record keeps what the app's data cannot say: finished tests and the day each badge was earned. It is small, bounded and lives only
   // in this browser (not in the backup); a progress reset deletes it too (resetActivity).
   const ACTIVITY_KEY='VOCVOC_ACTIVITY_V1';
@@ -14,8 +14,8 @@
     remove(key){try{localStorage.removeItem(key);}catch(_){}}
   };
   const param=new URLSearchParams(location.search).get('ui');
-  if(param==='v2')store.set(UI_KEY,'v2');else if(param==='v1')store.remove(UI_KEY);
-  const enabled=store.get(UI_KEY)==='v2';
+  if(param==='v2'||param==='v1')store.set(UI_KEY,param);
+  const enabled=store.get(UI_KEY)!=='v1';                                          // on by default; ?ui=v1 turns it off (remembered)
 
   /* ---------- plan (simulated) ---------- */
   // 'premium' features are locked on the free plan. There is no AI and no API key: every word comes from the word database (wordbase.js). The free plan holds
@@ -44,14 +44,14 @@
   const TEXT={
     tr:{
       nav:'Ana gezinme',today:'Bugün',words:'Kelimeler',study:'Çalış',stats:'İstatistik',profile:'Profil',back:'Geri',menu:'Menü',menuClose:'Menüyü kapat',addedWords:'Eklenen kelimeler',addedTapClose:'Kapatmak için dokun',orbNewWord:'Yeni Kelimeler',orbMemorized:'Ezberimde',photoAdd:'Fotoğraf ekle',photoChange:'Fotoğrafı değiştir',photoRemove:'Fotoğrafı kaldır',photoView:'Profil fotoğrafını büyüt',photoRemoveTitle:'Fotoğraf kaldırılsın mı?',photoRemoveText:'Profil fotoğrafın bu cihazdan silinir. İstersen sonra yeniden ekleyebilirsin.',photoRemoveYes:'Kaldır',photoTitle:'Profil fotoğrafı',photoHelp:'Sürükleyerek yerleştir, iki parmakla veya kaydırıcıyla yakınlaştır. Dairenin içinde kalan kısım kullanılır.',photoZoom:'Yakınlaştır',photoStage:'Fotoğraf alanı: oklarla kaydır, + ve - ile yakınlaştır',photoSave:'Kaydet',photoCancel:'Vazgeç',photoBad:'Bu dosya bir resim olarak açılamadı. En fazla 15 MB bir resim seç.',photoSaveFailed:'Fotoğraf kaydedilemedi: bu cihazda yeterli yer yok.',dayWordsLabel:'{day}, {kind}: {n} kelime. Kelimeleri göster',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} kelime',dayWordsMore:'ve {n} kelime daha',
-      authTitle:'VocVoc',authSub:'Kelimelerini cihazında öğren ve tekrar et.',authName:'Görünen ad (isteğe bağlı)',authGoogle:'Google ile devam et (simülasyon)',authGuest:'Misafir olarak devam et',
-      authNote:'Simülasyon: gerçek hesap ve sunucu yok. Bilgilerin yalnızca bu cihazda kalır.',demoName:'Demo Kullanıcı',
+      authTitle:'VocVoc',authSub:'Kelimelerini cihazında öğren ve tekrar et.',authName:'Görünen ad',authEmail:'E-posta',authContinue:'Devam et',authNameError:'Görünen adını yaz.',authEmailError:'Geçerli bir e-posta adresi yaz.',
+      authNote:'Bilgilerin şimdilik yalnızca bu cihazda saklanır.',
       studyTitle:'Çalış',studyMatch:'Eşleştirme',studyMatchSub:'{n} aktif kelimeyle 10 tur, her turda 4 eşleme',quizNeedMatch:'Eşleştirme için en az 10 aktif kelime gerekir. Şu an {n} var.',modeMatch:'Eşleştirme',studyTest:'Test',studyTestSub:'{n} aktif kelimeden 10 soru',studyRecall:'Hatırla',studyRecallSub:'{n} ezberlediğin kelimeyi sına',studyFlip:'Flip',studyFlipSub:'Kartları çevirerek tekrar et',studyCloze:'Boşluk Doldurma',studyClozeSub:'{n} kelimenin cümlesinden 10 soru',flipAuto:'Kart değişince kelimeyi otomatik oku',flipAutoLocked:'Otomatik okuma (Premium)',flipMore:'Kelime panelini aç',
       statsTitle:'İstatistikler',badgesTitle:'Rozetler',
       lockedTitle:'Premium özelliği',lockedStats:'Günlük etkinlik, test başarısı, öğrenme eğrisi ve seri gibi istatistikler Premium ile açılır.',goPremium:"Premium'a geç",
-      profileTitle:'Profil',guest:'Misafir',modeGoogle:'Google (simülasyon)',modeGuest:'Bu cihazda',planFree:'Ücretsiz',planPremium:'Premium (simülasyon)',
+      profileTitle:'Profil',planFree:'Ücretsiz',planPremium:'Premium (simülasyon)',
       rowPremium:'Premium',rowSettings:'Ayarlar',rowHelp:'Yardım',rowPrivacy:'Gizlilik Politikası',rowTerms:'Kullanım Şartları',rowAbout:'Hakkında',
-      signOut:'Çıkış yap (simülasyon)',signOutNote:'Çıkış, kelimelerini ve ilerlemeni silmez.',
+      signOut:'Çıkış yap',signOutNote:'Çıkış, kelimelerini ve ilerlemeni silmez.',
       premiumTitle:'Premium',planLabel:'Mevcut plan',premiumIncludes:'Premium (ücretsiz olanların hepsine ek olarak)',
       priceNote:'Fiyatlar USD cinsindendir. Yıllık abonelikte 2 ay bedavadır.',
       simulate:"Premium'u simüle et",backToFree:'Ücretsiz plana dön',simNote:'Simülasyon: gerçek ödeme alınmaz, hiçbir şey satın alınmaz.',perMonth:'/ ay',perYear:'/ yıl',billingLabel:'Faturalama dönemi',billingMonthly:'Aylık',billingYearly:'Yıllık',twoMonthsFree:'2 ay bedava',yearlyNote:'12 ay yerine 10 ay öde',monthlyEquiv:'Aylık ≈ {price}',
@@ -76,14 +76,14 @@
     },
     en:{
       nav:'Main navigation',today:'Today',words:'Words',study:'Study',stats:'Stats',profile:'Profile',back:'Back',menu:'Menu',menuClose:'Close menu',addedWords:'Added words',addedTapClose:'Tap to close',orbNewWord:'New Words',orbMemorized:'Memorized',photoAdd:'Add a photo',photoChange:'Change photo',photoRemove:'Remove photo',photoView:'Enlarge the profile photo',photoRemoveTitle:'Remove the photo?',photoRemoveText:'Your profile photo is deleted from this device. You can add it again later.',photoRemoveYes:'Remove',photoTitle:'Profile photo',photoHelp:'Drag to place it, pinch or use the slider to zoom. The part inside the circle is used.',photoZoom:'Zoom',photoStage:'Photo area: arrow keys move it, + and - zoom',photoSave:'Save',photoCancel:'Cancel',photoBad:'This file could not be opened as a picture. Choose a picture of up to 15 MB.',photoSaveFailed:'The photo could not be saved: there is not enough room on this device.',dayWordsLabel:'{day}, {kind}: {n} words. Show the words',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} words',dayWordsMore:'and {n} more',
-      authTitle:'VocVoc',authSub:'Learn and review your words on your device.',authName:'Display name (optional)',authGoogle:'Continue with Google (simulation)',authGuest:'Continue as guest',
-      authNote:'Simulation: there is no real account or server. Your information stays on this device.',demoName:'Demo user',
+      authTitle:'VocVoc',authSub:'Learn and review your words on your device.',authName:'Display name',authEmail:'Email',authContinue:'Continue',authNameError:'Enter your display name.',authEmailError:'Enter a valid email address.',
+      authNote:'Your details are stored only on this device for now.',
       studyTitle:'Study',studyMatch:'Matching',studyMatchSub:'10 rounds of 4 pairs from {n} active words',quizNeedMatch:'Matching needs at least 10 active words. You have {n}.',modeMatch:'Matching',studyTest:'Test',studyTestSub:'10 questions from {n} active words',studyRecall:'Recall',studyRecallSub:'Quiz yourself on {n} memorized words',studyFlip:'Flip',studyFlipSub:'Review by flipping cards',studyCloze:'Fill in the blank',studyClozeSub:'10 questions from the sentences of {n} words',flipAuto:'Read the word by itself when the card changes',flipAutoLocked:'Automatic reading (Premium)',flipMore:'Open the word panel',
       statsTitle:'Statistics',badgesTitle:'Badges',
       lockedTitle:'Premium feature',lockedStats:'Statistics such as daily activity, test accuracy, the learning curve and streaks come with Premium.',goPremium:'Go Premium',
-      profileTitle:'Profile',guest:'Guest',modeGoogle:'Google (simulation)',modeGuest:'On this device',planFree:'Free',planPremium:'Premium (simulation)',
+      profileTitle:'Profile',planFree:'Free',planPremium:'Premium (simulation)',
       rowPremium:'Premium',rowSettings:'Settings',rowHelp:'Help',rowPrivacy:'Privacy Policy',rowTerms:'Terms of Use',rowAbout:'About',
-      signOut:'Sign out (simulation)',signOutNote:'Signing out does not delete your words or progress.',
+      signOut:'Sign out',signOutNote:'Signing out does not delete your words or progress.',
       premiumTitle:'Premium',planLabel:'Current plan',premiumIncludes:'Premium (in addition to everything free)',
       priceNote:'Prices are in USD. The yearly subscription has 2 months free.',
       simulate:'Simulate Premium',backToFree:'Back to the free plan',simNote:'Simulation: no real payment is taken and nothing is purchased.',perMonth:'/ month',perYear:'/ year',billingLabel:'Billing period',billingMonthly:'Monthly',billingYearly:'Yearly',twoMonthsFree:'2 months free',yearlyNote:'Pay for 10 months instead of 12',monthlyEquiv:'About {price} a month',
@@ -108,14 +108,14 @@
     },
     fr:{
       nav:'Navigation principale',today:'Aujourd’hui',words:'Mots',study:'Étudier',stats:'Statistiques',profile:'Profil',back:'Retour',menu:'Menu',menuClose:'Fermer le menu',addedWords:'Mots ajoutés',addedTapClose:'Touchez pour fermer',orbNewWord:'Nouveaux mots',orbMemorized:'Mémorisé',photoAdd:'Ajouter une photo',photoChange:'Changer la photo',photoRemove:'Supprimer la photo',photoView:'Agrandir la photo de profil',photoRemoveTitle:'Supprimer la photo ?',photoRemoveText:'Votre photo de profil est effacée de cet appareil. Vous pourrez la rajouter plus tard.',photoRemoveYes:'Supprimer',photoTitle:'Photo de profil',photoHelp:'Faites glisser pour la placer, pincez ou utilisez le curseur pour zoomer. La partie à l’intérieur du cercle est utilisée.',photoZoom:'Zoom',photoStage:'Zone de la photo : les flèches la déplacent, + et - zooment',photoSave:'Enregistrer',photoCancel:'Annuler',photoBad:'Ce fichier n’a pas pu être ouvert comme image. Choisissez une image de 15 Mo maximum.',photoSaveFailed:'La photo n’a pas pu être enregistrée : il n’y a pas assez de place sur cet appareil.',dayWordsLabel:'{day}, {kind} : {n} mots. Afficher les mots',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} mots',dayWordsMore:'et {n} de plus',
-      authTitle:'VocVoc',authSub:'Apprenez et révisez vos mots sur votre appareil.',authName:'Nom affiché (facultatif)',authGoogle:'Continuer avec Google (simulation)',authGuest:'Continuer en tant qu’invité',
-      authNote:'Simulation : il n’y a ni vrai compte ni serveur. Vos informations restent sur cet appareil.',demoName:'Utilisateur démo',
+      authTitle:'VocVoc',authSub:'Apprenez et révisez vos mots sur votre appareil.',authName:'Nom affiché',authEmail:'E-mail',authContinue:'Continuer',authNameError:'Saisissez votre nom affiché.',authEmailError:'Saisissez une adresse e-mail valide.',
+      authNote:'Vos informations ne sont pour l’instant conservées que sur cet appareil.',
       studyTitle:'Étudier',studyMatch:'Association',studyMatchSub:'10 manches de 4 paires avec {n} mots actifs',quizNeedMatch:'L’association demande au moins 10 mots actifs. Vous en avez {n}.',modeMatch:'Association',studyTest:'Test',studyTestSub:'10 questions parmi {n} mots actifs',studyRecall:'Réviser',studyRecallSub:'Testez-vous sur {n} mots mémorisés',studyFlip:'Flip',studyFlipSub:'Révisez en retournant des cartes',studyCloze:'Texte à trous',studyClozeSub:'10 questions tirées des phrases de {n} mots',flipAuto:'Lire le mot automatiquement quand la carte change',flipAutoLocked:'Lecture automatique (Premium)',flipMore:'Ouvrir la fiche du mot',
       statsTitle:'Statistiques',badgesTitle:'Badges',
       lockedTitle:'Fonction Premium',lockedStats:'Les statistiques comme l’activité quotidienne, la réussite aux tests, la courbe d’apprentissage et les séries sont réservées à Premium.',goPremium:'Passer à Premium',
-      profileTitle:'Profil',guest:'Invité',modeGoogle:'Google (simulation)',modeGuest:'Sur cet appareil',planFree:'Gratuit',planPremium:'Premium (simulation)',
+      profileTitle:'Profil',planFree:'Gratuit',planPremium:'Premium (simulation)',
       rowPremium:'Premium',rowSettings:'Réglages',rowHelp:'Aide',rowPrivacy:'Politique de confidentialité',rowTerms:'Conditions d’utilisation',rowAbout:'À propos',
-      signOut:'Se déconnecter (simulation)',signOutNote:'Se déconnecter ne supprime ni vos mots ni votre progression.',
+      signOut:'Se déconnecter',signOutNote:'Se déconnecter ne supprime ni vos mots ni votre progression.',
       premiumTitle:'Premium',planLabel:'Offre actuelle',premiumIncludes:'Premium (en plus de tout ce qui est gratuit)',
       priceNote:'Les prix sont en USD. L’abonnement annuel offre 2 mois.',
       simulate:'Simuler Premium',backToFree:'Revenir à l’offre gratuite',simNote:'Simulation : aucun vrai paiement n’est prélevé et rien n’est acheté.',perMonth:'/ mois',perYear:'/ an',billingLabel:'Période de facturation',billingMonthly:'Mensuel',billingYearly:'Annuel',twoMonthsFree:'2 mois offerts',yearlyNote:'Payez 10 mois au lieu de 12',monthlyEquiv:'Environ {price} par mois',
@@ -140,14 +140,14 @@
     },
     de:{
       nav:'Hauptnavigation',today:'Heute',words:'Wörter',study:'Lernen',stats:'Statistik',profile:'Profil',back:'Zurück',menu:'Menü',menuClose:'Menü schließen',addedWords:'Hinzugefügte Wörter',addedTapClose:'Zum Schließen tippen',orbNewWord:'Neue Wörter',orbMemorized:'Gelernt',photoAdd:'Foto hinzufügen',photoChange:'Foto ändern',photoRemove:'Foto entfernen',photoView:'Profilfoto vergrößern',photoRemoveTitle:'Foto entfernen?',photoRemoveText:'Ihr Profilfoto wird von diesem Gerät gelöscht. Sie können es später wieder hinzufügen.',photoRemoveYes:'Entfernen',photoTitle:'Profilfoto',photoHelp:'Zum Platzieren ziehen, zum Zoomen zwei Finger oder den Regler verwenden. Der Teil im Kreis wird verwendet.',photoZoom:'Zoom',photoStage:'Fotobereich: Pfeiltasten verschieben, + und - zoomen',photoSave:'Speichern',photoCancel:'Abbrechen',photoBad:'Diese Datei konnte nicht als Bild geöffnet werden. Wählen Sie ein Bild bis 15 MB.',photoSaveFailed:'Das Foto konnte nicht gespeichert werden: Auf diesem Gerät ist nicht genug Platz.',dayWordsLabel:'{day}, {kind}: {n} Wörter. Wörter anzeigen',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} Wörter',dayWordsMore:'und {n} weitere',
-      authTitle:'VocVoc',authSub:'Lernen und wiederholen Sie Ihre Wörter auf Ihrem Gerät.',authName:'Anzeigename (optional)',authGoogle:'Mit Google fortfahren (Simulation)',authGuest:'Als Gast fortfahren',
-      authNote:'Simulation: Es gibt kein echtes Konto und keinen Server. Ihre Daten bleiben auf diesem Gerät.',demoName:'Demo-Nutzer',
+      authTitle:'VocVoc',authSub:'Lernen und wiederholen Sie Ihre Wörter auf Ihrem Gerät.',authName:'Anzeigename',authEmail:'E-Mail',authContinue:'Weiter',authNameError:'Geben Sie Ihren Anzeigenamen ein.',authEmailError:'Geben Sie eine gültige E-Mail-Adresse ein.',
+      authNote:'Ihre Angaben werden vorerst nur auf diesem Gerät gespeichert.',
       studyTitle:'Lernen',studyMatch:'Zuordnen',studyMatchSub:'10 Runden mit je 4 Paaren aus {n} aktiven Wörtern',quizNeedMatch:'Zuordnen braucht mindestens 10 aktive Wörter. Sie haben {n}.',modeMatch:'Zuordnen',studyTest:'Test',studyTestSub:'10 Fragen aus {n} aktiven Wörtern',studyRecall:'Wiederholen',studyRecallSub:'Testen Sie sich an {n} gelernten Wörtern',studyFlip:'Flip',studyFlipSub:'Mit umgedrehten Karten wiederholen',studyCloze:'Lückentext',studyClozeSub:'10 Fragen aus den Sätzen von {n} Wörtern',flipAuto:'Wort beim Kartenwechsel automatisch vorlesen',flipAutoLocked:'Automatisches Vorlesen (Premium)',flipMore:'Wortfenster öffnen',
       statsTitle:'Statistik',badgesTitle:'Abzeichen',
       lockedTitle:'Premium-Funktion',lockedStats:'Statistiken wie tägliche Aktivität, Testergebnisse, Lernkurve und Serien gibt es mit Premium.',goPremium:'Premium holen',
-      profileTitle:'Profil',guest:'Gast',modeGoogle:'Google (Simulation)',modeGuest:'Auf diesem Gerät',planFree:'Kostenlos',planPremium:'Premium (Simulation)',
+      profileTitle:'Profil',planFree:'Kostenlos',planPremium:'Premium (Simulation)',
       rowPremium:'Premium',rowSettings:'Einstellungen',rowHelp:'Hilfe',rowPrivacy:'Datenschutzerklärung',rowTerms:'Nutzungsbedingungen',rowAbout:'Über',
-      signOut:'Abmelden (Simulation)',signOutNote:'Beim Abmelden werden Ihre Wörter und Ihr Fortschritt nicht gelöscht.',
+      signOut:'Abmelden',signOutNote:'Beim Abmelden werden Ihre Wörter und Ihr Fortschritt nicht gelöscht.',
       premiumTitle:'Premium',planLabel:'Aktueller Tarif',premiumIncludes:'Premium (zusätzlich zu allem Kostenlosen)',
       priceNote:'Preise in USD. Beim Jahresabo sind 2 Monate gratis.',
       simulate:'Premium simulieren',backToFree:'Zurück zum kostenlosen Tarif',simNote:'Simulation: Es wird keine echte Zahlung abgebucht und nichts gekauft.',perMonth:'/ Monat',perYear:'/ Jahr',billingLabel:'Abrechnungszeitraum',billingMonthly:'Monatlich',billingYearly:'Jährlich',twoMonthsFree:'2 Monate gratis',yearlyNote:'10 Monate zahlen statt 12',monthlyEquiv:'Etwa {price} pro Monat',
@@ -172,14 +172,14 @@
     },
     es:{
       nav:'Navegación principal',today:'Hoy',words:'Palabras',study:'Estudiar',stats:'Estadísticas',profile:'Perfil',back:'Atrás',menu:'Menú',menuClose:'Cerrar menú',addedWords:'Palabras añadidas',addedTapClose:'Toca para cerrar',orbNewWord:'Palabras nuevas',orbMemorized:'Memorizado',photoAdd:'Añadir foto',photoChange:'Cambiar foto',photoRemove:'Quitar foto',photoView:'Ampliar la foto de perfil',photoRemoveTitle:'¿Quitar la foto?',photoRemoveText:'Tu foto de perfil se borra de este dispositivo. Puedes volver a añadirla más tarde.',photoRemoveYes:'Quitar',photoTitle:'Foto de perfil',photoHelp:'Arrastra para colocarla; pellizca o usa el control deslizante para ampliar. Se usa la parte que queda dentro del círculo.',photoZoom:'Zoom',photoStage:'Zona de la foto: las flechas la mueven, + y - amplían',photoSave:'Guardar',photoCancel:'Cancelar',photoBad:'Este archivo no se pudo abrir como imagen. Elige una imagen de hasta 15 MB.',photoSaveFailed:'No se pudo guardar la foto: no hay espacio suficiente en este dispositivo.',dayWordsLabel:'{day}, {kind}: {n} palabras. Mostrar las palabras',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} palabras',dayWordsMore:'y {n} más',
-      authTitle:'VocVoc',authSub:'Aprende y repasa tus palabras en tu dispositivo.',authName:'Nombre visible (opcional)',authGoogle:'Continuar con Google (simulación)',authGuest:'Continuar como invitado',
-      authNote:'Simulación: no hay cuenta ni servidor reales. Tu información se queda en este dispositivo.',demoName:'Usuario de prueba',
+      authTitle:'VocVoc',authSub:'Aprende y repasa tus palabras en tu dispositivo.',authName:'Nombre visible',authEmail:'Correo electrónico',authContinue:'Continuar',authNameError:'Escribe tu nombre visible.',authEmailError:'Escribe un correo electrónico válido.',
+      authNote:'Por ahora tu información se guarda solo en este dispositivo.',
       studyTitle:'Estudiar',studyMatch:'Emparejar',studyMatchSub:'10 rondas de 4 parejas con {n} palabras activas',quizNeedMatch:'Emparejar necesita al menos 10 palabras activas. Tienes {n}.',modeMatch:'Emparejar',studyTest:'Test',studyTestSub:'10 preguntas de {n} palabras activas',studyRecall:'Repasar',studyRecallSub:'Ponte a prueba con {n} palabras memorizadas',studyFlip:'Flip',studyFlipSub:'Repasa dando la vuelta a las tarjetas',studyCloze:'Rellenar huecos',studyClozeSub:'10 preguntas con las frases de {n} palabras',flipAuto:'Leer la palabra sola al cambiar de tarjeta',flipAutoLocked:'Lectura automática (Premium)',flipMore:'Abrir el panel de la palabra',
       statsTitle:'Estadísticas',badgesTitle:'Insignias',
       lockedTitle:'Función Premium',lockedStats:'Las estadísticas, como la actividad diaria, el acierto en los tests, la curva de aprendizaje y las rachas, llegan con Premium.',goPremium:'Pasar a Premium',
-      profileTitle:'Perfil',guest:'Invitado',modeGoogle:'Google (simulación)',modeGuest:'En este dispositivo',planFree:'Gratis',planPremium:'Premium (simulación)',
+      profileTitle:'Perfil',planFree:'Gratis',planPremium:'Premium (simulación)',
       rowPremium:'Premium',rowSettings:'Ajustes',rowHelp:'Ayuda',rowPrivacy:'Política de privacidad',rowTerms:'Condiciones de uso',rowAbout:'Acerca de',
-      signOut:'Cerrar sesión (simulación)',signOutNote:'Cerrar sesión no borra tus palabras ni tu progreso.',
+      signOut:'Cerrar sesión',signOutNote:'Cerrar sesión no borra tus palabras ni tu progreso.',
       premiumTitle:'Premium',planLabel:'Plan actual',premiumIncludes:'Premium (además de todo lo gratuito)',
       priceNote:'Los precios son en USD. La suscripción anual tiene 2 meses gratis.',
       simulate:'Simular Premium',backToFree:'Volver al plan gratuito',simNote:'Simulación: no se cobra ningún pago real y no se compra nada.',perMonth:'/ mes',perYear:'/ año',billingLabel:'Periodo de facturación',billingMonthly:'Mensual',billingYearly:'Anual',twoMonthsFree:'2 meses gratis',yearlyNote:'Paga 10 meses en lugar de 12',monthlyEquiv:'Unos {price} al mes',
@@ -204,14 +204,14 @@
     },
     it:{
       nav:'Navigazione principale',today:'Oggi',words:'Parole',study:'Studia',stats:'Statistiche',profile:'Profilo',back:'Indietro',menu:'Menu',menuClose:'Chiudi il menu',addedWords:'Parole aggiunte',addedTapClose:'Tocca per chiudere',orbNewWord:'Parole nuove',orbMemorized:'Memorizzato',photoAdd:'Aggiungi una foto',photoChange:'Cambia foto',photoRemove:'Rimuovi foto',photoView:'Ingrandisci la foto del profilo',photoRemoveTitle:'Rimuovere la foto?',photoRemoveText:'La tua foto del profilo viene eliminata da questo dispositivo. Potrai aggiungerla di nuovo più tardi.',photoRemoveYes:'Rimuovi',photoTitle:'Foto del profilo',photoHelp:'Trascina per posizionarla, pizzica o usa il cursore per ingrandire. Viene usata la parte dentro il cerchio.',photoZoom:'Zoom',photoStage:'Area della foto: le frecce la spostano, + e - ingrandiscono',photoSave:'Salva',photoCancel:'Annulla',photoBad:'Questo file non si può aprire come immagine. Scegli un’immagine fino a 15 MB.',photoSaveFailed:'Non è stato possibile salvare la foto: su questo dispositivo non c’è abbastanza spazio.',dayWordsLabel:'{day}, {kind}: {n} parole. Mostra le parole',dayWordsTitle:'{day} · {kind}',dayWordsCount:'{n} parole',dayWordsMore:'e altre {n}',
-      authTitle:'VocVoc',authSub:'Impara e ripassa le tue parole sul tuo dispositivo.',authName:'Nome visualizzato (facoltativo)',authGoogle:'Continua con Google (simulazione)',authGuest:'Continua come ospite',
-      authNote:'Simulazione: non esistono un account o un server reali. Le tue informazioni restano su questo dispositivo.',demoName:'Utente demo',
+      authTitle:'VocVoc',authSub:'Impara e ripassa le tue parole sul tuo dispositivo.',authName:'Nome visualizzato',authEmail:'E-mail',authContinue:'Continua',authNameError:'Inserisci il tuo nome visualizzato.',authEmailError:'Inserisci un indirizzo e-mail valido.',
+      authNote:'Per ora le tue informazioni restano solo su questo dispositivo.',
       studyTitle:'Studia',studyMatch:'Abbina',studyMatchSub:'10 round da 4 coppie con {n} parole attive',quizNeedMatch:'Abbinare richiede almeno 10 parole attive. Ne hai {n}.',modeMatch:'Abbina',studyTest:'Test',studyTestSub:'10 domande da {n} parole attive',studyRecall:'Ripassa',studyRecallSub:'Mettiti alla prova su {n} parole memorizzate',studyFlip:'Flip',studyFlipSub:'Ripassa girando le carte',studyCloze:'Completa la frase',studyClozeSub:'10 domande dalle frasi di {n} parole',flipAuto:'Leggi la parola da sola quando cambia la carta',flipAutoLocked:'Lettura automatica (Premium)',flipMore:'Apri il pannello della parola',
       statsTitle:'Statistiche',badgesTitle:'Badge',
       lockedTitle:'Funzione Premium',lockedStats:'Statistiche come attività giornaliera, risultati dei test, curva di apprendimento e serie sono incluse in Premium.',goPremium:'Passa a Premium',
-      profileTitle:'Profilo',guest:'Ospite',modeGoogle:'Google (simulazione)',modeGuest:'Su questo dispositivo',planFree:'Gratuito',planPremium:'Premium (simulazione)',
+      profileTitle:'Profilo',planFree:'Gratuito',planPremium:'Premium (simulazione)',
       rowPremium:'Premium',rowSettings:'Impostazioni',rowHelp:'Aiuto',rowPrivacy:'Informativa sulla privacy',rowTerms:'Termini d’uso',rowAbout:'Informazioni',
-      signOut:'Esci (simulazione)',signOutNote:'Uscire non cancella le tue parole né i tuoi progressi.',
+      signOut:'Esci',signOutNote:'Uscire non cancella le tue parole né i tuoi progressi.',
       premiumTitle:'Premium',planLabel:'Piano attuale',premiumIncludes:'Premium (in più rispetto a tutto ciò che è gratuito)',
       priceNote:'I prezzi sono in USD. L’abbonamento annuale ha 2 mesi gratis.',
       simulate:'Simula Premium',backToFree:'Torna al piano gratuito',simNote:'Simulazione: nessun pagamento reale viene addebitato e non si acquista nulla.',perMonth:'/ mese',perYear:'/ anno',billingLabel:'Periodo di fatturazione',billingMonthly:'Mensile',billingYearly:'Annuale',twoMonthsFree:'2 mesi gratis',yearlyNote:'Paga 10 mesi invece di 12',monthlyEquiv:'Circa {price} al mese',
@@ -416,7 +416,11 @@
   function icon(name){const span=h('span',{class:'v2-icon','aria-hidden':'true'});span.innerHTML='<svg viewBox="0 0 24 24" focusable="false">'+ICONS[name]+'</svg>';return span;}
 
   /* ---------- profile (simulated) ---------- */
-  function readProfile(){try{const value=JSON.parse(store.get(PROFILE_KEY)||'null');return value&&(value.mode==='guest'||value.mode==='google-sim')?value:null;}catch(_){return null;}}
+  const EMAIL_PATTERN=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const validEmail=value=>typeof value==='string'&&value.length<=254&&EMAIL_PATTERN.test(value);
+  // A saved profile counts only with a display name and a valid email (a profile from the old simulated sign-in has no email, so it is asked again).
+  function readProfile(){try{const value=JSON.parse(store.get(PROFILE_KEY)||'null');return value&&typeof value.name==='string'&&value.name.trim()&&validEmail(value.email)?{name:value.name.trim(),email:value.email}:null;}catch(_){return null;}}
+  function readLegacyName(){try{const value=JSON.parse(store.get(LEGACY_PROFILE_KEY)||'null');return value&&typeof value.name==='string'?value.name.trim().slice(0,40):'';}catch(_){return '';}}
 
 
   /* ---------- activity record and statistics (the numbers come from stats.js) ---------- */
@@ -1232,8 +1236,8 @@
   }
   function chipFor(plan){return h('span',{class:'v2-chip'+(plan==='premium'?' v2-premium':''),text:t(plan==='premium'?'planPremium':'planFree')});}
   function profileScreen(){
-    const profile=readProfile()||{mode:'guest',name:''};
-    const name=profile.name||t('guest');
+    const profile=readProfile()||{name:'',email:''};
+    const name=profile.name;
     const row=(label,run,end,danger)=>h('li',{},h('button',{type:'button',class:'v2-row','data-danger':danger?'':null,onclick:run},h('span',{text:label}),end?h('span',{class:'v2-row-end',text:end}):null));
     return page(heading(t('profileTitle')),
       h('div',{class:'v2-card'},
@@ -1245,7 +1249,7 @@
                  :h('div',{class:'v2-avatar','aria-hidden':'true'},name.trim().charAt(0).toUpperCase()||'V'),
             h('button',{type:'button',class:'v2-photo-btn v2-photo-edit','data-v2-focus':'photo','aria-label':t(photo?'photoChange':'photoAdd'),title:t(photo?'photoChange':'photoAdd'),onclick:()=>document.getElementById('v2PhotoInput').click()},icon('edit')),
             photo?h('button',{type:'button',class:'v2-photo-btn v2-photo-remove','aria-label':t('photoRemove'),title:t('photoRemove'),onclick:askRemovePhoto},icon('trash')):null),
-          h('div',{},h('p',{class:'v2-profile-name',text:name}),h('div',{},chipFor(VocVocPlan.get())),h('p',{class:'v2-muted v2-profile-mode',text:t(profile.mode==='google-sim'?'modeGoogle':'modeGuest')}))),
+          h('div',{},h('p',{class:'v2-profile-name',text:name}),h('div',{},chipFor(VocVocPlan.get())),h('p',{class:'v2-muted v2-profile-mode',text:profile.email}))),
         h('input',{type:'file',id:'v2PhotoInput',accept:'image/*',hidden:true,onchange:event=>chosePhoto(event.target)})),
       h('ul',{class:'v2-rows'},
         row(t('rowPremium'),()=>navigate('premium'),'›'),
@@ -1344,7 +1348,7 @@
     return t({today:'today',words:'words',study:'studyTitle',stats:'statsTitle',profile:'profileTitle',settings:'rowSettings',premium:'premiumTitle',about:'aboutTitle',test:'studyTest',recall:'studyRecall',cloze:'studyCloze',match:'studyMatch',flip:'studyFlip'}[route]||'today');
   }
   function syncChrome(){
-    const route=shown||currentRoute(),current=TAB_OF[route],name=readProfile()?.name||t('guest');
+    const route=shown||currentRoute(),current=TAB_OF[route],name=readProfile()?.name||'';
     barTitle.textContent=pageTitle(route);
     avatarButton.firstChild.replaceChildren(photo?photoCanvas(36):(name.trim().charAt(0).toUpperCase()||'V'));
     avatarButton.setAttribute('aria-label',t('profile')+': '+name);
@@ -1517,24 +1521,36 @@
 
   /* ---------- simulated sign-in ---------- */
   function setBackgroundInert(inert){root.inert=inert;if(container)container.inert=inert;}
-  function openAuth(){
+  // First run (and after signing out): the display name and the email are asked for, both required. They are kept on this device only.
+  function openAuth(prefill){
+    const known=prefill||{name:readLegacyName(),email:''};
+    const field=(id,label,type,value,autocomplete)=>h('div',{class:'v2-field'},
+      h('label',{for:id,text:label}),
+      h('input',{id,class:'ui-input',type,maxlength:type==='email'?'254':'40',autocomplete,value,'aria-required':'true','aria-describedby':id+'Error',onkeydown:event=>{if(event.key==='Enter'){event.preventDefault();finishAuth();}}}),
+      h('p',{id:id+'Error',class:'v2-field-error',role:'alert'}));
     auth.replaceChildren(h('div',{class:'v2-auth-card',lang:lang()},
       h('h1',{id:'v2AuthTitle',tabindex:'-1',text:t('authTitle')}),h('p',{text:t('authSub')}),
-      h('div',{class:'v2-field'},h('label',{for:'v2AuthName',text:t('authName')}),h('input',{id:'v2AuthName',class:'ui-input',type:'text',maxlength:'40',autocomplete:'off'})),
-      h('div',{class:'v2-auth-buttons'},
-        h('button',{type:'button',class:'ui-button ui-button-success',onclick:()=>finishAuth('google-sim')},t('authGoogle')),
-        h('button',{type:'button',class:'ui-button ui-button-secondary',onclick:()=>finishAuth('guest')},t('authGuest'))),
+      field('v2AuthName',t('authName'),'text',known.name,'name'),
+      field('v2AuthEmail',t('authEmail'),'email',known.email,'email'),
+      h('div',{class:'v2-auth-buttons'},h('button',{type:'button',class:'ui-button ui-button-success',onclick:finishAuth},t('authContinue'))),
       h('p',{class:'v2-note',text:t('authNote')})));
     auth.classList.add('v2-open');setBackgroundInert(true);
     auth.querySelector('#v2AuthTitle').focus({preventScroll:true});
   }
-  function finishAuth(mode){
-    const typed=auth.querySelector('#v2AuthName')?.value.trim()||'';
-    store.set(PROFILE_KEY,JSON.stringify({mode,name:mode==='guest'?'':(typed||t('demoName'))}));
+  function finishAuth(){
+    const nameInput=auth.querySelector('#v2AuthName'),emailInput=auth.querySelector('#v2AuthEmail');
+    if(!nameInput||!emailInput)return;
+    const name=nameInput.value.trim(),email=emailInput.value.trim();
+    const mark=(input,bad,key)=>{input.setAttribute('aria-invalid',String(bad));document.getElementById(input.id+'Error').textContent=bad?t(key):'';return bad;};
+    const badName=mark(nameInput,!name,'authNameError'),badEmail=mark(emailInput,!validEmail(email),'authEmailError');
+    if(badName||badEmail){(badName?nameInput:emailInput).focus({preventScroll:true});return;}
+    store.set(PROFILE_KEY,JSON.stringify({name,email}));
+    store.remove(LEGACY_PROFILE_KEY);
     auth.classList.remove('v2-open');auth.replaceChildren();setBackgroundInert(false);
     navigate('today');
+    syncChrome();
   }
-  function signOut(){store.remove(PROFILE_KEY);store.remove(PHOTO_KEY);photo=null;openAuth();}
+  function signOut(){const previous=readProfile();store.remove(PROFILE_KEY);store.remove(PHOTO_KEY);photo=null;openAuth(previous);}
 
   /* ---------- start ---------- */
   function start(){

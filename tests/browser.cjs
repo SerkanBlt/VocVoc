@@ -19,13 +19,19 @@ async function main(){
  const launch={headless:true};if(process.env.PWA_BROWSER_PATH){launch.executablePath=process.env.PWA_BROWSER_PATH;launch.args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'];}
  browser=await chromium.launch(launch);
  // Every context of the suite reports Content Security Policy violations: a normal session must never trigger one (the CSP scenario at the end causes one on purpose and removes it).
- const cspViolations=[],rawNewContext=browser.newContext.bind(browser);
- browser.newContext=async(...args)=>{const c=await rawNewContext(...args);
+ const cspViolations=[],rawNewContext=browser.newContext.bind(browser),rawPersistent=chromium.launchPersistentContext.bind(chromium);
+ // The new interface is on by default now. Most scenarios were written for the old interface, so their contexts start with it switched off (VOCVOC_UI=v1, set only when nothing is stored yet,
+ // so ?ui=v2 in a scenario still wins and is remembered). The scenario that checks the default turns this off for its own context.
+ let oldUiByDefault=true;
+ const oldUiScript=()=>{try{if(localStorage.getItem('VOCVOC_UI')===null)localStorage.setItem('VOCVOC_UI','v1');}catch(_){}};
+ chromium.launchPersistentContext=async(...args)=>{const c=await rawPersistent(...args);if(oldUiByDefault)await c.addInitScript(oldUiScript);return c;};
+ browser.newContext=async(...args)=>{const c=await rawNewContext(...args);if(oldUiByDefault)await c.addInitScript(oldUiScript);
   await c.addInitScript(()=>document.addEventListener('securitypolicyviolation',e=>{if(!window.__cspExpected)console.error('CSP-VIOLATION '+e.violatedDirective+' '+e.blockedURI);},true));
   await c.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>new MutationObserver(()=>{const orb=document.getElementById('v2Orb');if(orb&&!window.__keepOrb&&!orb.classList.contains('v2-leaving'))orb.querySelector('.v2-orb-hint').click();}).observe(document.body,{childList:true})));   // the screen of Add New Words stays until its button is pressed: every scenario but its own presses it at once
   c.on('console',m=>{if(/CSP-VIOLATION|Content Security Policy/i.test(m.text()))cspViolations.push(m.text());});return c;};
  const errors=[];let context=await browser.newContext();await context.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>{window.bootRenderCounts={history:0,content:0};for(const [name,key] of [['renderHistory','history'],['renderAllLocal','content']]){const original=window[name];window[name]=(...args)=>{bootRenderCounts[key]++;return original(...args);};}}));let page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  const ready=async(p=page)=>{await p.waitForFunction(()=>document.getElementById('storageBoot').hidden);await p.evaluate(()=>VocVocData.flush());};
+ const signIn=async(p,name='Test',email='test@example.com')=>{await p.locator('#v2AuthName').fill(name);await p.locator('#v2AuthEmail').fill(email);await p.getByRole('button',{name:/Devam et/}).click();};   // the first-run profile form
  const goTo=async(p,label)=>{await p.locator('.v2-menu-btn').click();await p.locator('.v2-nav-item',{hasText:label}).click();};   // the menu replaced the tab bar
  await page.goto(url);await ready();assert.equal(await page.evaluate(()=>VocVocData.getHistoryWords().length),3);assert.equal(await page.evaluate(()=>VocVocRegression.run().passed),true);assert.deepEqual(await page.evaluate(()=>bootRenderCounts),{history:1,content:1});assert.equal(await page.locator('#storageBoot').isVisible(),false);record('fresh initialization + 12 SPA guards + one main render pass');
  await page.evaluate(()=>navigator.serviceWorker.ready);await page.reload();await ready();await page.waitForFunction(()=>!!navigator.serviceWorker.controller);assert.equal((await page.evaluate(()=>VocVocPWARegression.run())).passed,true);record('online load/reload + worker activation + PWA guards');
@@ -1132,17 +1138,33 @@ async function main(){
   assert.deepEqual([packRequests,await page.evaluate(()=>document.querySelectorAll('.v2-speak,.v2-pack').length)],[[],0]);   // no download, no buttons
   assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),document.body.classList.contains('v2'),typeof VocVocPlan,VocVocPlan.get(),VocVocPlan.has('stats'),!!document.getElementById('v2Dashboard'),getComputedStyle(document.querySelector('.study-actions')).display!=='none',localStorage.getItem('VOCVOC_ACTIVITY_V1')]),[false,false,'object','free',false,false,true,null]);
   await context.close();
-  record('new interface: off by default (no tab bar, no sign-in); the plan helper exists and says Free');
+  record('new interface: ?ui=v1 (remembered) turns it off (no menu, no first-run form); the plan helper exists and says Free');
 
-  // opt-in with ?ui=v2: the simulated sign-in comes first
+  // on by default, on every device: no ?ui=v2 needed. The first-run form asks for a display name and an email, both required
+  oldUiByDefault=false;
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(url+'?ui=v2');await ready();await page.waitForSelector('#v2Auth.v2-open');
-  assert.deepEqual(await page.evaluate(()=>[document.activeElement.id,document.getElementById('v2Root').inert,document.querySelector('.container').inert,document.getElementById('v2Auth').getAttribute('role')]),['v2AuthTitle',true,true,'dialog']);
-  assert.match(await page.locator('#v2Auth').textContent(),/Simülasyon/);
-  await page.locator('#v2AuthName').fill('Ayşe');await page.getByRole('button',{name:/Google/}).click();
+  oldUiByDefault=true;
+  await context.addInitScript(()=>{if(!localStorage.getItem('VOCVOC_PROFILE')&&!localStorage.getItem('VOCVOC_SIM_PROFILE'))localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'}));});   // what the old simulated sign-in left behind
+  await page.goto(url);await ready();await page.waitForSelector('#v2Auth.v2-open');
+  assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),localStorage.getItem('VOCVOC_UI'),document.activeElement.id,document.getElementById('v2Root').inert,document.querySelector('.container').inert,document.getElementById('v2Auth').getAttribute('role')]),[true,null,'v2AuthTitle',true,true,'dialog']);
+  assert.equal(await page.getByRole('button',{name:/Google|Misafir/}).count(),0,'no simulated sign-in choices');assert.doesNotMatch(await page.locator('#v2Auth').textContent(),/imülasyon/);
+  assert.equal(await page.locator('#v2AuthName').inputValue(),'Ayşe','the name of the old profile is offered again');assert.equal(await page.locator('#v2AuthEmail').inputValue(),'');
+  // nothing typed, then a bad email: each field says what is wrong, nothing is saved, the form stays
+  await page.locator('#v2AuthName').fill('');await page.getByRole('button',{name:/Devam et/}).click();
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2AuthNameError').textContent,document.getElementById('v2AuthEmailError').textContent,document.activeElement.id,localStorage.getItem('VOCVOC_PROFILE')]),['Görünen adını yaz.','Geçerli bir e-posta adresi yaz.','v2AuthName',null]);
+  await page.locator('#v2AuthName').fill('Ayşe');await page.locator('#v2AuthEmail').fill('ayse@örnek');await page.getByRole('button',{name:/Devam et/}).click();
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2AuthNameError').textContent,document.getElementById('v2AuthEmail').getAttribute('aria-invalid'),document.activeElement.id,document.getElementById('v2Auth').classList.contains('v2-open')]),['','true','v2AuthEmail',true]);
+  await page.locator('#v2AuthEmail').fill(' ayse@example.com ');await page.locator('#v2AuthEmail').press('Enter');
   await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
-  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Root').inert,document.querySelector('.container').inert,JSON.parse(localStorage.getItem('VOCVOC_SIM_PROFILE')).name]),[false,false,'Ayşe']);
-  record('new interface: the simulated sign-in comes first, blocks what is behind it, and a profile is remembered');
+  assert.deepEqual(await page.evaluate(()=>[document.getElementById('v2Root').inert,document.querySelector('.container').inert,JSON.parse(localStorage.getItem('VOCVOC_PROFILE')),localStorage.getItem('VOCVOC_SIM_PROFILE')]),[false,false,{name:'Ayşe',email:'ayse@example.com'},null]);
+  await page.reload();await ready();await pause(300);
+  assert.equal(await page.evaluate(()=>document.getElementById('v2Auth').classList.contains('v2-open')),false,'a saved profile is not asked for again');
+  await page.evaluate(()=>{location.hash='#/profile';});await page.waitForSelector('#v2Screen[data-route="profile"] .v2-rows');
+  assert.match(await page.locator('#v2Screen .v2-profile-head').textContent(),/Ayşe[^]*ayse@example\.com/);
+  // a profile without an email (anything an older version saved) is asked again
+  await page.evaluate(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe'})));await page.reload();await ready();await page.waitForSelector('#v2Auth.v2-open');
+  await signIn(page,'Ayşe','ayse@example.com');await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});   // the scenarios below go on signed in
+  record('new interface: on by default without ?ui=v2; the first-run form asks for a display name and an email (both required, validated), blocks what is behind it, replaces the simulated sign-in and is remembered');
 
   // menu: the entries the tab bar had (Badges moved into Today), Settings last; Words is the existing home screen (search, word cards, the list), Today and the others are pages
   const entries=()=>page.evaluate(()=>[...document.querySelectorAll('.v2-nav-item')].map(item=>item.textContent+(item.getAttribute('aria-current')==='page'?'*':'')));
@@ -1263,11 +1285,11 @@ async function main(){
   const wordCount=await page.evaluate(()=>VocVocData.getWords().length);
   await page.getByRole('button',{name:/Çıkış yap/}).click();await page.waitForSelector('#v2Auth.v2-open');
   assert.equal(await page.evaluate(()=>VocVocData.getWords().length),wordCount);
-  await page.getByRole('button',{name:/Misafir olarak/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  await signIn(page);await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
   await page.evaluate(()=>{location.hash='#/profile';});await page.waitForSelector('#v2Screen[data-route="profile"] .v2-rows');
   assert.equal(await page.getByRole('button',{name:/Eski arayüze dön/}).count(),0);assert.equal(await page.locator('#v2Screen').getByText(/eski arayüz/i).count(),0);
   await page.goto(url+'?ui=v1');await ready();
-  assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),localStorage.getItem('VOCVOC_UI')]),[false,null]);
+  assert.deepEqual(await page.evaluate(()=>[!!document.getElementById('v2Root'),localStorage.getItem('VOCVOC_UI')]),[false,'v1']);
   record('new interface: draft policy/terms/help/about pages, sign-out keeps the data, no "old interface" row on the Profile page, ?ui=v1 turns the new one off');
   await context.close();
  }
@@ -1276,7 +1298,7 @@ async function main(){
   const quizWords=n=>Array.from({length:n},(_,index)=>({word:'qa'+index,meaning:'anlam '+index}));
   // a finished Test is recorded; a perfect one earns badges, announced once
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(url+'?ui=v2');await ready();await page.waitForSelector('#v2Auth.v2-open');await page.getByRole('button',{name:/Misafir olarak/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+  await page.goto(url+'?ui=v2');await ready();await page.waitForSelector('#v2Auth.v2-open');await signIn(page);await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
   const activity=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')));
   assert.deepEqual(await page.evaluate(()=>[JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')).seeded,document.getElementById('v2Celebrate')?.classList.contains('v2-on')||false]),[true,false]);   // the very first look is silent
   await page.evaluate(words=>VocVocData.addWordBatch(words),quizWords(12));
@@ -1328,7 +1350,7 @@ async function main(){
     words[id]={id,word,normalized:word,targetLanguage:'fr',nativeLanguage:'tr',type:'isim',meaning:'anlam '+i,synonyms:[],antonyms:[],examples:[],expressions:[],createdAt:added,updatedAt:added};aliases[id]=id;
     progress[id]={wordId:id,status:memorizedWord?'memorized':'active',firstSeenAt:added,lastSeenAt:added,statusChangedAt:memorized||added,memorizedAt:memorized,archivedAt:null,archiveSourceStatus:null};}
    localStorage.setItem('VOCVOC_DB_V1',JSON.stringify({schemaVersion:1,meta:{starterWordsInitialized:true},settings:{nativeLanguage:'tr',targetLanguage:'fr',difficulty:'A1-A2',dailyLimit:'10',theme:'system',fontSize:'normal'},words,aliases,progress,dailyUsage:{date:null,count:0}}));
-   localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'}));localStorage.setItem('VOCVOC_SIM_PLAN','premium');
+   localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'}));localStorage.setItem('VOCVOC_SIM_PLAN','premium');
    localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify({v:1,seeded,testsTaken:3,badges:{},quizzes:[
     {t:quizDays[0],mode:'active',score:6,total:10,wrong:['s20','s21','s22','s23']},{t:quizDays[1],mode:'recall',score:9,total:10,wrong:['s20']},{t:quizDays[2],mode:'active',score:10,total:10,wrong:[]}]}));
   };
@@ -1428,7 +1450,7 @@ async function main(){
   const openGuest=async({scores,width=360,height=640,context:options={}}={})=>{
    const c=await browser.newContext({viewport:{width,height},...options}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
    if(scores)await c.addInitScript(list=>{if(!localStorage.getItem('VOCVOC_ACTIVITY_V1'))localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify({v:1,seeded:false,testsTaken:list.length,badges:{},quizzes:list.map((score,index)=>({t:new Date(Date.now()-(list.length-index)*864e5).toISOString(),mode:'active',score,total:10,wrong:[]}))}));},scores);
-   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Auth.v2-open');await p.getByRole('button',{name:/Misafir olarak/}).click();await p.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Auth.v2-open');await signIn(p);await p.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
    return {c,p};
   };
   const openStudy=async p=>{await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] h1');};
@@ -1528,9 +1550,9 @@ async function main(){
  }
  // ===== New interface: the bar at the top of every page and the menu that slides in from the left =====
  {
-  const openSignedIn=async({width=390,height=844,context:options={},profile={mode:'google-sim',name:'Ayşe'}}={})=>{
+  const openSignedIn=async({width=390,height=844,context:options={},profile={name:'Ayşe',email:'ayse@example.com'}}={})=>{
    const c=await browser.newContext({viewport:{width,height},...options}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
-   await c.addInitScript(value=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify(value)),profile);
+   await c.addInitScript(value=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify(value)),profile);
    await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] h1');
    return {c,p};
   };
@@ -1597,8 +1619,8 @@ async function main(){
    await c.close();
   }
   {
-   const {c,p}=await openSignedIn({profile:{mode:'guest',name:''}});                                    // a guest has no name: the letter of "Misafir"
-   assert.equal(await p.evaluate(()=>document.querySelector('.v2-avatar-dot').textContent),'M');
+   const {c,p}=await openSignedIn({profile:{name:'zeynep',email:'zeynep@example.com'}});                                  // the letter of the display name, in capitals
+   assert.equal(await p.evaluate(()=>document.querySelector('.v2-avatar-dot').textContent),'Z');
    await c.close();
   }
   {
@@ -1629,7 +1651,7 @@ async function main(){
     words[id]={id,word,normalized:word,targetLanguage:'fr',nativeLanguage:'tr',type:'isim',meaning:'anlam '+i,synonyms:[],antonyms:[],examples:[],expressions:[],createdAt:added,updatedAt:added};aliases[id]=id;
     progress[id]={wordId:id,status:memorizedWord?'memorized':'active',firstSeenAt:added,lastSeenAt:added,statusChangedAt:memorized||added,memorizedAt:memorized,archivedAt:null,archiveSourceStatus:null};}
    localStorage.setItem('VOCVOC_DB_V1',JSON.stringify({schemaVersion:1,meta:{starterWordsInitialized:true},settings:{nativeLanguage:'tr',targetLanguage:'fr',difficulty:'A1-A2',dailyLimit:'10',theme:'system',fontSize:'normal'},words,aliases,progress,dailyUsage:{date:null,count:0}}));
-   localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'}));localStorage.setItem('VOCVOC_SIM_PLAN','premium');
+   localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'}));localStorage.setItem('VOCVOC_SIM_PLAN','premium');
    localStorage.setItem('VOCVOC_ACTIVITY_V1',JSON.stringify({v:1,seeded:false,testsTaken:0,badges:{},quizzes:[]}));
   };
   const openSeeded=async(route='stats')=>{
@@ -1704,7 +1726,7 @@ async function main(){
   record('new interface: in the Added panel of the last seven days a memorized word is faded like in the History list, in the Memorized panel none is');
   {
    const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
-   await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'guest',name:''})));
+   await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Test',email:'test@example.com'})));
    await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-days');
    assert.deepEqual(await p.evaluate(()=>[document.querySelectorAll('.v2-slot-btn').length,document.querySelectorAll('.v2-slot').length,[...document.querySelectorAll('.v2-slot')].every(node=>node.tagName==='SPAN'&&node.getAttribute('aria-hidden')==='true')]),[0,14,true]);   // empty bars are not buttons
    await c.close();
@@ -1714,7 +1736,7 @@ async function main(){
   // the profile photo: chosen from the device, moved and zoomed under a round window (mouse, wheel, slider, keys, two fingers), kept as a small square JPEG, shown round in the bar and on the profile
   {
    const c=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
-   await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+   await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'})));
    await p.goto(url+'?ui=v2#/profile');await ready(p);await p.waitForSelector('#v2Screen[data-route="profile"] h1');
    const choose=(options={})=>p.evaluate(async({type='image/png',size=0,text=null})=>{
     let picture;
@@ -1818,7 +1840,7 @@ async function main(){
  // ===== New interface: the interface language follows the Settings; the pronunciation stays in the user's original language =====
  {
   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
-  await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'})));
   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] h1');
   const snapshot=()=>p.evaluate(()=>({bar:document.querySelector('.v2-bar-title').textContent,heading:document.querySelector('#v2Screen h1')?.textContent,menu:[...document.querySelectorAll('.v2-nav-label')].map(node=>node.textContent),menuButton:document.querySelector('.v2-menu-btn').getAttribute('aria-label'),avatar:document.querySelector('.v2-avatar-btn').getAttribute('aria-label'),daily:document.querySelector('.v2-goal .ui-button')?.textContent,pageLang:document.querySelector('.v2-page')?.lang}));
   assert.deepEqual(await snapshot(),{bar:'Bugün',heading:'Bugün',menu:['Bugün','Kelimeler','Çalış','İstatistik','Profil','Ayarlar'],menuButton:'Menü',avatar:'Profil: Ayşe',daily:'Yeni Kelime Ekle',pageLang:'tr'});
@@ -1826,7 +1848,7 @@ async function main(){
   await p.locator('.v2-menu-btn').click();await p.locator('.v2-nav-settings').click();await p.waitForSelector('#v2Screen[data-route="settings"] #appLanguageDropdown');
   await p.locator('#appLanguageDropdown .ui-dropdown-trigger').click();await p.locator('#appLanguageDropdown .ui-dropdown-option[data-value="en"]').click();
   await p.waitForFunction(()=>document.querySelector('.v2-bar-title').textContent==='Settings');
-  assert.deepEqual(await snapshot(),{bar:'Settings',heading:'Settings',menu:['Today','Words','Study','Stats','Profile','Settings'],menuButton:'Menu',avatar:'Profile: Ayşe',pageLang:'en'});
+  assert.deepEqual(await snapshot(),{bar:'Settings',heading:'Settings',menu:['Today','Words','Study','Stats','Profile','Settings'],menuButton:'Menu',avatar:'Profile: Ayşe',daily:undefined,pageLang:'en'});
   await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] h1');
   assert.equal(await p.evaluate(()=>document.querySelector('.v2-goal-add').textContent),'Add New Words');
   // another page: a change made while it is open redraws it in the new language and keeps its place
@@ -1870,7 +1892,7 @@ async function main(){
  // ===== New interface: no scrollbar anywhere, and everything still scrolls =====
  {
   const c=await browser.newContext({viewport:{width:390,height:500}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
-  await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'})));
   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
   for(let press=0;press<2;press++){await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await pause(500);}
@@ -1896,7 +1918,7 @@ async function main(){
  // ===== New interface: the Fill in the blank test =====
  {
   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
-  await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'})));
   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
   // how the blank is made (it must leave the word out, find it also as written in an inflected form, and not invent one)
   assert.deepEqual(await p.evaluate(()=>[
@@ -1942,7 +1964,7 @@ async function main(){
  // ===== New interface: the Matching test =====
  {
   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
-  await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'})));
   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
   const studyOf=word=>p.evaluate(w=>VocVocData.getWordByText(w)?.study||{},word);
   // not enough active words: the page says how many there are, and nothing starts
@@ -2066,7 +2088,7 @@ async function main(){
  // ===== Words page: three lists (Today, Yesterday, Earlier) each under a label; in each list more points first, the same points in the order they were pulled =====
  {
   context=await browser.newContext({viewport:{width:390,height:844}});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-  await context.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'guest',name:''})));          // signed in as a guest: the new interface has its menu
+  await context.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Test',email:'test@example.com'})));          // signed in as a guest: the new interface has its menu
   await page.goto(url+'?ui=v2');await ready();
   await page.evaluate(()=>VocVocData.updateSettings({appLanguage:'en'}));await page.reload();await ready();
   await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:11},(_,i)=>'w'+(i+1)).map(word=>({word,meaning:'anlam '+word}))));
@@ -2150,7 +2172,7 @@ async function main(){
  // ===== New badges: the first 10 points, the first Recall and Matching test, more than 10 / 30 / 50 Flip cards, a badge for each level passed; gradients that end in purple =====
  {
   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
-  await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'})));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'})));
   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
   const activity=()=>p.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')||'{}'));
   const badgeList=()=>p.evaluate(()=>VocVocStats.compute({words:[],quizzes:[],today:'2026-10-17'}).badges.length);
@@ -2233,7 +2255,7 @@ async function main(){
  }
  // ===== New interface: ready-made word packs and read-aloud =====
  {
-  const signedIn=()=>{localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'google-sim',name:'Ayşe'}));};
+  const signedIn=()=>{localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'}));};
   // French is a course now (chunk files); the four other pairs are still single 40-word packs. The scenarios of the single-pack code run on French served as such a pack (a fixture);
   // openPage({course:true}) leaves the real files alone, so the course scenarios run on what ships.
   const legacyPack=fs.readFileSync(path.join(root,'tests/fixtures/fr-tr-pack.json'),'utf8');
@@ -2564,7 +2586,7 @@ async function main(){
   // the Today card has a Words button next to the Daily button; a daily goal above 20 words is a Premium feature
   {
    const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
-   await c.addInitScript(()=>localStorage.setItem('VOCVOC_SIM_PROFILE',JSON.stringify({mode:'guest',name:''})));
+   await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Test',email:'test@example.com'})));
    await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-goal-actions');
    assert.deepEqual(await p.locator('.v2-goal-actions button').allTextContents(),['Yeni Kelime Ekle','Kelimelerime Git']);
    // the two buttons are the same size, and wear the two gradients: Add New Words green to purple, Go to My Words orange to purple, both from the lower left to the upper right
@@ -2833,7 +2855,7 @@ async function main(){
    const ratioOn=bg=>{const text=fg.a<1?blend(fg,bg):fg,L1=lum(text),L2=lum(bg);return (Math.max(L1,L2)+.05)/(Math.min(L1,L2)+.05);},stops=[...getComputedStyle(el).backgroundImage.matchAll(/rgba?\([^)]+\)/g)].map(match=>parse(match[0])).filter(Boolean),ratio=stops.length?Math.min(...stops.map(stop=>ratioOn(blend(stop,base)))):ratioOn(base);   // a gradient background: the worst of its colours
    const style=getComputedStyle(el);return {ratio:Math.round(ratio*100)/100,size:parseFloat(style.fontSize),weight:style.fontWeight};
  };
-  const checks=[['',[['#v2Auth h1'],['#v2Auth p'],['#v2Auth label'],['#v2Auth .ui-button-success'],['#v2Auth .ui-button-secondary'],['#v2Auth .v2-note']]],
+  const checks=[['',[['#v2Auth h1'],['#v2Auth p'],['#v2Auth label'],['#v2Auth .ui-button-success'],['#v2Auth .ui-input'],['#v2Auth .v2-field-error'],['#v2Auth .v2-note']]],
    ['#/today',[['#v2Screen h1'],['.v2-goal-label'],['.v2-goal-value'],['.v2-pack .v2-goal-label'],['.v2-pack-text'],['.v2-goal .ui-button'],['.v2-goal-words'],['.v2-stat strong'],['.v2-stat span'],['#v2Dashboard .v2-day-label'],['#v2Dashboard .v2-day-num'],['#v2Dashboard .v2-legend'],['#v2Dashboard .v2-card h2'],['.v2-subtab[aria-selected="true"]'],['.v2-subtab[aria-selected="false"]'],['.v2-subtab-count']]],
    ['#/test',[['.v2-study-bar h1'],['#v2QuizCount'],['.v2-close'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91']]],
    ['#/cloze',[['.v2-study-bar h1'],['#v2QuizCount'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91'],['#v2QuizHost .quiz-cloze-hint']]],
@@ -2851,7 +2873,7 @@ async function main(){
    const failures=[];
    const measureAll=async list=>{for(const [selector] of list){const result=await page.evaluate(MEASURE,[selector,null]);assert(result,`${selector} not found (${colorScheme})`);measured++;const need=(result.size>=24||(result.size>=18.66&&Number(result.weight)>=700))?3:4.5;if(result.ratio<need)failures.push(`${selector} ${result.ratio}:1 < ${need}`);}};
    await measureAll(checks[0][1]);
-   await page.getByRole('button',{name:/Misafir olarak/}).click();await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
+   await signIn(page);await page.waitForSelector('#v2Auth:not(.v2-open)',{state:'attached'});
    await page.evaluate(()=>VocVocData.addWordBatch(Array.from({length:12},(_,i)=>({word:'contrast'+i,meaning:'anlam '+i,examples:[{text:'This is contrast'+i+' here.',phonetic:'dis iz kontrast here',translation:'Bu burada.'}],...(i===1?{expressions:[{text:'an idiom',translation:'bir deyim',exampleText:'An example.',examplePhonetic:'en igzempıl',exampleTranslation:'Bir örnek.'}]}:{})}))));
    for(const [hash,list] of checks.slice(1)){await page.evaluate(h=>{location.hash=h;},hash);await page.waitForSelector(hash==='#/today'?'#v2Screen[data-route="today"] .v2-pack-text':`#v2Screen[data-route="${hash.slice(2)}"] h1`);if(hash==='#/test'||hash==='#/cloze')await page.waitForSelector('#v2QuizHost .quiz-option');await measureAll(list);}
    await page.evaluate(()=>{VocVocPlan.set('premium');location.hash='#/premium';});await page.waitForSelector('#v2Screen[data-route="premium"] .v2-chip-on-dark');await measureAll([['.v2-chip-on-dark'],['.v2-plan-btn-quiet']]);
