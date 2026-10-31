@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.28.0">
+  <meta name="vocvoc-shell" content="1.29.0">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -2182,7 +2182,7 @@ body{
 .flip-panel.flip-memorized{--flip-status-tone:var(--success)}
 .flip-panel.flip-active{--flip-status-tone:var(--danger)}
 .flip-panel .flip-nav{background:transparent}
-.flip-panel .flip-nav:hover{background:color-mix(in srgb,var(--flip-status-tone) 12%,transparent)}
+.flip-panel .flip-nav:hover{background:transparent;color:color-mix(in srgb,var(--flip-status-tone) 80%,var(--text))}   /* the arrow changes colour, the button's background does not */
 
 .flip-panel > .ui-panel-close{top:var(--ui-panel-y);transform:none;z-index:2}
 .flip-panel .word-panel-scroll-body{display:flex;flex-direction:column;padding:0}

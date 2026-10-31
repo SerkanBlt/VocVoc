@@ -1402,7 +1402,7 @@ async function main(){
    // the Study page: the same Tests panel on top, the latest tests at the very bottom, newest first, a bullet by score (10 and 9 green, 6 orange)
    await route(p,'study');
    assert.deepEqual(await p.locator('#v2Screen .v2-statline .v2-stat strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['3','83%','10/10']);
-   assert.equal(await p.locator('#v2Screen .v2-page').evaluate(node=>[...node.children].map(child=>child.tagName+(child.querySelector('.v2-testlist')?'-list':'')).join()),'H1,SECTION,BUTTON,BUTTON,BUTTON,BUTTON,BUTTON,SECTION-list');
+   assert.equal(await p.locator('#v2Screen .v2-page').evaluate(node=>[...node.children].map(child=>child.tagName+(child.querySelector('.v2-testlist')?'-list':'')).join()),'H1,SECTION,BUTTON,BUTTON,BUTTON,BUTTON,BUTTON,BUTTON,SECTION-list');   // the cards: Test, Recall, Fill in the blank, Matching, Flip, Watch/Listen list
    assert.deepEqual(await p.locator('.v2-testlist li strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['10/10','9/10','6/10']);
    assert.deepEqual(await p.locator('.v2-testlist .v2-bullet').evaluateAll(nodes=>nodes.map(node=>node.className.replace('v2-bullet ',''))),['v2-bullet-great','v2-bullet-great','v2-bullet-fair']);
    // Today shows the last seven days of the same history (the streak is on the Statistics page)
@@ -1872,11 +1872,11 @@ async function main(){
   assert.equal(await p.evaluate(()=>document.querySelector('.v2-goal-add').textContent),'Add New Words');
   // another page: a change made while it is open redraws it in the new language and keeps its place
   await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
-  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Recall','Fill in the blank','Matching','Flip']);
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Recall','Fill in the blank','Matching','Flip','Watch/Listen List']);
   await p.evaluate(()=>{document.getElementById('v2Screen').scrollTop=60;});
   await p.evaluate(()=>changeAppLanguage('tr'));
   await p.waitForFunction(()=>document.querySelector('.v2-study-title')?.textContent==='Test'&&document.querySelectorAll('.v2-study-title')[1].textContent==='Hatırla');
-  assert.deepEqual([await p.locator('.v2-study-title').allTextContents(),await p.locator('.v2-bar-title').textContent(),await p.evaluate(()=>document.getElementById('v2Screen').scrollTop>0||document.getElementById('v2Screen').scrollHeight<=document.getElementById('v2Screen').clientHeight)],[['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip'],'Çalış',true]);
+  assert.deepEqual([await p.locator('.v2-study-title').allTextContents(),await p.locator('.v2-bar-title').textContent(),await p.evaluate(()=>document.getElementById('v2Screen').scrollTop>0||document.getElementById('v2Screen').scrollHeight<=document.getElementById('v2Screen').clientHeight)],[['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip','İzleme/Dinleme Listesi'],'Çalış',true]);
   // French, German, Spanish and Italian have their own texts on every page of the new interface: bar, menu, page language, and no English left over
   await p.evaluate(()=>VocVocPlan.set('premium'));                                                 // the statistics page is complete only with Premium
   const wanted={fr:['Étudier','Aujourd’hui,Mots,Étudier,Statistiques,Profil,Réglages'],de:['Lernen','Heute,Wörter,Lernen,Statistik,Profil,Einstellungen'],es:['Estudiar','Hoy,Palabras,Estudiar,Estadísticas,Perfil,Ajustes'],it:['Studia','Oggi,Parole,Studia,Statistiche,Profilo,Impostazioni']};
@@ -1953,7 +1953,7 @@ async function main(){
   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
   for(let press=0;press<2;press++){await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await pause(500);}
   await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
-  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip']);
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip','İzleme/Dinleme Listesi']);
   assert.match(await p.locator('.v2-study-card',{hasText:'Boşluk Doldurma'}).textContent(),/\d+ kelimenin cümlesinden 10 soru/);
   await p.locator('.v2-study-card',{hasText:'Boşluk Doldurma'}).click();await p.waitForSelector('#v2QuizHost .quiz-option');
   assert.deepEqual(await p.evaluate(()=>[location.hash,document.querySelector('.v2-study-bar h1').textContent,document.querySelector('.v2-appbar')&&getComputedStyle(document.querySelector('.v2-appbar')).display,quizSession.mode,quizSession.questions.length]),['#/cloze','Boşluk Doldurma','none','cloze',10]);
@@ -1997,7 +1997,7 @@ async function main(){
   assert.equal(await p.evaluate(()=>getMatchPool().some(entry=>entry.word==='ma11')),false);
   // the Study page offers it between Fill in the blank and Flip
   await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
-  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip']);
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip','İzleme/Dinleme Listesi']);
   assert.match(await p.locator('.v2-study-card',{hasText:'Eşleştirme'}).textContent(),/\d+ aktif kelimeyle 10 tur, her turda 4 eşleme/);
   await p.locator('.v2-study-card',{hasText:'Eşleştirme'}).click();await p.waitForSelector('#v2QuizHost .match-item');
   assert.deepEqual(await p.evaluate(()=>[location.hash,document.querySelector('.v2-study-bar h1').textContent,document.querySelector('.v2-appbar')&&getComputedStyle(document.querySelector('.v2-appbar')).display,quizSession.mode,quizSession.questions.length,document.getElementById('v2QuizCount').textContent]),['#/match','Eşleştirme','none','match',10,'Soru 1/10']);
@@ -2860,6 +2860,54 @@ async function main(){
   }
   record('Flip: a lock beside the speaker (locked on Free, off at the first card, on reads each new card by itself and goes off when the Flip closes) and three dots at the lower left that open the word panel above the Flip');
  }
+ // ===== New interface: the Watch/Listen list on the Study page (web links as a to-do list) =====
+ {
+  const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'})));
+  await c.route('https://example.com/**',route=>route.fulfill({status:200,contentType:'text/html',body:'<title>ok</title>'}));   // no real network: the "Watch" tab opens a page of this address
+  await p.goto(url+'?ui=v2#/study');await ready(p);await p.waitForSelector('#v2Screen[data-route="study"] [data-v2-focus="watch"]');
+  const stored=()=>p.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_WATCHLIST_V1')||'null'));
+  // the card sits after Flip and before the last tests, and looks like the other cards
+  assert.deepEqual(await p.evaluate(()=>{const cards=[...document.querySelectorAll('#v2Screen .v2-study-card')],watch=document.querySelector('[data-v2-focus="watch"]'),last=[...document.querySelectorAll('#v2Screen h2')].find(node=>node.textContent==='Son testler');const after=(a,b)=>!!(a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING);return [cards.indexOf(watch),cards.length,after(cards[cards.length-2],watch),after(watch,last),watch.querySelector('.v2-study-title').textContent,watch.querySelector('.v2-study-sub').textContent,watch.className===cards[0].className];}),[5,6,true,true,'İzleme/Dinleme Listesi','0 bağlantı',true]);
+  await p.locator('[data-v2-focus="watch"]').click();await p.waitForSelector('#v2Watch');
+  assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Watch').getAttribute('role'),document.getElementById('v2Watch').getAttribute('aria-modal'),document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.activeElement.id,document.querySelector('.v2-watch-empty').hidden,document.querySelector('.v2-watch-card > .v2-actions .ui-button').disabled]),['dialog','true',true,true,'v2WatchTitleIn',false,true]);
+  // only http(s) addresses get in; a bare address gets https://
+  await p.locator('#v2WatchUrlIn').fill('javascript:alert(1)');await p.getByRole('button',{name:'Ekle'}).click();
+  assert.deepEqual([await p.locator('#v2WatchAddError').textContent(),await stored(),await p.evaluate(()=>document.activeElement.id)],['Geçerli bir web adresi yaz (https://…).',null,'v2WatchUrlIn']);
+  await p.locator('#v2WatchUrlIn').fill('file:///c:/secret');await p.getByRole('button',{name:'Ekle'}).click();assert.equal(await stored(),null);
+  await p.locator('#v2WatchTitleIn').fill('Podcast');await p.locator('#v2WatchUrlIn').fill('example.com/podcast');await p.locator('#v2WatchUrlIn').press('Enter');
+  await p.locator('#v2WatchUrlIn').fill('https://example.com/video');await p.getByRole('button',{name:'Ekle'}).click();
+  assert.deepEqual((await stored()).map(item=>[item.title,item.url,item.done]),[['Podcast','https://example.com/podcast',false],['','https://example.com/video',false]]);
+  assert.deepEqual(await p.evaluate(()=>[[...document.querySelectorAll('.v2-watch-name')].map(node=>node.textContent),document.querySelector('.v2-watch-empty').hidden,document.getElementById('v2WatchAddError').textContent,document.activeElement.id]),[['Podcast','example.com/video'],true,'','v2WatchTitleIn']);
+  // ticking strikes the name through and is remembered
+  await p.getByRole('checkbox',{name:'Tamamlandı: Podcast'}).check();
+  assert.deepEqual([(await stored())[0].done,await p.evaluate(()=>getComputedStyle(document.querySelector('.v2-watch-done .v2-watch-name')).textDecorationLine)],[true,'line-through']);
+  // choosing a link enables "Watch", which opens it in a new tab (the default browser of the device)
+  await p.getByRole('button',{name:'example.com/video',exact:true}).click();
+  assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-watch-main[aria-pressed="true"]')?.textContent.includes('example.com/video'),document.querySelector('.v2-watch-card > .v2-actions .ui-button').disabled]),[true,false]);
+  const [popup]=await Promise.all([c.waitForEvent('page'),p.getByRole('button',{name:'İzle',exact:true}).click()]);
+  await popup.waitForLoadState();assert.equal(popup.url(),'https://example.com/video');await popup.close();
+  // edit: the fields come with the saved values, a bad address is refused, Escape leaves the edit (not the panel), Enter saves
+  await p.getByRole('button',{name:'Düzenle: Podcast'}).click();
+  assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2WatchEditTitle').value,document.getElementById('v2WatchEditUrl').value,document.activeElement.id]),['Podcast','https://example.com/podcast','v2WatchEditTitle']);
+  await p.locator('#v2WatchEditUrl').fill('not a link');await p.locator('#v2WatchEditUrl').press('Enter');
+  assert.deepEqual([await p.locator('#v2WatchEditError').textContent(),(await stored())[0].url],['Geçerli bir web adresi yaz (https://…).','https://example.com/podcast']);
+  await p.keyboard.press('Escape');
+  assert.deepEqual(await p.evaluate(()=>[!!document.getElementById('v2Watch'),!!document.getElementById('v2WatchEditUrl'),document.activeElement.getAttribute('data-watch-edit')!==null]),[true,false,true]);
+  await p.getByRole('button',{name:'Düzenle: Podcast'}).click();
+  await p.locator('#v2WatchEditTitle').fill('Fransızca podcast');await p.locator('#v2WatchEditUrl').fill('example.com/fr');await p.locator('#v2WatchEditUrl').press('Enter');
+  assert.deepEqual((await stored()).map(item=>[item.title,item.url,item.done]),[['Fransızca podcast','https://example.com/fr',true],['','https://example.com/video',false]]);
+  // delete
+  await p.getByRole('button',{name:'Sil: example.com/video'}).click();
+  assert.deepEqual([(await stored()).length,await p.evaluate(()=>document.querySelectorAll('.v2-watch-item').length),await p.evaluate(()=>document.querySelector('.v2-watch-main[aria-pressed="true"]'))],[1,1,null]);
+  // it is all still there after a reload; Escape closes the panel, the card says how many, focus is back on it
+  await p.reload();await ready(p);await p.locator('[data-v2-focus="watch"]').click();await p.waitForSelector('#v2Watch');
+  assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-watch-name').textContent,!!document.querySelector('.v2-watch-done'),document.querySelectorAll('.v2-watch-item').length]),['Fransızca podcast',true,1]);
+  await p.keyboard.press('Escape');await p.waitForSelector('#v2Watch',{state:'detached'});
+  assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.querySelector('[data-v2-focus="watch"] .v2-study-sub').textContent,document.activeElement.getAttribute('data-v2-focus')]),[false,false,'1 bağlantı','watch']);
+  record('new interface: the Watch/Listen list sits between Flip and the last tests; web links are added (only http/https), ticked off (struck through), edited, deleted, chosen and opened in a new tab; kept after a reload');
+  await c.close();
+ }
  // ===== New interface: WCAG AA contrast of its screens, light and dark =====
  {
  const MEASURE=([selector,pseudo])=>{
@@ -2979,6 +3027,10 @@ async function main(){
    const arrows=await page.evaluate(()=>[...document.querySelectorAll('#flipOverlay .flip-nav')].map(button=>{const style=getComputedStyle(button);return [style.borderTopWidth,style.borderRightWidth,style.borderBottomWidth,style.borderLeftWidth,style.borderStyle].join(' ');}));
    assert.equal(arrows.length,4);                                                                   // two arrows on each of the two faces
    assert(arrows.every(border=>/^0px 0px 0px 0px /.test(border)),`the arrows still have a border (${colorScheme}): ${arrows}`);
+   // hovering an arrow changes the colour of the arrow, not the background of the button
+   const arrowLook=()=>page.evaluate(()=>{const style=getComputedStyle(document.querySelector('#flipOverlay [data-flip-face="front"] [data-flip-nav="1"]'));return [style.backgroundColor,style.color];});
+   const resting=await arrowLook();await page.hover('#flipOverlay [data-flip-face="front"] [data-flip-nav="1"]');await pause(400);const hovered=await arrowLook();
+   assert.equal(hovered[0],resting[0],`the arrow's background changes on hover (${colorScheme}): ${resting[0]} -> ${hovered[0]}`);assert.notEqual(hovered[1],resting[1],`the arrow keeps its colour on hover (${colorScheme})`);
    await context.close();
   }
   record('Flip: the previous/next arrows have no border on either face, in the light and the dark theme');

@@ -50,7 +50,7 @@
       statsTitle:'İstatistikler',badgesTitle:'Rozetler',
       lockedTitle:'Premium özelliği',lockedStats:'Günlük etkinlik, test başarısı, öğrenme eğrisi ve seri gibi istatistikler Premium ile açılır.',goPremium:"Premium'a geç",
       profileTitle:'Profil',planFree:'Ücretsiz',planPremium:'Premium (simülasyon)',
-      rowPremium:'Premium',rowEditProfile:'Bilgilerimi düzenle',rowSettings:'Ayarlar',rowHelp:'Yardım',rowPrivacy:'Gizlilik Politikası',rowTerms:'Kullanım Şartları',rowAbout:'Hakkında',
+      rowPremium:'Premium',rowEditProfile:'Bilgilerimi düzenle',watchTitle:'İzleme/Dinleme Listesi',watchCount:'{n} bağlantı',watchEmpty:'Henüz bağlantı yok. Bir video, podcast ya da makale bağlantısı ekle.',watchLabelTitle:'Başlık (isteğe bağlı)',watchLabelUrl:'Web bağlantısı',watchAdd:'Ekle',watchUrlError:'Geçerli bir web adresi yaz (https://…).',watchFull:'Liste dolu: en çok {n} bağlantı.',watchOpen:'İzle',watchEdit:'Düzenle',watchDelete:'Sil',watchDoneLabel:'Tamamlandı: {name}',watchPick:'İzlemek için listeden bir bağlantı seç.',rowSettings:'Ayarlar',rowHelp:'Yardım',rowPrivacy:'Gizlilik Politikası',rowTerms:'Kullanım Şartları',rowAbout:'Hakkında',
       signOut:'Çıkış yap',signOutNote:'Çıkış, kelimelerini ve ilerlemeni silmez.',
       premiumTitle:'Premium',planLabel:'Mevcut plan',premiumIncludes:'Premium (ücretsiz olanların hepsine ek olarak)',
       priceNote:'Fiyatlar USD cinsindendir. Yıllık abonelikte 2 ay bedavadır.',
@@ -82,7 +82,7 @@
       statsTitle:'Statistics',badgesTitle:'Badges',
       lockedTitle:'Premium feature',lockedStats:'Statistics such as daily activity, test accuracy, the learning curve and streaks come with Premium.',goPremium:'Go Premium',
       profileTitle:'Profile',planFree:'Free',planPremium:'Premium (simulation)',
-      rowPremium:'Premium',rowEditProfile:'Edit my details',rowSettings:'Settings',rowHelp:'Help',rowPrivacy:'Privacy Policy',rowTerms:'Terms of Use',rowAbout:'About',
+      rowPremium:'Premium',rowEditProfile:'Edit my details',watchTitle:'Watch/Listen List',watchCount:'{n} links',watchEmpty:'No links yet. Add a link to a video, podcast or article.',watchLabelTitle:'Title (optional)',watchLabelUrl:'Web link',watchAdd:'Add',watchUrlError:'Enter a valid web address (https://…).',watchFull:'The list is full: at most {n} links.',watchOpen:'Watch',watchEdit:'Edit',watchDelete:'Delete',watchDoneLabel:'Done: {name}',watchPick:'Pick a link from the list to watch it.',rowSettings:'Settings',rowHelp:'Help',rowPrivacy:'Privacy Policy',rowTerms:'Terms of Use',rowAbout:'About',
       signOut:'Sign out',signOutNote:'Signing out does not delete your words or progress.',
       premiumTitle:'Premium',planLabel:'Current plan',premiumIncludes:'Premium (in addition to everything free)',
       priceNote:'Prices are in USD. The yearly subscription has 2 months free.',
@@ -114,7 +114,7 @@
       statsTitle:'Statistiques',badgesTitle:'Badges',
       lockedTitle:'Fonction Premium',lockedStats:'Les statistiques comme l’activité quotidienne, la réussite aux tests, la courbe d’apprentissage et les séries sont réservées à Premium.',goPremium:'Passer à Premium',
       profileTitle:'Profil',planFree:'Gratuit',planPremium:'Premium (simulation)',
-      rowPremium:'Premium',rowEditProfile:'Modifier mes informations',rowSettings:'Réglages',rowHelp:'Aide',rowPrivacy:'Politique de confidentialité',rowTerms:'Conditions d’utilisation',rowAbout:'À propos',
+      rowPremium:'Premium',rowEditProfile:'Modifier mes informations',watchTitle:'Liste à regarder/écouter',watchCount:'{n} liens',watchEmpty:'Aucun lien pour l’instant. Ajoutez le lien d’une vidéo, d’un podcast ou d’un article.',watchLabelTitle:'Titre (facultatif)',watchLabelUrl:'Lien web',watchAdd:'Ajouter',watchUrlError:'Saisissez une adresse web valide (https://…).',watchFull:'La liste est pleine : {n} liens au maximum.',watchOpen:'Regarder',watchEdit:'Modifier',watchDelete:'Supprimer',watchDoneLabel:'Terminé : {name}',watchPick:'Choisissez un lien dans la liste pour le regarder.',rowSettings:'Réglages',rowHelp:'Aide',rowPrivacy:'Politique de confidentialité',rowTerms:'Conditions d’utilisation',rowAbout:'À propos',
       signOut:'Se déconnecter',signOutNote:'Se déconnecter ne supprime ni vos mots ni votre progression.',
       premiumTitle:'Premium',planLabel:'Offre actuelle',premiumIncludes:'Premium (en plus de tout ce qui est gratuit)',
       priceNote:'Les prix sont en USD. L’abonnement annuel offre 2 mois.',
@@ -146,7 +146,7 @@
       statsTitle:'Statistik',badgesTitle:'Abzeichen',
       lockedTitle:'Premium-Funktion',lockedStats:'Statistiken wie tägliche Aktivität, Testergebnisse, Lernkurve und Serien gibt es mit Premium.',goPremium:'Premium holen',
       profileTitle:'Profil',planFree:'Kostenlos',planPremium:'Premium (Simulation)',
-      rowPremium:'Premium',rowEditProfile:'Meine Angaben bearbeiten',rowSettings:'Einstellungen',rowHelp:'Hilfe',rowPrivacy:'Datenschutzerklärung',rowTerms:'Nutzungsbedingungen',rowAbout:'Über',
+      rowPremium:'Premium',rowEditProfile:'Meine Angaben bearbeiten',watchTitle:'Anschau-/Hörliste',watchCount:'{n} Links',watchEmpty:'Noch keine Links. Fügen Sie den Link zu einem Video, Podcast oder Artikel hinzu.',watchLabelTitle:'Titel (optional)',watchLabelUrl:'Weblink',watchAdd:'Hinzufügen',watchUrlError:'Geben Sie eine gültige Webadresse ein (https://…).',watchFull:'Die Liste ist voll: höchstens {n} Links.',watchOpen:'Ansehen',watchEdit:'Bearbeiten',watchDelete:'Löschen',watchDoneLabel:'Erledigt: {name}',watchPick:'Wählen Sie einen Link aus der Liste, um ihn anzusehen.',rowSettings:'Einstellungen',rowHelp:'Hilfe',rowPrivacy:'Datenschutzerklärung',rowTerms:'Nutzungsbedingungen',rowAbout:'Über',
       signOut:'Abmelden',signOutNote:'Beim Abmelden werden Ihre Wörter und Ihr Fortschritt nicht gelöscht.',
       premiumTitle:'Premium',planLabel:'Aktueller Tarif',premiumIncludes:'Premium (zusätzlich zu allem Kostenlosen)',
       priceNote:'Preise in USD. Beim Jahresabo sind 2 Monate gratis.',
@@ -178,7 +178,7 @@
       statsTitle:'Estadísticas',badgesTitle:'Insignias',
       lockedTitle:'Función Premium',lockedStats:'Las estadísticas, como la actividad diaria, el acierto en los tests, la curva de aprendizaje y las rachas, llegan con Premium.',goPremium:'Pasar a Premium',
       profileTitle:'Perfil',planFree:'Gratis',planPremium:'Premium (simulación)',
-      rowPremium:'Premium',rowEditProfile:'Editar mis datos',rowSettings:'Ajustes',rowHelp:'Ayuda',rowPrivacy:'Política de privacidad',rowTerms:'Condiciones de uso',rowAbout:'Acerca de',
+      rowPremium:'Premium',rowEditProfile:'Editar mis datos',watchTitle:'Lista para ver/escuchar',watchCount:'{n} enlaces',watchEmpty:'Aún no hay enlaces. Añade el enlace de un vídeo, un pódcast o un artículo.',watchLabelTitle:'Título (opcional)',watchLabelUrl:'Enlace web',watchAdd:'Añadir',watchUrlError:'Escribe una dirección web válida (https://…).',watchFull:'La lista está llena: máximo {n} enlaces.',watchOpen:'Ver',watchEdit:'Editar',watchDelete:'Eliminar',watchDoneLabel:'Hecho: {name}',watchPick:'Elige un enlace de la lista para verlo.',rowSettings:'Ajustes',rowHelp:'Ayuda',rowPrivacy:'Política de privacidad',rowTerms:'Condiciones de uso',rowAbout:'Acerca de',
       signOut:'Cerrar sesión',signOutNote:'Cerrar sesión no borra tus palabras ni tu progreso.',
       premiumTitle:'Premium',planLabel:'Plan actual',premiumIncludes:'Premium (además de todo lo gratuito)',
       priceNote:'Los precios son en USD. La suscripción anual tiene 2 meses gratis.',
@@ -210,7 +210,7 @@
       statsTitle:'Statistiche',badgesTitle:'Badge',
       lockedTitle:'Funzione Premium',lockedStats:'Statistiche come attività giornaliera, risultati dei test, curva di apprendimento e serie sono incluse in Premium.',goPremium:'Passa a Premium',
       profileTitle:'Profilo',planFree:'Gratuito',planPremium:'Premium (simulazione)',
-      rowPremium:'Premium',rowEditProfile:'Modifica i miei dati',rowSettings:'Impostazioni',rowHelp:'Aiuto',rowPrivacy:'Informativa sulla privacy',rowTerms:'Termini d’uso',rowAbout:'Informazioni',
+      rowPremium:'Premium',rowEditProfile:'Modifica i miei dati',watchTitle:'Lista da guardare/ascoltare',watchCount:'{n} link',watchEmpty:'Ancora nessun link. Aggiungi il link di un video, di un podcast o di un articolo.',watchLabelTitle:'Titolo (facoltativo)',watchLabelUrl:'Link web',watchAdd:'Aggiungi',watchUrlError:'Inserisci un indirizzo web valido (https://…).',watchFull:'La lista è piena: al massimo {n} link.',watchOpen:'Guarda',watchEdit:'Modifica',watchDelete:'Elimina',watchDoneLabel:'Fatto: {name}',watchPick:'Scegli un link dalla lista per guardarlo.',rowSettings:'Impostazioni',rowHelp:'Aiuto',rowPrivacy:'Informativa sulla privacy',rowTerms:'Termini d’uso',rowAbout:'Informazioni',
       signOut:'Esci',signOutNote:'Uscire non cancella le tue parole né i tuoi progressi.',
       premiumTitle:'Premium',planLabel:'Piano attuale',premiumIncludes:'Premium (in più rispetto a tutto ciò che è gratuito)',
       priceNote:'I prezzi sono in USD. L’abbonamento annuale ha 2 mesi gratis.',
@@ -986,7 +986,7 @@
   const matchCount=()=>{try{return getMatchPool().length;}catch(_){return 0;}};
   function studyScreen(){
     const {active,memorized}=counts(),tests=currentStats().tests;
-    const card=(glyph,title,sub,run)=>h('button',{type:'button',class:'v2-study-card',onclick:run},
+    const card=(glyph,title,sub,run,focusKey)=>h('button',{type:'button',class:'v2-study-card','data-v2-focus':focusKey||null,onclick:run},
       h('span',{class:'v2-study-glyph','aria-hidden':'true',text:glyph}),
       h('span',{},h('span',{class:'v2-study-title',text:title}),h('span',{class:'v2-study-sub',text:sub})));
     return page(heading(t('studyTitle')),testsPanel(tests),
@@ -995,6 +995,7 @@
       card('✎',t('studyCloze'),fill(t('studyClozeSub'),{n:clozeCount()}),()=>navigate('cloze')),
       card('⧉',t('studyMatch'),fill(t('studyMatchSub'),{n:matchCount()}),()=>navigate('match')),
       card('⇄',t('studyFlip'),t('studyFlipSub'),()=>navigate('flip')),
+      card('▶',t('watchTitle'),fill(t('watchCount'),{n:readWatch().length}),openWatch,'watch'),
       recentTests(tests));
   }
 
@@ -1520,6 +1521,121 @@
     crop={node,bitmap};draw();stage.focus({preventScroll:true});
   }
 
+  /* ---------- Watch/Listen list: web links as a to-do list (Study page) ---------- */
+  // Links the learner wants to watch or listen to (a video, a podcast, an article). Each one is ticked off (struck through), edited, deleted, or
+  // chosen and opened in the default browser. The list lives only in this browser (not in the backup; a progress reset leaves it alone).
+  const WATCH_KEY='VOCVOC_WATCHLIST_V1',WATCH_MAX=200,WATCH_TITLE_MAX=120,WATCH_URL_MAX=2000;
+  // What the learner typed becomes an http(s) address or nothing: "youtube.com/x" gets https://, any other scheme (javascript:, data:, file: …) is refused.
+  function normalizeWatchUrl(raw){
+    let text=String(raw==null?'':raw).trim();
+    if(!text||text.length>WATCH_URL_MAX||/\s/.test(text))return null;
+    if(!/^https?:\/\//i.test(text)){if(/^[a-z][a-z0-9+.-]*:(?!\d)/i.test(text))return null;text='https://'+text;}
+    let url;try{url=new URL(text);}catch(_){return null;}
+    if(url.protocol!=='https:'&&url.protocol!=='http:')return null;
+    if(!url.hostname||(!url.hostname.includes('.')&&url.hostname!=='localhost'))return null;
+    return url.href;
+  }
+  function readWatch(){
+    try{
+      const value=JSON.parse(store.get(WATCH_KEY)||'[]');if(!Array.isArray(value))return [];
+      return value.filter(item=>item&&typeof item.id==='string'&&normalizeWatchUrl(item.url)).slice(0,WATCH_MAX)
+        .map(item=>({id:item.id,title:typeof item.title==='string'?item.title.slice(0,WATCH_TITLE_MAX):'',url:normalizeWatchUrl(item.url),done:item.done===true}));
+    }catch(_){return [];}
+  }
+  const writeWatch=list=>store.set(WATCH_KEY,JSON.stringify(list));
+  const newWatchId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  function watchLabel(item){
+    if(item.title)return item.title;
+    try{const url=new URL(item.url);const path=url.pathname==='/'?'':url.pathname;return (url.hostname.replace(/^www\./,'')+path+url.search).slice(0,80);}catch(_){return item.url;}
+  }
+  let watching=null;                                                             // the open panel: {node,list,selected,editing,paint} (or null)
+  function closeWatch(restoreFocus=true){
+    if(!watching)return;
+    leaveDialog(watching.node);watching=null;
+    if(shown==='study')render(false);                                            // the count on the card
+    if(restoreFocus)screen.querySelector('[data-v2-focus="watch"]')?.focus({preventScroll:true});
+  }
+  function openWatchLink(item){
+    const link=h('a',{href:item.url,target:'_blank',rel:'noopener noreferrer'});    // the default browser, in a new window or tab
+    link.style.display='none';document.body.append(link);link.click();link.remove();
+  }
+  function openWatch(){
+    if(watching)return;
+    const state={node:null,list:readWatch(),selected:null,editing:null,focusAfter:null};
+    watching=state;
+    const save=()=>writeWatch(state.list);
+    const titleInput=h('input',{id:'v2WatchTitleIn',class:'ui-input',type:'text',maxlength:String(WATCH_TITLE_MAX),autocomplete:'off',onkeydown:event=>{if(event.key==='Enter'){event.preventDefault();add();}}});
+    const urlInput=h('input',{id:'v2WatchUrlIn',class:'ui-input',type:'url',inputmode:'url',maxlength:String(WATCH_URL_MAX),autocomplete:'off',autocapitalize:'off',spellcheck:'false','aria-describedby':'v2WatchAddError',onkeydown:event=>{if(event.key==='Enter'){event.preventDefault();add();}}});
+    const addError=h('p',{id:'v2WatchAddError',class:'v2-field-error',role:'alert'});
+    const listNode=h('ul',{class:'v2-watch-list'});
+    const emptyNode=h('p',{class:'v2-muted v2-watch-empty',text:t('watchEmpty')});
+    const watchButton=h('button',{type:'button',class:'ui-button ui-button-success',onclick:()=>{const item=state.list.find(entry=>entry.id===state.selected);if(item)openWatchLink(item);}},t('watchOpen'));
+    const pickHint=h('p',{class:'v2-muted v2-watch-hint',text:t('watchPick')});
+    function add(){
+      const url=normalizeWatchUrl(urlInput.value);
+      urlInput.setAttribute('aria-invalid',String(!url));
+      if(!url){addError.textContent=t('watchUrlError');urlInput.focus({preventScroll:true});return;}
+      if(state.list.length>=WATCH_MAX){addError.textContent=fill(t('watchFull'),{n:WATCH_MAX});return;}
+      addError.textContent='';
+      state.list.push({id:newWatchId(),title:titleInput.value.trim().slice(0,WATCH_TITLE_MAX),url,done:false});save();
+      titleInput.value='';urlInput.value='';state.focusAfter=titleInput;paint();
+    }
+    const editRow=item=>{
+      const nameIn=h('input',{id:'v2WatchEditTitle',class:'ui-input',type:'text',maxlength:String(WATCH_TITLE_MAX),autocomplete:'off',value:item.title}),
+        linkIn=h('input',{id:'v2WatchEditUrl',class:'ui-input',type:'url',inputmode:'url',maxlength:String(WATCH_URL_MAX),autocomplete:'off',autocapitalize:'off',spellcheck:'false',value:item.url,'aria-describedby':'v2WatchEditError'}),
+        error=h('p',{id:'v2WatchEditError',class:'v2-field-error',role:'alert'});
+      const commit=()=>{
+        const url=normalizeWatchUrl(linkIn.value);linkIn.setAttribute('aria-invalid',String(!url));
+        if(!url){error.textContent=t('watchUrlError');linkIn.focus({preventScroll:true});return;}
+        item.title=nameIn.value.trim().slice(0,WATCH_TITLE_MAX);item.url=url;save();state.editing=null;state.focusAfter='edit:'+item.id;paint();
+      };
+      const keys=event=>{if(event.key==='Enter'){event.preventDefault();commit();}};
+      nameIn.addEventListener('keydown',keys);linkIn.addEventListener('keydown',keys);
+      return h('li',{class:'v2-watch-item v2-watch-editing'},
+        h('div',{class:'v2-field'},h('label',{for:'v2WatchEditTitle',text:t('watchLabelTitle')}),nameIn),
+        h('div',{class:'v2-field'},h('label',{for:'v2WatchEditUrl',text:t('watchLabelUrl')}),linkIn,error),
+        h('div',{class:'v2-actions'},
+          h('button',{type:'button',class:'ui-button ui-button-success',onclick:commit},t('photoSave')),
+          h('button',{type:'button',class:'ui-button ui-button-secondary',onclick:()=>{state.editing=null;state.focusAfter='edit:'+item.id;paint();}},t('photoCancel'))));
+    };
+    const itemRow=item=>{
+      const label=watchLabel(item),selected=state.selected===item.id;
+      return h('li',{class:'v2-watch-item'+(item.done?' v2-watch-done':'')+(selected?' v2-watch-selected':'')},
+        h('input',{type:'checkbox',class:'v2-watch-check',checked:item.done,'aria-label':fill(t('watchDoneLabel'),{name:label}),onchange:event=>{item.done=event.target.checked;save();state.focusAfter='check:'+item.id;paint();}}),
+        h('button',{type:'button',class:'v2-watch-main','aria-pressed':String(selected),'data-watch-id':item.id,onclick:()=>{state.selected=selected?null:item.id;state.focusAfter='main:'+item.id;paint();}},
+          h('span',{class:'v2-watch-name',text:label}),
+          item.title?h('span',{class:'v2-watch-url',text:watchLabel({title:'',url:item.url})}):null),
+        h('button',{type:'button',class:'v2-watch-icon','data-watch-edit':item.id,'aria-label':t('watchEdit')+': '+label,title:t('watchEdit'),onclick:()=>{state.editing=item.id;paint();}},icon('edit')),
+        h('button',{type:'button',class:'v2-watch-icon','aria-label':t('watchDelete')+': '+label,title:t('watchDelete'),onclick:()=>{
+          const index=state.list.indexOf(item);state.list.splice(index,1);if(state.selected===item.id)state.selected=null;save();
+          const next=state.list[Math.min(index,state.list.length-1)];state.focusAfter=next?'main:'+next.id:titleInput;paint();}},icon('trash')));
+    };
+    function paint(){
+      listNode.replaceChildren(...state.list.map(item=>state.editing===item.id?editRow(item):itemRow(item)));
+      emptyNode.hidden=state.list.length>0;
+      watchButton.disabled=!state.list.some(item=>item.id===state.selected);pickHint.hidden=!watchButton.disabled||!state.list.length;
+      const target=state.focusAfter;state.focusAfter=null;
+      let node=null;
+      if(target&&typeof target==='object')node=target;
+      else if(typeof target==='string'){const [kind,id]=target.split(':');node=kind==='main'?listNode.querySelector(`[data-watch-id="${id}"]`):kind==='edit'?listNode.querySelector(`[data-watch-edit="${id}"]`):kind==='check'?[...listNode.children].find(li=>li.querySelector(`[data-watch-id="${id}"]`))?.querySelector('.v2-watch-check'):null;}
+      else if(state.editing)node=listNode.querySelector('#v2WatchEditTitle');
+      node?.focus({preventScroll:true});
+    }
+    state.paint=paint;
+    state.node=h('div',{id:'v2Watch',class:'v2-crop v2-watch',role:'dialog','aria-modal':'true','aria-labelledby':'v2WatchTitle',lang:lang()},
+      h('div',{class:'v2-scrim',onclick:()=>closeWatch()}),
+      h('div',{class:'v2-crop-card v2-watch-card'},
+        h('div',{class:'v2-watch-head'},h('h2',{id:'v2WatchTitle',text:t('watchTitle')}),h('button',{type:'button',class:'v2-watch-close','aria-label':t('quizClose'),onclick:()=>closeWatch()},'×')),
+        h('div',{class:'v2-watch-add'},
+          h('div',{class:'v2-field'},h('label',{for:'v2WatchTitleIn',text:t('watchLabelTitle')}),titleInput),
+          h('div',{class:'v2-field'},h('label',{for:'v2WatchUrlIn',text:t('watchLabelUrl')}),urlInput,addError),
+          h('button',{type:'button',class:'ui-button ui-button-secondary',onclick:add},t('watchAdd'))),
+        emptyNode,listNode,pickHint,
+        h('div',{class:'v2-actions'},watchButton)));
+    document.body.append(state.node);screen.inert=true;bar.inert=true;
+    paint();titleInput.focus({preventScroll:true});
+  }
+
   /* ---------- simulated sign-in ---------- */
   function setBackgroundInert(inert){root.inert=inert;if(container)container.inert=inert;}
   // First run (and after signing out): the display name and the email are asked for, both required. They are kept on this device only.
@@ -1592,6 +1708,12 @@
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('v2-open')){event.preventDefault();setDrawer(false);}},true);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&crop){event.preventDefault();closeCrop();}},true);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&authEditing){event.preventDefault();closeEditProfile();}},true);
+    document.addEventListener('keydown',event=>{        // Escape leaves the edit of a link first, then the list
+      if(event.key!=='Escape'||!watching)return;
+      event.preventDefault();
+      if(watching.editing){const id=watching.editing;watching.editing=null;watching.focusAfter='edit:'+id;watching.paint();}else closeWatch();
+    },true);
+    window.addEventListener('hashchange',()=>closeWatch(false));                      // the back key leaves the list too
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&(asking||viewer)){event.preventDefault();if(asking)closeConfirm();else closePhotoView();}},true);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&dayPopup&&!document.querySelector('.word-popup-overlay.open')){event.preventDefault();closeDayWords();}},true);
     // Today follows every change of the data

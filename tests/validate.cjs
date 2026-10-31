@@ -572,6 +572,12 @@ describe('Card controls',()=>{
     assert(rules.some(body=>/border:0\b/.test(body)),'the arrows must reset their border');
     for(const body of rules)assert(!/border-(?:left|right|top|bottom)\s*:\s*[1-9]/.test(body)&&!/border\s*:\s*[1-9]/.test(body),`a Flip arrow rule draws a border: ${body}`);
   });
+  it('hovering a Flip arrow changes the colour of the arrow, not the background of the button',()=>{
+    const hover=html.match(/\.flip-panel \.flip-nav:hover\{([^}]*)\}/);
+    assert(hover,'there is a hover rule for the Flip arrows');
+    assert(/(?:^|;)\s*background:\s*transparent\b/.test(hover[1]),'the background stays transparent on hover');
+    assert(/(?:^|;)\s*color:/.test(hover[1]),'the arrow gets a colour on hover');
+  });
 });
 
 describe('Code hygiene',()=>{
