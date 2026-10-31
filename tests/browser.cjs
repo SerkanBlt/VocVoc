@@ -2375,7 +2375,9 @@ async function main(){
   // Add New Words: the words are known at once, so a circle throws them out one by one (every second), each in a big badge, in a random direction, in slow motion;
   // every word stays where it landed (inside the screen, clear of the circle and of the other words) and, once the last one has landed, the screen waits for a tap
   {
-   const {c,p}=await openPage({course:true,init:()=>{window.__keepOrb=true;}});          // the other scenarios of the suite dismiss the circle by themselves (see newContext above)
+   // The circle throws the words in random directions and puts each where there is room, so a run with other random numbers can end with two words that touch or with
+   // a word that is not where the checks below look for it: this page gets a fixed series of random numbers, the same on every machine (mulberry32).
+   const {c,p}=await openPage({course:true,init:()=>{window.__keepOrb=true;let seed=20261031;Math.random=()=>{seed=(seed+0x6D2B79F5)|0;let t=Math.imul(seed^(seed>>>15),1|seed);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}});          // the other scenarios of the suite dismiss the circle by themselves (see newContext above)
    await p.waitForSelector('.v2-pack-text');
    await p.evaluate(()=>{
     window.__flung=[];
@@ -2468,8 +2470,9 @@ async function main(){
    assert(Math.abs(sagged-landedAngle)>6,'grabbed by one end the word sags around that point: '+JSON.stringify([landedAngle,sagged]));
    await p.mouse.up();await pause(2200);
    assert(Math.abs(await angleOf(earIndex)-landedAngle)<1.5,'it turns back to the tilt it landed with');
-   await p.mouse.move(ear.x,ear.y);await p.mouse.down();await pause(900);
-   assert(Math.abs(await angleOf(earIndex)-landedAngle)<4,'grabbed in the middle it hardly turns');
+   const middle=(await boxes())[earIndex];                                                      // where the word is now (its neighbours may have moved it a little)
+   await p.mouse.move(middle.x,middle.y);await p.mouse.down();await pause(900);
+   assert(Math.abs(await angleOf(earIndex)-landedAngle)<4,'grabbed in the middle it hardly turns: '+JSON.stringify([landedAngle,await angleOf(earIndex),ear,middle]));
    await p.mouse.up();await pause(500);
    // a word pushed by hand (let go while it is moving) goes on for a little in the direction it was pushed and stays inside the screen; one let go standing still did not move (above)
    const resting=await boxes(),roomOf=box=>box.x<view[0]/2?box.x-box.w/2:view[0]-box.x-box.w/2;
@@ -2509,8 +2512,9 @@ async function main(){
    await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await p.waitForSelector('#v2Orb .v2-fling.v2-landed',{timeout:10000});
    const landed=await p.evaluate(()=>{const node=document.querySelector('.v2-fling.v2-landed'),box=node.getBoundingClientRect(),orb=document.querySelector('.v2-orb').getBoundingClientRect();return {x:box.left+box.width/2,y:box.top+box.height/2,word:node.textContent,mx:orb.left+orb.width/2,my:orb.top+orb.height/2,done:document.getElementById('v2Orb').classList.contains('v2-done')};});
    assert.equal(landed.done,false,'the words are still coming');
-   await p.mouse.move(landed.x,landed.y);await p.mouse.down();await p.mouse.move(landed.mx,landed.my,{steps:15});await p.mouse.up();
-   await p.waitForFunction(word=>VocVocData.getWordProgress(word)?.status==='memorized',landed.word,{timeout:4000});
+   // carried into the circle and let go standing still (a word let go while the pointer is still moving is thrown on and may leave the circle: that is tested below)
+   await p.mouse.move(landed.x,landed.y);await p.mouse.down();await p.mouse.move(landed.mx,landed.my,{steps:15});await pause(400);await p.mouse.up();
+   await p.waitForFunction(word=>VocVocData.getWordProgress(word)?.status==='memorized',landed.word,{timeout:10000});
    await p.waitForSelector('#v2Orb.v2-done',{timeout:30000});
    assert.deepEqual(await p.evaluate(()=>document.querySelectorAll('#v2Orb .v2-fling').length),10,'ten words on the screen: the memorized one is gone, its replacement is there');
    assert.deepEqual([await progressCount()-wordsBefore,await usedToday()-usedBefore],[11,10],'eleven words were added, ten of them count towards the daily goal');
