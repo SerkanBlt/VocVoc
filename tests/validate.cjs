@@ -223,7 +223,7 @@ describe('Tags, similar words, reset and the Profile page (static guards)',()=>{
 describe('Free allowance per level group, points for words, Premium cards and the card triangle (static guards)',()=>{
   const screensJs=read('screens.js'),screensCss=read('screens.css');
   it('the free plan gives 40 words from each of the six levels; the count comes from the words in the list (archived ones too) per level, not from a counter',()=>{
-    assert(/const FREE_BAND_LIMIT=40;/.test(screensJs)&&/bandWordLimit\(\)\{return planNow\(\)==='premium'\?Infinity:FREE_BAND_LIMIT;\}/.test(screensJs));
+    assert(/const FREE_BAND_LIMIT=40;/.test(screensJs)&&/bandWordLimit\(\)\{return atLeast\('premium'\)\?Infinity:FREE_BAND_LIMIT;\}/.test(screensJs));
     assert(/function bandRoom\(band\)\{[^]*?window\.VocVocWordbase\.progress\(band\)\.used/.test(html),'used = the words of that group that are in the list (archived included)');
     assert(/function progress\(band=bandOf\(\)\)/.test(read('wordbase.js'))&&read('wordbase.js').includes('function bandOfWord(word)'));
     assert(!/wordRoom|wordCap/.test(html),'the old limit on the whole list is gone');
@@ -245,8 +245,9 @@ describe('Free allowance per level group, points for words, Premium cards and th
   });
   it('the Premium page is a card for each plan (Free 0 USD, Premium 1.99 USD a month or 19.90 USD a year, two months free) with a Monthly / Yearly switch',()=>{
     assert(screensJs.includes('const PRICE={monthly:1.99,yearly:19.9,yearlyFull:23.88};')&&Math.abs(1.99*10-19.9)<1e-9&&Math.abs(1.99*12-23.88)<1e-9,'the year is ten months of the monthly price');
-    assert(/class:'v2-plan v2-plan-free'/.test(screensJs)&&/class:'v2-plan v2-plan-premium'/.test(screensJs)&&screensJs.includes("class:'v2-billing'"));
+    assert(/class:'v2-plan v2-plan-free'/.test(screensJs)&&/class:'v2-plan v2-plan-premium'/.test(screensJs)&&screensJs.includes("class:'v2-billing v2-billing-page'"));
     assert(/\.v2-plan-premium\{[^}]*background-color:#5b21b6;background-image:linear-gradient/.test(screensCss),'a solid colour under the gradient');
+    assert(screensJs.includes('const PRICE_PLUS={monthly:2.99,yearly:29.9,yearlyFull:35.88},PRICE_EXCLUSIVE={monthly:4.99,yearly:49.9,yearlyFull:59.88};')&&Math.abs(2.99*10-29.9)<1e-9&&Math.abs(4.99*10-49.9)<1e-9,'Plus and Exclusive: the year is ten months too');
     assert(!/oldUi|freeIncludes/.test(screensJs));
   });
   it('the triangle of a main card is level with the word: it sits on the middle of the first title line without a height of its own, and the toggle lines its children up at the top',()=>{
@@ -508,6 +509,10 @@ describe('New interface (prototype)',()=>{
     plan.set('free');assert.deepEqual([plan.get(),plan.bandWordLimit(),'VOCVOC_SIM_PLAN' in storage,events.length],['free',40,false,2]);
     assert.throws(()=>{'use strict';plan.features.stats='free';},TypeError);
     assert.equal(load({VOCVOC_SIM_PLAN:'garbage'}).win.VocVocPlan.get(),'free');
+    assert.deepEqual([...plan.tiers],['free','premium','plus','exclusive']);
+    plan.set('plus');assert.deepEqual([plan.get(),plan.has('stats'),plan.has('aiRoom'),plan.atLeast('premium'),plan.atLeast('exclusive')],['plus',true,true,true,false],'a higher plan has everything of the lower ones');
+    plan.set('exclusive');assert.deepEqual([plan.has('aiMistakes'),plan.bandWordLimit()],[true,Infinity]);
+    plan.set('premium');assert.equal(plan.has('aiRoom'),false,'Premium has no AI feature');plan.set('free');
   });
   it('all six interface languages have exactly the same text keys and placeholders, and every page exists in all six with the same shape',()=>{
     const {TEXT,PAGES}=load().win.VocVocScreens,LANGUAGES=['de','en','es','fr','it','tr'];

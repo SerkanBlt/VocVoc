@@ -1268,10 +1268,12 @@ async function main(){
   await page.getByRole('button',{name:"Premium'a geç"}).click();assert.equal(await page.locator('#v2Screen h1').textContent(),'Premium');
   assert.match(await page.locator('#v2Screen').textContent(),/Her seviyede ilk 40 kelimeden sonrası, 10 bine yakın kelime deposu/);assert.doesNotMatch(await page.locator('#v2Screen').textContent(),/cümle kurma/,'the sentence line is gone from the Premium card');assert.doesNotMatch(await page.locator('#v2Screen').textContent(),/API|yapay zek/i,'Premium is no longer about a key or an AI');
   // a card for each plan: Free 0 USD a month; Premium 1.99 USD a month or 19.90 USD a year (two months free), switched with Monthly / Yearly
-  const plans=()=>page.evaluate(()=>[...document.querySelectorAll('#v2Screen .v2-plan')].map(card=>({name:card.querySelector('.v2-plan-name').textContent,amount:card.querySelector('.v2-plan-amount').textContent,unit:card.querySelector('.v2-plan-unit').textContent,current:!!card.querySelector('.v2-chip'),ribbon:card.querySelector('.v2-plan-ribbon')?.textContent||'',items:card.querySelectorAll('.v2-feature-list li').length,sub:card.querySelector('.v2-plan-sub')?.textContent||''})));
+  const plans=()=>page.evaluate(()=>[...document.querySelectorAll('#v2Screen .v2-plan')].map(card=>({name:card.querySelector('.v2-plan-name').textContent,amount:card.querySelector('.v2-plan-amount').textContent,unit:card.querySelector('.v2-plan-unit').textContent,current:!!card.querySelector('.v2-chip:not(.v2-chip-soon)'),ribbon:card.querySelector('.v2-plan-ribbon')?.textContent||'',items:card.querySelectorAll('.v2-feature-list li').length,sub:card.querySelector('.v2-plan-sub')?.textContent||''})));
   assert.deepEqual((await plans()).map(({name,amount,unit,current,ribbon,items})=>({name,amount,unit,current,ribbon,items})),[
    {name:'Ücretsiz',amount:'0 USD',unit:'/ ay',current:true,ribbon:'',items:6},
-   {name:'Premium',amount:'19,90 USD',unit:'/ yıl',current:false,ribbon:'★ 2 ay bedava',items:4}]);                  // the year is the default, and it is the better deal
+   {name:'Premium',amount:'19,90 USD',unit:'/ yıl',current:false,ribbon:'★ 2 ay bedava',items:4},
+   {name:'Premium Plus',amount:'29,90 USD',unit:'/ yıl',current:false,ribbon:'',items:5},
+   {name:'Exclusive',amount:'49,90 USD',unit:'/ yıl',current:false,ribbon:'',items:3}]);                  // the year is the default, and it is the better deal
   assert.match((await plans())[1].sub,/23,88 USD.*12 ay yerine 10 ay öde.*Aylık ≈ 1,66 USD/);
   assert.equal(await page.locator('.v2-billing-btn[aria-pressed="true"]').textContent(),'Yıllık2 ay bedava');
   await page.locator('.v2-billing-btn',{hasText:'Aylık'}).click();
@@ -1280,10 +1282,11 @@ async function main(){
   await page.locator('.v2-billing-btn',{hasText:'Yıllık'}).click();assert.equal((await plans())[1].amount,'19,90 USD');
   const look=await page.evaluate(()=>{const card=document.querySelector('#v2Screen .v2-plan-premium'),style=getComputedStyle(card);return {image:style.backgroundImage,color:style.color,radius:style.borderTopLeftRadius};});
   assert(/linear-gradient/.test(look.image)&&look.color==='rgb(255, 255, 255)'&&parseFloat(look.radius)>=20,'the Premium card is a coloured gradient card with white text: '+JSON.stringify(look));
-  assert.equal(await page.locator('#v2Screen .v2-plan').count(),2);
+  assert.equal(await page.locator('#v2Screen .v2-plan').count(),4);assert.equal(await page.locator('#v2Screen .v2-plan-btn:disabled').count(),2,'Plus and Exclusive are still coming soon: their buttons cannot be pressed');
+  await page.locator('.v2-billing-btn',{hasText:'Aylık'}).click();assert.deepEqual((await plans()).map(plan=>plan.amount),['0 USD','1,99 USD','2,99 USD','4,99 USD'],'one switch changes the price of every card');await page.locator('.v2-billing-btn',{hasText:'Yıllık'}).click();
   await page.getByRole('button',{name:"Premium'u simüle et"}).click();
   assert.deepEqual(await page.evaluate(()=>[VocVocPlan.get(),VocVocPlan.has('stats'),VocVocPlan.has('sentenceBuilder'),VocVocPlan.bandWordLimit(),localStorage.getItem('VOCVOC_SIM_PLAN')]),['premium',true,true,Infinity,'premium']);
-  assert.deepEqual((await plans()).map(plan=>plan.current),[false,true],'the current-plan label moves to the Premium card');
+  assert.deepEqual((await plans()).map(plan=>plan.current),[false,true,false,false],'the current-plan label moves to the Premium card');
   assert.equal(await page.getByRole('button',{name:'Ücretsiz plana dön'}).count(),1);
   await goTo(page,'İstatistik');assert.equal(await page.locator('#v2Screen .v2-locked').count(),0);
   record('new interface: Statistics are locked on Free, "Premium" simulation unlocks them and lifts the free word allowance; the Premium page is a card for each plan with the prices and a Monthly / Yearly switch, and says nothing about a key or an AI');
@@ -3127,7 +3130,7 @@ async function main(){
     ['.v2-testlist .v2-bullet-great'],['.v2-testlist .v2-bullet-good'],['.v2-testlist .v2-bullet-fair'],['.v2-testlist .v2-bullet-low'],['.v2-test-day'],['.v2-testlist .v2-muted'],['.v2-testlist strong']]],
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
    ['#/profile',[['.v2-profile-name'],['.v2-chip'],['.v2-profile-head .v2-muted'],['.v2-row'],['.v2-row-end'],['.v2-row[data-danger]'],['.v2-page > .v2-muted']]],
-   ['#/premium',[['.v2-back'],['.v2-plan-free .v2-plan-name'],['.v2-plan-free .v2-plan-amount'],['.v2-plan-free .v2-plan-unit'],['.v2-plan-free .v2-feature-list li'],['.v2-plan-premium .v2-plan-name'],['.v2-plan-premium .v2-plan-amount'],['.v2-plan-premium .v2-plan-unit'],['.v2-plan-premium .v2-plan-sub'],['.v2-plan-premium .v2-plan-caption'],['.v2-plan-premium .v2-feature-list li'],['.v2-plan-premium .v2-plan-ribbon'],['.v2-billing-btn[aria-pressed="true"]'],['.v2-billing-btn[aria-pressed="false"]'],['.v2-plan-premium .v2-billing-tag'],['.v2-plan-premium .v2-plan-btn'],['.v2-page > .v2-muted']]],
+   ['#/premium',[['.v2-back'],['.v2-plan-free .v2-plan-name'],['.v2-plan-free .v2-plan-amount'],['.v2-plan-free .v2-plan-unit'],['.v2-plan-free .v2-feature-list li'],['.v2-plan-premium .v2-plan-name'],['.v2-plan-premium .v2-plan-amount'],['.v2-plan-premium .v2-plan-unit'],['.v2-plan-premium .v2-plan-sub'],['.v2-plan-premium .v2-plan-caption'],['.v2-plan-premium .v2-feature-list li'],['.v2-plan-premium .v2-plan-ribbon'],['.v2-billing-btn[aria-pressed="true"]'],['.v2-billing-btn[aria-pressed="false"]'],['.v2-billing-tag'],['.v2-plan-premium .v2-plan-btn'],['.v2-page > .v2-muted']]],
    ['#/privacy',[['.v2-note'],['.v2-page h2'],['.v2-page p:not(.v2-note)'],['.v2-doc-lead'],['.v2-doc-meta'],['.v2-doc-chip'],['.v2-doc-toc-title'],['.v2-doc-toc button'],['.v2-doc-num'],['.v2-doc-section p'],['.v2-doc-link']]],
    ['#/help',[['.v2-doc-fold summary'],['.v2-doc-fold-body p'],['.v2-doc-lead'],['.v2-doc-meta']]],
    ['#/about',[['.v2-about-name'],['.v2-about-tag'],['.v2-facts dt'],['.v2-facts dd'],['.v2-card h2'],['.v2-card p'],['.v2-note']]]];

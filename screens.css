@@ -502,3 +502,18 @@ html:has(body.v2)::-webkit-scrollbar,body.v2::-webkit-scrollbar,body.v2 *::-webk
 .v2-mix-name{flex:1;min-width:0}
 .v2-mix-share{min-width:3ch;text-align:right;font-variant-numeric:tabular-nums}
 @media(max-width:340px){.v2-mix{grid-template-columns:1fr}.v2-mix-ring{width:128px;margin:0 auto}}
+/* The Premium page: one Monthly / Yearly switch above the four plan cards; Premium Plus (blue-green) and Exclusive (dark with gold) are the same kind of card as Premium */
+.v2-billing-page{background:var(--accent-bg);margin:0 0 4px}
+.v2-billing-page .v2-billing-btn{color:var(--text)}
+.v2-billing-page .v2-billing-btn[aria-pressed="true"]{background:var(--primary);color:var(--bg)}
+.v2-billing-page .v2-billing-btn:focus-visible{outline-color:var(--primary)}
+.v2-plan-plus,.v2-plan-exclusive{color:#fff;border-color:transparent}
+.v2-plan-plus{background-color:#0e7490;background-image:linear-gradient(to top right,#082f49,#0e7490 80%);box-shadow:0 18px 44px rgba(14,116,144,.35)}
+.v2-plan-exclusive{background-color:#1f2937;background-image:linear-gradient(to top right,#0b0f19,#1f2937 70%,#3b2f12);border-color:#fbbf24;box-shadow:0 18px 44px rgba(180,83,9,.3)}
+.v2-plan-plus::after,.v2-plan-exclusive::after{content:"";position:absolute;right:-60px;top:-60px;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
+.v2-plan-plus .v2-plan-unit,.v2-plan-plus .v2-plan-sub,.v2-plan-exclusive .v2-plan-unit,.v2-plan-exclusive .v2-plan-sub{color:rgba(255,255,255,.9)}
+.v2-plan-plus .v2-feature-list li::before,.v2-plan-exclusive .v2-feature-list li::before{color:#fbbf24}
+.v2-plan-plus .v2-plan-btn,.v2-plan-exclusive .v2-plan-btn{background:#fff;color:#0b0f19;border-color:#fff}
+.v2-plan-btn:disabled{opacity:.72;cursor:not-allowed}
+.v2-plan-btn:disabled:hover{background:#fff;border-color:#fff}
+.v2-chip-soon{background:#fbbf24;color:#1f1300;border-color:#fbbf24;font-weight:800}

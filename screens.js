@@ -20,23 +20,31 @@
   /* ---------- plan (simulated) ---------- */
   // 'premium' features are locked on the free plan. There is no AI and no API key: every word comes from the word database (wordbase.js). The free plan holds
   // up to FREE_BAND_LIMIT words from each of the six levels (A1 … C2: a gift of 40 words each; archived ones count); Premium has no limit.
-  const FEATURES=Object.freeze({freeWords:'free',badges:'free',stats:'premium',historyAnalysis:'premium',unlimitedWords:'premium',sentenceBuilder:'premium',speech:'premium',dailyGoalOver20:'premium'});
+  // The plans form a ladder: each one has everything of the plans below it (Free < Premium < Plus < Exclusive). A feature names the lowest plan that has it.
+  // Plus and Exclusive are for the AI features (an AI chat room, sentence correction, personal stories, mistake tips): they are announced on the Premium page and
+  // nothing is switched on by them yet; the plan itself is still a simulation kept on this device.
+  const TIERS=Object.freeze(['free','premium','plus','exclusive']);
+  const FEATURES=Object.freeze({freeWords:'free',badges:'free',stats:'premium',historyAnalysis:'premium',unlimitedWords:'premium',sentenceBuilder:'premium',speech:'premium',dailyGoalOver20:'premium',
+    aiRoom:'plus',aiSentence:'plus',aiStory:'plus',aiMistakes:'plus'});
   const FREE_DAILY_LIMIT=20;                                                       // a daily goal above this is a Premium feature
   const FREE_BAND_LIMIT=40;                                                        // words of each level on the free plan; the index.html side reads bandWordLimit()
-  const planNow=()=>store.get(PLAN_KEY)==='premium'?'premium':'free';
+  const planNow=()=>{const stored=store.get(PLAN_KEY);return TIERS.includes(stored)?stored:'free';};      // anything else in storage reads as Free
+  const atLeast=tier=>TIERS.indexOf(planNow())>=TIERS.indexOf(tier);
   const VocVocPlan=Object.freeze({
     features:FEATURES,
+    tiers:TIERS,
     get:planNow,
     set(plan){
-      const next=plan==='premium'?'premium':'free';if(next===planNow())return;
-      if(next==='premium')store.set(PLAN_KEY,'premium');else store.remove(PLAN_KEY);
+      const next=TIERS.includes(plan)?plan:'free';if(next===planNow())return;
+      if(next==='free')store.remove(PLAN_KEY);else store.set(PLAN_KEY,next);
       window.dispatchEvent(new CustomEvent('vocvoc-plan-changed',{detail:{plan:next}}));
     },
-    has(feature){const need=FEATURES[feature];return need==='free'||(need==='premium'&&planNow()==='premium');},
+    atLeast,
+    has(feature){const need=FEATURES[feature];return TIERS.includes(need)&&atLeast(need);},
     FREE_DAILY_LIMIT,
-    dailyLimitMax(){return planNow()==='premium'?Infinity:FREE_DAILY_LIMIT;},
+    dailyLimitMax(){return atLeast('premium')?Infinity:FREE_DAILY_LIMIT;},
     FREE_BAND_LIMIT,
-    bandWordLimit(){return planNow()==='premium'?Infinity:FREE_BAND_LIMIT;}
+    bandWordLimit(){return atLeast('premium')?Infinity:FREE_BAND_LIMIT;}
   });
   window.VocVocPlan=VocVocPlan;
 
@@ -52,7 +60,7 @@
       profileTitle:'Profil',planFree:'Ücretsiz',planPremium:'Premium (simülasyon)',
       rowPremium:'Premium',rowEditProfile:'Bilgilerimi düzenle',watchTitle:'İzleme/Dinleme Listesi',watchCount:'{n} bağlantı',watchEmpty:'Henüz bağlantı yok. Bir video, podcast ya da makale bağlantısı ekle.',watchAddTitle:'Yeni bağlantı ekle',watchLabelTitle:'Başlık (isteğe bağlı)',watchLabelUrl:'Web bağlantısı',watchAdd:'Ekle',watchUrlError:'Geçerli bir web adresi yaz (https://…).',watchFull:'Liste dolu: en çok {n} bağlantı.',watchOpen:'İzle',watchEdit:'Düzenle',watchDelete:'Sil',watchDoneLabel:'Tamamlandı: {name}',rowSettings:'Ayarlar',rowHelp:'Yardım',rowPrivacy:'Gizlilik Politikası',rowTerms:'Kullanım Şartları',rowAbout:'Hakkında',
       signOut:'Çıkış yap',signOutNote:'Çıkış, kelimelerini ve ilerlemeni silmez.',
-      premiumTitle:'Premium',planLabel:'Mevcut plan',premiumIncludes:'Premium (ücretsiz olanların hepsine ek olarak)',
+      premiumTitle:'Premium',planLabel:'Mevcut plan',premiumIncludes:'Premium (ücretsiz olanların hepsine ek olarak)',planPlus:"Premium Plus (simülasyon)",planExclusive:"Exclusive (simülasyon)",plusIncludes:"Premium Plus (Premium'un hepsine ek olarak)",exclusiveIncludes:"Exclusive (Premium Plus'ın hepsine ek olarak)",plus1:"Yapay zekâ sohbet odası: birden çok karakterle konuş, listendeki kelimeleri kullan",plus2:"Cümle kur: yapay zekâ düzeltir ve açıklar",plus3:"Kişisel hikâye: kelimelerinle yazılır, sesli dinlenir",plus4:"Hata analizi ve hafıza ipuçları",plus5:"Her ay 300 yapay zekâ işlemi",exclusive1:"Her işlemde en güçlü yapay zekâ modeli",exclusive2:"Daha geniş hata analizi ve hikâye hakkı",exclusive3:"Günlük 50 yapay zekâ işlemi",soon:"Yakında",
       priceNote:'Fiyatlar USD cinsindendir. Yıllık abonelikte 2 ay bedavadır.',
       simulate:"Premium'u simüle et",backToFree:'Ücretsiz plana dön',simNote:'Simülasyon: gerçek ödeme alınmaz, hiçbir şey satın alınmaz.',perMonth:'/ ay',perYear:'/ yıl',billingLabel:'Faturalama dönemi',billingMonthly:'Aylık',billingYearly:'Yıllık',twoMonthsFree:'2 ay bedava',yearlyNote:'12 ay yerine 10 ay öde',monthlyEquiv:'Aylık ≈ {price}',
       free1:'Altı seviyenin (A1–C2) her birinden 40’ar kelime hediye',free2:'Kartlar, ezberleme, arşiv ve History',free3:'Test, Hatırla ve Flip',free4:'Arama, rastgele kelime ve eş/zıt anlam etiketlerinden kelime ekleme',free5:'Yedekleme, tema ve 6 arayüz dili',free6:'Rozetler',
@@ -84,7 +92,7 @@
       profileTitle:'Profile',planFree:'Free',planPremium:'Premium (simulation)',
       rowPremium:'Premium',rowEditProfile:'Edit my details',watchTitle:'Watch/Listen List',watchCount:'{n} links',watchEmpty:'No links yet. Add a link to a video, podcast or article.',watchAddTitle:'Add a new link',watchLabelTitle:'Title (optional)',watchLabelUrl:'Web link',watchAdd:'Add',watchUrlError:'Enter a valid web address (https://…).',watchFull:'The list is full: at most {n} links.',watchOpen:'Watch',watchEdit:'Edit',watchDelete:'Delete',watchDoneLabel:'Done: {name}',rowSettings:'Settings',rowHelp:'Help',rowPrivacy:'Privacy Policy',rowTerms:'Terms of Use',rowAbout:'About',
       signOut:'Sign out',signOutNote:'Signing out does not delete your words or progress.',
-      premiumTitle:'Premium',planLabel:'Current plan',premiumIncludes:'Premium (in addition to everything free)',
+      premiumTitle:'Premium',planLabel:'Current plan',premiumIncludes:'Premium (in addition to everything free)',planPlus:"Premium Plus (simulation)",planExclusive:"Exclusive (simulation)",plusIncludes:"Premium Plus (in addition to everything in Premium)",exclusiveIncludes:"Exclusive (in addition to everything in Premium Plus)",plus1:"AI chat room: talk with several characters and use the words of your list",plus2:"Write a sentence: the AI corrects it and explains it",plus3:"Personal story: written with your words, read aloud",plus4:"Mistake analysis and memory tips",plus5:"300 AI actions a month",exclusive1:"The most capable AI model for every action",exclusive2:"More mistake analyses and stories",exclusive3:"50 AI actions a day",soon:"Coming soon",
       priceNote:'Prices are in USD. The yearly subscription has 2 months free.',
       simulate:'Simulate Premium',backToFree:'Back to the free plan',simNote:'Simulation: no real payment is taken and nothing is purchased.',perMonth:'/ month',perYear:'/ year',billingLabel:'Billing period',billingMonthly:'Monthly',billingYearly:'Yearly',twoMonthsFree:'2 months free',yearlyNote:'Pay for 10 months instead of 12',monthlyEquiv:'About {price} a month',
       free1:'A gift of 40 words from each of the six levels (A1–C2)',free2:'Cards, memorizing, archive and History',free3:'Test, Recall and Flip',free4:'Adding words by search, random word and synonym/antonym tags',free5:'Backup, themes and 6 interface languages',free6:'Badges',
@@ -116,7 +124,7 @@
       profileTitle:'Profil',planFree:'Gratuit',planPremium:'Premium (simulation)',
       rowPremium:'Premium',rowEditProfile:'Modifier mes informations',watchTitle:'Liste à regarder/écouter',watchCount:'{n} liens',watchEmpty:'Aucun lien pour l’instant. Ajoutez le lien d’une vidéo, d’un podcast ou d’un article.',watchAddTitle:'Ajouter un nouveau lien',watchLabelTitle:'Titre (facultatif)',watchLabelUrl:'Lien web',watchAdd:'Ajouter',watchUrlError:'Saisissez une adresse web valide (https://…).',watchFull:'La liste est pleine : {n} liens au maximum.',watchOpen:'Regarder',watchEdit:'Modifier',watchDelete:'Supprimer',watchDoneLabel:'Terminé : {name}',rowSettings:'Réglages',rowHelp:'Aide',rowPrivacy:'Politique de confidentialité',rowTerms:'Conditions d’utilisation',rowAbout:'À propos',
       signOut:'Se déconnecter',signOutNote:'Se déconnecter ne supprime ni vos mots ni votre progression.',
-      premiumTitle:'Premium',planLabel:'Offre actuelle',premiumIncludes:'Premium (en plus de tout ce qui est gratuit)',
+      premiumTitle:'Premium',planLabel:'Offre actuelle',premiumIncludes:'Premium (en plus de tout ce qui est gratuit)',planPlus:"Premium Plus (simulé)",planExclusive:"Exclusive (simulé)",plusIncludes:"Premium Plus (en plus de tout Premium)",exclusiveIncludes:"Exclusive (en plus de tout Premium Plus)",plus1:"Salon de discussion IA : parlez avec plusieurs personnages et utilisez les mots de votre liste",plus2:"Écrivez une phrase : l’IA la corrige et l’explique",plus3:"Histoire personnelle : écrite avec vos mots, lue à voix haute",plus4:"Analyse des erreurs et astuces de mémoire",plus5:"300 actions IA par mois",exclusive1:"Le modèle d’IA le plus performant pour chaque action",exclusive2:"Plus d’analyses d’erreurs et d’histoires",exclusive3:"50 actions IA par jour",soon:"Bientôt",
       priceNote:'Les prix sont en USD. L’abonnement annuel offre 2 mois.',
       simulate:'Simuler Premium',backToFree:'Revenir à l’offre gratuite',simNote:'Simulation : aucun vrai paiement n’est prélevé et rien n’est acheté.',perMonth:'/ mois',perYear:'/ an',billingLabel:'Période de facturation',billingMonthly:'Mensuel',billingYearly:'Annuel',twoMonthsFree:'2 mois offerts',yearlyNote:'Payez 10 mois au lieu de 12',monthlyEquiv:'Environ {price} par mois',
       free1:'Un cadeau de 40 mots dans chacun des six niveaux (A1–C2)',free2:'Cartes, mémorisation, archive et History',free3:'Test, Réviser et Flip',free4:'Ajout de mots par la recherche, le mot au hasard et les étiquettes de synonymes/contraires',free5:'Sauvegarde, thèmes et 6 langues d’interface',free6:'Badges',
@@ -148,7 +156,7 @@
       profileTitle:'Profil',planFree:'Kostenlos',planPremium:'Premium (Simulation)',
       rowPremium:'Premium',rowEditProfile:'Meine Angaben bearbeiten',watchTitle:'Anschau-/Hörliste',watchCount:'{n} Links',watchEmpty:'Noch keine Links. Fügen Sie den Link zu einem Video, Podcast oder Artikel hinzu.',watchAddTitle:'Neuen Link hinzufügen',watchLabelTitle:'Titel (optional)',watchLabelUrl:'Weblink',watchAdd:'Hinzufügen',watchUrlError:'Geben Sie eine gültige Webadresse ein (https://…).',watchFull:'Die Liste ist voll: höchstens {n} Links.',watchOpen:'Ansehen',watchEdit:'Bearbeiten',watchDelete:'Löschen',watchDoneLabel:'Erledigt: {name}',rowSettings:'Einstellungen',rowHelp:'Hilfe',rowPrivacy:'Datenschutzerklärung',rowTerms:'Nutzungsbedingungen',rowAbout:'Über',
       signOut:'Abmelden',signOutNote:'Beim Abmelden werden Ihre Wörter und Ihr Fortschritt nicht gelöscht.',
-      premiumTitle:'Premium',planLabel:'Aktueller Tarif',premiumIncludes:'Premium (zusätzlich zu allem Kostenlosen)',
+      premiumTitle:'Premium',planLabel:'Aktueller Tarif',premiumIncludes:'Premium (zusätzlich zu allem Kostenlosen)',planPlus:"Premium Plus (Simulation)",planExclusive:"Exclusive (Simulation)",plusIncludes:"Premium Plus (zusätzlich zu allem in Premium)",exclusiveIncludes:"Exclusive (zusätzlich zu allem in Premium Plus)",plus1:"KI-Chatraum: Sprechen Sie mit mehreren Figuren und nutzen Sie die Wörter Ihrer Liste",plus2:"Satz bilden: Die KI korrigiert ihn und erklärt ihn",plus3:"Persönliche Geschichte: mit Ihren Wörtern geschrieben, vorgelesen",plus4:"Fehleranalyse und Merktipps",plus5:"300 KI-Aktionen pro Monat",exclusive1:"Das leistungsstärkste KI-Modell für jede Aktion",exclusive2:"Mehr Fehleranalysen und Geschichten",exclusive3:"50 KI-Aktionen pro Tag",soon:"Demnächst",
       priceNote:'Preise in USD. Beim Jahresabo sind 2 Monate gratis.',
       simulate:'Premium simulieren',backToFree:'Zurück zum kostenlosen Tarif',simNote:'Simulation: Es wird keine echte Zahlung abgebucht und nichts gekauft.',perMonth:'/ Monat',perYear:'/ Jahr',billingLabel:'Abrechnungszeitraum',billingMonthly:'Monatlich',billingYearly:'Jährlich',twoMonthsFree:'2 Monate gratis',yearlyNote:'10 Monate zahlen statt 12',monthlyEquiv:'Etwa {price} pro Monat',
       free1:'Je 40 Wörter geschenkt aus jeder der sechs Stufen (A1–C2)',free2:'Karten, Lernen, Archiv und History',free3:'Test, Wiederholen und Flip',free4:'Wörter per Suche, Zufallswort und Synonym-/Antonym-Chips hinzufügen',free5:'Sicherung, Designs und 6 Oberflächensprachen',free6:'Abzeichen',
@@ -180,7 +188,7 @@
       profileTitle:'Perfil',planFree:'Gratis',planPremium:'Premium (simulación)',
       rowPremium:'Premium',rowEditProfile:'Editar mis datos',watchTitle:'Lista para ver/escuchar',watchCount:'{n} enlaces',watchEmpty:'Aún no hay enlaces. Añade el enlace de un vídeo, un pódcast o un artículo.',watchAddTitle:'Añadir un enlace nuevo',watchLabelTitle:'Título (opcional)',watchLabelUrl:'Enlace web',watchAdd:'Añadir',watchUrlError:'Escribe una dirección web válida (https://…).',watchFull:'La lista está llena: máximo {n} enlaces.',watchOpen:'Ver',watchEdit:'Editar',watchDelete:'Eliminar',watchDoneLabel:'Hecho: {name}',rowSettings:'Ajustes',rowHelp:'Ayuda',rowPrivacy:'Política de privacidad',rowTerms:'Condiciones de uso',rowAbout:'Acerca de',
       signOut:'Cerrar sesión',signOutNote:'Cerrar sesión no borra tus palabras ni tu progreso.',
-      premiumTitle:'Premium',planLabel:'Plan actual',premiumIncludes:'Premium (además de todo lo gratuito)',
+      premiumTitle:'Premium',planLabel:'Plan actual',premiumIncludes:'Premium (además de todo lo gratuito)',planPlus:"Premium Plus (simulación)",planExclusive:"Exclusive (simulación)",plusIncludes:"Premium Plus (además de todo lo de Premium)",exclusiveIncludes:"Exclusive (además de todo lo de Premium Plus)",plus1:"Sala de chat con IA: habla con varios personajes y usa las palabras de tu lista",plus2:"Escribe una frase: la IA la corrige y la explica",plus3:"Historia personal: escrita con tus palabras y leída en voz alta",plus4:"Análisis de errores y trucos de memoria",plus5:"300 acciones de IA al mes",exclusive1:"El modelo de IA más potente en cada acción",exclusive2:"Más análisis de errores e historias",exclusive3:"50 acciones de IA al día",soon:"Próximamente",
       priceNote:'Los precios son en USD. La suscripción anual tiene 2 meses gratis.',
       simulate:'Simular Premium',backToFree:'Volver al plan gratuito',simNote:'Simulación: no se cobra ningún pago real y no se compra nada.',perMonth:'/ mes',perYear:'/ año',billingLabel:'Periodo de facturación',billingMonthly:'Mensual',billingYearly:'Anual',twoMonthsFree:'2 meses gratis',yearlyNote:'Paga 10 meses en lugar de 12',monthlyEquiv:'Unos {price} al mes',
       free1:'Un regalo de 40 palabras de cada uno de los seis niveles (A1–C2)',free2:'Tarjetas, memorizar, archivo e History',free3:'Test, Repasar y Flip',free4:'Añadir palabras con la búsqueda, la palabra al azar y las etiquetas de sinónimos/antónimos',free5:'Copia de seguridad, temas y 6 idiomas de interfaz',free6:'Insignias',
@@ -212,7 +220,7 @@
       profileTitle:'Profilo',planFree:'Gratuito',planPremium:'Premium (simulazione)',
       rowPremium:'Premium',rowEditProfile:'Modifica i miei dati',watchTitle:'Lista da guardare/ascoltare',watchCount:'{n} link',watchEmpty:'Ancora nessun link. Aggiungi il link di un video, di un podcast o di un articolo.',watchAddTitle:'Aggiungi un nuovo link',watchLabelTitle:'Titolo (facoltativo)',watchLabelUrl:'Link web',watchAdd:'Aggiungi',watchUrlError:'Inserisci un indirizzo web valido (https://…).',watchFull:'La lista è piena: al massimo {n} link.',watchOpen:'Guarda',watchEdit:'Modifica',watchDelete:'Elimina',watchDoneLabel:'Fatto: {name}',rowSettings:'Impostazioni',rowHelp:'Aiuto',rowPrivacy:'Informativa sulla privacy',rowTerms:'Termini d’uso',rowAbout:'Informazioni',
       signOut:'Esci',signOutNote:'Uscire non cancella le tue parole né i tuoi progressi.',
-      premiumTitle:'Premium',planLabel:'Piano attuale',premiumIncludes:'Premium (in più rispetto a tutto ciò che è gratuito)',
+      premiumTitle:'Premium',planLabel:'Piano attuale',premiumIncludes:'Premium (in più rispetto a tutto ciò che è gratuito)',planPlus:"Premium Plus (simulazione)",planExclusive:"Exclusive (simulazione)",plusIncludes:"Premium Plus (oltre a tutto Premium)",exclusiveIncludes:"Exclusive (oltre a tutto Premium Plus)",plus1:"Stanza di chat con l’IA: parla con più personaggi e usa le parole della tua lista",plus2:"Scrivi una frase: l’IA la corregge e la spiega",plus3:"Storia personale: scritta con le tue parole e letta ad alta voce",plus4:"Analisi degli errori e trucchi per ricordare",plus5:"300 azioni IA al mese",exclusive1:"Il modello di IA più potente per ogni azione",exclusive2:"Più analisi degli errori e storie",exclusive3:"50 azioni IA al giorno",soon:"In arrivo",
       priceNote:'I prezzi sono in USD. L’abbonamento annuale ha 2 mesi gratis.',
       simulate:'Simula Premium',backToFree:'Torna al piano gratuito',simNote:'Simulazione: nessun pagamento reale viene addebitato e non si acquista nulla.',perMonth:'/ mese',perYear:'/ anno',billingLabel:'Periodo di fatturazione',billingMonthly:'Mensile',billingYearly:'Annuale',twoMonthsFree:'2 mesi gratis',yearlyNote:'Paga 10 mesi invece di 12',monthlyEquiv:'Circa {price} al mese',
       free1:'In regalo 40 parole da ciascuno dei sei livelli (A1–C2)',free2:'Carte, memorizzazione, archivio e History',free3:'Test, Ripassa e Flip',free4:'Aggiungere parole con la ricerca, la parola casuale e le etichette di sinonimi/contrari',free5:'Backup, temi e 6 lingue dell’interfaccia',free6:'Badge',
@@ -1331,7 +1339,11 @@
       h('div',{id:'v2BadgePanel',role:'tabpanel','aria-labelledby':'v2BadgeTab-'+badgeTab},
         list.length?h('ul',{class:'v2-badges'},list.map(badgeCard)):h('p',{class:'v2-muted v2-empty',text:t(noneKey)})));
   }
-  function chipFor(plan){return h('span',{class:'v2-chip'+(plan==='premium'?' v2-premium':''),text:t(plan==='premium'?'planPremium':'planFree')});}
+  // The name of the plan on the Profile page: Free, or one of the paid plans (in the colour of the paid plans).
+  function chipFor(plan){
+    const name={premium:()=>t('planPremium'),plus:()=>t('planPlus'),exclusive:()=>t('planExclusive')}[plan];
+    return h('span',{class:'v2-chip'+(name?' v2-premium':''),text:name?name():t('planFree')});
+  }
   function profileScreen(){
     const profile=readProfile()||{name:'',email:''};
     const name=profile.name;
@@ -1358,37 +1370,52 @@
         row(t('signOut'),signOut,'',true)),
       h('p',{class:'v2-muted',text:t('signOutNote')}));
   }
-  // Two plan cards (Free, Premium) and a Monthly / Yearly switch. Nothing is bought: the switch only changes what the Premium card shows.
+  // Four plan cards (Free, Premium, Premium Plus, Exclusive) and a Monthly / Yearly switch for all of them. Nothing is bought: the switch only changes the prices shown.
+  // Premium Plus and Exclusive are announced ("Coming soon"): the AI features they are for do not exist yet, so their button is not one that does anything.
   const PRICE={monthly:1.99,yearly:19.9,yearlyFull:23.88};                          // USD; the yearly price is 10 months of the monthly one (2 months free)
+  const PRICE_PLUS={monthly:2.99,yearly:29.9,yearlyFull:35.88},PRICE_EXCLUSIVE={monthly:4.99,yearly:49.9,yearlyFull:59.88};   // the same rule: ten months of the monthly price
   let billing=store.get(BILLING_KEY)==='monthly'?'monthly':'yearly';
   const money=value=>(value===0?'0':value.toLocaleString(lang()==='en'?'en-US':lang(),{minimumFractionDigits:2,maximumFractionDigits:2}))+' USD';
   function premiumScreen(){
-    const premium=VocVocPlan.get()==='premium',yearly=billing==='yearly';
+    const current=VocVocPlan.get(),owns=tier=>current===tier,yearly=billing==='yearly';
     const list=(keys,extra)=>h('ul',{class:'v2-feature-list'+(extra?' '+extra:'')},keys.map(key=>h('li',{text:t(key)})));
     const choose=kind=>()=>{billing=kind;store.set(BILLING_KEY,kind);render(false);};
-    const switcher=h('div',{class:'v2-billing',role:'group','aria-label':t('billingLabel')},
+    const switcher=h('div',{class:'v2-billing v2-billing-page',role:'group','aria-label':t('billingLabel')},
       ['monthly','yearly'].map(kind=>h('button',{type:'button',class:'v2-billing-btn','aria-pressed':String(billing===kind),onclick:choose(kind)},
         t(kind==='monthly'?'billingMonthly':'billingYearly'),kind==='yearly'?h('span',{class:'v2-billing-tag',text:t('twoMonthsFree')}):null)));
+    // the price of a plan, for the period that is switched on, with what the year costs without the two free months
+    const priceOf=price=>[
+      h('p',{class:'v2-plan-price'},h('span',{class:'v2-plan-amount',text:money(yearly?price.yearly:price.monthly)}),h('span',{class:'v2-plan-unit',text:t(yearly?'perYear':'perMonth')})),
+      yearly?h('p',{class:'v2-plan-sub'},h('s',{text:money(price.yearlyFull)}),' ',t('yearlyNote'),' · ',fill(t('monthlyEquiv'),{price:money(price.yearly/12)})):null];
     const freeCard=h('section',{class:'v2-plan v2-plan-free','aria-labelledby':'v2PlanFree'},
-      h('div',{class:'v2-plan-head'},h('h2',{id:'v2PlanFree',class:'v2-plan-name',text:t('planFree')}),premium?null:h('span',{class:'v2-chip',text:t('planLabel')})),
+      h('div',{class:'v2-plan-head'},h('h2',{id:'v2PlanFree',class:'v2-plan-name',text:t('planFree')}),owns('free')?h('span',{class:'v2-chip',text:t('planLabel')}):null),
       h('p',{class:'v2-plan-price'},h('span',{class:'v2-plan-amount',text:money(0)}),h('span',{class:'v2-plan-unit',text:t('perMonth')})),
       list(['free1','free2','free3','free4','free5','free6']));
     const paidCard=h('section',{class:'v2-plan v2-plan-premium','aria-labelledby':'v2PlanPremium'},
       yearly?h('span',{class:'v2-plan-ribbon',text:'★ '+t('twoMonthsFree')}):null,
-      h('div',{class:'v2-plan-head'},h('h2',{id:'v2PlanPremium',class:'v2-plan-name',text:t('premiumTitle')}),premium?h('span',{class:'v2-chip v2-chip-on-dark',text:t('planLabel')}):null),
-      switcher,
-      h('p',{class:'v2-plan-price'},h('span',{class:'v2-plan-amount',text:money(yearly?PRICE.yearly:PRICE.monthly)}),h('span',{class:'v2-plan-unit',text:t(yearly?'perYear':'perMonth')})),
-      yearly?h('p',{class:'v2-plan-sub'},h('s',{text:money(PRICE.yearlyFull)}),' ',t('yearlyNote'),' · ',fill(t('monthlyEquiv'),{price:money(PRICE.yearly/12)})):null,
+      h('div',{class:'v2-plan-head'},h('h2',{id:'v2PlanPremium',class:'v2-plan-name',text:t('premiumTitle')}),owns('premium')?h('span',{class:'v2-chip v2-chip-on-dark',text:t('planLabel')}):null),
+      ...priceOf(PRICE),
       h('p',{class:'v2-plan-caption',text:t('premiumIncludes')}),
       list(['prem1','prem3','prem4','prem5'],'v2-premium-list'),
-      premium
+      owns('premium')
         ?h('button',{type:'button',class:'ui-button v2-plan-btn v2-plan-btn-quiet',onclick:()=>VocVocPlan.set('free')},t('backToFree'))
         :h('button',{type:'button',class:'ui-button v2-plan-btn',onclick:()=>VocVocPlan.set('premium')},t('simulate')));
+    // Premium Plus and Exclusive: the same kind of card, announced for later
+    const soonCard=(tier,name,price,includes,keys)=>h('section',{class:'v2-plan v2-plan-'+tier,'aria-labelledby':'v2Plan-'+tier},
+      h('div',{class:'v2-plan-head'},h('h2',{id:'v2Plan-'+tier,class:'v2-plan-name',text:name}),
+        h('span',{class:'v2-chip v2-chip-on-dark v2-chip-soon',text:t('soon')})),
+      owns(tier)?h('span',{class:'v2-chip v2-chip-on-dark',text:t('planLabel')}):null,
+      ...priceOf(price),
+      h('p',{class:'v2-plan-caption',text:t(includes)}),
+      list(keys,'v2-premium-list'),
+      h('button',{type:'button',class:'ui-button v2-plan-btn',disabled:true},t('soon')));
     return page(backButton(),heading(t('premiumTitle')),
-      h('div',{class:'v2-plans'},freeCard,paidCard),
+      switcher,
+      h('div',{class:'v2-plans'},freeCard,paidCard,
+        soonCard('plus','Premium Plus',PRICE_PLUS,'plusIncludes',['plus1','plus2','plus3','plus4','plus5']),
+        soonCard('exclusive','Exclusive',PRICE_EXCLUSIVE,'exclusiveIncludes',['exclusive1','exclusive2','exclusive3'])),
       h('p',{class:'v2-muted',text:t('priceNote')}),h('p',{class:'v2-muted',text:t('simNote')}));
-  }
-  // Help, Privacy Policy and Terms of Use share one look: a header (what the page is for, when it was last changed, a Draft tag), the draft notice, and the text.
+  }  // Help, Privacy Policy and Terms of Use share one look: a header (what the page is for, when it was last changed, a Draft tag), the draft notice, and the text.
   // The legal pages are numbered section cards with a contents list; Help is a list of folding questions (the first is open).
   const DOC_LOOK={help:{icon:'help',lead:()=>t('leadHelp')},privacy:{icon:'shield',lead:()=>t('leadPrivacy')},terms:{icon:'doc',lead:()=>t('leadTerms')}};
   function docDate(){try{return new Date(DOCS_UPDATED+'T12:00:00').toLocaleDateString(lang(),{day:'numeric',month:'long',year:'numeric'});}catch(_){return DOCS_UPDATED;}}
