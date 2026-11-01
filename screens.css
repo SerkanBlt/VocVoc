@@ -1,7 +1,13 @@
 /* New interface (prototype). Everything here applies only when screens.js adds body.v2 (opt-in with ?ui=v2); the default interface is untouched. */
-:root{--v2-bar-h:56px;--v2-danger:#b91c1c;--v2-orange:#c2410c;--v2-blue:#1d4ed8;--v2-green:#15803d;--v2-grad-orange:#c2410c;--v2-grad-green:#15803d;--v2-grad-purple:#6d28d9}
-:root[data-theme="dark"]{--v2-danger:#f87171;--v2-orange:#fb923c;--v2-blue:#60a5fa;--v2-green:#4ade80}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--v2-danger:#f87171;--v2-orange:#fb923c;--v2-blue:#60a5fa;--v2-green:#4ade80}}
+:root{--v2-bar-h:56px;--v2-danger:#b91c1c;--v2-orange:#c2410c;--v2-blue:#1d4ed8;--v2-green:#15803d;--v2-grad-orange:#c2410c;--v2-grad-green:#15803d;--v2-grad-purple:#6d28d9;
+  --v2-curve-from:#6250d6;--v2-curve-to:#1baf7a;
+  --v2-chart-1:#2a78d6;--v2-chart-2:#eb6834;--v2-chart-3:#1baf7a;--v2-chart-4:#eda100;--v2-chart-5:#e87ba4}   /* charts: the first five slots of the categorical palette (fixed order, checked for colour-blind separation) and the colours of the memorized-words line */
+:root[data-theme="dark"]{--v2-danger:#f87171;--v2-orange:#fb923c;--v2-blue:#60a5fa;--v2-green:#4ade80;
+  --v2-curve-from:#9085e9;--v2-curve-to:#199e70;
+  --v2-chart-1:#3987e5;--v2-chart-2:#d95926;--v2-chart-3:#199e70;--v2-chart-4:#c98500;--v2-chart-5:#d55181}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--v2-danger:#f87171;--v2-orange:#fb923c;--v2-blue:#60a5fa;--v2-green:#4ade80;
+  --v2-curve-from:#9085e9;--v2-curve-to:#199e70;
+  --v2-chart-1:#3987e5;--v2-chart-2:#d95926;--v2-chart-3:#199e70;--v2-chart-4:#c98500;--v2-chart-5:#d55181}}
 .v2-root,.v2-auth{display:none}
 body.v2 .v2-root{display:block}
 .v2-auth.v2-open{display:flex}
@@ -159,7 +165,9 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
 .v2-key-added{background:var(--primary)}
 .v2-key-memorized{background:var(--success)}
 .v2-curve{display:block;width:100%;height:auto}
-.v2-curve polyline{fill:none;stroke:var(--primary);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.v2-curve polyline{fill:none;stroke:var(--v2-curve-from);stroke:url(#v2CurveGradient);stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}   /* the plain colour is for a browser that cannot draw the gradient */
+.v2-curve-from{stop-color:var(--v2-curve-from)}
+.v2-curve-to{stop-color:var(--v2-curve-to)}
 .v2-curve-range{text-align:right;margin:4px 0 0}
 .v2-testlist,.v2-chips{list-style:none;margin:0;padding:0}
 .v2-page .v2-testlist li{display:flex;align-items:center;gap:10px;margin:0;padding:8px 0;border-bottom:1px solid var(--border)}
@@ -473,3 +481,24 @@ html:has(body.v2)::-webkit-scrollbar,body.v2::-webkit-scrollbar,body.v2 *::-webk
 .v2-plan-btn:hover{background:#f3e8ff;border-color:#f3e8ff}
 .v2-plan-btn-quiet{background:transparent;color:#fff;border-color:rgba(255,255,255,.75)}
 .v2-plan-btn-quiet:hover{background:rgba(255,255,255,.14);border-color:#fff}
+/* Study page: the line of suggestions and the number of tests taken of each kind on each test card; Statistics: the ring of them with its legend */
+.v2-suggest{margin:0 0 14px;line-height:1.6;font-weight:600}
+.v2-link{display:inline;margin:0;padding:2px 0;border:0;border-bottom:2px solid currentColor;background:transparent;color:var(--primary);font:inherit;font-weight:700;cursor:pointer;border-radius:2px}
+.v2-link:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.v2-study-text{min-width:0;flex:1}
+
+.v2-study-head{display:flex;align-items:center;gap:8px}
+.v2-study-card-test .v2-study-title{flex:1;min-width:0;font-size:1rem}
+.v2-study-count{margin-left:auto;font-weight:700;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.v2-dot{flex:none;display:inline-block;width:10px;height:10px;border-radius:50%}
+.v2-donut{display:block;width:100%;height:auto}
+.v2-donut-arc{fill:none;stroke-width:16}
+.v2-donut-total{text-anchor:middle;font-size:26px;font-weight:700;fill:var(--text)}
+.v2-donut-label{text-anchor:middle;font-size:10px;fill:var(--text-muted)}
+.v2-mix{display:grid;grid-template-columns:128px minmax(0,1fr);gap:16px;align-items:center}
+.v2-mix-legend{list-style:none;margin:0;padding:0}
+.v2-page .v2-mix-legend li{display:flex;align-items:center;gap:8px;margin:0;padding:6px 0;border-bottom:1px solid var(--border)}
+.v2-page .v2-mix-legend li:last-child{border-bottom:0}
+.v2-mix-name{flex:1;min-width:0}
+.v2-mix-share{min-width:3ch;text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:340px){.v2-mix{grid-template-columns:1fr}.v2-mix-ring{width:128px;margin:0 auto}}

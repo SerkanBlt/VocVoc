@@ -1419,7 +1419,7 @@ async function main(){
    // the Study page: the same Tests panel on top, the latest tests at the very bottom, newest first, a bullet by score (10 and 9 green, 6 orange)
    await route(p,'study');
    assert.deepEqual(await p.locator('#v2Screen .v2-statline .v2-stat strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['3','83%','10/10']);
-   assert.equal(await p.locator('#v2Screen .v2-page').evaluate(node=>[...node.children].map(child=>child.tagName+(child.querySelector('.v2-testlist')?'-list':'')).join()),'H1,SECTION,BUTTON,BUTTON,BUTTON,BUTTON,BUTTON,BUTTON,SECTION-list');   // the cards: Test, Recall, Fill in the blank, Matching, Flip, Watch/Listen list
+   assert.equal(await p.locator('#v2Screen .v2-page').evaluate(node=>[...node.children].map(child=>child.tagName+(child.querySelector('.v2-testlist')?'-list':'')).join()),'H1,P,SECTION,BUTTON,BUTTON,BUTTON,BUTTON,BUTTON,BUTTON,BUTTON,SECTION-list');   // the line of suggestions, the figures of the tests, the five tests, then the cards of Flip and of the Watch/Listen list
    assert.deepEqual(await p.locator('.v2-testlist li strong').evaluateAll(nodes=>nodes.map(node=>node.textContent)),['10/10','9/10','6/10']);
    assert.deepEqual(await p.locator('.v2-testlist .v2-bullet').evaluateAll(nodes=>nodes.map(node=>node.className.replace('v2-bullet ',''))),['v2-bullet-great','v2-bullet-great','v2-bullet-fair']);
    // Today shows the last seven days of the same history (the streak is on the Statistics page)
@@ -1889,11 +1889,11 @@ async function main(){
   assert.equal(await p.evaluate(()=>document.querySelector('.v2-goal-add').textContent),'Add New Words');
   // another page: a change made while it is open redraws it in the new language and keeps its place
   await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
-  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Recall','Fill in the blank','Matching','Flip','Watch/Listen List']);
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Recall','Fill in the blank','Matching','Write the Word','Flip','Watch/Listen List']);
   await p.evaluate(()=>{document.getElementById('v2Screen').scrollTop=60;});
   await p.evaluate(()=>changeAppLanguage('tr'));
   await p.waitForFunction(()=>document.querySelector('.v2-study-title')?.textContent==='Test'&&document.querySelectorAll('.v2-study-title')[1].textContent==='Hatırla');
-  assert.deepEqual([await p.locator('.v2-study-title').allTextContents(),await p.locator('.v2-bar-title').textContent(),await p.evaluate(()=>document.getElementById('v2Screen').scrollTop>0||document.getElementById('v2Screen').scrollHeight<=document.getElementById('v2Screen').clientHeight)],[['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip','İzleme/Dinleme Listesi'],'Çalış',true]);
+  assert.deepEqual([await p.locator('.v2-study-title').allTextContents(),await p.locator('.v2-bar-title').textContent(),await p.evaluate(()=>document.getElementById('v2Screen').scrollTop>0||document.getElementById('v2Screen').scrollHeight<=document.getElementById('v2Screen').clientHeight)],[['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Kelimeyi Yaz','Flip','İzleme/Dinleme Listesi'],'Çalış',true]);
   // French, German, Spanish and Italian have their own texts on every page of the new interface: bar, menu, page language, and no English left over
   await p.evaluate(()=>VocVocPlan.set('premium'));                                                 // the statistics page is complete only with Premium
   const wanted={fr:['Étudier','Aujourd’hui,Mots,Étudier,Statistiques,Profil,Réglages'],de:['Lernen','Heute,Wörter,Lernen,Statistik,Profil,Einstellungen'],es:['Estudiar','Hoy,Palabras,Estudiar,Estadísticas,Perfil,Ajustes'],it:['Studia','Oggi,Parole,Studia,Statistiche,Profilo,Impostazioni']};
@@ -1958,11 +1958,12 @@ async function main(){
   await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'})));
   await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
   // how the blank is made (it must leave the word out, find it also as written in an inflected form, and not invent one)
-  assert.deepEqual(await p.evaluate(()=>[
-   blankSentence('Je mange du pain.','pain'),blankSentence('Bonjour, madame.','bonjour'),blankSentence('Je mange une pomme.','manger'),
-   blankSentence("Un café, s'il vous plaît.","s'il vous plaît"),blankSentence('Il est trois heures.','être'),blankSentence("L'eau est froide.",'eau'),
-   blankSentence('Le chat dort.','main'),blankSentence('','pain'),blankSentence('Le pain.','')]),
-   ['Je mange du _____.','_____, madame.','Je _____ une pomme.',"Un café, _____.",null,"L'_____ est froide.",null,null,null]);
+  assert.deepEqual(await p.evaluate(()=>{
+   const blank=(sentence,word)=>{const parts=blankSentenceParts(sentence,word);return parts?[parts.text,parts.found]:null;};                // the sentence with the blank, and what was taken out of it
+   return [blank('Je mange du pain.','pain'),blank('Bonjour, madame.','bonjour'),blank('Je mange une pomme.','manger'),
+    blank("Un café, s'il vous plaît.","s'il vous plaît"),blank('Il est trois heures.','être'),blank("L'eau est froide.",'eau'),
+    blank('Le chat dort.','main'),blank('','pain'),blank('Le pain.','')];}),
+   [['Je mange du _____.','pain'],['_____, madame.','Bonjour'],['Je _____ une pomme.','mange'],["Un café, _____.","s'il vous plaît"],null,["L'_____ est froide.",'eau'],null,null,null]);
   // not enough words with a sentence: the page says how many there are, and nothing starts
   await p.evaluate(()=>{location.hash='#/cloze';});await p.waitForSelector('#v2Screen[data-route="cloze"] .v2-card');
   assert.match(await p.locator('#v2Screen').textContent(),/Boşluk Doldurma için cümlesi olan en az 10 kelime gerekir\. Şu an \d+ var\./);
@@ -1971,7 +1972,7 @@ async function main(){
   await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
   for(let press=0;press<2;press++){await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await pause(500);}
   await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
-  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip','İzleme/Dinleme Listesi']);
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Kelimeyi Yaz','Flip','İzleme/Dinleme Listesi']);
   assert.match(await p.locator('.v2-study-card',{hasText:'Boşluk Doldurma'}).textContent(),/\d+ kelimenin cümlesinden 10 soru/);
   await p.locator('.v2-study-card',{hasText:'Boşluk Doldurma'}).click();await p.waitForSelector('#v2QuizHost .quiz-option');
   assert.deepEqual(await p.evaluate(()=>[location.hash,document.querySelector('.v2-study-bar h1').textContent,document.querySelector('.v2-appbar')&&getComputedStyle(document.querySelector('.v2-appbar')).display,quizSession.mode,quizSession.questions.length]),['#/cloze','Boşluk Doldurma','none','cloze',10]);
@@ -1998,6 +1999,121 @@ async function main(){
   await c.close();
   record('Fill in the blank: a sentence of the word with a blank and its translation, four words to choose from, ten questions, recorded as a test of its own kind; too few words say so; it sits between Recall and Flip');
  }
+ // ===== New interface: the Write the Word test, the ring of tests by kind and the line of suggestions on the Study page, the example sentences under the Flip card =====
+ {
+  const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+  await c.addInitScript(()=>localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'})));
+  await p.goto(url+'?ui=v2');await ready(p);await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');
+  // what counts as the same word: a letter without its mark, capitals, ligatures, the two apostrophes, spaces and punctuation at the ends; but not another letter
+  assert.deepEqual(await p.evaluate(()=>[writeKey('Père')===writeKey('pere'),writeKey('ÉCOLE')===writeKey('école'),writeKey('œuf')===writeKey('oeuf'),writeKey(' s’il ')===writeKey("s'il"),writeKey('Ça va.')===writeKey('ca va'),writeKey('pere')===writeKey('pare'),writeKey('')===writeKey('a')]),[true,true,true,true,true,false,false]);
+  // not enough words with a sentence: the page says how many there are, and nothing starts
+  await p.evaluate(()=>{location.hash='#/write';});await p.waitForSelector('#v2Screen[data-route="write"] .v2-card');
+  assert.match(await p.locator('#v2Screen').textContent(),/Kelimeyi Yaz için cümlesi olan en az 10 kelime gerekir\. Şu an \d+ var\./);
+  assert.equal(await p.evaluate(()=>!!quizSession),false);
+  await p.evaluate(()=>VocVocData.updateSettings({dailyLimit:'unlimited'}));
+  for(let press=0;press<2;press++){await p.evaluate(()=>{location.hash='#/today';});await p.waitForSelector('#v2Screen[data-route="today"] .v2-pack-text');await p.getByRole('button',{name:'Yeni Kelime Ekle'}).click();await pause(500);}
+  await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
+  // the Study page: the five tests, each with the number of tests of its kind taken so far on its right (nothing taken yet); the ring of them is on the Statistics page, not here
+  assert.deepEqual(await p.evaluate(()=>{
+   const cards=[...document.querySelectorAll('.v2-study-card-test')];
+   return [cards.map(card=>card.querySelector('.v2-study-title').textContent).join(),cards.map(card=>card.querySelector('.v2-study-count').textContent).join(),cards.every(card=>{const count=card.querySelector('.v2-study-count').getBoundingClientRect(),box=card.getBoundingClientRect();return count.left>box.left+box.width/2&&box.right-count.right<=24;}),!!document.querySelector('#v2Screen .v2-donut'),!!document.querySelector('#v2Screen .v2-dot')];
+  }),['Test,Hatırla,Boşluk Doldurma,Eşleştirme,Kelimeyi Yaz','0,0,0,0,0',true,false,false]);
+  // "Let's work on these today": the two ways of studying used least, as links; Recall is left out (no memorized words yet), the others have not been used: the first two in the order of the page
+  assert.deepEqual(await p.evaluate(()=>[document.querySelector('.v2-suggest').textContent.startsWith('Hadi bugün şunlara çalışalım; '),[...document.querySelectorAll('.v2-suggest .v2-link')].map(node=>node.textContent),document.querySelector('.v2-suggest').firstElementChild.tagName]),[true,['Test','Boşluk Doldurma'],'BUTTON']);
+  await p.locator('.v2-suggest .v2-link',{hasText:'Boşluk Doldurma'}).click();await p.waitForSelector('#v2Screen[data-route="cloze"]');
+  assert.equal(await p.evaluate(()=>location.hash),'#/cloze');
+  await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
+  // Write the Word: the sentence with the blank and its translation, a field (not four words to choose from), a check button
+  assert.match(await p.locator('.v2-study-card',{hasText:'Kelimeyi Yaz'}).textContent(),/\d+ kelimenin cümlesinden 10 soru, boşluğa yaz/);
+  await p.locator('.v2-study-card',{hasText:'Kelimeyi Yaz'}).click();await p.waitForSelector('#v2QuizHost #writeInput');
+  assert.deepEqual(await p.evaluate(()=>[location.hash,document.querySelector('.v2-study-bar h1').textContent,quizSession.mode,quizSession.questions.length,document.activeElement.id]),['#/write','Kelimeyi Yaz','write',10,'writeInput']);
+  const ask=()=>p.evaluate(()=>{const q=quizSession.questions[quizSession.index],sentence=document.querySelector('#v2QuizHost .quiz-word-v91').textContent;return {found:q.cloze.found,word:q.word,sentence,hint:document.querySelector('#v2QuizHost .quiz-cloze-hint')?.textContent||'',options:document.querySelectorAll('#v2QuizHost .quiz-option').length,lang:document.getElementById('writeInput').lang,check:!!document.querySelector('#v2QuizHost .write-check'),next:!!document.getElementById('writeNext')};});
+  const first=await ask();
+  assert.deepEqual([first.sentence.includes('_____'),first.hint.length>0,first.options,first.lang,first.check,first.next],[true,true,0,'fr',true,false]);
+  // nothing typed: nothing is checked
+  await p.locator('#v2QuizHost .write-check').click();
+  assert.deepEqual(await p.evaluate(()=>[quizSession.answered,quizSession.score,document.activeElement.id]),[false,0,'writeInput']);
+  // a wrong word: it says so, shows the right one, the field is locked and an arrow (not the check button) goes on
+  await p.locator('#writeInput').fill('zzz');await p.locator('#writeInput').press('Enter');
+  assert.deepEqual(await p.evaluate(()=>[document.querySelector('.write-result').className,document.querySelector('.write-result strong').textContent,document.querySelector('.write-answer').textContent,document.getElementById('writeInput').disabled,!!document.querySelector('#v2QuizHost .write-check'),document.activeElement.id,document.getElementById('writeNext').getAttribute('aria-label'),quizSession.wrongWords.length]),['write-result wrong','yanlış',first.found,true,false,'writeNext','Sonraki kelime',1]);
+  await p.locator('#writeNext').click();
+  assert.deepEqual(await p.evaluate(()=>[quizSession.index,document.getElementById('writeInput').value,document.getElementById('writeInput').disabled,document.activeElement.id]),[1,'',false,'writeInput']);
+  // the others rightly, each written in capitals and without the marks of its letters: still right, and the right spelling is shown
+  let accented=0;
+  for(let question=1;question<10;question++){
+   const now=await ask(),typed=now.found.normalize('NFD').replace(/\p{M}/gu,'').toUpperCase();
+   if(typed!==now.found.toUpperCase())accented++;
+   await p.locator('#writeInput').fill(typed);await p.locator('#writeInput').press('Enter');
+   assert.deepEqual(await p.evaluate(()=>[document.querySelector('.write-result').className,document.querySelector('.write-answer').textContent]),['write-result correct',now.found],'question '+question+': '+typed);
+   await p.locator('#writeNext').click();
+  }
+  await p.waitForSelector('#v2QuizHost .quiz-result-card');
+  assert.deepEqual(await p.evaluate(()=>[document.getElementById('v2QuizCount').textContent,quizSession.score,quizSession.wrongWords.length]),['Tamamlandı',9,1]);
+  // a word with a mark on a letter, written without it, is right; the right spelling is shown
+  await p.locator('#v2QuizHost .quiz-restart-btn').click();await p.waitForSelector('#writeInput');
+  await p.evaluate(()=>{const q=quizSession.questions[0];quizSession.questions[0]={...q,cloze:{text:'Mon _____ travaille.',found:'père',translation:'Babam çalışıyor.'}};renderQuizQuestion();});
+  await p.locator('#writeInput').fill('PERE');await p.locator('#writeInput').press('Enter');
+  assert.deepEqual(await p.evaluate(()=>[document.querySelector('.write-result').className,document.querySelector('.write-result').textContent,quizSession.score]),['write-result correct','doğru · Doğrusu: père',1]);
+  // a different letter is not the same word
+  await p.evaluate(()=>{quizSession.index=1;quizSession.answered=false;const q=quizSession.questions[1];quizSession.questions[1]={...q,cloze:{text:'Mon _____ travaille.',found:'père',translation:'Babam çalışıyor.'}};renderQuizQuestion();});
+  await p.locator('#writeInput').fill('pare');await p.locator('#writeInput').press('Enter');
+  assert.equal(await p.evaluate(()=>document.querySelector('.write-result').className),'write-result wrong');
+  // it is recorded as a test of its own kind, and counted: the first one finished (the one above was not)
+  const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_ACTIVITY_V1')));
+  assert.deepEqual([saved.testsTaken,saved.quizzes.at(-1).mode,saved.quizzes.at(-1).score,saved.modes],[1,'write',9,{active:0,recall:0,cloze:0,match:0,write:1}]);
+  // the Study page: its number, the line of tests names it, and the links no longer offer it
+  await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card-test');
+  assert.deepEqual(await p.evaluate(()=>[[...document.querySelectorAll('.v2-study-count')].map(node=>node.textContent).join(),document.querySelector('.v2-study-card-test[data-v2-focus="write"] .v2-study-count').title,!!document.querySelector('#v2Screen .v2-donut'),[...document.querySelectorAll('.v2-suggest .v2-link')].map(node=>node.textContent),document.querySelector('.v2-testlist li .v2-muted').textContent]),['0,0,0,0,1','1 test',false,['Test','Boşluk Doldurma'],'Yaz']);
+  // the example sentences of the word under the Flip card, in small type, on both sides; not their meaning, not their pronunciation
+  await p.evaluate(()=>{location.hash='#/flip';});await p.waitForSelector('#flipOverlay.open [data-flip-face="front"]');
+  const shown=await p.evaluate(()=>{
+   const card=flipSession.cards[flipSession.index],data=VocVocData.getWordByText(card.word),faces=[...document.querySelectorAll('#flipOverlay .flip-panel')];
+   const extra=(data.examples||[]).flatMap(example=>[example.translation,example.tr,example.phonetic].filter(Boolean));
+   return {sentences:(data.examples||[]).slice(0,2).map(example=>example.text),faces:faces.map(face=>{const box=face.querySelector('.flip-examples');return {texts:[...box.querySelectorAll('p')].map(node=>node.textContent),lang:box.lang,size:parseFloat(getComputedStyle(box).fontSize),inside:box.getBoundingClientRect().bottom<=face.getBoundingClientRect().bottom+0.5,leaked:extra.some(text=>box.textContent.includes(text))};})};
+  });
+  assert(shown.sentences.length>0&&shown.faces.length===2,'the word has example sentences');
+  for(const face of shown.faces)assert.deepEqual([face.texts,face.lang,face.size<=13,face.inside,face.leaked],[shown.sentences,'fr',true,true,false]);
+  // the next card has its own sentences
+  await p.locator('[data-flip-face="front"] [data-flip-nav="1"]').click();await pause(900);
+  assert.deepEqual(await p.evaluate(()=>{const card=flipSession.cards[flipSession.index],data=VocVocData.getWordByText(card.word);return [[...document.querySelectorAll('#flipOverlay [data-flip-face="front"] .flip-examples p')].map(node=>node.textContent).join('|'),(data.examples||[]).slice(0,2).map(example=>example.text).join('|')];}).then(pair=>pair[0]===pair[1]),true);
+  await c.close();
+  record('Write the Word: the sentence with a blank, a field and a check button, a letter without its mark is accepted, the right spelling is shown, an arrow goes on, recorded as a test of its own kind; the Study page: five tests with the number taken of each kind on their right, the two ways used least as links; Flip: the example sentences under the card, small, on both sides, without meaning or pronunciation');
+ }
+ // ===== New interface: Statistics: the ring of tests by kind, the line of memorized words =====
+ {
+  const record0=JSON.stringify({v:1,seeded:true,testsTaken:12,flips:0,watches:0,modes:{active:6,recall:3,cloze:2,match:1,write:0},quizzes:[],badges:{}});
+  const open=async(activity,colorScheme)=>{
+   const c=await browser.newContext({viewport:{width:390,height:844},colorScheme}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+   await c.addInitScript(([record,keep])=>{localStorage.setItem('VOCVOC_PROFILE',JSON.stringify({name:'Ayşe',email:'ayse@example.com'}));localStorage.setItem('VOCVOC_SIM_PLAN','premium');if(keep&&!localStorage.getItem('VOCVOC_ACTIVITY_V1'))localStorage.setItem('VOCVOC_ACTIVITY_V1',record);},[record0,activity]);
+   await p.goto(url+'?ui=v2#/stats');await ready(p);await p.waitForSelector('#v2Screen[data-route="stats"] .v2-curve');
+   return {c,p};
+  };
+  for(const colorScheme of ['light','dark']){
+   const {c,p}=await open(true,colorScheme);
+   // the ring: one arc for each kind that was taken, as long as its share (a 2 px gap between arcs), the total in the middle, every number and share in the legend
+   const ring=await p.evaluate(()=>{
+    const mix=document.querySelector('.v2-mix'),svg=mix.querySelector('svg.v2-donut'),arcs=[...svg.querySelectorAll('.v2-donut-arc')];
+    return {heading:mix.parentElement.querySelector('h2').textContent,total:svg.querySelector('.v2-donut-total').textContent,label:svg.getAttribute('aria-label'),arcs:arcs.map(arc=>[arc.style.stroke,parseFloat(arc.getAttribute('stroke-dasharray')),arc.querySelector('title')?.textContent||null]),legend:[...mix.querySelectorAll('.v2-mix-legend li')].map(li=>[li.querySelector('.v2-mix-name').textContent,li.querySelector('strong').textContent,li.querySelector('.v2-mix-share').textContent,getComputedStyle(li.querySelector('.v2-dot')).backgroundColor])};
+   });
+   assert.deepEqual([ring.heading,ring.total,ring.arcs.length,ring.arcs.slice(1).map(arc=>arc[2])],['Test dağılımı','12',5,['Test: 6 (50%)','Hatırla: 3 (25%)','Boşluk Doldurma: 2 (17%)','Eşleştirme: 1 (8%)']]);
+   assert.deepEqual(ring.legend.map(row=>row.slice(0,3)),[['Test','6','50%'],['Hatırla','3','25%'],['Boşluk Doldurma','2','17%'],['Eşleştirme','1','8%'],['Kelimeyi Yaz','0','0%']]);
+   assert.equal(new Set(ring.legend.map(row=>row[3])).size,5,'five colours');
+   assert.match(ring.label,/Test 6, Hatırla 3, Boşluk Doldurma 2, Eşleştirme 1, Kelimeyi Yaz 0/);
+   const circumference=2*Math.PI*46;
+   assert(Math.abs(ring.arcs[1][1]-(circumference/2-2))<0.6&&ring.arcs.slice(1).every(arc=>arc[1]<circumference),'an arc is as long as its share, less the gap: '+JSON.stringify(ring.arcs.map(arc=>arc[1])));
+   // the line of memorized words is thicker and its colour changes along it
+   const line=await p.evaluate(()=>{const polyline=document.querySelector('.v2-curve polyline'),stops=[...document.querySelectorAll('#v2CurveGradient stop')].map(stop=>getComputedStyle(stop).stopColor);return {width:parseFloat(getComputedStyle(polyline).strokeWidth),stroke:getComputedStyle(polyline).stroke,units:document.getElementById('v2CurveGradient').getAttribute('gradientUnits'),stops};});
+   assert.deepEqual([line.width>=3,/url\(/.test(line.stroke),line.units,line.stops.length,line.stops[0]!==line.stops[1]],[true,true,'userSpaceOnUse',2,true],`${colorScheme}: ${JSON.stringify(line)}`);
+   await c.close();
+  }
+  {
+   // no test yet: the card says so instead of showing an empty ring
+   const {c,p}=await open(false,'light');
+   assert.deepEqual(await p.evaluate(()=>{const card=document.querySelector('.v2-mix')?.parentElement||[...document.querySelectorAll('#v2Screen h2')].find(node=>node.textContent==='Test dağılımı').parentElement;return [card.querySelector('h2').textContent,!!card.querySelector('svg'),card.querySelector('p')?.textContent];}),['Test dağılımı',false,'Henüz tamamlanmış test yok. Bir test bitirince sonuçların burada görünür.']);
+   await c.close();
+  }
+  record('Statistics: a ring of the tests taken of each kind (an arc as long as its share, a legend with every number, the total in the middle, five colours), a note when there is no test yet; the line of memorized words is thicker and its colour changes along it, in light and dark');
+ }
  // ===== New interface: the Matching test =====
  {
   const c=await browser.newContext({viewport:{width:390,height:844}}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
@@ -2015,7 +2131,7 @@ async function main(){
   assert.equal(await p.evaluate(()=>getMatchPool().some(entry=>entry.word==='ma11')),false);
   // the Study page offers it between Fill in the blank and Flip
   await p.evaluate(()=>{location.hash='#/study';});await p.waitForSelector('#v2Screen[data-route="study"] .v2-study-card');
-  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Flip','İzleme/Dinleme Listesi']);
+  assert.deepEqual(await p.locator('.v2-study-title').allTextContents(),['Test','Hatırla','Boşluk Doldurma','Eşleştirme','Kelimeyi Yaz','Flip','İzleme/Dinleme Listesi']);
   assert.match(await p.locator('.v2-study-card',{hasText:'Eşleştirme'}).textContent(),/\d+ aktif kelimeyle 10 tur, her turda 4 eşleme/);
   await p.locator('.v2-study-card',{hasText:'Eşleştirme'}).click();await p.waitForSelector('#v2QuizHost .match-item');
   assert.deepEqual(await p.evaluate(()=>[location.hash,document.querySelector('.v2-study-bar h1').textContent,document.querySelector('.v2-appbar')&&getComputedStyle(document.querySelector('.v2-appbar')).display,quizSession.mode,quizSession.questions.length,document.getElementById('v2QuizCount').textContent]),['#/match','Eşleştirme','none','match',10,'Soru 1/10']);
@@ -2892,7 +3008,7 @@ async function main(){
   await p.goto(url+'?ui=v2#/study');await ready(p);await p.waitForSelector('#v2Screen[data-route="study"] [data-v2-focus="watch"]');
   const stored=()=>p.evaluate(()=>JSON.parse(localStorage.getItem('VOCVOC_WATCHLIST_V1')||'null'));
   // the card sits after Flip and before the last tests, and looks like the other cards
-  assert.deepEqual(await p.evaluate(()=>{const cards=[...document.querySelectorAll('#v2Screen .v2-study-card')],watch=document.querySelector('[data-v2-focus="watch"]'),last=[...document.querySelectorAll('#v2Screen h2')].find(node=>node.textContent==='Son testler');const after=(a,b)=>!!(a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING);return [cards.indexOf(watch),cards.length,after(cards[cards.length-2],watch),after(watch,last),watch.querySelector('.v2-study-title').textContent,watch.querySelector('.v2-study-sub').textContent,watch.className===cards[0].className];}),[5,6,true,true,'İzleme/Dinleme Listesi','0 bağlantı',true]);
+  assert.deepEqual(await p.evaluate(()=>{const cards=[...document.querySelectorAll('#v2Screen .v2-study-card')],watch=document.querySelector('[data-v2-focus="watch"]'),last=[...document.querySelectorAll('#v2Screen h2')].find(node=>node.textContent==='Son testler');const after=(a,b)=>!!(a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING);return [cards.indexOf(watch),cards.length,after(cards[cards.length-2],watch),after(watch,last),watch.querySelector('.v2-study-title').textContent,watch.querySelector('.v2-study-sub').textContent,watch.className===cards[cards.length-2].className];}),[6,7,true,true,'İzleme/Dinleme Listesi','0 bağlantı',true]);
   await p.locator('[data-v2-focus="watch"]').click();await p.waitForSelector('#v2Watch');
   // the panel: the title with + (new link) and × (close) on its right; the list below; no form and no button at the bottom, nothing to choose first
   assert.deepEqual(await p.evaluate(()=>{const head=document.querySelector('.v2-watch-head'),plus=document.querySelector('.v2-watch-plus').getBoundingClientRect(),close=document.querySelector('.v2-watch-close').getBoundingClientRect(),title=document.getElementById('v2WatchTitle').getBoundingClientRect();return [document.getElementById('v2Watch').getAttribute('role'),document.getElementById('v2Watch').getAttribute('aria-modal'),document.getElementById('v2Screen').inert,document.querySelector('.v2-appbar').inert,document.querySelector('.v2-watch-empty').hidden,!!document.getElementById('v2WatchUrlIn'),!!document.querySelector('.v2-watch-card > .v2-actions'),[...document.querySelectorAll('.v2-watch-head-actions button')].map(node=>node.getAttribute('aria-label')),title.right<=plus.left&&plus.right<=close.left+1&&Math.abs(close.right-head.getBoundingClientRect().right)<=2];}),['dialog','true',true,true,false,false,false,['Yeni bağlantı ekle','Kapat'],true]);
@@ -3007,7 +3123,7 @@ async function main(){
    ['#/today',[['#v2Screen h1'],['.v2-goal-label'],['.v2-goal-value'],['.v2-pack .v2-goal-label'],['.v2-pack-text'],['.v2-goal .ui-button'],['.v2-goal-words'],['.v2-stat strong'],['.v2-stat span'],['#v2Dashboard .v2-day-label'],['#v2Dashboard .v2-day-num'],['#v2Dashboard .v2-legend'],['#v2Dashboard .v2-card h2'],['.v2-subtab[aria-selected="true"]'],['.v2-subtab[aria-selected="false"]'],['.v2-subtab-count']]],
    ['#/test',[['.v2-study-bar h1'],['#v2QuizCount'],['.v2-close'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91']]],
    ['#/cloze',[['.v2-study-bar h1'],['#v2QuizCount'],['#v2QuizHost .quiz-option'],['#v2QuizHost .quiz-word-v91'],['#v2QuizHost .quiz-cloze-hint']]],
-   ['#/study',[['.v2-appbar .v2-brand'],['.v2-bar-title'],['.v2-avatar-dot'],['.v2-menu-btn'],['.v2-study-title'],['.v2-study-sub'],['#v2Screen h1'],['.v2-card h2'],['.v2-statline .v2-stat strong'],['.v2-statline .v2-stat span'],
+   ['#/study',[['.v2-appbar .v2-brand'],['.v2-bar-title'],['.v2-avatar-dot'],['.v2-menu-btn'],['.v2-study-title'],['.v2-study-sub'],['.v2-suggest'],['.v2-link'],['.v2-study-count'],['#v2Screen h1'],['.v2-card h2'],['.v2-statline .v2-stat strong'],['.v2-statline .v2-stat span'],
     ['.v2-testlist .v2-bullet-great'],['.v2-testlist .v2-bullet-good'],['.v2-testlist .v2-bullet-fair'],['.v2-testlist .v2-bullet-low'],['.v2-test-day'],['.v2-testlist .v2-muted'],['.v2-testlist strong']]],
    ['#/stats',[['.v2-locked h2'],['.v2-locked p'],['.v2-locked .ui-button']]],
    ['#/profile',[['.v2-profile-name'],['.v2-chip'],['.v2-profile-head .v2-muted'],['.v2-row'],['.v2-row-end'],['.v2-row[data-danger]'],['.v2-page > .v2-muted']]],

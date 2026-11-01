@@ -277,8 +277,8 @@ describe('Collapsible Points and Tags sections, the tag panel and the Matching t
   it('a Flip card that is turned over earns a point for its word, and the Matching test is a mode of the quiz engine with its own page, card and test kind',()=>{
     assert(/function toggleFlip\(\)\{[^]*?if\(flipSession\.flipped\)\{\s*noteStudy\(flipSession\.cards\[flipSession\.index\]\.word,"flipped"\);[^]*?new CustomEvent\("vocvoc-flipped"\)/.test(html),'a Flip card turned over: a point for its word and one more flip for the badges');
     assert(/function startMatchQuiz\(\)\{[^]*?mode:"match"/.test(html)&&/function getMatchPool\(\)/.test(html)&&html.includes('if(quizSession.mode==="match"){renderMatchRound(area);return;}'));
-    assert(/const QUIZ_ROUTES=\['test','recall','cloze','match'\];/.test(screensJs)&&screensJs.includes("card('⧉',t('studyMatch')")&&screensJs.includes("match:[getMatchPool,startMatchQuiz]"));
-    assert(read('stats.js').includes("q.mode==='match'")&&screensJs.includes("['recall','cloze','match'].includes(quizSession.mode)"),'a finished Matching is recorded as a test of its own kind');
+    assert(/const QUIZ_ROUTES=\['test','recall','cloze','match','write'\];/.test(screensJs)&&screensJs.includes("{mode:'match',route:'match',glyph:'⧉',name:()=>t('studyMatch')")&&screensJs.includes("match:[getMatchPool,startMatchQuiz]"));
+    assert(read('stats.js').includes("['active','recall','cloze','match','write']")&&read('stats.js').includes('MODES.includes(q.mode)')&&screensJs.includes('VocVocStats.MODES.includes(quizSession.mode)'),'a finished Matching (and every other kind of test) is recorded as a test of its own kind');
     assert(/for\(let guard=0;pairs\.length<4&&guard<400;guard\+\+\)/.test(html)&&html.includes('Array.from({length:10},()=>'),'ten rounds of four pairs');
   });
   it('the cards of the Words page: three lists (today, yesterday, earlier) each under a label, in each list the words with more points on top, the same points in the order they were pulled',()=>{
@@ -474,6 +474,24 @@ describe('New interface (prototype)',()=>{
     assert.deepEqual(dates,[...dates].sort(),'the links are in order, oldest first');
     assert(!/watchlist\//.test(precacheList().join()),'the default list is read from the network, so it can change without a new version of the app');
   });
+  it('Write the Word is a mode of the quiz engine with its own page, field and test kind; the five kinds of test keep their colours in the chart; Flip shows example sentences without meaning or pronunciation',()=>{
+    assert(/function startWriteQuiz\(\)\{[^]*?mode:"write"/.test(html)&&/function checkWrite\(\)/.test(html)&&/function nextWrite\(\)/.test(html)&&html.includes('if(quizSession.mode==="write"){renderWriteQuestion(area);return;}'),'the engine has the mode');
+    assert(html.includes("quizSession.mode==='write'?'startWriteQuiz()'")&&html.includes('.write-input:not([disabled])'),'"new test" and the focus know the kind');
+    assert(/function writeKey\(value\)\{[^]*?normalize\("NFD"\)\.replace\(\/\\p\{M\}\/gu,""\)/.test(html),'a letter without its mark is the same letter');
+    assert(html.includes('const hit=exact.exec(text);')&&html.includes('found:hit[0]')&&html.includes('found:parts?.found||d.word'),'what was taken out of the sentence is the answer');
+    assert(screensJs.includes("QUIZ_ROUTES=['test','recall','cloze','match','write']")&&screensJs.includes('write:[getClozePool,startWriteQuiz]'),'the page');
+    const kinds=[...screensJs.matchAll(/\{mode:'(\w+)',route:'(\w+)',glyph:'[^']+',name:/g)].map(match=>match[1]);
+    assert.deepEqual(kinds,['active','recall','cloze','match','write'],'the five kinds, in the order of the page, are the slots 1 to 5 of the chart');
+    // the chart colours are the first five slots of the checked palette, in its fixed order (light, then dark twice: the chosen theme and the system theme)
+    const css=read('screens.css'),light=['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4'],dark=['#3987e5','#d95926','#199e70','#c98500','#d55181'];
+    light.forEach((hex,index)=>assert(css.includes(`--v2-chart-${index+1}:${hex}`),`light colour ${index+1}`));
+    dark.forEach((hex,index)=>assert.equal(css.split(`--v2-chart-${index+1}:${hex}`).length-1,2,`dark colour ${index+1}`));
+    assert(css.includes('stroke:url(#v2CurveGradient);stroke-width:3.5')&&screensJs.includes("gradient.setAttribute('gradientUnits','userSpaceOnUse')"),'the line of memorized words is thicker and drawn in a gradient');
+    const flip=html.slice(html.indexOf('function startFlip()'),html.indexOf('function refreshFlipCards()')),made=flip.slice(flip.indexOf('const examples='),flip.indexOf('cards.push'));
+    assert(made.includes('ex?.text??ex?.fr')&&!/phonetic|translation|ex\?\.tr\b/.test(made),'the card keeps the sentences only');
+    const render=html.slice(html.indexOf('function renderFlip()'),html.indexOf('function toggleFlip()')),shown=render.slice(render.indexOf('const examplesHtml'),render.indexOf('const face='));
+    assert(shown.includes('class="flip-examples"')&&!/phonetic|translation|meaning/.test(shown),'only the sentences are drawn under the card');
+  });
   it('the plan rules match the agreed product: Free by default with 40 words from each level and a 20-word daily goal, stats/sentences/speech/unlimited words are Premium, no AI and no key anywhere',()=>{
     const {win,events,storage}=load(),plan=win.VocVocPlan;
     assert.deepEqual([plan.get(),plan.has('stats'),plan.has('badges'),plan.has('freeWords'),plan.has('unlimitedWords')],['free',false,true,true,false]);
@@ -580,7 +598,7 @@ describe('Word card content (examples and idioms)',()=>{
     assert(/closeConfirm\(false\);removePhoto\(\)/.test(screensJs));
   });
   it('the Fill in the blank test is part of the app: a mode of the same quiz engine, with its message in all six languages and a restart that starts the same kind',()=>{
-    assert(/function startClozeQuiz\(\)\{[^]*?mode:"cloze"/.test(html)&&/function getClozePool\(\)/.test(html)&&/function blankSentence\(/.test(html));
+    assert(/function startClozeQuiz\(\)\{[^]*?mode:"cloze"/.test(html)&&/function getClozePool\(\)/.test(html)&&/function blankSentenceParts\(/.test(html));
     assert.equal((html.match(/clozeNeed:"/g)||[]).length,6,'one message per interface language');
     assert(html.includes("quizSession.mode==='cloze'?'startClozeQuiz()'"),'"new test" must start the same kind of test');
     assert(/q\.cloze\.text/.test(html)&&html.includes('quiz-cloze-hint'));

@@ -62,7 +62,7 @@
       statsSummaryTotal:'Toplam kelime',statsMemorized:'Ezberlenen',statsStreak:'Seri (gün)',statsLongest:'En uzun seri',
       statsWeek:'Son 7 gün',legendAdded:'Eklenen',legendMemorized:'Ezberlenen',dayLabel:'{day}: {added} eklendi, {memorized} ezberlendi, {tests} test',
       statsCurve:'Ezberlenen kelime (son 30 gün)',curveSummary:'30 gün önce {from}, şimdi {to} ezberlenmiş kelime.',
-      statsTests:'Testler',testsCount:'Test',testsAccuracy:'Ortalama başarı',testsBest:'En iyi',testsNone:'Henüz tamamlanmış test yok. Bir test bitirince sonuçların burada görünür.',lastTests:'Son testler',modeActive:'Test',modeRecall:'Hatırla',modeCloze:'Boşluk',
+      statsTests:'Testler',testsCount:'Test',testsAccuracy:'Ortalama başarı',testsBest:'En iyi',testsNone:'Henüz tamamlanmış test yok. Bir test bitirince sonuçların burada görünür.',lastTests:'Son testler',modeActive:'Test',modeRecall:'Hatırla',modeCloze:'Boşluk',studyWrite:"Kelimeyi Yaz",studyWriteSub:"{n} kelimenin cümlesinden 10 soru, boşluğa yaz",quizNeedWrite:"Kelimeyi Yaz için cümlesi olan en az 10 kelime gerekir. Şu an {n} var.",modeWrite:"Yaz",mixTitle:"Test dağılımı",mixSummary:"Test dağılımı: {parts}.",mixCount:"{n} test",studySuggest:"Hadi bugün şunlara çalışalım;",
       statsAnalysis:'Geçmiş analizi',hardestTitle:'En çok yanıldığın kelimeler',hardestNone:'Henüz yanlış yaptığın kelime yok.',speedTitle:'Ortalama ezberleme süresi',speedValue:'{n} gün ({m} kelimeye göre)',speedNone:'Henüz ezberlenmiş kelime yok.',
       statsFootnote:'Rakamlar kelimelerin eklenme ve ezberlenme zamanlarından ve tamamladığın testlerden hesaplanır. Arşive aldığın kelimeler ezberlenen sayısına girmez. Test geçmişi ve rozetler bu cihazda tutulur, yedeğe girmez.',
       badgesSummary:'{n} / {m} rozet kazanıldı',badgesEarned:'Kazandıkların',badgesStarted:'Başladıkların',badgesWaiting:'Bekleyenler',badgesNoneEarned:'Henüz kazandığın rozet yok. Bir kelimeyi ezberlediğinde ilk rozetin gelir.',badgesNoneStarted:'Başladığın ama henüz kazanmadığın rozet yok.',badgesNoneWaiting:'Bekleyen rozet kalmadı: hepsine başladın.',badgeEarned:'Kazanıldı: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'Yeni rozet!',newBadgesTitle:'{n} yeni rozet!',
@@ -94,7 +94,7 @@
       statsSummaryTotal:'Total words',statsMemorized:'Memorized',statsStreak:'Streak (days)',statsLongest:'Longest streak',
       statsWeek:'Last 7 days',legendAdded:'Added',legendMemorized:'Memorized',dayLabel:'{day}: {added} added, {memorized} memorized, {tests} tests',
       statsCurve:'Memorized words (last 30 days)',curveSummary:'30 days ago {from}, now {to} memorized words.',
-      statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Average score',testsBest:'Best',testsNone:'No finished test yet. Your results appear here once you finish one.',lastTests:'Latest tests',modeActive:'Test',modeRecall:'Recall',modeCloze:'Blank',
+      statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Average score',testsBest:'Best',testsNone:'No finished test yet. Your results appear here once you finish one.',lastTests:'Latest tests',modeActive:'Test',modeRecall:'Recall',modeCloze:'Blank',studyWrite:"Write the Word",studyWriteSub:"10 questions from the sentences of {n} words, type the missing word",quizNeedWrite:"Write the Word needs at least 10 words that have an example sentence. You have {n}.",modeWrite:"Write",mixTitle:"Tests by kind",mixSummary:"Tests by kind: {parts}.",mixCount:"{n} tests",studySuggest:"Let's work on these today:",
       statsAnalysis:'History analysis',hardestTitle:'Words you miss most',hardestNone:'No missed words yet.',speedTitle:'Average time to memorize',speedValue:'{n} days (from {m} words)',speedNone:'No memorized words yet.',
       statsFootnote:'The numbers come from when words were added and memorized and from the tests you finished. Archived words are not counted as memorized. Test history and badges are kept on this device and are not part of a backup.',
       badgesSummary:'{n} / {m} badges earned',badgesEarned:'Earned',badgesStarted:'Started',badgesWaiting:'Waiting',badgesNoneEarned:'No badge earned yet. Memorize a word and your first one arrives.',badgesNoneStarted:'No badge is under way that you have not earned yet.',badgesNoneWaiting:'No badge is waiting: you have started them all.',badgeEarned:'Earned: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'New badge!',newBadgesTitle:'{n} new badges!',
@@ -126,7 +126,7 @@
       statsSummaryTotal:'Total des mots',statsMemorized:'Mémorisés',statsStreak:'Série (jours)',statsLongest:'Plus longue série',
       statsWeek:'7 derniers jours',legendAdded:'Ajoutés',legendMemorized:'Mémorisés',dayLabel:'{day} : {added} ajoutés, {memorized} mémorisés, {tests} tests',
       statsCurve:'Mots mémorisés (30 derniers jours)',curveSummary:'Il y a 30 jours : {from}. Maintenant : {to} mots mémorisés.',
-      statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Score moyen',testsBest:'Meilleur',testsNone:'Aucun test terminé pour l’instant. Vos résultats apparaîtront ici dès que vous en aurez terminé un.',lastTests:'Derniers tests',modeActive:'Test',modeRecall:'Révision',modeCloze:'Trous',
+      statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Score moyen',testsBest:'Meilleur',testsNone:'Aucun test terminé pour l’instant. Vos résultats apparaîtront ici dès que vous en aurez terminé un.',lastTests:'Derniers tests',modeActive:'Test',modeRecall:'Révision',modeCloze:'Trous',studyWrite:"Écrire le mot",studyWriteSub:"10 questions tirées des phrases de {n} mots, saisissez le mot manquant",quizNeedWrite:"Écrire le mot demande au moins 10 mots ayant une phrase d’exemple. Vous en avez {n}.",modeWrite:"Écriture",mixTitle:"Répartition des tests",mixSummary:"Répartition des tests : {parts}.",mixCount:"{n} tests",studySuggest:"Travaillons ceci aujourd’hui :",
       statsAnalysis:'Analyse de l’historique',hardestTitle:'Les mots que vous ratez le plus',hardestNone:'Aucun mot raté pour l’instant.',speedTitle:'Temps moyen pour mémoriser',speedValue:'{n} jours (sur {m} mots)',speedNone:'Aucun mot mémorisé pour l’instant.',
       statsFootnote:'Les chiffres viennent des dates d’ajout et de mémorisation des mots et des tests terminés. Les mots archivés ne comptent pas comme mémorisés. L’historique des tests et les badges sont conservés sur cet appareil et ne font pas partie d’une sauvegarde.',
       badgesSummary:'{n} / {m} badges obtenus',badgesEarned:'Obtenus',badgesStarted:'Commencés',badgesWaiting:'À venir',badgesNoneEarned:'Aucun badge obtenu pour l’instant. Mémorisez un mot et le premier arrive.',badgesNoneStarted:'Aucun badge en cours que vous n’avez pas encore obtenu.',badgesNoneWaiting:'Aucun badge en attente : vous les avez tous commencés.',badgeEarned:'Obtenu le {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'Nouveau badge !',newBadgesTitle:'{n} nouveaux badges !',
@@ -158,7 +158,7 @@
       statsSummaryTotal:'Wörter gesamt',statsMemorized:'Gelernt',statsStreak:'Serie (Tage)',statsLongest:'Längste Serie',
       statsWeek:'Letzte 7 Tage',legendAdded:'Hinzugefügt',legendMemorized:'Gelernt',dayLabel:'{day}: {added} hinzugefügt, {memorized} gelernt, {tests} Tests',
       statsCurve:'Gelernte Wörter (letzte 30 Tage)',curveSummary:'Vor 30 Tagen {from}, jetzt {to} gelernte Wörter.',
-      statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Durchschnittliches Ergebnis',testsBest:'Bestes',testsNone:'Noch kein abgeschlossener Test. Ihre Ergebnisse erscheinen hier, sobald Sie einen beendet haben.',lastTests:'Letzte Tests',modeActive:'Test',modeRecall:'Wiederholen',modeCloze:'Lücke',
+      statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Durchschnittliches Ergebnis',testsBest:'Bestes',testsNone:'Noch kein abgeschlossener Test. Ihre Ergebnisse erscheinen hier, sobald Sie einen beendet haben.',lastTests:'Letzte Tests',modeActive:'Test',modeRecall:'Wiederholen',modeCloze:'Lücke',studyWrite:"Wort schreiben",studyWriteSub:"10 Fragen aus den Sätzen von {n} Wörtern, tippen Sie das fehlende Wort",quizNeedWrite:"Wort schreiben braucht mindestens 10 Wörter mit einem Beispielsatz. Sie haben {n}.",modeWrite:"Schreiben",mixTitle:"Tests nach Art",mixSummary:"Tests nach Art: {parts}.",mixCount:"{n} Tests",studySuggest:"Das üben wir heute:",
       statsAnalysis:'Verlaufsanalyse',hardestTitle:'Wörter, die Sie am häufigsten verfehlen',hardestNone:'Noch keine falschen Wörter.',speedTitle:'Durchschnittliche Lernzeit',speedValue:'{n} Tage (bei {m} Wörtern)',speedNone:'Noch keine gelernten Wörter.',
       statsFootnote:'Die Zahlen stammen aus den Zeitpunkten, zu denen Wörter hinzugefügt und gelernt wurden, und aus den abgeschlossenen Tests. Archivierte Wörter zählen nicht als gelernt. Testverlauf und Abzeichen bleiben auf diesem Gerät und gehören nicht zu einer Sicherung.',
       badgesSummary:'{n} / {m} Abzeichen erhalten',badgesEarned:'Erhalten',badgesStarted:'Begonnen',badgesWaiting:'Ausstehend',badgesNoneEarned:'Noch kein Abzeichen erhalten. Lernen Sie ein Wort, dann kommt das erste.',badgesNoneStarted:'Kein Abzeichen ist in Arbeit, das Sie noch nicht erhalten haben.',badgesNoneWaiting:'Kein Abzeichen steht aus: Sie haben alle begonnen.',badgeEarned:'Erhalten: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'Neues Abzeichen!',newBadgesTitle:'{n} neue Abzeichen!',
@@ -190,7 +190,7 @@
       statsSummaryTotal:'Palabras en total',statsMemorized:'Memorizadas',statsStreak:'Racha (días)',statsLongest:'Racha más larga',
       statsWeek:'Últimos 7 días',legendAdded:'Añadidas',legendMemorized:'Memorizadas',dayLabel:'{day}: {added} añadidas, {memorized} memorizadas, {tests} tests',
       statsCurve:'Palabras memorizadas (últimos 30 días)',curveSummary:'Hace 30 días {from}, ahora {to} palabras memorizadas.',
-      statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Puntuación media',testsBest:'Mejor',testsNone:'Aún no hay ningún test terminado. Tus resultados aparecerán aquí cuando termines uno.',lastTests:'Últimos tests',modeActive:'Test',modeRecall:'Repaso',modeCloze:'Hueco',
+      statsTests:'Tests',testsCount:'Tests',testsAccuracy:'Puntuación media',testsBest:'Mejor',testsNone:'Aún no hay ningún test terminado. Tus resultados aparecerán aquí cuando termines uno.',lastTests:'Últimos tests',modeActive:'Test',modeRecall:'Repaso',modeCloze:'Hueco',studyWrite:"Escribir la palabra",studyWriteSub:"10 preguntas con las frases de {n} palabras, escribe la palabra que falta",quizNeedWrite:"Escribir la palabra necesita al menos 10 palabras con una frase de ejemplo. Tienes {n}.",modeWrite:"Escritura",mixTitle:"Tests por tipo",mixSummary:"Tests por tipo: {parts}.",mixCount:"{n} tests",studySuggest:"Hoy practiquemos esto:",
       statsAnalysis:'Análisis del historial',hardestTitle:'Palabras que más fallas',hardestNone:'Aún no hay palabras falladas.',speedTitle:'Tiempo medio para memorizar',speedValue:'{n} días (con {m} palabras)',speedNone:'Aún no hay palabras memorizadas.',
       statsFootnote:'Las cifras salen de cuándo se añadieron y memorizaron las palabras y de los tests que terminaste. Las palabras archivadas no cuentan como memorizadas. El historial de tests y las insignias se guardan en este dispositivo y no forman parte de una copia de seguridad.',
       badgesSummary:'{n} / {m} insignias conseguidas',badgesEarned:'Conseguidas',badgesStarted:'Empezadas',badgesWaiting:'Pendientes',badgesNoneEarned:'Aún no has conseguido ninguna insignia. Memoriza una palabra y llegará la primera.',badgesNoneStarted:'No hay ninguna insignia en curso que aún no hayas conseguido.',badgesNoneWaiting:'No queda ninguna insignia pendiente: has empezado todas.',badgeEarned:'Conseguida: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'¡Nueva insignia!',newBadgesTitle:'¡{n} insignias nuevas!',
@@ -222,7 +222,7 @@
       statsSummaryTotal:'Parole totali',statsMemorized:'Memorizzate',statsStreak:'Serie (giorni)',statsLongest:'Serie più lunga',
       statsWeek:'Ultimi 7 giorni',legendAdded:'Aggiunte',legendMemorized:'Memorizzate',dayLabel:'{day}: {added} aggiunte, {memorized} memorizzate, {tests} test',
       statsCurve:'Parole memorizzate (ultimi 30 giorni)',curveSummary:'30 giorni fa {from}, ora {to} parole memorizzate.',
-      statsTests:'Test',testsCount:'Test',testsAccuracy:'Punteggio medio',testsBest:'Migliore',testsNone:'Nessun test completato per ora. I tuoi risultati compariranno qui quando ne finirai uno.',lastTests:'Ultimi test',modeActive:'Test',modeRecall:'Ripasso',modeCloze:'Spazio',
+      statsTests:'Test',testsCount:'Test',testsAccuracy:'Punteggio medio',testsBest:'Migliore',testsNone:'Nessun test completato per ora. I tuoi risultati compariranno qui quando ne finirai uno.',lastTests:'Ultimi test',modeActive:'Test',modeRecall:'Ripasso',modeCloze:'Spazio',studyWrite:"Scrivi la parola",studyWriteSub:"10 domande dalle frasi di {n} parole, scrivi la parola mancante",quizNeedWrite:"Scrivi la parola richiede almeno 10 parole con una frase di esempio. Ne hai {n}.",modeWrite:"Scrittura",mixTitle:"Test per tipo",mixSummary:"Test per tipo: {parts}.",mixCount:"{n} test",studySuggest:"Oggi esercitiamoci con:",
       statsAnalysis:'Analisi della cronologia',hardestTitle:'Le parole che sbagli di più',hardestNone:'Ancora nessuna parola sbagliata.',speedTitle:'Tempo medio per memorizzare',speedValue:'{n} giorni (su {m} parole)',speedNone:'Ancora nessuna parola memorizzata.',
       statsFootnote:'I numeri derivano da quando le parole sono state aggiunte e memorizzate e dai test che hai completato. Le parole archiviate non contano come memorizzate. La cronologia dei test e i badge restano su questo dispositivo e non fanno parte di un backup.',
       badgesSummary:'{n} / {m} badge ottenuti',badgesEarned:'Ottenuti',badgesStarted:'Iniziati',badgesWaiting:'In attesa',badgesNoneEarned:'Nessun badge ottenuto per ora. Memorizza una parola e arriva il primo.',badgesNoneStarted:'Nessun badge in corso che tu non abbia già ottenuto.',badgesNoneWaiting:'Nessun badge in attesa: li hai iniziati tutti.',badgeEarned:'Ottenuto: {date}',badgeProgress:'{n} / {m}',newBadgeTitle:'Nuovo badge!',newBadgesTitle:'{n} nuovi badge!',
@@ -453,7 +453,7 @@
     if(statsCache&&statsCache.db===db&&statsCache.raw===raw&&statsCache.day===day&&statsCache.goal===goal&&statsCache.course===course)return statsCache.value;   // nothing changed since last time
     const record=VocVocStats.normalizeRecord(parseJson(raw));
     const words=Object.values(db.progress).map(progress=>({word:db.words[progress.wordId]?.word||'',status:progress.status,addedAt:progress.firstSeenAt||null,memorizedAt:progress.memorizedAt||null}));
-    const value=VocVocStats.compute({words,quizzes:record.quizzes,testsTaken:record.testsTaken,earned:record.badges,builtin:[...BUILTIN_DICTIONARY_KEYS],today:day,goalReachedToday:goal,points:pointsOf(db),flips:record.flips,levelsDone:levelsDone(db)});
+    const value=VocVocStats.compute({words,quizzes:record.quizzes,testsTaken:record.testsTaken,modes:record.modes,watches:record.watches,earned:record.badges,builtin:[...BUILTIN_DICTIONARY_KEYS],today:day,goalReachedToday:goal,points:pointsOf(db),flips:record.flips,levelsDone:levelsDone(db)});
     statsCache={db,raw,day,goal,course,value};
     return value;
   }
@@ -499,7 +499,7 @@
   function recordFinishedTest(){                                                   // told after every drawing of a Test; acts once, when it is finished
     if(!quizSession||quizSession.index<quizSession.questions.length||recordedTests.has(quizSession))return;
     recordedTests.add(quizSession);
-    writeActivity(VocVocStats.appendQuiz(readActivity(),{t:new Date().toISOString(),mode:['recall','cloze','match'].includes(quizSession.mode)?quizSession.mode:'active',score:quizSession.score,total:quizSession.questions.length,wrong:quizSession.wrongWords||[]}));
+    writeActivity(VocVocStats.appendQuiz(readActivity(),{t:new Date().toISOString(),mode:VocVocStats.MODES.includes(quizSession.mode)?quizSession.mode:'active',score:quizSession.score,total:quizSession.questions.length,wrong:quizSession.wrongWords||[]}));
     evaluateBadges();
   }
 
@@ -981,9 +981,9 @@
 
   /* ---------- routing ---------- */
   const TABS=['today','words','study','stats','profile'];                        // the entries of the menu
-  const QUIZ_ROUTES=['test','recall','cloze','match'];
-  const ROUTES=[...TABS,'settings','test','recall','cloze','match','flip','premium','help','privacy','terms','about'];
-  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',profile:'profile',settings:'settings',test:'study',recall:'study',cloze:'study',match:'study',flip:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
+  const QUIZ_ROUTES=['test','recall','cloze','match','write'];
+  const ROUTES=[...TABS,'settings','test','recall','cloze','match','write','flip','premium','help','privacy','terms','about'];
+  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',profile:'profile',settings:'settings',test:'study',recall:'study',cloze:'study',match:'study',write:'study',flip:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
   let shown=null,internalNavigations=0,screen=null,container=null,auth=null,root=null;
   const currentRoute=()=>{const route=location.hash.replace(/^#\/?/,'');return ROUTES.includes(route)?route:'today';};
   function navigate(route){
@@ -1005,16 +1005,74 @@
   }
   const clozeCount=()=>{try{return getClozePool().length;}catch(_){return 0;}};
   const matchCount=()=>{try{return getMatchPool().length;}catch(_){return 0;}};
+  // The five kinds of test, in the order of the Study page. Each has a page, a name, a glyph, a line under the name, how many words it can use and a colour of its own
+  // (the same on its card and in the chart: --v2-chart-1 … 5, the first five slots of the categorical palette, always in this order).
+  const TEST_KINDS=[
+    {mode:'active',route:'test',glyph:'◈',name:()=>t('studyTest'),sub:n=>fill(t('studyTestSub'),{n}),size:()=>counts().active},
+    {mode:'recall',route:'recall',glyph:'↺',name:()=>t('studyRecall'),sub:n=>fill(t('studyRecallSub'),{n}),size:()=>counts().memorized},
+    {mode:'cloze',route:'cloze',glyph:'✎',name:()=>t('studyCloze'),sub:n=>fill(t('studyClozeSub'),{n}),size:clozeCount},
+    {mode:'match',route:'match',glyph:'⧉',name:()=>t('studyMatch'),sub:n=>fill(t('studyMatchSub'),{n}),size:matchCount},
+    {mode:'write',route:'write',glyph:'⌨',name:()=>t('studyWrite'),sub:n=>fill(t('studyWriteSub'),{n}),size:clozeCount}
+  ];
+  const kindColor=index=>'var(--v2-chart-'+(index+1)+')';
+  // "Let's work on these today": the two ways of studying used least so far, as links. Ways that cannot be used yet (too few words) are left out when two others exist.
+  // A Flip set is ten cards turned over; the others count tests taken or links of the Watch/Listen list opened.
+  function suggestion(usage){
+    const {active,memorized}=counts();
+    const ways=[
+      ...TEST_KINDS.map(kind=>({uses:usage[kind.mode]||0,ready:kind.size()>=10,name:kind.name(),go:()=>navigate(kind.route)})),
+      {uses:Math.floor((usage.flip||0)/10),ready:active+memorized>0,name:t('studyFlip'),go:()=>navigate('flip')},
+      {uses:usage.watch||0,ready:true,name:t('watchTitle'),go:openWatch}
+    ].map((way,order)=>({...way,order}));
+    const pool=ways.filter(way=>way.ready).length>=2?ways.filter(way=>way.ready):ways;
+    const chosen=[...pool].sort((a,b)=>a.uses-b.uses||a.order-b.order).slice(0,2);
+    return h('p',{class:'v2-suggest'},t('studySuggest')+' ',
+      chosen.flatMap((way,index)=>[index?', ':null,h('button',{type:'button',class:'v2-link',onclick:way.go},way.name)]));
+  }
+  // A ring: one arc for each kind of test, as long as its share of all the tests (a 2 px gap between arcs); the total is in the middle.
+  const DONUT_R=46,DONUT_LENGTH=2*Math.PI*DONUT_R;
+  function mixDonut(byMode){
+    const NS='http://www.w3.org/2000/svg',total=TEST_KINDS.reduce((sum,kind)=>sum+(byMode[kind.mode]||0),0);
+    const svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox','0 0 120 120');svg.setAttribute('class','v2-donut');svg.setAttribute('role','img');
+    svg.setAttribute('aria-label',fill(t('mixSummary'),{parts:TEST_KINDS.map(kind=>kind.name()+' '+(byMode[kind.mode]||0)).join(', ')}));
+    const ring=(color,length,offset,title)=>{
+      const circle=document.createElementNS(NS,'circle');
+      circle.setAttribute('cx','60');circle.setAttribute('cy','60');circle.setAttribute('r',String(DONUT_R));circle.setAttribute('transform','rotate(-90 60 60)');
+      circle.setAttribute('class','v2-donut-arc');circle.style.stroke=color;
+      circle.setAttribute('stroke-dasharray',length.toFixed(2)+' '+DONUT_LENGTH.toFixed(2));circle.setAttribute('stroke-dashoffset',(-offset).toFixed(2));
+      if(title){const tip=document.createElementNS(NS,'title');tip.textContent=title;circle.append(tip);}
+      return circle;
+    };
+    svg.append(ring('var(--border)',DONUT_LENGTH,0,null));                                         // the track, all there is when no test has been taken
+    let offset=0;
+    TEST_KINDS.forEach((kind,index)=>{
+      const value=byMode[kind.mode]||0;
+      if(!value||!total)return;
+      const share=value/total*DONUT_LENGTH,gap=value===total?0:2;
+      svg.append(ring(kindColor(index),Math.max(.5,share-gap),offset+gap/2,kind.name()+': '+value+' ('+Math.round(value/total*100)+'%)'));
+      offset+=share;
+    });
+    const number=document.createElementNS(NS,'text'),label=document.createElementNS(NS,'text');
+    number.setAttribute('x','60');number.setAttribute('y','62');number.setAttribute('class','v2-donut-total');number.textContent=String(total);
+    label.setAttribute('x','60');label.setAttribute('y','78');label.setAttribute('class','v2-donut-label');label.textContent=t('testsCount');
+    svg.append(number,label);
+    return svg;
+  }
   function studyScreen(){
-    const {active,memorized}=counts(),tests=currentStats().tests;
+    const stats=currentStats(),tests=stats.tests,usage=stats.usage;
     const card=(glyph,title,sub,run,focusKey)=>h('button',{type:'button',class:'v2-study-card','data-v2-focus':focusKey||null,onclick:run},
       h('span',{class:'v2-study-glyph','aria-hidden':'true',text:glyph}),
       h('span',{},h('span',{class:'v2-study-title',text:title}),h('span',{class:'v2-study-sub',text:sub})));
-    return page(heading(t('studyTitle')),testsPanel(tests),
-      card('◈',t('studyTest'),fill(t('studyTestSub'),{n:active}),()=>navigate('test')),
-      card('↺',t('studyRecall'),fill(t('studyRecallSub'),{n:memorized}),()=>navigate('recall')),
-      card('✎',t('studyCloze'),fill(t('studyClozeSub'),{n:clozeCount()}),()=>navigate('cloze')),
-      card('⧉',t('studyMatch'),fill(t('studyMatchSub'),{n:matchCount()}),()=>navigate('match')),
+    // the cards of the tests, each with the number of tests of that kind taken so far on its right (the ring of them is on the Statistics page)
+    const testCard=kind=>h('button',{type:'button',class:'v2-study-card v2-study-card-test','data-v2-focus':kind.mode==='write'?'write':null,onclick:()=>navigate(kind.route)},
+      h('span',{class:'v2-study-glyph','aria-hidden':'true',text:kind.glyph}),
+      h('span',{class:'v2-study-text'},
+        h('span',{class:'v2-study-head'},h('span',{class:'v2-study-title',text:kind.name()}),
+          h('span',{class:'v2-study-count',title:fill(t('mixCount'),{n:tests.byMode[kind.mode]||0}),text:String(tests.byMode[kind.mode]||0)})),
+        h('span',{class:'v2-study-sub',text:kind.sub(kind.size())})));
+    return page(heading(t('studyTitle')),suggestion(usage),testsPanel(tests),
+      TEST_KINDS.map(testCard),
       card('⇄',t('studyFlip'),t('studyFlipSub'),()=>navigate('flip')),
       card('▶',t('watchTitle'),fill(t('watchCount'),{n:readWatch().length}),openWatch,'watch'),
       recentTests(tests));
@@ -1054,7 +1112,7 @@
   /* ---------- the Test as a page of its own ---------- */
   // The Test itself is the app's own (startQuiz, answerQuiz, the result card); this page only frames it and says how far it is.
   function quizScreen(route){
-    const kind={recall:{pool:getRecallQuizPool,title:'studyRecall',need:'quizNeedRecall'},cloze:{pool:getClozePool,title:'studyCloze',need:'quizNeedCloze'},match:{pool:getMatchPool,title:'studyMatch',need:'quizNeedMatch'}}[route]||{pool:getQuizPool,title:'studyTest',need:'quizNeedActive'};
+    const kind={recall:{pool:getRecallQuizPool,title:'studyRecall',need:'quizNeedRecall'},cloze:{pool:getClozePool,title:'studyCloze',need:'quizNeedCloze'},match:{pool:getMatchPool,title:'studyMatch',need:'quizNeedMatch'},write:{pool:getClozePool,title:'studyWrite',need:'quizNeedWrite'}}[route]||{pool:getQuizPool,title:'studyTest',need:'quizNeedActive'};
     const poolSize=kind.pool().length;
     const bar=h('div',{class:'v2-study-bar'},
       h('h1',{tabindex:'-1',text:t(kind.title)}),
@@ -1076,7 +1134,7 @@
   // After a page is drawn: start what it is for.
   function afterRender(route){
     if(QUIZ_ROUTES.includes(route)){
-      const starts={recall:[getRecallQuizPool,startRecallQuiz],cloze:[getClozePool,startClozeQuiz],match:[getMatchPool,startMatchQuiz]}[route]||[getQuizPool,startQuiz];
+      const starts={recall:[getRecallQuizPool,startRecallQuiz],cloze:[getClozePool,startClozeQuiz],match:[getMatchPool,startMatchQuiz],write:[getClozePool,startWriteQuiz]}[route]||[getQuizPool,startQuiz];
       if(starts[0]().length>=10){starts[1]();updateQuizProgress();}
     }else if(route==='flip'){
       startFlip();                                                                // the app's own Flip dialog, shown like a page
@@ -1151,11 +1209,28 @@
     const svg=document.createElementNS(NS,'svg');
     svg.setAttribute('viewBox','0 0 '+width+' '+height);svg.setAttribute('class','v2-curve');svg.setAttribute('role','img');
     svg.setAttribute('aria-label',fill(t('curveSummary'),{from:series[0].total,to:series[series.length-1].total}));
+    // The line is drawn in a gradient from left (30 days ago) to right (today). The gradient is in the units of the drawing (not of the line's own box), so that
+    // a flat line, which has no height, still gets its colours.
+    const defs=document.createElementNS(NS,'defs'),gradient=document.createElementNS(NS,'linearGradient');
+    gradient.setAttribute('id','v2CurveGradient');gradient.setAttribute('gradientUnits','userSpaceOnUse');
+    gradient.setAttribute('x1','0');gradient.setAttribute('y1','0');gradient.setAttribute('x2',String(width));gradient.setAttribute('y2','0');
+    for(const [offset,name] of [['0','v2-curve-from'],['1','v2-curve-to']]){const stop=document.createElementNS(NS,'stop');stop.setAttribute('offset',offset);stop.setAttribute('class',name);gradient.append(stop);}
+    defs.append(gradient);
     const line=document.createElementNS(NS,'polyline');
     line.setAttribute('points',series.map((point,index)=>x(index).toFixed(1)+','+y(point.total).toFixed(1)).join(' '));
-    svg.append(line);
+    svg.append(defs,line);
     return h('section',{class:'v2-card'},h('h2',{text:t('statsCurve')}),svg,
       h('p',{class:'v2-muted v2-curve-range','aria-hidden':'true',text:series[0].total+' → '+series[series.length-1].total}));
+  }
+  // How many tests of each kind were taken: the same ring as on the Study page, with a legend that says every number and share (the colours alone are not the message).
+  function mixSection(byMode){
+    const total=TEST_KINDS.reduce((sum,kind)=>sum+(byMode[kind.mode]||0),0);
+    return h('section',{class:'v2-card'},h('h2',{text:t('mixTitle')}),
+      total
+        ?h('div',{class:'v2-mix'},h('div',{class:'v2-mix-ring'},mixDonut(byMode)),
+            h('ul',{class:'v2-mix-legend'},TEST_KINDS.map((kind,index)=>h('li',{},h('span',{class:'v2-dot','aria-hidden':'true',style:'background:'+kindColor(index)}),
+              h('span',{class:'v2-mix-name',text:kind.name()}),h('strong',{text:String(byMode[kind.mode]||0)}),h('span',{class:'v2-muted v2-mix-share',text:Math.round((byMode[kind.mode]||0)/total*100)+'%'})))))
+        :h('p',{class:'v2-muted',text:t('testsNone')}));
   }
   function testsPanel(tests){
     const accuracy=tests.accuracy===null?'–':Math.round(tests.accuracy*100)+'%',best=tests.best?tests.best.score+'/'+tests.best.total:'–';
@@ -1169,7 +1244,7 @@
       tests.last.length
         ?h('ul',{class:'v2-testlist'},tests.last.map(test=>h('li',{},
             h('span',{class:'v2-bullet v2-bullet-'+scoreBand(test.score,test.total),'aria-hidden':'true'}),
-            h('span',{class:'v2-test-day',text:formatDay(VocVocStats.localDay(test.t))}),h('span',{class:'v2-muted',text:t({recall:'modeRecall',cloze:'modeCloze',match:'modeMatch'}[test.mode]||'modeActive')}),h('strong',{text:test.score+'/'+test.total}))))
+            h('span',{class:'v2-test-day',text:formatDay(VocVocStats.localDay(test.t))}),h('span',{class:'v2-muted',text:t({recall:'modeRecall',cloze:'modeCloze',match:'modeMatch',write:'modeWrite'}[test.mode]||'modeActive')}),h('strong',{text:test.score+'/'+test.total}))))
         :h('p',{class:'v2-muted',text:t('testsNone')}));
   }
   function analysisSection(stats){
@@ -1190,7 +1265,7 @@
     const stats=currentStats(),summary=stats.summary;
     return page(heading(t('statsTitle')),
       h('ul',{class:'v2-statline v2-statline-4'},tile(summary.total,t('statsSummaryTotal')),tile(summary.memorized,t('statsMemorized')),tile(summary.streak.current,t('statsStreak')),tile(summary.streak.longest,t('statsLongest'))),
-      weekSection(stats.last7),curveSection(stats.memorizedSeries),testsPanel(stats.tests),
+      weekSection(stats.last7),curveSection(stats.memorizedSeries),testsPanel(stats.tests),mixSection(stats.tests.byMode),
       VocVocPlan.has('historyAnalysis')?analysisSection(stats):null,
       h('p',{class:'v2-muted',text:t('statsFootnote')}));
   }
@@ -1380,7 +1455,7 @@
     switch(route){
       case 'today':return todayScreen();
       case 'study':case 'flip':return studyScreen();
-      case 'test':case 'recall':case 'cloze':case 'match':return quizScreen(route);
+      case 'test':case 'recall':case 'cloze':case 'match':case 'write':return quizScreen(route);
       case 'stats':return statsScreen();
       case 'profile':return profileScreen();
       case 'settings':return settingsScreen();
@@ -1398,7 +1473,7 @@
   // What the bar says next to VocVoc: the title of the page that is open.
   function pageTitle(route){
     if(route==='help'||route==='privacy'||route==='terms')return (PAGES[route][lang()]||PAGES[route].en).title;
-    return t({today:'today',words:'words',study:'studyTitle',stats:'statsTitle',profile:'profileTitle',settings:'rowSettings',premium:'premiumTitle',about:'aboutTitle',test:'studyTest',recall:'studyRecall',cloze:'studyCloze',match:'studyMatch',flip:'studyFlip'}[route]||'today');
+    return t({today:'today',words:'words',study:'studyTitle',stats:'statsTitle',profile:'profileTitle',settings:'rowSettings',premium:'premiumTitle',about:'aboutTitle',test:'studyTest',recall:'studyRecall',cloze:'studyCloze',match:'studyMatch',write:'studyWrite',flip:'studyFlip'}[route]||'today');
   }
   function syncChrome(){
     const route=shown||currentRoute(),current=TAB_OF[route],name=readProfile()?.name||'';
@@ -1635,6 +1710,7 @@
   function openWatchLink(item){
     const link=h('a',{href:item.url,target:'_blank',rel:'noopener noreferrer'});    // the default browser, in a new window or tab
     link.style.display='none';document.body.append(link);link.click();link.remove();
+    writeActivity(VocVocStats.appendWatch(readActivity()));                          // one more link opened: the Study page suggests the ways of studying used least
   }
   function openWatch(){
     if(watching)return;

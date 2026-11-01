@@ -231,12 +231,33 @@ describe('The activity record',()=>{
     const result=Stats.compute(input({quizzes:[quiz('2026-10-06',9,{mode:'cloze'}),quiz('2026-10-07',10,{mode:'cloze'})]}));
     assert.deepEqual([result.tests.count,result.tests.last.map(test=>test.mode),badge(result,'perfect').progress,badge(result,'recall8').progress],[2,['cloze','cloze'],1,0]);
   });
-  it('refuses a result that makes no sense',()=>{
+  it('a Write the word test is a kind of test of its own: kept, counted and listed with its mode',()=>{
+    const record=Stats.appendQuiz(null,quiz('2026-10-07',8,{mode:'write',wrong:['x']}));
+    assert.deepEqual([record.testsTaken,record.quizzes[0].mode,record.modes.write,Stats.normalizeRecord(JSON.parse(JSON.stringify(record))).modes.write],[1,'write',1,1]);
+    const result=Stats.compute(input({quizzes:[quiz('2026-10-07',8,{mode:'write'})]}));
+    assert.deepEqual([result.tests.count,result.tests.last[0].mode,badge(result,'recall8').progress],[1,'write',0]);
+  });
+  it('the number of tests of each kind keeps counting past the list of the newest 300, and a record from before the count was kept is counted from its list',()=>{
+    let record=null;
+    for(let index=0;index<305;index++)record=Stats.appendQuiz(record,quiz('2026-10-07',5,{mode:index%5===0?'match':'active'}));
+    assert.deepEqual([record.quizzes.length,record.modes.active,record.modes.match,record.testsTaken],[300,244,61,305]);
+    const result=Stats.compute(input({quizzes:record.quizzes,testsTaken:record.testsTaken,modes:record.modes}));
+    assert.deepEqual([result.tests.byMode.active,result.tests.byMode.match,result.tests.byMode.write],[244,61,0]);
+    const old=Stats.compute(input({quizzes:[quiz('2026-10-01',5),quiz('2026-10-02',5,{mode:'cloze'}),quiz('2026-10-03',5,{mode:'cloze'})]}));         // no counts kept: counted from the list
+    assert.deepEqual(old.tests.byMode,{active:1,recall:0,cloze:2,match:0,write:0});
+  });
+  it('how often each way of studying was used: the kinds of test, the Flip cards turned and the links of the Watch/Listen list opened',()=>{
+    assert.deepEqual(Stats.compute(input({})).usage,{active:0,recall:0,cloze:0,match:0,write:0,flip:0,watch:0});
+    const result=Stats.compute(input({quizzes:[quiz('2026-10-07',9,{mode:'recall'})],flips:42,watches:3}));
+    assert.deepEqual(result.usage,{active:0,recall:1,cloze:0,match:0,write:0,flip:42,watch:3});
+    let record=Stats.appendWatch(null);record=Stats.appendWatch(record);
+    assert.deepEqual([record.watches,Stats.normalizeRecord({watches:'x'}).watches,Stats.normalizeRecord({watches:-4}).watches,Stats.normalizeRecord({modes:{write:'x',match:7}}).modes.match],[2,0,0,7]);
+  });  it('refuses a result that makes no sense',()=>{
     for(const bad of [null,{},{t:'x',mode:'active',score:1,total:10},{t:at('2026-10-07'),mode:'other',score:1,total:10},{t:at('2026-10-07'),mode:'active',score:12,total:10},{t:at('2026-10-07'),mode:'active',score:-1,total:10},{t:at('2026-10-07'),mode:'active',score:1.5,total:10}])
       assert.equal(Stats.appendQuiz(null,bad).testsTaken,0);
   });
   it('whatever is in storage, the record that comes out is valid',()=>{
-    for(const raw of [undefined,null,'text',42,[],{quizzes:'no',badges:'no'}])assert.deepEqual(Stats.normalizeRecord(raw),{v:1,seeded:false,testsTaken:0,flips:0,quizzes:[],badges:{}});
+    for(const raw of [undefined,null,'text',42,[],{quizzes:'no',badges:'no'}])assert.deepEqual(Stats.normalizeRecord(raw),{v:1,seeded:false,testsTaken:0,flips:0,watches:0,modes:{active:0,recall:0,cloze:0,match:0,write:0},quizzes:[],badges:{}});
     const record=Stats.normalizeRecord({seeded:true,testsTaken:2,quizzes:[quiz('2026-10-07',5),{junk:1}],badges:{memo10:'2026-09-01',notABadge:'2026-09-01',streak3:'yesterday'}});
     assert.deepEqual([record.seeded,record.quizzes.length,Object.keys(record.badges)],[true,1,['memo10']]);
     assert.equal(record.testsTaken,2);

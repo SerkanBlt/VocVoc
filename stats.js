@@ -4,6 +4,8 @@
    Days are local calendar days as "YYYY-MM-DD" strings; every date calculation works on those strings, so it does not depend on a time zone. */
 (function(root){
   const MAX_QUIZZES=300,MAX_WRONG=10,MAX_WORD=60,MAX_DAY_WORDS=200,MAX_FLIPS=1000000;
+  // The kinds of finished test, in the order they are listed everywhere (Test, Recall, Fill in the blank, Matching, Write the word).
+  const MODES=Object.freeze(['active','recall','cloze','match','write']);
   const LEVELS=['A1','A2','B1','B2','C1','C2'];
   const KINDS=['memorized','collected','tests','perfect','recall','streak','goal','points','recallTests','matchTests','flips','level'];
   // id, what it counts, how many are needed, and the family. Badges of one family count the same thing towards a growing goal (1, 10, 50 … words) and share one card:
@@ -30,28 +32,38 @@
   const collect=(map,key,word)=>{const list=map.get(key)||[];if(!map.has(key))map.set(key,list);if(list.length<MAX_DAY_WORDS)list.push(word);};   // the words of a day (the counts stay exact)
 
   /* ---------- the activity record ---------- */
-  const isQuiz=q=>q&&typeof q==='object'&&typeof q.t==='string'&&!Number.isNaN(Date.parse(q.t))&&(q.mode==='active'||q.mode==='recall'||q.mode==='cloze'||q.mode==='match')&&Number.isInteger(q.score)&&Number.isInteger(q.total)&&q.total>=1&&q.total<=50&&q.score>=0&&q.score<=q.total;
+  const isQuiz=q=>q&&typeof q==='object'&&typeof q.t==='string'&&!Number.isNaN(Date.parse(q.t))&&MODES.includes(q.mode)&&Number.isInteger(q.score)&&Number.isInteger(q.total)&&q.total>=1&&q.total<=50&&q.score>=0&&q.score<=q.total;
   const cleanQuiz=q=>({t:q.t,mode:q.mode,score:q.score,total:q.total,wrong:(Array.isArray(q.wrong)?q.wrong:[]).filter(word=>typeof word==='string'&&word.trim()).slice(0,MAX_WRONG).map(word=>word.slice(0,MAX_WORD))});
-  const emptyRecord=()=>({v:1,seeded:false,testsTaken:0,flips:0,quizzes:[],badges:{}});
+  const zeroModes=()=>Object.fromEntries(MODES.map(mode=>[mode,0]));
+  const emptyRecord=()=>({v:1,seeded:false,testsTaken:0,flips:0,watches:0,modes:zeroModes(),quizzes:[],badges:{}});
   // Whatever is in storage: keep what is valid, drop the rest.
   function normalizeRecord(raw){
     if(!raw||typeof raw!=='object'||Array.isArray(raw))return emptyRecord();
     const quizzes=(Array.isArray(raw.quizzes)?raw.quizzes:[]).filter(isQuiz).map(cleanQuiz).slice(-MAX_QUIZZES);
     const badges={};
     if(raw.badges&&typeof raw.badges==='object')for(const [id,day] of Object.entries(raw.badges))if(KNOWN.has(id)&&typeof day==='string'&&DAY.test(day))badges[id]=day;
-    const flips=Number.isInteger(raw.flips)&&raw.flips>0?Math.min(raw.flips,MAX_FLIPS):0;
-    return {v:1,seeded:raw.seeded===true,testsTaken:Math.max(Number.isInteger(raw.testsTaken)&&raw.testsTaken>0?raw.testsTaken:0,quizzes.length),flips,quizzes,badges};
+    const count=value=>Number.isInteger(value)&&value>0?Math.min(value,MAX_FLIPS):0;
+    const flips=count(raw.flips),watches=count(raw.watches),modes=zeroModes();
+    for(const mode of MODES)modes[mode]=count(raw.modes&&raw.modes[mode]);
+    return {v:1,seeded:raw.seeded===true,testsTaken:Math.max(Number.isInteger(raw.testsTaken)&&raw.testsTaken>0?raw.testsTaken:0,quizzes.length),flips,watches,modes,quizzes,badges};
   }
   // A finished test is added; only the newest MAX_QUIZZES are kept, the number of tests taken keeps counting.
   function appendQuiz(record,result){
     const current=normalizeRecord(record);
     if(!isQuiz(result))return current;
-    return {...current,testsTaken:current.testsTaken+1,quizzes:[...current.quizzes,cleanQuiz(result)].slice(-MAX_QUIZZES)};
+    // the number of tests of each kind keeps counting too (the list of finished tests holds only the newest ones)
+    const modes={...current.modes,[result.mode]:Math.min(current.modes[result.mode]+1,MAX_FLIPS)};
+    return {...current,testsTaken:current.testsTaken+1,modes,quizzes:[...current.quizzes,cleanQuiz(result)].slice(-MAX_QUIZZES)};
   }
   // A Flip card was turned over (counted every time).
   function appendFlip(record){
     const current=normalizeRecord(record);
     return {...current,flips:Math.min(current.flips+1,MAX_FLIPS)};
+  }
+  // A link of the Watch/Listen list was opened (counted every time).
+  function appendWatch(record){
+    const current=normalizeRecord(record);
+    return {...current,watches:Math.min(current.watches+1,MAX_FLIPS)};
   }
   // earned: {id:day}. A badge already in the record keeps its date.
   function withBadges(record,earned){
@@ -62,7 +74,8 @@
 
   /* ---------- statistics and badges ---------- */
   // input: {words:[{word,status,addedAt,memorizedAt}], quizzes, testsTaken, earned:{id:day}, builtin:[lowercase starter words],
-  //         today:'YYYY-MM-DD', dayOf(iso)->day, goalReachedToday, points (the points of all words together), flips (Flip cards turned), levelsDone (['A1',…])}
+  //         today:'YYYY-MM-DD', dayOf(iso)->day, goalReachedToday, points (the points of all words together), flips (Flip cards turned), levelsDone (['A1',…]),
+  //         modes ({active,recall,…}: tests taken of each kind), watches (links of the Watch/Listen list opened)}
   function compute(input){
     const dayOf=input.dayOf||localDay,today=input.today,builtin=new Set(input.builtin||[]),earnedBefore=input.earned||{};
     let active=0,memorized=0,archived=0;
@@ -117,6 +130,8 @@
     const spans=median(speeds);
 
     const testsTaken=Math.max(input.testsTaken||0,quizzes.length);
+    // tests of each kind: the running count of the record, or what the kept list shows when that is more (a record from before the count was kept)
+    const byMode=Object.fromEntries(MODES.map(mode=>[mode,Math.max((input.modes&&input.modes[mode])||0,quizzes.filter(quiz=>quiz.mode===mode).length)]));
     const perfect=quizzes.find(quiz=>quiz.score===quiz.total);
     const recall=quizzes.find(quiz=>quiz.mode==='recall'&&quiz.score/quiz.total>=0.8);
     const goal=!!input.goalReachedToday;
@@ -147,7 +162,9 @@
     return {
       summary:{total:active+memorized,active,memorized,archived,memorizedToday:memorizedByDay.get(today)||0,addedToday:addedByDay.get(today)||0,streak:{current,longest},activeDays:activity.size},
       last7,memorizedSeries:series,
-      tests:{count:testsTaken,accuracy:maxSum?scoreSum/maxSum:null,best,last:quizzes.slice(-5).reverse().map(({t,mode,score,total})=>({t,mode,score,total})),hardest},
+      // how often each way of studying was used: the five kinds of test, Flip cards turned, links of the Watch/Listen list opened
+      usage:{...byMode,flip:Math.max(0,input.flips||0),watch:Math.max(0,input.watches||0)},
+      tests:{count:testsTaken,byMode,accuracy:maxSum?scoreSum/maxSum:null,best,last:quizzes.slice(-5).reverse().map(({t,mode,score,total})=>({t,mode,score,total})),hardest},
       speed:{medianDays:spans===null?null:Math.round(spans*10)/10,samples:speeds.length},
       badges,newlyEarned
     };
@@ -167,7 +184,7 @@
     });
   }
 
-  const api=Object.freeze({BADGES,KINDS,LEVELS,MAX_QUIZZES,localDay,addDays,compute,groupBadges,appendQuiz,appendFlip,normalizeRecord,withBadges});
+  const api=Object.freeze({BADGES,KINDS,LEVELS,MODES,MAX_QUIZZES,localDay,addDays,compute,groupBadges,appendQuiz,appendFlip,appendWatch,normalizeRecord,withBadges});
   root.VocVocStats=api;
   if(typeof module==='object'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
