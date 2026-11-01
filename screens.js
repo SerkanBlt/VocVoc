@@ -982,8 +982,8 @@
   /* ---------- routing ---------- */
   const TABS=['today','words','study','stats','profile'];                        // the entries of the menu
   const QUIZ_ROUTES=['test','recall','cloze','match','write'];
-  const ROUTES=[...TABS,'settings','test','recall','cloze','match','write','flip','premium','help','privacy','terms','about'];
-  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',profile:'profile',settings:'settings',test:'study',recall:'study',cloze:'study',match:'study',write:'study',flip:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
+  const ROUTES=[...TABS,'settings','test','recall','cloze','match','write','flip','watch','premium','help','privacy','terms','about'];
+  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',profile:'profile',settings:'settings',test:'study',recall:'study',cloze:'study',match:'study',write:'study',flip:'study',watch:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
   let shown=null,internalNavigations=0,screen=null,container=null,auth=null,root=null;
   const currentRoute=()=>{const route=location.hash.replace(/^#\/?/,'');return ROUTES.includes(route)?route:'today';};
   function navigate(route){
@@ -1022,7 +1022,7 @@
     const ways=[
       ...TEST_KINDS.map(kind=>({uses:usage[kind.mode]||0,ready:kind.size()>=10,name:kind.name(),go:()=>navigate(kind.route)})),
       {uses:Math.floor((usage.flip||0)/10),ready:active+memorized>0,name:t('studyFlip'),go:()=>navigate('flip')},
-      {uses:usage.watch||0,ready:true,name:t('watchTitle'),go:openWatch}
+      {uses:usage.watch||0,ready:true,name:t('watchTitle'),go:()=>navigate('watch')}
     ].map((way,order)=>({...way,order}));
     const pool=ways.filter(way=>way.ready).length>=2?ways.filter(way=>way.ready):ways;
     const chosen=[...pool].sort((a,b)=>a.uses-b.uses||a.order-b.order).slice(0,2);
@@ -1074,7 +1074,7 @@
     return page(heading(t('studyTitle')),suggestion(usage),testsPanel(tests),
       TEST_KINDS.map(testCard),
       card('⇄',t('studyFlip'),t('studyFlipSub'),()=>navigate('flip')),
-      card('▶',t('watchTitle'),fill(t('watchCount'),{n:readWatch().length}),openWatch,'watch'),
+      card('▶',t('watchTitle'),fill(t('watchCount'),{n:readWatch().length}),()=>navigate('watch'),'watch'),
       recentTests(tests));
   }
 
@@ -1456,6 +1456,7 @@
       case 'today':return todayScreen();
       case 'study':case 'flip':return studyScreen();
       case 'test':case 'recall':case 'cloze':case 'match':case 'write':return quizScreen(route);
+      case 'watch':return watchScreen();
       case 'stats':return statsScreen();
       case 'profile':return profileScreen();
       case 'settings':return settingsScreen();
@@ -1473,7 +1474,7 @@
   // What the bar says next to VocVoc: the title of the page that is open.
   function pageTitle(route){
     if(route==='help'||route==='privacy'||route==='terms')return (PAGES[route][lang()]||PAGES[route].en).title;
-    return t({today:'today',words:'words',study:'studyTitle',stats:'statsTitle',profile:'profileTitle',settings:'rowSettings',premium:'premiumTitle',about:'aboutTitle',test:'studyTest',recall:'studyRecall',cloze:'studyCloze',match:'studyMatch',write:'studyWrite',flip:'studyFlip'}[route]||'today');
+    return t({today:'today',words:'words',study:'studyTitle',stats:'statsTitle',profile:'profileTitle',settings:'rowSettings',premium:'premiumTitle',about:'aboutTitle',test:'studyTest',recall:'studyRecall',cloze:'studyCloze',match:'studyMatch',write:'studyWrite',flip:'studyFlip',watch:'watchTitle'}[route]||'today');
   }
   function syncChrome(){
     const route=shown||currentRoute(),current=TAB_OF[route],name=readProfile()?.name||'';
@@ -1506,6 +1507,7 @@
     // Leaving the study pages ends what they started: a Test that was left is abandoned, an open Flip is closed.
     if(!QUIZ_ROUTES.includes(route)&&quizSession)quizSession=null;
     if(route!=='flip'&&flipSession)closeFlip();
+    if(route!=='watch')leaveWatchPage();                                           // the form of a new link goes with the page
     document.body.classList.toggle('v2-immersive',QUIZ_ROUTES.includes(route));
     syncChrome();
     if(route==='words'){                                                           // the existing home screen: search, word cards, the list
@@ -1678,7 +1680,7 @@
     if(typeof navigator!=='undefined'&&navigator.onLine===false)return;
     let file=null;
     try{const response=await fetch(WATCH_DEFAULT_URL,{cache:'no-cache'});if(response.ok)file=await response.json();}catch(_){return;}
-    if(!file||!Array.isArray(file.items)||watching)return;                         // not usable, or the list is open on screen (it would overwrite the change): next time
+    if(!file||!Array.isArray(file.items)||watchPage?.adding||watchPage?.editing)return;   // not usable, or a link is being added or edited on the page (saving it would overwrite this): next time
     const seen=new Set(readWatchSeen()),list=readWatch(),have=new Set(list.map(item=>item.url));
     let added=0,offered=0;
     for(const entry of file.items){
@@ -1692,34 +1694,33 @@
     if(!offered)return;
     if(added)writeWatch(list);
     store.set(WATCH_SEEN_KEY,JSON.stringify([...seen]));
-    if(added&&shown==='study')render(false);                                        // the count on the card
+    if(added&&(shown==='study'||shown==='watch'))render(false);                      // the count on the card, the list on the page
   }
   const newWatchId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
   function watchLabel(item){
     if(item.title)return item.title;
     try{const url=new URL(item.url);const path=url.pathname==='/'?'':url.pathname;return url.hostname.replace(/^www\./,'')+path+url.search;}catch(_){return item.url;}   // the whole address; a long one is cut with … by the stylesheet
   }
-  let watching=null;                                                             // the open panel: {node,list,editing,adding,paint,closeAdd} (or null)
-  function closeWatch(restoreFocus=true){
-    if(!watching)return;
-    watching.adding?.remove();
-    leaveDialog(watching.node);watching=null;
-    if(shown==='study')render(false);                                            // the count on the card
-    if(restoreFocus)screen.querySelector('[data-v2-focus="watch"]')?.focus({preventScroll:true});
+  // The list is a page of its own (#/watch). While it is shown, watchPage holds what is on it: {list,editing,adding,focusAfter,paint,closeAdd}.
+  let watchPage=null;
+  function leaveWatchPage(){
+    if(!watchPage)return;
+    if(watchPage.adding)leaveDialog(watchPage.adding);
+    watchPage=null;
   }
   function openWatchLink(item){
     const link=h('a',{href:item.url,target:'_blank',rel:'noopener noreferrer'});    // the default browser, in a new window or tab
     link.style.display='none';document.body.append(link);link.click();link.remove();
     writeActivity(VocVocStats.appendWatch(readActivity()));                          // one more link opened: the Study page suggests the ways of studying used least
   }
-  function openWatch(){
-    if(watching)return;
-    const state={node:null,list:readWatch(),editing:null,adding:null,focusAfter:null};
-    watching=state;
+  function watchScreen(){
+    leaveWatchPage();
+    const state={list:readWatch(),editing:null,adding:null,focusAfter:null};
+    watchPage=state;
     const save=()=>writeWatch(state.list);
     const listNode=h('ul',{class:'v2-watch-list'});
     const emptyNode=h('p',{class:'v2-muted v2-watch-empty',text:t('watchEmpty')});
-    // The form for a new link is a small panel of its own, opened with the + beside the close button.
+    // The form for a new link is a small panel of its own, opened with the + at the top right of the page.
     const titleInput=h('input',{id:'v2WatchTitleIn',class:'ui-input',type:'text',maxlength:String(WATCH_TITLE_MAX),autocomplete:'off',onkeydown:event=>{if(event.key==='Enter'){event.preventDefault();add();}}});
     const urlInput=h('input',{id:'v2WatchUrlIn',class:'ui-input',type:'url',inputmode:'url',maxlength:String(WATCH_URL_MAX),autocomplete:'off',autocapitalize:'off',spellcheck:'false','aria-describedby':'v2WatchAddError',onkeydown:event=>{if(event.key==='Enter'){event.preventDefault();add();}}});
     const addError=h('p',{id:'v2WatchAddError',class:'v2-field-error',role:'alert'});
@@ -1736,12 +1737,12 @@
           h('div',{class:'v2-actions'},
             h('button',{type:'button',class:'ui-button ui-button-success',onclick:()=>add()},t('watchAdd')),
             h('button',{type:'button',class:'ui-button ui-button-secondary',onclick:()=>closeAdd()},t('photoCancel')))));
-      document.body.append(state.adding);state.node.inert=true;            // the list behind it cannot be reached while the form is open
+      document.body.append(state.adding);screen.inert=true;bar.inert=true;      // the page behind it cannot be reached while the form is open
       titleInput.focus({preventScroll:true});
     }
     function closeAdd(){
       if(!state.adding)return;
-      state.adding.remove();state.adding=null;state.node.inert=false;
+      leaveDialog(state.adding);state.adding=null;
       if(state.focusAfter===null)plusButton.focus({preventScroll:true});
     }
     state.closeAdd=closeAdd;
@@ -1797,14 +1798,9 @@
       node?.focus({preventScroll:true});
     }
     state.paint=paint;
-    state.node=h('div',{id:'v2Watch',class:'v2-crop v2-watch',role:'dialog','aria-modal':'true','aria-labelledby':'v2WatchTitle',lang:lang()},
-      h('div',{class:'v2-scrim',onclick:()=>closeWatch()}),
-      h('div',{class:'v2-crop-card v2-watch-card'},
-        h('div',{class:'v2-watch-head'},h('h2',{id:'v2WatchTitle',text:t('watchTitle')}),
-          h('div',{class:'v2-watch-head-actions'},plusButton,h('button',{type:'button',class:'v2-watch-close','aria-label':t('quizClose'),onclick:()=>closeWatch()},'×'))),
-        emptyNode,listNode));
-    document.body.append(state.node);screen.inert=true;bar.inert=true;
-    paint();state.node.querySelector('.v2-watch-close').focus({preventScroll:true});
+    paint();
+    return page(h('div',{class:'v2-watch-bar'},h('button',{type:'button',class:'v2-back',onclick:()=>goBack('study')},'‹ '+t('back')),plusButton),
+      heading(t('watchTitle')),emptyNode,listNode);
   }
 
   /* ---------- simulated sign-in ---------- */
@@ -1879,13 +1875,12 @@
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('v2-open')){event.preventDefault();setDrawer(false);}},true);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&crop){event.preventDefault();closeCrop();}},true);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&authEditing){event.preventDefault();closeEditProfile();}},true);
-    document.addEventListener('keydown',event=>{        // Escape leaves the form for a new link first, then the edit of a link, then the list
-      if(event.key!=='Escape'||!watching)return;
+    document.addEventListener('keydown',event=>{        // Escape closes the form for a new link, or else leaves the edit of a link (it does nothing else on the list page)
+      if(event.key!=='Escape'||!watchPage||(!watchPage.adding&&!watchPage.editing))return;
       event.preventDefault();
-      if(watching.adding)watching.closeAdd();
-      else if(watching.editing){const id=watching.editing;watching.editing=null;watching.focusAfter='edit:'+id;watching.paint();}else closeWatch();
+      if(watchPage.adding)watchPage.closeAdd();
+      else{const id=watchPage.editing;watchPage.editing=null;watchPage.focusAfter='edit:'+id;watchPage.paint();}
     },true);
-    window.addEventListener('hashchange',()=>closeWatch(false));                      // the back key leaves the list too
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&(asking||viewer)){event.preventDefault();if(asking)closeConfirm();else closePhotoView();}},true);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&dayPopup&&!document.querySelector('.word-popup-overlay.open')){event.preventDefault();closeDayWords();}},true);
     // Today follows every change of the data
