@@ -45,7 +45,7 @@
   const t=key=>{const l=kit?kit.lang():'en';return (TEXT[l]||TEXT.en)[key]??TEXT.en[key]??key;};
   const fill=(text,values)=>text.replace(/\{(\w+)\}/g,(_,name)=>String(values[name]));
   const AI=()=>window.VocVocAI;
-  const errorText=error=>t({unavailable:'errUnavailable',offline:'errOffline',busy:'errBusy',timeout:'errTimeout'}[error?.aiCode]||'errBad');
+  const errorText=error=>{const text=t({unavailable:'errUnavailable',offline:'errOffline',busy:'errBusy',timeout:'errTimeout'}[error?.aiCode]||'errBad');return error?.aiCode==='bad'&&error.detail?text+' ('+error.detail+')':text;};
   const dateText=iso=>{try{return new Date(iso).toLocaleString(kit.lang()==='tr'?'tr-TR':undefined,{dateStyle:'medium',timeStyle:'short'});}catch(_){return iso;}};
   const list=items=>Array.isArray(items)?items.filter(item=>typeof item==='string'&&item.trim()):[];
   const speechLang=()=>SPEECH_LANG[AI().context().target]||'fr-FR';

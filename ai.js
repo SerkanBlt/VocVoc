@@ -77,7 +77,7 @@
   /* ---------- the service ---------- */
   // Errors carry a code the page can word: 'unavailable' (no service at this address, e.g. a plain static host), 'offline', 'busy' (rate limit),
   // 'timeout', 'bad' (the service answered with something unusable).
-  function fail(code,detail){const error=new Error(code+(detail?': '+detail:''));error.aiCode=code;return error;}
+  function fail(code,detail){const error=new Error(code+(detail?': '+detail:''));error.aiCode=code;error.detail=detail||'';return error;}
   async function call(task,payload,{signal}={}){
     if(root.navigator&&root.navigator.onLine===false)throw fail('offline');
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),TIMEOUT_MS);
@@ -89,7 +89,7 @@
     finally{clearTimeout(timer);}
     if(response.status===404||response.status===405)throw fail('unavailable');
     if(response.status===429)throw fail('busy');
-    if(!response.ok)throw fail('bad','HTTP '+response.status);
+    if(!response.ok){let detail='HTTP '+response.status;try{const body=await response.json();if(body&&body.error)detail+=' '+body.error;}catch(_){}throw fail('bad',detail);}
     let data;try{data=await response.json();}catch(_){throw fail('bad','not JSON');}
     if(!data||typeof data!=='object'||data.error)throw fail('bad',data&&data.error);
     return data;

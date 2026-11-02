@@ -103,12 +103,16 @@ export async function handle(body, env, fetchImpl = fetch) {
     body: JSON.stringify({ model: job.model, max_tokens: job.max, system: job.system, messages: job.messages }),
   });
   if (response.status === 429) return [429, { error: 'busy' }];
-  if (!response.ok) return [502, { error: 'upstream ' + response.status }];
+  if (!response.ok) {
+    let detail = '';
+    try { const e = (await response.json()).error || {}; detail = ': ' + clip((e.type || '') + ' ' + (e.message || ''), 140).trim(); } catch (_) {}
+    return [502, { error: 'upstream ' + response.status + detail }];
+  }
   try {
     const data = await response.json();
     return [200, parseJson((data.content || []).map(part => part.text || '').join(''))];
   } catch (_) {
-    return [502, { error: 'unusable answer' }];
+    return [502, { error: 'unusable answer (the model reply was not JSON or was cut off)' }];
   }
 }
 
