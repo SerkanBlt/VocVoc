@@ -99,6 +99,14 @@ describe('Service (functions/api/ai.js)',()=>{
     assert.equal(seen.url,'https://api.anthropic.com/v1/messages');assert.equal(seen.init.headers['x-api-key'],'k');
     assert(seen.body.messages[0].content.length<700&&!JSON.stringify(seen.body).includes('ignore all rules'));
   });
+  it('chat: the messages sent to the provider start with the user, also when the tutor spoke first',async()=>{
+    const {handle}=await loadService();const bodies=[];
+    const fake=async(url,init)=>{bodies.push(JSON.parse(init.body));return {ok:true,status:200,json:async()=>({content:[{text:'{"reply":"x"}'}]})};};
+    await handle({task:'chat',payload:{mode:'turn',history:[]}},{ANTHROPIC_API_KEY:'k'},fake);
+    await handle({task:'chat',payload:{mode:'turn',history:[{role:'assistant',text:'Bonjour'},{role:'user',text:'Salut'}]}},{ANTHROPIC_API_KEY:'k'},fake);
+    for(const body of bodies){assert.equal(body.messages[0].role,'user');assert(body.messages.length>=1);}
+    assert.deepEqual(bodies[1].messages.map(m=>m.role),['user','assistant','user']);
+  });
   it('maps provider failures: 429 is busy, other errors and unusable text are 502',async()=>{
     const {handle}=await loadService();const env={ANTHROPIC_API_KEY:'k'};
     assert.equal((await handle({task:'chat',payload:{}},env,async()=>({ok:false,status:429})))[0],429);

@@ -17,6 +17,10 @@ function common(p) {
   return { level, target: lang(p.target), native: lang(p.native || 'tr') };
 }
 
+// The provider wants the first message to come from the user; the tutor speaks first, so a stand-in line goes before its opening.
+const JOINED = '(The learner has joined. Start the conversation.)';
+const opening = turns => (turns.length && turns[0].role === 'user' ? turns : [{ role: 'user', content: JOINED }, ...turns]);
+
 // Each task: model, token limit, the system prompt and the user message, built from the clipped payload. All answer with one JSON object.
 const TASKS = {
   chat(p) {
@@ -35,7 +39,7 @@ Reply with ONE JSON object only: {"summary": string (2-3 sentences in ${native})
       model: MODEL_FAST, max: 400,
       system: `You are a friendly ${target} conversation partner for a ${level} learner whose first language is ${native}. Keep to ${level} vocabulary and grammar. Your reply is read aloud: 1-3 short sentences in ${target}, no markdown, no emojis. Steer the talk so the learner needs these words: ${list.join(', ')}. Ask one question at the end. Do not correct the learner during the talk.
 Reply with ONE JSON object only: {"reply": string}.`,
-      messages: turns.length ? turns : [{ role: 'user', content: '(The learner has joined. Start the conversation.)' }],
+      messages: opening(turns),
     };
   },
   spell(p) {
