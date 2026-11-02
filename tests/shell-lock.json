@@ -1,8 +1,10 @@
 {
-  "version": "1.41.0",
-  "fingerprint": "ea665506debad0d1cef532c212274d408c5f5761478479091d92b6d77fb1fcba",
+  "version": "1.42.0",
+  "fingerprint": "2594633c7dd8778782acd8fd707d91d12b2e6df353b6f5c38d01e2be66fa505c",
   "files": [
     "a11y.js",
+    "ai-ui.js",
+    "ai.js",
     "icons/apple-touch-icon.png",
     "icons/icon-192.png",
     "icons/icon-512.png",

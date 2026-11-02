@@ -425,7 +425,8 @@
     doc:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/>',
     help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .5c0 1.5-2.5 2-2.5 3.5"/><path d="M12 17h.01"/>',
     plus:'<path d="M12 5v14"/><path d="M5 12h14"/>',
-    play:'<path d="M7 4.5v15l12.5-7.5z"/>'
+    play:'<path d="M7 4.5v15l12.5-7.5z"/>',
+    inbox:'<path d="M4 13l2.5-8h11L20 13"/><path d="M4 13v6h16v-6h-5a3 3 0 01-6 0H4z"/>'
   };
   function icon(name){const span=h('span',{class:'v2-icon','aria-hidden':'true'});span.innerHTML='<svg viewBox="0 0 24 24" focusable="false">'+ICONS[name]+'</svg>';return span;}
 
@@ -990,8 +991,9 @@
   /* ---------- routing ---------- */
   const TABS=['today','words','study','stats','profile'];                        // the entries of the menu
   const QUIZ_ROUTES=['test','recall','cloze','match','write'];
-  const ROUTES=[...TABS,'settings','test','recall','cloze','match','write','flip','watch','premium','help','privacy','terms','about'];
-  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',profile:'profile',settings:'settings',test:'study',recall:'study',cloze:'study',match:'study',write:'study',flip:'study',watch:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile'};
+  const AIS=()=>window.VocVocAIScreens;
+  const ROUTES=[...TABS,'settings','test','recall','cloze','match','write','flip','watch','premium','help','privacy','terms','about',...(AIS()?.routes||[])];
+  const TAB_OF={today:'today',words:'words',study:'study',stats:'stats',profile:'profile',settings:'settings',test:'study',recall:'study',cloze:'study',match:'study',write:'study',flip:'study',watch:'study',premium:'profile',help:'profile',privacy:'profile',terms:'profile',about:'profile',...Object.fromEntries((AIS()?.routes||[]).map(route=>[route,AIS().tabOf(route)]))};
   let shown=null,internalNavigations=0,screen=null,container=null,auth=null,root=null;
   const currentRoute=()=>{const route=location.hash.replace(/^#\/?/,'');return ROUTES.includes(route)?route:'today';};
   function navigate(route){
@@ -1001,6 +1003,7 @@
     render(true);
   }
   const goBack=(fallback='profile')=>{if(internalNavigations>0)history.back();else navigate(fallback);};
+  const aiKit=()=>({h,page,heading,navigate,goBack,lang});          // what the AI screens (ai-ui.js) are given to draw with
 
   /* ---------- screens ---------- */
   const page=(...kids)=>h('div',{class:'v2-page',lang:lang()},kids);
@@ -1083,6 +1086,7 @@
       TEST_KINDS.map(testCard),
       card('⇄',t('studyFlip'),t('studyFlipSub'),()=>navigate('flip')),
       card('▶',t('watchTitle'),fill(t('watchCount'),{n:readWatch().length}),()=>navigate('watch'),'watch'),
+      AIS()?.studyCards(aiKit()),
       recentTests(tests));
   }
 
@@ -1490,17 +1494,18 @@
       case 'premium':return premiumScreen();
       case 'help':case 'privacy':case 'terms':return textPage(route);
       case 'about':return aboutScreen();
-      default:return null;
+      default:return AIS()?.routes.includes(route)?AIS().build(route,aiKit()):null;
     }
   }
 
   /* ---------- the bar at the top of every page, and the menu that slides in from the left ---------- */
   // The bar says VocVoc, opens the menu (the entries the tab bar used to have, and Settings at the bottom) and leads to the profile.
   // There is no picture to show yet (the sign-in is a simulation): the round button shows the first letter of the name.
-  let bar=null,drawer=null,menuButton=null,avatarButton=null,barTitle=null,drawerItems=[];
+  let bar=null,drawer=null,menuButton=null,avatarButton=null,inboxButton=null,barTitle=null,drawerItems=[];
   // What the bar says next to VocVoc: the title of the page that is open.
   function pageTitle(route){
     if(route==='help'||route==='privacy'||route==='terms')return (PAGES[route][lang()]||PAGES[route].en).title;
+    if(AIS()?.routes.includes(route))return AIS().title(route,aiKit());
     return t({today:'today',words:'words',study:'studyTitle',stats:'statsTitle',profile:'profileTitle',settings:'rowSettings',premium:'premiumTitle',about:'aboutTitle',test:'studyTest',recall:'studyRecall',cloze:'studyCloze',match:'studyMatch',write:'studyWrite',flip:'studyFlip',watch:'watchTitle'}[route]||'today');
   }
   function syncChrome(){
@@ -1509,6 +1514,8 @@
     avatarButton.firstChild.replaceChildren(photo?photoCanvas(36):(name.trim().charAt(0).toUpperCase()||'V'));
     avatarButton.setAttribute('aria-label',t('profile')+': '+name);
     menuButton.setAttribute('aria-label',t('menu'));
+    if(AIS())inboxButton.setAttribute('aria-label',AIS().label(aiKit()));
+    syncInboxBadge();
     drawer.setAttribute('aria-label',t('menu'));drawer.lang=lang();
     drawer.querySelector('nav').setAttribute('aria-label',t('nav'));
     drawer.querySelector('.v2-drawer-close').setAttribute('aria-label',t('menuClose'));
@@ -1516,6 +1523,13 @@
       item.querySelector('.v2-nav-label').textContent=t(item.dataset.label);
       if(item.dataset.route===current)item.setAttribute('aria-current','page');else item.removeAttribute('aria-current');
     }
+  }
+  // The unread messages of the inbox, as a number on the bar's inbox button.
+  async function syncInboxBadge(){
+    try{
+      const count=await window.VocVocAI.unreadCount(),badge=inboxButton.querySelector('.v2-inbox-badge');
+      badge.hidden=!count;badge.textContent=count>9?'9+':String(count);
+    }catch(_){}
   }
   function setDrawer(open){
     if(open===drawer.classList.contains('v2-open'))return;
@@ -1530,6 +1544,7 @@
   function render(moveFocus){
     const route=currentRoute(),was=shown;shown=route;
     if(was==='settings'&&route!=='settings')leaveSettings();
+    if(was&&was!==route)AIS()?.leave();
     stopSpeaking();closeDayWords(false);closePhotoView(false);closeConfirm(false);
     // Leaving the study pages ends what they started: a Test that was left is abandoned, an open Flip is closed.
     if(!QUIZ_ROUTES.includes(route)&&quizSession)quizSession=null;
@@ -1882,11 +1897,12 @@
     container=document.querySelector('.container');
     screen=h('main',{id:'v2Screen',class:'v2-screen',hidden:true});
     menuButton=h('button',{type:'button',class:'v2-menu-btn','aria-controls':'v2Drawer','aria-expanded':'false',onclick:()=>setDrawer(true)},icon('menu'));
+    inboxButton=h('button',{type:'button',class:'v2-inbox-btn',onclick:()=>navigate('inbox')},icon('inbox'),h('span',{class:'v2-inbox-badge',hidden:true}));
     avatarButton=h('button',{type:'button',class:'v2-avatar-btn',onclick:()=>navigate('profile')},h('span',{class:'v2-avatar-dot','aria-hidden':'true'}));
     barTitle=h('span',{class:'v2-bar-title','aria-hidden':'true'});                                  // the page's own heading is in the page (out of sight); this one is for the eyes
     bar=h('div',{class:'v2-appbar',role:'banner'},menuButton,
       h('div',{class:'v2-bar-line'},h('span',{class:'v2-brand',text:'VocVoc'}),h('span',{class:'v2-bar-sep','aria-hidden':'true'}),barTitle),   // one line: the name and the title sit on the same baseline
-      avatarButton);
+      inboxButton,avatarButton);
     const entry=(route,label,run)=>h('button',{type:'button',class:'v2-nav-item'+(route==='settings'?' v2-nav-settings':''),'data-route':route,'data-label':label,onclick:run},icon(route==='settings'?'settings':route),h('span',{class:'v2-nav-label'}));
     drawer=h('div',{id:'v2Drawer',class:'v2-drawer',role:'dialog','aria-modal':'true',inert:true},
       h('div',{class:'v2-scrim',onclick:()=>setDrawer(false)}),
@@ -1931,6 +1947,7 @@
     const flip=document.getElementById('flipOverlay');
     if(flip)new MutationObserver(()=>{if(!flip.classList.contains('open')&&shown==='flip')goBack('study');}).observe(flip,{attributes:true,attributeFilter:['class']});
     window.addEventListener('hashchange',()=>{if(currentRoute()!==shown)render(true);});
+    window.addEventListener('vocvoc-inbox-changed',syncInboxBadge);
     window.addEventListener('vocvoc-plan-changed',()=>{document.querySelectorAll('.v2-speak').forEach(syncSpeakButton);document.querySelectorAll('.v2-flip-auto').forEach(syncAutoButton);if(['stats','premium','profile'].includes(shown))render(false);});
     // The interface language was changed (Settings): the bar, the menu and the page follow at once. A running Test or Flip is left as it is.
     window.addEventListener('vocvoc-language-applied',()=>{

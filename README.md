@@ -32,7 +32,7 @@ Import bir **restore/overwrite** işlemidir, merge değildir. Dosya boyutu (en f
 
 Kapanan IndexedDB bağlantısı bir sonraki işlemde otomatik yeniden açılır; depo dışarıdan silinmişse eski revision ile yazma `conflict` ile reddedilir, boş veri yeniden oluşturulmaz. Fatal DB/migration hatasında uygulama boş veritabanıyla açılmaz. Arayüz (render) hatası veritabanı hatasından ayrı bir mesajla gösterilir; bu durumda veriler açıktır ve ekrandaki JSON düğmesi mevcut veriyi dışa aktarır. Retry ve geçerli eski Schema v1 JSON'unu export etme seçenekleri gösterilir. Corrupt JSON kaynak otomatik silinmez/düzeltilmez. IndexedDB açılamıyorsa kullanıcı başka sekmeleri kapatmalı, alan/izin kontrolü yapmalı ve tekrar denemelidir.
 
-Uygulamada **API anahtarı ve yapay zekâ yoktur** (1.12.0). Önceki sürümlerde saklanmış bir anahtar uygulama açılırken cihazdan silinir (`VocVocSecrets.forget`, iki saklama adı); Word DB, export, manifest ve Service Worker cache'ine hiçbir anahtar girmez. Kelimeler `packs/` altındaki dosyalardan gelir (aşağıda *Kelime veritabanı*).
+Uygulamada **API anahtarı yoktur** (1.12.0; yapay zekâ özellikleri 1.42.0'dan beri aynı origin'deki `/api/ai` uç noktasını kullanır, aşağıda *Yapay zekâ*). Önceki sürümlerde saklanmış bir anahtar uygulama açılırken cihazdan silinir (`VocVocSecrets.forget`, iki saklama adı); Word DB, export, manifest ve Service Worker cache'ine hiçbir anahtar girmez. Kelimeler `packs/` altındaki dosyalardan gelir (aşağıda *Kelime veritabanı*).
 
 ## Performans
 
@@ -214,3 +214,14 @@ Uygulama kabuğundaki (`index.html`, `storage.js`, `a11y.js`, `pwa.js`, `stats.j
 ## Sınırlar
 
 Chromium otomasyonunda offline shell/cold start, IndexedDB migration/persistence, gerçek pointer işlemleri, update lifecycle ve mobile viewport kontrol edilir. Bu, fiziksel Android/iOS kurulum denemesinin yerini tutmaz. Private/incognito storage, kullanıcı tarafından browser data silinmesi ve cihazın kalıcı disk arızası için cloud koruması yoktur. Eski (localStorage) sürümden geçişte o verinin boyutu yaklaşık 2,5 MB'ı aşarsa, geçiş yedeği (aynı verinin ikinci kopyası) tarayıcının yaklaşık 5 MB'lık kotasını aşabilir ve geçiş başlamaz; başlangıç ekranı bu durumda eski verinin JSON dışa aktarımını sunar. (5.000 kelimelik bir eski veriyle gözlendi.)
+
+## Yapay zekâ (1.42.0)
+
+Dört özellik: **Sohbet odası** (kelimelerinle sesli sohbet; sonunda değerlendirme), **Hikâye** (seviyene göre hikâye, çeviri, dinleme, test; bir kelimeye dokunmak uygulamanın kelime penceresini açar, oradan listeye eklenir), **Cümle düzeltme** (her kelime bitince doğru yazılışı kısa süre gösterir; cümle bitince daha iyisini gösterir, dokununca uygulanır) ve **Hata analizi**. Üçü Çalış sayfasındadır; sonuçlar üst çubuktaki **Gelen kutusu** ikonuna (profil resminin solunda) düşer.
+
+- **Anahtar tarayıcıda yoktur.** Sayfa `./api/ai` adresine `{task,payload}` gönderir; `functions/api/ai.js` (Cloudflare Pages Function) anahtarı (`ANTHROPIC_API_KEY` sırrı) tutar, prompt'lar sunucudadır, alanlar kırpılır. Uç nokta sayfayla aynı origin'de olduğu için CSP `connect-src 'self'` olarak kalır. Başka bir barındırmada aynı `handle(body, env)` işlevi sarılabilir. Uç nokta yoksa ekranlar "servis kurulu değil" der; kelime verisi etkilenmez.
+- **Yerel deneme:** `node tools/ai-dev-server.js` klasörü ve uç noktayı sunar; anahtarsız örnek yanıtlar (`AI_MOCK=1`) verir, `ANTHROPIC_API_KEY` verilirse gerçek servisi kullanır.
+- **Depolama:** Gelen kutusu ve hata günlüğü ayrı bir IndexedDB'dedir (`VOCVOC_INBOX`, `messages` ve `mistakes`; en çok 200 mesaj, 500 hata). Yedeğe girmez, ilerleme sıfırlamasından etkilenmez.
+- **Ses:** Konuşmayı yazıya ve yazıyı sese tarayıcının Web Speech API'si çevirir (Chrome/Android iyi; iOS Safari'de giriş sınırlı, yazarak devam edilir).
+- **Hata analizi:** Üç özellikte yapılan hatalar günlüğe yazılır; en az 8 yeni hata birikince (ya da Gelen kutusunda "Hatalarımı analiz et" ile) rapor Gelen kutusuna gelir. Her hata bir kez raporlanır.
+- **Bilinen sınırlar:** Uç noktada kullanıcı kimliği yoktur (profil bu cihazda simülasyondur), bu yüzden istek sınırlaması yalnızca boyut ve origin denetimidir; herkese açık yayından önce hız sınırı eklenmeli. Plus planı henüz simülasyonda açılamadığı için özellikler plana bağlanmadı (`aiRoom`, `aiSentence`, `aiStory`, `aiMistakes` adları hazır).
