@@ -1,5 +1,5 @@
 'use strict';
-/* The screens of the AI features: Inbox, Chat room, Story and Sentence. screens.js owns routing and the bar; it asks this file for the routes, the study cards and the
+/* The screens of the AI features: Inbox, Chat room, Story and Sentence. screens.js owns routing and the bar; it asks this file for the routes (the Yapay Zeka section among them) and the
    inbox badge and hands over its small toolkit (h, page, heading, navigate, goBack, lang, fill). Data and the service are in ai.js. No innerHTML with data. */
 (function(){
   const TEXT={
@@ -8,7 +8,7 @@
       analyzeNow:'Hatalarımı analiz et',analyzing:'Analiz ediliyor…',nothingNew:'Analiz edilecek yeni hata yok.',reportTitle:'Hata analizi',chatTitle:'Sohbet değerlendirmesi',
       score:'Puan',strengths:'İyi yaptıkların',mistakes:'Hatalar',patterns:'Tekrar eden hatalar',tips:'Öneriler',focus:'Çalışılacak kelimeler',used:'Kullanılan kelimeler',missed:'Kullanılmayanlar',advice:'Tavsiye',
       basedOn:'{n} hataya dayanır',
-      aiStudy:'Yapay zekâ ile',chatCard:'Sohbet odası',chatSub:'Kelimelerinle sesli sohbet et, sonunda değerlendirme gelsin',storyCard:'Hikâye',storySub:'Kelimelerinle seviyene uygun bir hikâye',sentenceCard:'Cümle düzeltme',sentenceSub:'Cümle yaz, yazım ve söz dizimi önerileri al',
+      aiTab:'Yapay Zeka',chatCard:'Sohbet odası',chatSub:'Kelimelerinle sesli sohbet et, sonunda değerlendirme gelsin',storyCard:'Hikâye',storySub:'Kelimelerinle seviyene uygun bir hikâye',sentenceCard:'Cümle düzeltme',sentenceSub:'Cümle yaz, yazım ve söz dizimi önerileri al',
       chatPage:'Sohbet odası',storyPage:'Hikâye',sentencePage:'Cümle düzeltme',
       needWords:'Önce listene birkaç kelime ekle.',
       start:'Başlat',talk:'Konuş',listening:'Dinliyorum…',stopTalk:'Durdur',send:'Gönder',typeHere:'Ya da buraya yaz…',you:'Sen',tutor:'Eğitmen',thinking:'Düşünüyor…',
@@ -26,7 +26,7 @@
       analyzeNow:'Analyse my mistakes',analyzing:'Analysing…',nothingNew:'There are no new mistakes to analyse.',reportTitle:'Mistake analysis',chatTitle:'Chat evaluation',
       score:'Score',strengths:'What went well',mistakes:'Mistakes',patterns:'Repeated mistakes',tips:'Tips',focus:'Words to practise',used:'Words used',missed:'Words not used',advice:'Advice',
       basedOn:'Based on {n} mistakes',
-      aiStudy:'With AI',chatCard:'Chat room',chatSub:'Talk with your words, get an evaluation at the end',storyCard:'Story',storySub:'A story for your words and your level',sentenceCard:'Sentence correction',sentenceSub:'Write a sentence, get spelling and word-order help',
+      aiTab:'AI',chatCard:'Chat room',chatSub:'Talk with your words, get an evaluation at the end',storyCard:'Story',storySub:'A story for your words and your level',sentenceCard:'Sentence correction',sentenceSub:'Write a sentence, get spelling and word-order help',
       chatPage:'Chat room',storyPage:'Story',sentencePage:'Sentence correction',
       needWords:'Add a few words to your list first.',
       start:'Start',talk:'Talk',listening:'Listening…',stopTalk:'Stop',send:'Send',typeHere:'Or type here…',you:'You',tutor:'Tutor',thinking:'Thinking…',
@@ -300,12 +300,20 @@
     try{await AI().analyzeMistakes({minimum:8});}catch(_){}finally{analyzing=false;}
   }
 
+  // The Yapay Zeka section: the cards of the AI features (they used to be on the Study page).
+  function aiScreen(){
+    const card=(glyph,title,sub,route)=>kit.h('button',{type:'button',class:'v2-study-card',onclick:()=>kit.navigate(route)},
+      kit.h('span',{class:'v2-study-glyph','aria-hidden':'true',text:glyph}),kit.h('span',{},kit.h('span',{class:'v2-study-title',text:title}),kit.h('span',{class:'v2-study-sub',text:sub})));
+    return kit.page(kit.heading(t('aiTab')),card('💬',t('chatCard'),t('chatSub'),'chat'),card('📖',t('storyCard'),t('storySub'),'story'),card('✍',t('sentenceCard'),t('sentenceSub'),'sentence'));
+  }
+
   /* ---------- hooks for screens.js ---------- */
   const ROUTES={
+    ai:{tab:'ai',title:'aiTab',build:aiScreen},
     inbox:{tab:'profile',title:'inboxTitle',build:inboxScreen},
-    chat:{tab:'study',title:'chatPage',build:chatScreen},
-    story:{tab:'study',title:'storyPage',build:storyScreen},
-    sentence:{tab:'study',title:'sentencePage',build:sentenceScreen}
+    chat:{tab:'ai',title:'chatPage',build:chatScreen},
+    story:{tab:'ai',title:'storyPage',build:storyScreen},
+    sentence:{tab:'ai',title:'sentencePage',build:sentenceScreen}
   };
   window.VocVocAIScreens=Object.freeze({
     routes:Object.keys(ROUTES),
@@ -313,12 +321,6 @@
     title:(route,toolkit)=>{kit=toolkit;return t(ROUTES[route].title);},
     build(route,toolkit){kit=toolkit;this.leave();return ROUTES[route].build();},
     leave(){try{cleanup?.();}catch(_){}cleanup=null;},
-    studyCards(toolkit){
-      kit=toolkit;
-      const card=(glyph,title,sub,route)=>kit.h('button',{type:'button',class:'v2-study-card',onclick:()=>kit.navigate(route)},
-        kit.h('span',{class:'v2-study-glyph','aria-hidden':'true',text:glyph}),kit.h('span',{},kit.h('span',{class:'v2-study-title',text:title}),kit.h('span',{class:'v2-study-sub',text:sub})));
-      return [card('💬',t('chatCard'),t('chatSub'),'chat'),card('📖',t('storyCard'),t('storySub'),'story'),card('✍',t('sentenceCard'),t('sentenceSub'),'sentence')];
-    },
     label:toolkit=>{kit=toolkit;return t('inbox');}
   });
 })();
