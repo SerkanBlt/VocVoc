@@ -156,11 +156,10 @@ describe('No AI and no API key (static guards)',()=>{
     assert(/closeLevelUp\(accepted\)\{[^]*?VocVocData\.updateSettings\(\{difficulty:level\}\)/.test(offer+html.slice(html.indexOf('async function closeLevelUp'),html.indexOf('// The random button'))),'saying yes sets the level the way Settings does');
     assert(html.includes('onclick="addNewWords()"')&&!html.includes('addDailyWords'),'the header button runs the same function');
   });
-  it('search, the random button and the synonym/antonym tags open the word database in the word window and never add by themselves; the user adds with the button',()=>{
+  it('search and the synonym/antonym tags open the word database in the word window and never add by themselves; the user adds with the button',()=>{
     const search=html.slice(html.indexOf('async function handleSearch()'),html.indexOf('let appDataEpoch'));
     assert(search.includes('await openRelatedWordPopup(query);')&&!/addHistory|saveAndTouch|touchWord|addWordBatch/.test(search),'search only looks a word up');
-    const random=html.slice(html.indexOf('async function randomWord()'),html.indexOf('function shuffle('));
-    assert(random.includes('VocVocWordbase.random()')&&random.includes('openRelatedWordPopup(')&&!/addHistory|saveAndTouch|touchWord|addWordBatch/.test(random),'the random button only shows a word');
+    assert(!html.includes('randomWord')&&!html.includes('onclick="randomWord()"'),'the Words page has no random button');
     const popup=html.slice(html.indexOf('async function getWordDataForPopup'),html.indexOf('function renderPopupStatus'));
     assert(popup.includes('VocVocWordbase.find(word)')&&!/addHistory|saveAndTouch|touchWord|addWordBatch/.test(popup),'looking a word up adds nothing');
     assert(/document\.addEventListener\("click",e=>\{\s*const badge=e\.target\.closest\("\.clickable-badge\[data-related-word\]"\);[^]*?openRelatedWordPopup\(word\.trim\(\)\)/.test(html),'a synonym or antonym tag opens the same window');

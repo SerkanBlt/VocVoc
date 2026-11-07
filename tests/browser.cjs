@@ -179,11 +179,7 @@ async function main(){
   assert.equal(await page.evaluate(word=>VocVocData.getWordByText(word),other),null);assert.equal(await page.locator('#relatedWordPopup .card-archive-btn').count(),0);
   await page.evaluate(word=>addRelatedWordToList(word),other);
   assert(await page.evaluate(word=>VocVocData.getHistoryWords().includes(word),other));assert.equal(await page.evaluate(()=>VocVocData.getDailyUsage().count),10);
-  // random: a word of the chosen level is shown and not added
   const known=(await listed()).length;
-  await page.evaluate(()=>randomWord());await page.waitForSelector('#relatedWordPopup [data-add-related-word]');
-  assert(levelWords(['A1']).includes(await page.locator('#relatedWordPopup .word-title').first().textContent()));
-  assert.equal((await listed()).length,known);await page.evaluate(()=>closeRelatedWordPopup());
   // a word that is not in the database says so
   await page.evaluate(()=>{document.getElementById('searchInput').value='zzzxqjk';return handleSearch();});
   await page.waitForSelector('#relatedWordPopup .error-box');
@@ -714,7 +710,6 @@ async function main(){
     await page.evaluate(()=>{showError('');closeRelatedWordPopup();});await page.waitForFunction(()=>!document.querySelector('.app-alert')&&!document.querySelector('#relatedWordPopup.open'));};
    await failsGracefully('search',async()=>{await page.fill('#searchInput','inconnuword');await page.locator('[onclick="handleSearch()"]').click();},'#relatedWordPopup .error-box');
    await failsGracefully('add new words',()=>page.locator('[onclick="addNewWords()"]').click(),'.app-alert');
-   await failsGracefully('random',()=>page.locator('[onclick="randomWord()"]').click(),'.app-alert');
    record('offline UI: word-database actions fail gracefully and leave data untouched');await context.close();
   }
   // --- 11: true cold start. Brand-new browser process, same profile, server gone (connection refused): only the worker can answer.
