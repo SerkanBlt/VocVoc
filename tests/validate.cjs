@@ -681,8 +681,9 @@ describe('Content Security Policy (static guards)',()=>{
   });
   it('connect-src allows this origin and nothing else; no directive names any other origin',()=>{
     assert.deepEqual(policy['connect-src'],["'self'"]);
+    assert.deepEqual(policy['frame-src'],['https://www.youtube-nocookie.com'],'the only frame is the privacy-enhanced YouTube player of the Watch list');
     for(const [name,sources] of Object.entries(policy))for(const source of sources){
-      assert(!/^https?:/.test(source),`${name} allows ${source}`);
+      assert(name==='frame-src'||!/^https?:/.test(source),`${name} allows ${source}`);
       assert(!['*','data:','blob:',"'unsafe-eval'"].includes(source),`${name} allows ${source}`);
     }
     assert.deepEqual(policy['object-src'],["'none'"]);assert.deepEqual(policy['base-uri'],["'self'"]);assert.deepEqual(policy['form-action'],["'self'"]);
