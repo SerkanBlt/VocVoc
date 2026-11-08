@@ -427,6 +427,8 @@
     help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .5c0 1.5-2.5 2-2.5 3.5"/><path d="M12 17h.01"/>',
     plus:'<path d="M12 5v14"/><path d="M5 12h14"/>',
     pause:'<path d="M8 5v14"/><path d="M16 5v14"/>',
+    close:'<path d="M6 6l12 12"/><path d="M18 6L6 18"/>',
+    resize:'<path d="M20 14v6h-6"/><path d="M4 10V4h6"/><path d="M20 20L14 14"/><path d="M4 4l6 6"/>',
     play:'<path d="M7 4.5v15l12.5-7.5z"/>',
     inbox:'<path d="M4 13l2.5-8h11L20 13"/><path d="M4 13v6h16v-6h-5a3 3 0 01-6 0H4z"/>'
   };
@@ -1803,12 +1805,12 @@
     if(!id||!watchPage||watchPage.playing||navigator.onLine===false){openWatchLink(item);return;}
     const state=watchPage,label=watchLabel(item);
     const frame=h('iframe',{class:'v2-watch-frame',title:label,src:'https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&playsinline=1',allow:'autoplay; encrypted-media; picture-in-picture; fullscreen',allowfullscreen:true,referrerpolicy:'strict-origin-when-cross-origin',sandbox:'allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox'});
-    const closeButton=h('button',{type:'button',class:'v2-watch-x','aria-label':t('quizClose'),title:t('quizClose'),onclick:()=>state.closePlayer()},'×');
+    const closeButton=h('button',{type:'button',class:'v2-watch-x','aria-label':t('quizClose'),title:t('quizClose'),onclick:()=>state.closePlayer()},icon('close'));
     // The panel can be made bigger or smaller: drag the bottom right corner (or use the arrow keys on it); the size is kept for the next video. The picture stays 16:9.
     const card=h('div',{class:'v2-crop-card v2-watch-card v2-watch-playercard'},h('div',{class:'v2-watch-video'},frame),closeButton);
     const widthLimits=()=>({min:Math.min(280,window.innerWidth-32),max:Math.max(280,Math.min(window.innerWidth-32,(window.innerHeight-112)*16/9))});   // room above and below for the buttons
     const setWidth=value=>{const {min,max}=widthLimits();watchPlayerWidth=Math.round(Math.min(max,Math.max(min,value)));card.style.width=watchPlayerWidth+'px';};
-    const grip=h('button',{type:'button',class:'v2-watch-grip','aria-label':t('watchResize'),title:t('watchResize')},'◢');
+    const grip=h('button',{type:'button',class:'v2-watch-grip','aria-label':t('watchResize'),title:t('watchResize')},icon('resize'));
     let drag=null;
     grip.addEventListener('pointerdown',event=>{drag={x:event.clientX,width:card.offsetWidth};grip.setPointerCapture(event.pointerId);event.preventDefault();});
     grip.addEventListener('pointermove',event=>{if(drag)setWidth(drag.width+(event.clientX-drag.x)*2);});            // the corner is at the bottom right and the card is centred: both sides move, so the corner follows the pointer
