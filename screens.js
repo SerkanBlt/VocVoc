@@ -58,7 +58,7 @@
       statsTitle:'İstatistikler',badgesTitle:'Rozetler',
       lockedTitle:'Premium özelliği',lockedStats:'Günlük etkinlik, test başarısı, öğrenme eğrisi ve seri gibi istatistikler Premium ile açılır.',goPremium:"Premium'a geç",
       profileTitle:'Profil',planFree:'Ücretsiz',planPremium:'Premium (simülasyon)',
-      rowPremium:'Premium',rowEditProfile:'Bilgilerimi düzenle',watchTitle:'İzleme/Dinleme Listesi',watchCount:'{n} bağlantı',watchEmpty:'Henüz bağlantı yok. Bir video, podcast ya da makale bağlantısı ekle.',watchAddTitle:'Yeni bağlantı ekle',watchLabelTitle:'Başlık (isteğe bağlı)',watchLabelUrl:'Web bağlantısı',watchCategory:'Kategori',watchCategoryHint:'Seç veya yeni yaz',watchSort:'Sırala',watchSortAz:'A–Z',watchSortZa:'Z–A',watchSortDateAsc:'Tarihe göre (eskiden yeniye)',watchSortDateDesc:'Tarihe göre (yeniden eskiye)',watchSortCategory:'Kategoriye göre',watchAdd:'Ekle',watchUrlError:'Geçerli bir web adresi yaz (https://…).',watchFull:'Liste dolu: en çok {n} bağlantı.',watchOpen:'İzle',watchResize:'Panelin boyutunu değiştir',watchEdit:'Düzenle',watchDelete:'Sil',watchDoneLabel:'Tamamlandı: {name}',rowSettings:'Ayarlar',rowHelp:'Yardım',rowPrivacy:'Gizlilik Politikası',rowTerms:'Kullanım Şartları',rowAbout:'Hakkında',
+      rowPremium:'Premium',rowEditProfile:'Bilgilerimi düzenle',watchTitle:'İzleme/Dinleme Listesi',watchCount:'{n} bağlantı',watchEmpty:'Henüz bağlantı yok. Bir video, podcast ya da makale bağlantısı ekle.',watchAddTitle:'Yeni bağlantı ekle',watchLabelTitle:'Başlık (isteğe bağlı)',watchLabelUrl:'Web bağlantısı',watchCategory:'Kategori',watchNoCategory:'Kategorisiz',watchDrag:'Başka kategoriye taşı: sürükle ya da yukarı/aşağı ok tuşlarına bas',watchCategoryHint:'Seç veya yeni yaz',watchSort:'Sırala',watchSortAz:'A–Z',watchSortZa:'Z–A',watchSortDateAsc:'Tarihe göre (eskiden yeniye)',watchSortDateDesc:'Tarihe göre (yeniden eskiye)',watchSortCategory:'Kategoriye göre',watchAdd:'Ekle',watchUrlError:'Geçerli bir web adresi yaz (https://…).',watchFull:'Liste dolu: en çok {n} bağlantı.',watchOpen:'İzle',watchResize:'Panelin boyutunu değiştir',watchEdit:'Düzenle',watchDelete:'Sil',watchDoneLabel:'Tamamlandı: {name}',rowSettings:'Ayarlar',rowHelp:'Yardım',rowPrivacy:'Gizlilik Politikası',rowTerms:'Kullanım Şartları',rowAbout:'Hakkında',
       signOut:'Çıkış yap',signOutNote:'Çıkış, kelimelerini ve ilerlemeni silmez.',
       premiumTitle:'Premium',planLabel:'Mevcut plan',premiumIncludes:'Premium (ücretsiz olanların hepsine ek olarak)',planPlus:"Premium Plus (simülasyon)",planExclusive:"Exclusive (simülasyon)",plusIncludes:"Premium Plus (Premium'un hepsine ek olarak)",exclusiveIncludes:"Exclusive (Premium Plus'ın hepsine ek olarak)",plus1:"Yapay zekâ sohbet odası: birden çok karakterle konuş, listendeki kelimeleri kullan",plus2:"Cümle kur: yapay zekâ düzeltir ve açıklar",plus3:"Kişisel hikâye: kelimelerinle yazılır, sesli dinlenir",plus4:"Hata analizi ve hafıza ipuçları",plus5:"Her ay 300 yapay zekâ işlemi",exclusive1:"Her işlemde en güçlü yapay zekâ modeli",exclusive2:"Daha geniş hata analizi ve hikâye hakkı",exclusive3:"Günlük 50 yapay zekâ işlemi",soon:"Yakında",
       priceNote:'Fiyatlar USD cinsindendir. Yıllık abonelikte 2 ay bedavadır.',
@@ -90,7 +90,7 @@
       statsTitle:'Statistics',badgesTitle:'Badges',
       lockedTitle:'Premium feature',lockedStats:'Statistics such as daily activity, test accuracy, the learning curve and streaks come with Premium.',goPremium:'Go Premium',
       profileTitle:'Profile',planFree:'Free',planPremium:'Premium (simulation)',
-      rowPremium:'Premium',rowEditProfile:'Edit my details',watchTitle:'Watch/Listen List',watchCount:'{n} links',watchEmpty:'No links yet. Add a link to a video, podcast or article.',watchAddTitle:'Add a new link',watchLabelTitle:'Title (optional)',watchLabelUrl:'Web link',watchCategory:'Category',watchCategoryHint:'Pick one or type a new one',watchSort:'Sort',watchSortAz:'A–Z',watchSortZa:'Z–A',watchSortDateAsc:'By date (oldest first)',watchSortDateDesc:'By date (newest first)',watchSortCategory:'By category',watchAdd:'Add',watchUrlError:'Enter a valid web address (https://…).',watchFull:'The list is full: at most {n} links.',watchOpen:'Watch',watchResize:'Resize the panel',watchEdit:'Edit',watchDelete:'Delete',watchDoneLabel:'Done: {name}',rowSettings:'Settings',rowHelp:'Help',rowPrivacy:'Privacy Policy',rowTerms:'Terms of Use',rowAbout:'About',
+      rowPremium:'Premium',rowEditProfile:'Edit my details',watchTitle:'Watch/Listen List',watchCount:'{n} links',watchEmpty:'No links yet. Add a link to a video, podcast or article.',watchAddTitle:'Add a new link',watchLabelTitle:'Title (optional)',watchLabelUrl:'Web link',watchCategory:'Category',watchNoCategory:'Uncategorized',watchDrag:'Move to another category: drag, or press the up/down arrow keys',watchCategoryHint:'Pick one or type a new one',watchSort:'Sort',watchSortAz:'A–Z',watchSortZa:'Z–A',watchSortDateAsc:'By date (oldest first)',watchSortDateDesc:'By date (newest first)',watchSortCategory:'By category',watchAdd:'Add',watchUrlError:'Enter a valid web address (https://…).',watchFull:'The list is full: at most {n} links.',watchOpen:'Watch',watchResize:'Resize the panel',watchEdit:'Edit',watchDelete:'Delete',watchDoneLabel:'Done: {name}',rowSettings:'Settings',rowHelp:'Help',rowPrivacy:'Privacy Policy',rowTerms:'Terms of Use',rowAbout:'About',
       signOut:'Sign out',signOutNote:'Signing out does not delete your words or progress.',
       premiumTitle:'Premium',planLabel:'Current plan',premiumIncludes:'Premium (in addition to everything free)',planPlus:"Premium Plus (simulation)",planExclusive:"Exclusive (simulation)",plusIncludes:"Premium Plus (in addition to everything in Premium)",exclusiveIncludes:"Exclusive (in addition to everything in Premium Plus)",plus1:"AI chat room: talk with several characters and use the words of your list",plus2:"Write a sentence: the AI corrects it and explains it",plus3:"Personal story: written with your words, read aloud",plus4:"Mistake analysis and memory tips",plus5:"300 AI actions a month",exclusive1:"The most capable AI model for every action",exclusive2:"More mistake analyses and stories",exclusive3:"50 AI actions a day",soon:"Coming soon",
       priceNote:'Prices are in USD. The yearly subscription has 2 months free.',
@@ -122,7 +122,7 @@
       statsTitle:'Statistiques',badgesTitle:'Badges',
       lockedTitle:'Fonction Premium',lockedStats:'Les statistiques comme l’activité quotidienne, la réussite aux tests, la courbe d’apprentissage et les séries sont réservées à Premium.',goPremium:'Passer à Premium',
       profileTitle:'Profil',planFree:'Gratuit',planPremium:'Premium (simulation)',
-      rowPremium:'Premium',rowEditProfile:'Modifier mes informations',watchTitle:'Liste à regarder/écouter',watchCount:'{n} liens',watchEmpty:'Aucun lien pour l’instant. Ajoutez le lien d’une vidéo, d’un podcast ou d’un article.',watchAddTitle:'Ajouter un nouveau lien',watchLabelTitle:'Titre (facultatif)',watchLabelUrl:'Lien web',watchCategory:'Catégorie',watchCategoryHint:'Choisir ou saisir une nouvelle',watchSort:'Trier',watchSortAz:'De A à Z',watchSortZa:'De Z à A',watchSortDateAsc:'Par date (anciens d’abord)',watchSortDateDesc:'Par date (récents d’abord)',watchSortCategory:'Par catégorie',watchAdd:'Ajouter',watchUrlError:'Saisissez une adresse web valide (https://…).',watchFull:'La liste est pleine : {n} liens au maximum.',watchOpen:'Regarder',watchResize:'Redimensionner le panneau',watchEdit:'Modifier',watchDelete:'Supprimer',watchDoneLabel:'Terminé : {name}',rowSettings:'Réglages',rowHelp:'Aide',rowPrivacy:'Politique de confidentialité',rowTerms:'Conditions d’utilisation',rowAbout:'À propos',
+      rowPremium:'Premium',rowEditProfile:'Modifier mes informations',watchTitle:'Liste à regarder/écouter',watchCount:'{n} liens',watchEmpty:'Aucun lien pour l’instant. Ajoutez le lien d’une vidéo, d’un podcast ou d’un article.',watchAddTitle:'Ajouter un nouveau lien',watchLabelTitle:'Titre (facultatif)',watchLabelUrl:'Lien web',watchCategory:'Catégorie',watchNoCategory:'Sans catégorie',watchDrag:'Déplacer vers une autre catégorie : glisser, ou touches flèche haut/bas',watchCategoryHint:'Choisir ou saisir une nouvelle',watchSort:'Trier',watchSortAz:'De A à Z',watchSortZa:'De Z à A',watchSortDateAsc:'Par date (anciens d’abord)',watchSortDateDesc:'Par date (récents d’abord)',watchSortCategory:'Par catégorie',watchAdd:'Ajouter',watchUrlError:'Saisissez une adresse web valide (https://…).',watchFull:'La liste est pleine : {n} liens au maximum.',watchOpen:'Regarder',watchResize:'Redimensionner le panneau',watchEdit:'Modifier',watchDelete:'Supprimer',watchDoneLabel:'Terminé : {name}',rowSettings:'Réglages',rowHelp:'Aide',rowPrivacy:'Politique de confidentialité',rowTerms:'Conditions d’utilisation',rowAbout:'À propos',
       signOut:'Se déconnecter',signOutNote:'Se déconnecter ne supprime ni vos mots ni votre progression.',
       premiumTitle:'Premium',planLabel:'Offre actuelle',premiumIncludes:'Premium (en plus de tout ce qui est gratuit)',planPlus:"Premium Plus (simulé)",planExclusive:"Exclusive (simulé)",plusIncludes:"Premium Plus (en plus de tout Premium)",exclusiveIncludes:"Exclusive (en plus de tout Premium Plus)",plus1:"Salon de discussion IA : parlez avec plusieurs personnages et utilisez les mots de votre liste",plus2:"Écrivez une phrase : l’IA la corrige et l’explique",plus3:"Histoire personnelle : écrite avec vos mots, lue à voix haute",plus4:"Analyse des erreurs et astuces de mémoire",plus5:"300 actions IA par mois",exclusive1:"Le modèle d’IA le plus performant pour chaque action",exclusive2:"Plus d’analyses d’erreurs et d’histoires",exclusive3:"50 actions IA par jour",soon:"Bientôt",
       priceNote:'Les prix sont en USD. L’abonnement annuel offre 2 mois.',
@@ -154,7 +154,7 @@
       statsTitle:'Statistik',badgesTitle:'Abzeichen',
       lockedTitle:'Premium-Funktion',lockedStats:'Statistiken wie tägliche Aktivität, Testergebnisse, Lernkurve und Serien gibt es mit Premium.',goPremium:'Premium holen',
       profileTitle:'Profil',planFree:'Kostenlos',planPremium:'Premium (Simulation)',
-      rowPremium:'Premium',rowEditProfile:'Meine Angaben bearbeiten',watchTitle:'Anschau-/Hörliste',watchCount:'{n} Links',watchEmpty:'Noch keine Links. Fügen Sie den Link zu einem Video, Podcast oder Artikel hinzu.',watchAddTitle:'Neuen Link hinzufügen',watchLabelTitle:'Titel (optional)',watchLabelUrl:'Weblink',watchCategory:'Kategorie',watchCategoryHint:'Wählen oder neu eingeben',watchSort:'Sortieren',watchSortAz:'A bis Z',watchSortZa:'Z bis A',watchSortDateAsc:'Nach Datum (älteste zuerst)',watchSortDateDesc:'Nach Datum (neueste zuerst)',watchSortCategory:'Nach Kategorie',watchAdd:'Hinzufügen',watchUrlError:'Geben Sie eine gültige Webadresse ein (https://…).',watchFull:'Die Liste ist voll: höchstens {n} Links.',watchOpen:'Ansehen',watchResize:'Panelgröße ändern',watchEdit:'Bearbeiten',watchDelete:'Löschen',watchDoneLabel:'Erledigt: {name}',rowSettings:'Einstellungen',rowHelp:'Hilfe',rowPrivacy:'Datenschutzerklärung',rowTerms:'Nutzungsbedingungen',rowAbout:'Über',
+      rowPremium:'Premium',rowEditProfile:'Meine Angaben bearbeiten',watchTitle:'Anschau-/Hörliste',watchCount:'{n} Links',watchEmpty:'Noch keine Links. Fügen Sie den Link zu einem Video, Podcast oder Artikel hinzu.',watchAddTitle:'Neuen Link hinzufügen',watchLabelTitle:'Titel (optional)',watchLabelUrl:'Weblink',watchCategory:'Kategorie',watchNoCategory:'Ohne Kategorie',watchDrag:'In eine andere Kategorie verschieben: ziehen oder Pfeiltasten hoch/runter',watchCategoryHint:'Wählen oder neu eingeben',watchSort:'Sortieren',watchSortAz:'A bis Z',watchSortZa:'Z bis A',watchSortDateAsc:'Nach Datum (älteste zuerst)',watchSortDateDesc:'Nach Datum (neueste zuerst)',watchSortCategory:'Nach Kategorie',watchAdd:'Hinzufügen',watchUrlError:'Geben Sie eine gültige Webadresse ein (https://…).',watchFull:'Die Liste ist voll: höchstens {n} Links.',watchOpen:'Ansehen',watchResize:'Panelgröße ändern',watchEdit:'Bearbeiten',watchDelete:'Löschen',watchDoneLabel:'Erledigt: {name}',rowSettings:'Einstellungen',rowHelp:'Hilfe',rowPrivacy:'Datenschutzerklärung',rowTerms:'Nutzungsbedingungen',rowAbout:'Über',
       signOut:'Abmelden',signOutNote:'Beim Abmelden werden Ihre Wörter und Ihr Fortschritt nicht gelöscht.',
       premiumTitle:'Premium',planLabel:'Aktueller Tarif',premiumIncludes:'Premium (zusätzlich zu allem Kostenlosen)',planPlus:"Premium Plus (Simulation)",planExclusive:"Exclusive (Simulation)",plusIncludes:"Premium Plus (zusätzlich zu allem in Premium)",exclusiveIncludes:"Exclusive (zusätzlich zu allem in Premium Plus)",plus1:"KI-Chatraum: Sprechen Sie mit mehreren Figuren und nutzen Sie die Wörter Ihrer Liste",plus2:"Satz bilden: Die KI korrigiert ihn und erklärt ihn",plus3:"Persönliche Geschichte: mit Ihren Wörtern geschrieben, vorgelesen",plus4:"Fehleranalyse und Merktipps",plus5:"300 KI-Aktionen pro Monat",exclusive1:"Das leistungsstärkste KI-Modell für jede Aktion",exclusive2:"Mehr Fehleranalysen und Geschichten",exclusive3:"50 KI-Aktionen pro Tag",soon:"Demnächst",
       priceNote:'Preise in USD. Beim Jahresabo sind 2 Monate gratis.',
@@ -186,7 +186,7 @@
       statsTitle:'Estadísticas',badgesTitle:'Insignias',
       lockedTitle:'Función Premium',lockedStats:'Las estadísticas, como la actividad diaria, el acierto en los tests, la curva de aprendizaje y las rachas, llegan con Premium.',goPremium:'Pasar a Premium',
       profileTitle:'Perfil',planFree:'Gratis',planPremium:'Premium (simulación)',
-      rowPremium:'Premium',rowEditProfile:'Editar mis datos',watchTitle:'Lista para ver/escuchar',watchCount:'{n} enlaces',watchEmpty:'Aún no hay enlaces. Añade el enlace de un vídeo, un pódcast o un artículo.',watchAddTitle:'Añadir un enlace nuevo',watchLabelTitle:'Título (opcional)',watchLabelUrl:'Enlace web',watchCategory:'Categoría',watchCategoryHint:'Elige una o escribe una nueva',watchSort:'Ordenar',watchSortAz:'De la A a la Z',watchSortZa:'De la Z a la A',watchSortDateAsc:'Por fecha (más antiguos primero)',watchSortDateDesc:'Por fecha (más recientes primero)',watchSortCategory:'Por categoría',watchAdd:'Añadir',watchUrlError:'Escribe una dirección web válida (https://…).',watchFull:'La lista está llena: máximo {n} enlaces.',watchOpen:'Ver',watchResize:'Cambiar el tamaño del panel',watchEdit:'Editar',watchDelete:'Eliminar',watchDoneLabel:'Hecho: {name}',rowSettings:'Ajustes',rowHelp:'Ayuda',rowPrivacy:'Política de privacidad',rowTerms:'Condiciones de uso',rowAbout:'Acerca de',
+      rowPremium:'Premium',rowEditProfile:'Editar mis datos',watchTitle:'Lista para ver/escuchar',watchCount:'{n} enlaces',watchEmpty:'Aún no hay enlaces. Añade el enlace de un vídeo, un pódcast o un artículo.',watchAddTitle:'Añadir un enlace nuevo',watchLabelTitle:'Título (opcional)',watchLabelUrl:'Enlace web',watchCategory:'Categoría',watchNoCategory:'Sin categoría',watchDrag:'Mover a otra categoría: arrastrar, o teclas de flecha arriba/abajo',watchCategoryHint:'Elige una o escribe una nueva',watchSort:'Ordenar',watchSortAz:'De la A a la Z',watchSortZa:'De la Z a la A',watchSortDateAsc:'Por fecha (más antiguos primero)',watchSortDateDesc:'Por fecha (más recientes primero)',watchSortCategory:'Por categoría',watchAdd:'Añadir',watchUrlError:'Escribe una dirección web válida (https://…).',watchFull:'La lista está llena: máximo {n} enlaces.',watchOpen:'Ver',watchResize:'Cambiar el tamaño del panel',watchEdit:'Editar',watchDelete:'Eliminar',watchDoneLabel:'Hecho: {name}',rowSettings:'Ajustes',rowHelp:'Ayuda',rowPrivacy:'Política de privacidad',rowTerms:'Condiciones de uso',rowAbout:'Acerca de',
       signOut:'Cerrar sesión',signOutNote:'Cerrar sesión no borra tus palabras ni tu progreso.',
       premiumTitle:'Premium',planLabel:'Plan actual',premiumIncludes:'Premium (además de todo lo gratuito)',planPlus:"Premium Plus (simulación)",planExclusive:"Exclusive (simulación)",plusIncludes:"Premium Plus (además de todo lo de Premium)",exclusiveIncludes:"Exclusive (además de todo lo de Premium Plus)",plus1:"Sala de chat con IA: habla con varios personajes y usa las palabras de tu lista",plus2:"Escribe una frase: la IA la corrige y la explica",plus3:"Historia personal: escrita con tus palabras y leída en voz alta",plus4:"Análisis de errores y trucos de memoria",plus5:"300 acciones de IA al mes",exclusive1:"El modelo de IA más potente en cada acción",exclusive2:"Más análisis de errores e historias",exclusive3:"50 acciones de IA al día",soon:"Próximamente",
       priceNote:'Los precios son en USD. La suscripción anual tiene 2 meses gratis.',
@@ -218,7 +218,7 @@
       statsTitle:'Statistiche',badgesTitle:'Badge',
       lockedTitle:'Funzione Premium',lockedStats:'Statistiche come attività giornaliera, risultati dei test, curva di apprendimento e serie sono incluse in Premium.',goPremium:'Passa a Premium',
       profileTitle:'Profilo',planFree:'Gratuito',planPremium:'Premium (simulazione)',
-      rowPremium:'Premium',rowEditProfile:'Modifica i miei dati',watchTitle:'Lista da guardare/ascoltare',watchCount:'{n} link',watchEmpty:'Ancora nessun link. Aggiungi il link di un video, di un podcast o di un articolo.',watchAddTitle:'Aggiungi un nuovo link',watchLabelTitle:'Titolo (facoltativo)',watchLabelUrl:'Link web',watchCategory:'Categoria',watchCategoryHint:'Scegline una o scrivine una nuova',watchSort:'Ordina',watchSortAz:'Dalla A alla Z',watchSortZa:'Dalla Z alla A',watchSortDateAsc:'Per data (più vecchi prima)',watchSortDateDesc:'Per data (più recenti prima)',watchSortCategory:'Per categoria',watchAdd:'Aggiungi',watchUrlError:'Inserisci un indirizzo web valido (https://…).',watchFull:'La lista è piena: al massimo {n} link.',watchOpen:'Guarda',watchResize:'Ridimensiona il pannello',watchEdit:'Modifica',watchDelete:'Elimina',watchDoneLabel:'Fatto: {name}',rowSettings:'Impostazioni',rowHelp:'Aiuto',rowPrivacy:'Informativa sulla privacy',rowTerms:'Termini d’uso',rowAbout:'Informazioni',
+      rowPremium:'Premium',rowEditProfile:'Modifica i miei dati',watchTitle:'Lista da guardare/ascoltare',watchCount:'{n} link',watchEmpty:'Ancora nessun link. Aggiungi il link di un video, di un podcast o di un articolo.',watchAddTitle:'Aggiungi un nuovo link',watchLabelTitle:'Titolo (facoltativo)',watchLabelUrl:'Link web',watchCategory:'Categoria',watchNoCategory:'Senza categoria',watchDrag:'Sposta in un’altra categoria: trascina, oppure frecce su/giù',watchCategoryHint:'Scegline una o scrivine una nuova',watchSort:'Ordina',watchSortAz:'Dalla A alla Z',watchSortZa:'Dalla Z alla A',watchSortDateAsc:'Per data (più vecchi prima)',watchSortDateDesc:'Per data (più recenti prima)',watchSortCategory:'Per categoria',watchAdd:'Aggiungi',watchUrlError:'Inserisci un indirizzo web valido (https://…).',watchFull:'La lista è piena: al massimo {n} link.',watchOpen:'Guarda',watchResize:'Ridimensiona il pannello',watchEdit:'Modifica',watchDelete:'Elimina',watchDoneLabel:'Fatto: {name}',rowSettings:'Impostazioni',rowHelp:'Aiuto',rowPrivacy:'Informativa sulla privacy',rowTerms:'Termini d’uso',rowAbout:'Informazioni',
       signOut:'Esci',signOutNote:'Uscire non cancella le tue parole né i tuoi progressi.',
       premiumTitle:'Premium',planLabel:'Piano attuale',premiumIncludes:'Premium (in più rispetto a tutto ciò che è gratuito)',planPlus:"Premium Plus (simulazione)",planExclusive:"Exclusive (simulazione)",plusIncludes:"Premium Plus (oltre a tutto Premium)",exclusiveIncludes:"Exclusive (oltre a tutto Premium Plus)",plus1:"Stanza di chat con l’IA: parla con più personaggi e usa le parole della tua lista",plus2:"Scrivi una frase: l’IA la corregge e la spiega",plus3:"Storia personale: scritta con le tue parole e letta ad alta voce",plus4:"Analisi degli errori e trucchi per ricordare",plus5:"300 azioni IA al mese",exclusive1:"Il modello di IA più potente per ogni azione",exclusive2:"Più analisi degli errori e storie",exclusive3:"50 azioni IA al giorno",soon:"In arrivo",
       priceNote:'I prezzi sono in USD. L’abbonamento annuale ha 2 mesi gratis.',
@@ -429,6 +429,7 @@
     pause:'<path d="M8 5v14"/><path d="M16 5v14"/>',
     close:'<path d="M6 6l12 12"/><path d="M18 6L6 18"/>',
     resize:'<path d="M20 14v6h-6"/><path d="M4 10V4h6"/><path d="M20 20L14 14"/><path d="M4 4l6 6"/>',
+    drag:'<circle cx="9" cy="6" r="1.2"/><circle cx="15" cy="6" r="1.2"/><circle cx="9" cy="12" r="1.2"/><circle cx="15" cy="12" r="1.2"/><circle cx="9" cy="18" r="1.2"/><circle cx="15" cy="18" r="1.2"/>',
     play:'<path d="M7 4.5v15l12.5-7.5z"/>',
     inbox:'<path d="M4 13l2.5-8h11L20 13"/><path d="M4 13v6h16v-6h-5a3 3 0 01-6 0H4z"/>'
   };
@@ -1822,6 +1823,8 @@
   }
   // The list is a page of its own (#/watch). While it is shown, watchPage holds what is on it: {list,editing,adding,focusAfter,paint,closeAdd}.
   let watchPage=null;
+  const WATCH_COLLAPSED_KEY='VOCVOC_WATCH_COLLAPSED_V1';
+  const readWatchCollapsed=()=>{try{const value=JSON.parse(store.get(WATCH_COLLAPSED_KEY)||'[]');return new Set(Array.isArray(value)?value.filter(name=>typeof name==='string'):[]);}catch(_){return new Set();}};
   const readWatchSort=()=>{const value=store.get(WATCH_SORT_KEY);return WATCH_SORTS.includes(value)?value:'dateAsc';};
   // The list as it is shown (the saved list keeps the order the links were added in): by name, by date, or by category (links without one come last).
   function sortedWatch(list,mode){
@@ -1897,7 +1900,7 @@
   }
   function watchScreen(){
     leaveWatchPage();
-    const state={list:readWatch(),sort:readWatchSort(),editing:null,adding:null,playing:null,focusAfter:null};
+    const state={list:readWatch(),sort:readWatchSort(),collapsed:readWatchCollapsed(),editing:null,adding:null,playing:null,focusAfter:null};
     watchPage=state;
     const save=()=>writeWatch(state.list);
     const listNode=h('ul',{class:'v2-watch-list'});
@@ -1937,7 +1940,7 @@
       if(!url){addError.textContent=t('watchUrlError');urlInput.focus({preventScroll:true});return;}
       if(state.list.length>=WATCH_MAX){addError.textContent=fill(t('watchFull'),{n:WATCH_MAX});return;}
       const category=cleanCategory(categoryInput.value),item={id:newWatchId(),title:titleInput.value.trim().slice(0,WATCH_TITLE_MAX),url,done:false,added:Date.now(),...(category?{category}:{})};
-      state.list.push(item);save();
+      state.list.push(item);state.collapsed.delete(item.category||'');save();
       state.focusAfter='open:'+item.id;closeAdd();paint();                    // the new link is at the end of the list: scroll to it
       listNode.querySelector('[data-watch-open="'+item.id+'"]')?.closest('li')?.scrollIntoView({block:'nearest'});
     }
@@ -1966,19 +1969,87 @@
     // One box per link: the tick, the name (one line), then Edit, Delete and Watch (a YouTube video plays in a panel of the app, any other link opens in the default browser).
     const itemRow=item=>{
       const label=watchLabel(item);
-      return h('li',{class:'v2-watch-item'+(item.done?' v2-watch-done':'')},
+      const grouped=state.sort==='category';
+      const row=h('li',{class:'v2-watch-item'+(item.done?' v2-watch-done':'')},
+        grouped?dragHandle(item,()=>row):null,
         h('input',{type:'checkbox',class:'v2-watch-check',checked:item.done,'aria-label':fill(t('watchDoneLabel'),{name:label}),onchange:event=>{item.done=event.target.checked;save();state.focusAfter='check:'+item.id;paint();}}),
         // one line: the title, or the address when there is no title; the hover tip (title attribute) always has the whole of it, title and address
-        h('span',{class:'v2-watch-main',title:item.title?item.title+'\n'+item.url:item.url},h('span',{class:'v2-watch-name',text:label}),item.category?h('span',{class:'v2-watch-cat',text:item.category}):null),
+        h('span',{class:'v2-watch-main',title:item.title?item.title+'\n'+item.url:item.url},h('span',{class:'v2-watch-name',text:label}),item.category&&!grouped?h('span',{class:'v2-watch-cat',text:item.category}):null),
         h('button',{type:'button',class:'v2-watch-icon','data-watch-edit':item.id,'aria-label':t('watchEdit')+': '+label,title:t('watchEdit'),onclick:()=>{state.editing=item.id;paint();}},icon('edit')),
         h('button',{type:'button',class:'v2-watch-icon','aria-label':t('watchDelete')+': '+label,title:t('watchDelete'),onclick:()=>{
           const index=state.list.indexOf(item);state.list.splice(index,1);save();
           const next=state.list[Math.min(index,state.list.length-1)];state.focusAfter=next?'open:'+next.id:plusButton;paint();}},icon('trash')),
         h('button',{type:'button',class:'v2-watch-icon','data-watch-open':item.id,'aria-label':t('watchOpen')+': '+label,title:t('watchOpen'),onclick:event=>openWatchPlayer(item,event.currentTarget)},icon('play')));
+      row.dataset.watchGroup=item.category||'';
+      return row;
     };
+    // In the category view a link is moved to another category by dragging its handle onto the title or the links of that category (the keyboard: up and down arrows on the handle).
+    function moveToCategory(item,key){
+      if(key===(item.category||''))return;
+      if(key)item.category=key;else delete item.category;
+      save();state.focusAfter='open:'+item.id;paint();
+    }
+    function dragHandle(item,getRow){
+      const handle=h('button',{type:'button',class:'v2-watch-icon v2-watch-drag','aria-label':t('watchDrag'),title:t('watchDrag')},icon('drag'));
+      handle.addEventListener('keydown',event=>{
+        if(event.key!=='ArrowUp'&&event.key!=='ArrowDown')return;
+        event.preventDefault();
+        const keys=[...new Set(sortedWatch(state.list,'category').map(entry=>entry.category||''))],at=keys.indexOf(item.category||'')+(event.key==='ArrowUp'?-1:1);
+        if(at<0||at>=keys.length)return;
+        moveToCategory(item,keys[at]);
+        listNode.querySelector('[data-watch-open="'+item.id+'"]')?.closest('li')?.querySelector('.v2-watch-drag')?.focus({preventScroll:true});
+      });
+      handle.addEventListener('pointerdown',event=>{
+        if(event.button>0)return;
+        event.preventDefault();handle.setPointerCapture(event.pointerId);
+        const row=getRow(),box=row.getBoundingClientRect(),ghost=row.cloneNode(true),offset=event.clientY-box.top;
+        ghost.classList.add('v2-watch-ghost');ghost.style.cssText='width:'+box.width+'px;left:'+box.left+'px;top:'+box.top+'px';
+        document.body.append(ghost);row.classList.add('v2-watch-dragging');
+        let target=null,frame=0;
+        const mark=key=>{
+          if(key===target)return;target=key;
+          for(const node of listNode.children)node.classList.toggle('v2-watch-droptarget',key!==null&&node.dataset.watchGroup===key);
+        };
+        const move=pointer=>{
+          ghost.style.top=(pointer.clientY-offset)+'px';
+          const hit=document.elementFromPoint(pointer.clientX,pointer.clientY)?.closest?.('[data-watch-group]');
+          mark(hit&&listNode.contains(hit)?hit.dataset.watchGroup:null);
+          const bounds=screen.getBoundingClientRect(),dy=pointer.clientY<bounds.top+60?-12:pointer.clientY>bounds.bottom-60?12:0;   // near an edge the page scrolls by itself
+          cancelAnimationFrame(frame);
+          if(dy){const step=()=>{screen.scrollBy(0,dy);frame=requestAnimationFrame(step);};frame=requestAnimationFrame(step);}
+        };
+        const finish=drop=>{
+          handle.removeEventListener('pointermove',move);handle.removeEventListener('pointerup',up);handle.removeEventListener('pointercancel',cancel);
+          cancelAnimationFrame(frame);ghost.remove();row.classList.remove('v2-watch-dragging');
+          const key=target;mark(null);
+          if(drop&&key!==null)moveToCategory(item,key);
+        };
+        const up=()=>finish(true),cancel=()=>finish(false);
+        handle.addEventListener('pointermove',move);handle.addEventListener('pointerup',up);handle.addEventListener('pointercancel',cancel);
+      });
+      return handle;
+    }
+    const focusToggle=key=>[...listNode.querySelectorAll('[data-watch-toggle]')].find(button=>button.dataset.watchToggle===key)?.focus({preventScroll:true});
+    function groupHead(key,count){
+      const open=!state.collapsed.has(key);
+      const head=h('li',{class:'v2-watch-grouphead'},
+        h('button',{type:'button',class:'v2-watch-groupbtn','aria-expanded':String(open),'data-watch-toggle':key,onclick:()=>{
+          if(state.collapsed.has(key))state.collapsed.delete(key);else state.collapsed.add(key);
+          store.set(WATCH_COLLAPSED_KEY,JSON.stringify([...state.collapsed]));paint();focusToggle(key);
+        }},h('span',{class:'v2-watch-chevron','aria-hidden':'true',text:'▾'}),h('span',{class:'v2-watch-groupname',text:key||t('watchNoCategory')}),h('span',{class:'v2-watch-groupcount',text:String(count)})));
+      head.dataset.watchGroup=key;
+      return head;
+    }
     function paint(){
-      const rows=sortedWatch(state.list,state.sort);
-      listNode.replaceChildren(...rows.map(item=>state.editing===item.id?editRow(item):itemRow(item)));
+      const rows=sortedWatch(state.list,state.sort),draw=item=>state.editing===item.id?editRow(item):itemRow(item);
+      if(state.sort==='category'){
+        // one title for every category (links without one are under "Uncategorized"), each opening and closing its links
+        const groups=new Map();
+        for(const item of rows){const key=item.category||'';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(item);}
+        const nodes=[];
+        for(const [key,items] of groups){nodes.push(groupHead(key,items.length));if(!state.collapsed.has(key))nodes.push(...items.map(draw));}
+        listNode.replaceChildren(...nodes);
+      }else listNode.replaceChildren(...rows.map(draw));
       categoryList.replaceChildren(...[...new Set(state.list.map(item=>item.category).filter(Boolean))].sort(new Intl.Collator(lang()).compare).map(name=>h('option',{value:name})));
       emptyNode.hidden=state.list.length>0;
       const target=state.focusAfter;state.focusAfter=null;
