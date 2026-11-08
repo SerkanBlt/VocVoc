@@ -1,6 +1,6 @@
 {
-  "version": "1.42.23",
-  "fingerprint": "a0dbc1ff663338b64e2a827d9e3c22d39bb51b6c4b855af520ca9749bd7cc7a2",
+  "version": "1.42.24",
+  "fingerprint": "d1c73584ed5ca840ffee064ebc8270ddc35029c8c98cdf031aebea3af8bef2e2",
   "files": [
     "a11y.js",
     "ai-ui.js",
