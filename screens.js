@@ -430,6 +430,7 @@
     close:'<path d="M6 6l12 12"/><path d="M18 6L6 18"/>',
     resize:'<path d="M20 14v6h-6"/><path d="M4 10V4h6"/><path d="M20 20L14 14"/><path d="M4 4l6 6"/>',
     drag:'<circle cx="9" cy="6" r="1.2"/><circle cx="15" cy="6" r="1.2"/><circle cx="9" cy="12" r="1.2"/><circle cx="15" cy="12" r="1.2"/><circle cx="9" cy="18" r="1.2"/><circle cx="15" cy="18" r="1.2"/>',
+    chevron:'<path d="M6 9l6 6 6-6"/>',
     play:'<path d="M7 4.5v15l12.5-7.5z"/>',
     inbox:'<path d="M4 13l2.5-8h11L20 13"/><path d="M4 13v6h16v-6h-5a3 3 0 01-6 0H4z"/>'
   };
@@ -2036,7 +2037,7 @@
         h('button',{type:'button',class:'v2-watch-groupbtn','aria-expanded':String(open),'data-watch-toggle':key,onclick:()=>{
           if(state.collapsed.has(key))state.collapsed.delete(key);else state.collapsed.add(key);
           store.set(WATCH_COLLAPSED_KEY,JSON.stringify([...state.collapsed]));paint();focusToggle(key);
-        }},h('span',{class:'v2-watch-chevron','aria-hidden':'true',text:'▾'}),h('span',{class:'v2-watch-groupname',text:key||t('watchNoCategory')}),h('span',{class:'v2-watch-groupcount',text:String(count)})));
+        }},h('span',{class:'v2-watch-chevron','aria-hidden':'true'},icon('chevron')),h('span',{class:'v2-watch-groupname',text:key||t('watchNoCategory')}),h('span',{class:'v2-watch-groupcount',text:String(count)})));
       head.dataset.watchGroup=key;
       return head;
     }
