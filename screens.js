@@ -1804,26 +1804,35 @@
     const state=watchPage,label=watchLabel(item);
     const frame=h('iframe',{class:'v2-watch-frame',title:label,src:'https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&playsinline=1',allow:'autoplay; encrypted-media; picture-in-picture; fullscreen',allowfullscreen:true,referrerpolicy:'strict-origin-when-cross-origin',sandbox:'allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox'});
     const closeButton=h('button',{type:'button',class:'v2-watch-x','aria-label':t('quizClose'),title:t('quizClose'),onclick:()=>state.closePlayer()},'×');
-    // The panel can be made bigger or smaller: drag the top left corner (or use the arrow keys on it); the size is kept for the next video. The picture stays 16:9.
+    // The panel can be made bigger or smaller: drag the bottom right corner (or use the arrow keys on it); the size is kept for the next video. The picture stays 16:9.
     const card=h('div',{class:'v2-crop-card v2-watch-card v2-watch-playercard'},h('div',{class:'v2-watch-video'},frame),closeButton);
-    const widthLimits=()=>({min:Math.min(280,window.innerWidth-32),max:Math.max(280,Math.min(window.innerWidth-32,(window.innerHeight-32)*16/9))});
+    const widthLimits=()=>({min:Math.min(280,window.innerWidth-32),max:Math.max(280,Math.min(window.innerWidth-32,(window.innerHeight-112)*16/9))});   // room above and below for the buttons
     const setWidth=value=>{const {min,max}=widthLimits();watchPlayerWidth=Math.round(Math.min(max,Math.max(min,value)));card.style.width=watchPlayerWidth+'px';};
-    const grip=h('button',{type:'button',class:'v2-watch-grip','aria-label':t('watchResize'),title:t('watchResize')},'◤');
+    const grip=h('button',{type:'button',class:'v2-watch-grip','aria-label':t('watchResize'),title:t('watchResize')},'◢');
     let drag=null;
     grip.addEventListener('pointerdown',event=>{drag={x:event.clientX,width:card.offsetWidth};grip.setPointerCapture(event.pointerId);event.preventDefault();});
-    grip.addEventListener('pointermove',event=>{if(drag)setWidth(drag.width-(event.clientX-drag.x)*2);});            // the corner is at the top left and the card is centred: both sides move, so the corner follows the pointer
+    grip.addEventListener('pointermove',event=>{if(drag)setWidth(drag.width+(event.clientX-drag.x)*2);});            // the corner is at the bottom right and the card is centred: both sides move, so the corner follows the pointer
     for(const type of ['pointerup','pointercancel'])grip.addEventListener(type,()=>{drag=null;});
     grip.addEventListener('keydown',event=>{
       const step=event.key==='ArrowRight'||event.key==='ArrowUp'?60:event.key==='ArrowLeft'||event.key==='ArrowDown'?-60:0;
       if(!step)return;event.preventDefault();setWidth(card.offsetWidth+step);
     });
     card.append(grip);
+    // The two buttons sit outside the picture and fade away when nothing touches the screen. The frame swallows the pointer, so entering or leaving it, a click in it
+    // (the window loses the focus to the frame) and any movement or key in the dialog bring them back; they go again after a short idle.
+    let idle=0;
+    const wake=()=>{const dialog=state.playing;if(!dialog)return;dialog.classList.remove('v2-watch-idle');clearTimeout(idle);idle=setTimeout(()=>{if(!state.playing||drag)return wake();if(document.activeElement===frame)state.playing.focus({preventScroll:true});state.playing.classList.add('v2-watch-idle');},2500);};
     if(watchPlayerWidth)setWidth(watchPlayerWidth);
     state.playing=h('div',{id:'v2WatchPlayer',class:'v2-crop v2-watch-playerpop',role:'dialog','aria-modal':'true','aria-label':label,lang:lang()},
       h('div',{class:'v2-scrim'}),                                                    // a tap outside does not close the panel: only the x and Escape do
       card);
-    document.body.append(state.playing);screen.inert=true;bar.inert=true;
-    state.closePlayer=()=>{if(!state.playing)return;leaveDialog(state.playing);state.playing=null;opener?.isConnected&&opener.focus({preventScroll:true});};
+    state.playing.tabIndex=-1;
+    for(const type of ['pointermove','pointerdown','touchstart','keydown','focusin'])state.playing.addEventListener(type,wake,{passive:true});
+    for(const type of ['mouseenter','mouseleave'])frame.addEventListener(type,wake);
+    const onBlur=()=>{if(document.activeElement===frame)wake();};
+    window.addEventListener('blur',onBlur);
+    document.body.append(state.playing);screen.inert=true;bar.inert=true;wake();
+    state.closePlayer=()=>{if(!state.playing)return;clearTimeout(idle);window.removeEventListener('blur',onBlur);leaveDialog(state.playing);state.playing=null;opener?.isConnected&&opener.focus({preventScroll:true});};
     writeActivity(VocVocStats.appendWatch(readActivity()));                          // watching in the panel counts like opening the link
     closeButton.focus({preventScroll:true});
   }
