@@ -1971,16 +1971,17 @@
     const itemRow=item=>{
       const label=watchLabel(item);
       const grouped=state.sort==='category';
+      const playButton=h('button',{type:'button',class:'v2-watch-icon','data-watch-open':item.id,'aria-label':t('watchOpen')+': '+label,title:t('watchOpen'),onclick:event=>openWatchPlayer(item,event.currentTarget)},icon('play'));
       const row=h('li',{class:'v2-watch-item'+(item.done?' v2-watch-done':'')},
         grouped?dragHandle(item,()=>row):null,
         h('input',{type:'checkbox',class:'v2-watch-check',checked:item.done,'aria-label':fill(t('watchDoneLabel'),{name:label}),onchange:event=>{item.done=event.target.checked;save();state.focusAfter='check:'+item.id;paint();}}),
         // one line: the title, or the address when there is no title; the hover tip (title attribute) always has the whole of it, title and address
-        h('span',{class:'v2-watch-main',title:item.title?item.title+'\n'+item.url:item.url},h('span',{class:'v2-watch-name',text:label}),item.category&&!grouped?h('span',{class:'v2-watch-cat',text:item.category}):null),
+        h('span',{class:'v2-watch-main',onclick:()=>openWatchPlayer(item,playButton),title:item.title?item.title+'\n'+item.url:item.url},h('span',{class:'v2-watch-name',text:label}),item.category&&!grouped?h('span',{class:'v2-watch-cat',text:item.category}):null),
         h('button',{type:'button',class:'v2-watch-icon','data-watch-edit':item.id,'aria-label':t('watchEdit')+': '+label,title:t('watchEdit'),onclick:()=>{state.editing=item.id;paint();}},icon('edit')),
         h('button',{type:'button',class:'v2-watch-icon','aria-label':t('watchDelete')+': '+label,title:t('watchDelete'),onclick:()=>{
           const index=state.list.indexOf(item);state.list.splice(index,1);save();
           const next=state.list[Math.min(index,state.list.length-1)];state.focusAfter=next?'open:'+next.id:plusButton;paint();}},icon('trash')),
-        h('button',{type:'button',class:'v2-watch-icon','data-watch-open':item.id,'aria-label':t('watchOpen')+': '+label,title:t('watchOpen'),onclick:event=>openWatchPlayer(item,event.currentTarget)},icon('play')));
+        playButton);
       row.dataset.watchGroup=item.category||'';
       return row;
     };

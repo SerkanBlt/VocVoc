@@ -425,7 +425,7 @@ body.v2 .example-item .fr-text .v2-speak,body.v2 .expression-item .fr-text .v2-s
 .v2-watch-editing .v2-field{margin:0 0 8px}
 .v2-watch-editing .v2-actions{margin:8px 0 0}
 .v2-watch-check{flex:none;width:22px;height:22px;margin:0;accent-color:var(--primary);cursor:pointer}
-.v2-watch-main{flex:1;min-width:0;display:block;padding:6px;margin:0;border:0;background:transparent;color:var(--text);font:inherit;text-align:left;border-radius:8px}
+.v2-watch-main{cursor:pointer;flex:1;min-width:0;display:block;padding:6px;margin:0;border:0;background:transparent;color:var(--text);font:inherit;text-align:left;border-radius:8px}
 .v2-watch-name{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .v2-watch-done .v2-watch-name{text-decoration:line-through;color:var(--text-muted);font-weight:500}
 .v2-watch-icon{display:grid;place-items:center;flex:none;width:36px;height:36px;margin:0;padding:0;border:0;border-radius:50%;background:transparent;color:var(--text-muted);cursor:pointer}
