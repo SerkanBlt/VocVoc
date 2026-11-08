@@ -935,9 +935,13 @@
     if(text&&speak(button,text))announceSpoken(button);
   }
   /* ---------- reading on a tap: the example sentences of Flip; and for index.html (the sound button of the tests) the voice that reads a word or a sentence before the next question ---------- */
+  const QUIZ_SOUND_KEY='VOCVOC_QUIZ_SOUND_V1';
   const plainSpeaker=()=>document.createElement('span');                                       // reads without lighting up a speaker button
   window.VocVocSpeech=Object.freeze({
     allowed:()=>VocVocPlan.has('speech'),
+    // the sound button of the tests: one choice for all of them, kept in this browser (off until it is turned on; always off without Premium)
+    soundOn:()=>store.get(QUIZ_SOUND_KEY)==='1'&&VocVocPlan.has('speech'),
+    setSound(on){if(on)store.set(QUIZ_SOUND_KEY,'1');else store.remove(QUIZ_SOUND_KEY);},
     warnLocked:()=>toast(t('speakLocked')),
     stop:()=>stopSpeaking(),
     // reads the text and answers when it has been read (at once when there is no voice, no Premium or nothing to read; after 20 s at the latest)
