@@ -934,7 +934,7 @@
     const text=speakText(button);
     if(text&&speak(button,text))announceSpoken(button);
   }
-  /* ---------- reading on a tap: the words of the tests and of Matching, the example sentences of Flip; and for index.html (Fill in the blank, Write the Word) the voice that reads a sentence before the next question ---------- */
+  /* ---------- reading on a tap: the example sentences of Flip; and for index.html (the sound button of the tests) the voice that reads a word or a sentence before the next question ---------- */
   const plainSpeaker=()=>document.createElement('span');                                       // reads without lighting up a speaker button
   window.VocVocSpeech=Object.freeze({
     allowed:()=>VocVocPlan.has('speech'),
@@ -943,22 +943,18 @@
     // reads the text and answers when it has been read (at once when there is no voice, no Premium or nothing to read; after 20 s at the latest)
     say(text){return new Promise(resolve=>{
       let over=false;const end=()=>{if(!over){over=true;resolve();}};
-      if(!VocVocPlan.has('speech')||!String(text||'').trim()||!speak(plainSpeaker(),String(text).trim(),end)){end();return;}
-      setTimeout(end,20000);
+      // an engine may report the end early or for a reading that was only replaced: it is over when nothing is being spoken any more
+      const finish=()=>{const synth=window.speechSynthesis;if(!over&&synth&&synth.speaking)setTimeout(finish,120);else end();};
+      if(!VocVocPlan.has('speech')||!String(text||'').trim()||!speak(plainSpeaker(),String(text).trim(),finish)){end();return;}
+      setTimeout(end,30000);
     });}
   });
   function readTapped(event){
-    const target=event.target.closest?.('.quiz-option,.match-item.match-word,.flip-examples p');
+    const target=event.target.closest?.('.flip-examples p');                                  // the words of the tests are read by index.html when the sound button is on
     if(!target)return;
-    if(target.matches('.flip-examples p')){
-      if(!VocVocPlan.has('speech')){toast(t('speakLocked'));return;}
-      const text=target.textContent.trim(),word=flipWord();
-      if(text&&speak(plainSpeaker(),text)&&word)window.dispatchEvent(new CustomEvent('vocvoc-spoken',{detail:{word,kind:'sentence'}}));
-      return;
-    }
-    if(!VocVocPlan.has('speech'))return;                                                      // a tap on an answer is not the place to say Premium; no points for it either
-    const text=(target.querySelector('.match-text')||target).textContent.trim();
-    if(text)speak(plainSpeaker(),text);
+    if(!VocVocPlan.has('speech')){toast(t('speakLocked'));return;}
+    const text=target.textContent.trim(),word=flipWord();
+    if(text&&speak(plainSpeaker(),text)&&word)window.dispatchEvent(new CustomEvent('vocvoc-spoken',{detail:{word,kind:'sentence'}}));
   }
   document.addEventListener('click',readTapped,true);
   document.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches?.('.flip-examples p')){event.preventDefault();readTapped(event);}},true);

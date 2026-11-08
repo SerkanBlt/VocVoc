@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.42.18">
+  <meta name="vocvoc-shell" content="1.42.19">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -4848,7 +4848,8 @@ function toggleWriteHint(){
   if(q.hint){document.querySelector(".write-card .write-row")?.insertAdjacentHTML("afterend",renderWriteTiles(q));syncWriteTiles();}
   document.querySelector(".write-hint")?.setAttribute("aria-pressed",String(q.hint));
 }
-// The sound button under a Fill in the blank or Write the Word question: off (crossed out) when the test opens; on, the sentence with its answer is read before the next question.
+// The sound button under every question: off (crossed out) when a test opens, and nothing is read. On: the word that was tapped is read (Test, Recall, Matching), or the sentence with its
+// answer (Fill in the blank, Write the Word). The next question is shown only when the reading is over (quizSession.lastRead is the reading the next question waits for).
 function quizFullSentence(q){return String(q.cloze?.text||"").replace("_____",q.cloze?.found||q.word);}
 function renderQuizSound(){
   const on=!!quizSession.sound;
@@ -4930,7 +4931,7 @@ function renderMatchRound(area){
       <div class="match-col" role="group" aria-label="${esc(t("matchMeanings"))}">${round.right.map((index,row)=>tile("meaning",index,row)).join("")}</div>
     </div>
     ${renderQuizWrongBadges()}
-  </div>`;
+  </div>${renderQuizSound()}`;
 }
 // Draws the round again and keeps the keyboard where it was.
 function redrawMatch(){
@@ -4946,6 +4947,7 @@ function pickMatch(side,index){
   if(!quizSession||quizSession.mode!=="match"||quizSession.answered)return;
   const round=quizSession.questions[quizSession.index];
   if(round.done.includes(index))return;
+  if(side==="word"&&quizSession.sound&&window.VocVocSpeech)quizSession.lastRead=window.VocVocSpeech.say(round.pairs[index].word);
   const first=round.picked;
   if(!first||first.side===side){
     round.picked=first&&first.side===side&&first.index===index?null:{side,index};
@@ -4962,7 +4964,7 @@ function pickMatch(side,index){
       if(!round.mistakes.length)quizSession.score++;
       const session=quizSession;
       redrawMatch();
-      setTimeout(()=>{if(quizSession!==session)return;quizSession.index++;quizSession.answered=false;renderQuizQuestion();},700);
+      Promise.all([new Promise(resolve=>setTimeout(resolve,700)),quizSession.lastRead||Promise.resolve()]).then(()=>{if(quizSession!==session)return;quizSession.index++;quizSession.answered=false;renderQuizQuestion();});
       return;
     }
     redrawMatch();return;
@@ -5064,7 +5066,7 @@ function renderQuizQuestionContent(){
     </div>
     <div class="quiz-options">${options.map(x=>`<button class="quiz-option" type="button"${langAttr()} data-quiz-answer="${encodeDomText(x)}">${esc(x)}</button>`).join("")}</div>
     ${renderQuizWrongBadges()}
-  </div>${cloze?renderQuizSound():""}`;
+  </div>${renderQuizSound()}`;
 }
 function answerQuiz(choice){
   if(!quizSession||quizSession.answered)return;
@@ -5087,8 +5089,8 @@ function answerQuiz(choice){
     else if(normalizeHistoryKey(btn.textContent)===normalizeHistoryKey(choice)&&!correct)btn.classList.add("wrong");
   });
   const answeredSession=quizSession;
-  // with the sound on (Fill in the blank) the sentence is read first; the next question comes when it has been read
-  const reading=quizSession.mode==="cloze"&&quizSession.sound&&q.cloze&&window.VocVocSpeech?window.VocVocSpeech.say(quizFullSentence(q)):Promise.resolve();
+  // with the sound on the tapped word (the sentence in Fill in the blank) is read; the next question comes when it has been read
+  const reading=quizSession.sound&&window.VocVocSpeech?window.VocVocSpeech.say(quizSession.mode==="cloze"&&q.cloze?quizFullSentence(q):choice):Promise.resolve();
   Promise.all([new Promise(resolve=>setTimeout(resolve,650)),reading]).then(()=>{
     if(quizSession!==answeredSession)return;
     quizSession.index++;
