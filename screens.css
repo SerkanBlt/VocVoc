@@ -385,10 +385,9 @@ body.v2 .example-item .fr-text .v2-speak,body.v2 .expression-item .fr-text .v2-s
 .v2-watch-bar .v2-back{margin:0}
 .v2-watch-main:focus-visible,.v2-watch-icon:focus-visible,.v2-watch-check:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 .v2-watch-addcard{width:min(400px,100%)}
-.v2-watch-search{display:block;width:100%;box-sizing:border-box;margin:0 0 10px}
-.v2-watch-sortrow{display:flex;align-items:center;gap:10px;margin:0 0 10px}
-.v2-watch-sortrow label{flex:none;font-size:.9rem;color:var(--text-muted)}
-.v2-watch-sort{flex:1;min-width:0}
+/* the toolbar of the Words page (search box and dropdown, one row), with the dropdown's menu as wide as its longest choice */
+.v2-watch-toolbar{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:var(--ui-gap,10px);align-items:center;margin:0 0 12px}
+.v2-watch-toolbar .ui-dropdown-menu{left:auto;right:0;width:max-content;min-width:100%;max-width:min(80vw,300px)}
 .v2-watch-grouphead{list-style:none;margin:6px 0 0}
 .v2-watch-grouphead:first-child{margin-top:0}
 .v2-watch-groupbtn{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;margin:0;padding:6px 8px;border:0;border-radius:10px;background:transparent;color:var(--text);font:inherit;font-size:1.05rem;line-height:1.2;font-weight:700;text-align:left;cursor:pointer}

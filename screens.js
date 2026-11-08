@@ -2066,14 +2066,30 @@
     }
     state.paint=paint;
     // the way the list is ordered is kept in this browser
-    const sortSelect=h('select',{id:'v2WatchSort',class:'ui-input v2-watch-sort',onchange:event=>{state.sort=WATCH_SORTS.includes(event.target.value)?event.target.value:'dateAsc';store.set(WATCH_SORT_KEY,state.sort);paint();}},
-      WATCH_SORTS.map(mode=>h('option',{value:mode},t({dateAsc:'watchSortDateAsc',dateDesc:'watchSortDateDesc',az:'watchSortAz',za:'watchSortZa',category:'watchSortCategory'}[mode]))));
-    sortSelect.value=state.sort;
-    const searchInput=h('input',{id:'v2WatchSearch',class:'ui-input v2-watch-search',type:'search',maxlength:'100',autocomplete:'off',autocapitalize:'off',spellcheck:'false',placeholder:t('watchSearch'),'aria-label':t('watchSearch'),oninput:event=>{state.query=event.target.value;paint();}});
-    const sortRow=h('div',{class:'v2-watch-sortrow'},h('label',{for:'v2WatchSort',text:t('watchSort')}),sortSelect);
+    // The search box and the way the list is ordered look and work like the ones of the Words page (the same input and the same dropdown of the app): one toolbar, a search box and a dropdown.
+    const SORT_TEXT={dateAsc:'watchSortDateAsc',dateDesc:'watchSortDateDesc',az:'watchSortAz',za:'watchSortZa',category:'watchSortCategory'};
+    const sortLabel=h('span',{class:'ui-dropdown-label'});
+    const sortTrigger=h('button',{type:'button',class:'ui-dropdown-trigger','aria-expanded':'false',onclick:()=>window.toggleUiDropdown('v2WatchSortDropdown')},sortLabel,h('span',{class:'ui-chevron','aria-hidden':'true'}));
+    const sortOptions=WATCH_SORTS.map(mode=>h('button',{type:'button',class:'ui-dropdown-option','data-value':mode,onclick:()=>chooseSort(mode)},t(SORT_TEXT[mode])));
+    const sortDropdown=h('div',{id:'v2WatchSortDropdown',class:'ui-dropdown'},sortTrigger,h('div',{class:'ui-dropdown-menu'},sortOptions));
+    function showSort(){
+      sortLabel.textContent=t(SORT_TEXT[state.sort]);
+      sortTrigger.setAttribute('aria-label',t('watchSort')+': '+sortLabel.textContent);
+      for(const option of sortOptions){const on=option.dataset.value===state.sort;option.classList.toggle('selected',on);option.setAttribute('aria-current',String(on));}
+    }
+    function chooseSort(mode){
+      state.sort=WATCH_SORTS.includes(mode)?mode:'dateAsc';store.set(WATCH_SORT_KEY,state.sort);      // kept in this browser
+      showSort();window.closeUiDropdowns();paint();sortTrigger.focus({preventScroll:true});
+    }
+    showSort();
+    const searchInput=h('input',{id:'v2WatchSearch',class:'ui-input',type:'search',maxlength:'100',autocomplete:'off',autocapitalize:'off',spellcheck:'false',placeholder:t('watchSearch'),'aria-label':t('watchSearch'),oninput:event=>{state.query=event.target.value;paint();}});
+    let freshFocus=false;                                                                         // like the Words page: the box selects what it holds when it gets the focus
+    searchInput.addEventListener('focus',()=>{freshFocus=true;searchInput.select();});
+    searchInput.addEventListener('mouseup',event=>{if(freshFocus)event.preventDefault();freshFocus=false;});
+    const toolbar=h('div',{class:'v2-watch-toolbar'},searchInput,sortDropdown);
     paint();
     return page(h('div',{class:'v2-watch-bar'},h('button',{type:'button',class:'v2-back',onclick:()=>goBack('study')},'‹ '+t('back')),plusButton),
-      heading(t('watchTitle')),searchInput,sortRow,emptyNode,listNode,categoryList);
+      heading(t('watchTitle')),toolbar,emptyNode,listNode,categoryList);
   }
 
   /* ---------- simulated sign-in ---------- */
