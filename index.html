@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.42.27">
+  <meta name="vocvoc-shell" content="1.42.29">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -924,6 +924,18 @@ input.ui-input:focus{
 .bulk-overlay .tag-add-row{display:flex;gap:var(--ui-gap,10px);align-items:stretch}
 .bulk-overlay .bulk-tag-input{flex:1;min-width:0}
 .bulk-overlay .tag-existing{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+
+/* ---------- HISTORY: GROUPS (the same look as the categories of the Watch list) ---------- */
+.history-group-head{flex:0 0 100%;width:100%;margin:6px 0 0}
+.history-group-head:first-child{margin-top:0}
+.history-group-btn{display:flex;align-items:center;gap:10px;box-sizing:border-box;width:100%;min-height:52px;margin:0;padding:6px 8px;border:0;border-radius:10px;background:transparent;color:var(--text);font:inherit;font-size:1.05rem;line-height:1.2;font-weight:700;text-align:left;cursor:pointer}
+.history-group-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.history-group-chevron{display:flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;transition:transform .2s}
+.history-group-chevron svg{display:block;width:30px;height:30px}
+.history-group-btn[aria-expanded="false"] .history-group-chevron{transform:rotate(-90deg)}
+.history-group-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2}
+.history-group-count{flex:none;font-weight:500;font-size:.85rem;color:var(--text-muted)}
+@media(prefers-reduced-motion:reduce){.history-group-chevron{transition:none}}
 
 /* ---------- PILL FAMILY ---------- */
 #historyArea{
@@ -2319,6 +2331,8 @@ body{
         <button type="button" class="ui-dropdown-option selected" data-value="none" onclick="selectUiDropdown('historySortDropdown','none','No sorting')">No sorting</button>
         <button type="button" class="ui-dropdown-option" data-value="az" onclick="selectUiDropdown('historySortDropdown','az','A–Z')">A–Z</button>
         <button type="button" class="ui-dropdown-option" data-value="za" onclick="selectUiDropdown('historySortDropdown','za','Z–A')">Z–A</button>
+        <button type="button" class="ui-dropdown-option" data-value="tag" onclick="selectUiDropdown('historySortDropdown','tag','Tag')">Tag</button>
+        <button type="button" class="ui-dropdown-option" data-value="group" onclick="selectUiDropdown('historySortDropdown','group','Group')">Group</button>
       </div>
       <input type="hidden" id="historySort" value="none">
     </div>
@@ -2596,7 +2610,7 @@ const I18N={
     archiveEmpty:"Archive is empty.",archiveNoMatch:"No archived words match the filters.",selected:"selected",words:"words",
     testDone:"Test complete",correct:"correct",wrong:"wrong",bravo:"Bravo!",testNeed:"A 10-question Test needs at least 10 active, non-memorized words with details.",
     recallNeed:"Recall needs at least 10 active memorized words.",
-    clozeNeed:"Fill in the blank needs at least 10 words that have an example sentence.",writeNeed:"Write the word needs at least 10 words that have an example sentence.",writeLabel:"Type the missing word",writePlaceholder:"Type the word",hsCount:"{n} selected",hsActions:"Actions",hsExit:"Finish selecting",hsArchive:"Send to the Archive",hsTag:"Tag",hsMemorize:"Add to Memorized",hsForget:"Remove from Memorized",hsTagTitle:"Tag the selected words",hsDoneArchive:"{n} words sent to the archive",hsDoneTag:"Tag “{tag}” added to {n} words",hsDoneMemorize:"{n} words added to Memorized",hsDoneForget:"{n} words removed from Memorized",hsTagFull:"{n} words already have the most tags and were skipped.",quizSound:"Read the sentence aloud",writeSpace:"Space",writeHint:"Hint: show the letters",writeErase:"Delete the last letter",writeCheck:"Check",writeNext:"Next word",writeAnswerIs:"Correct spelling:",archivedWord:"This word is archived. Reactivate it from Settings → Show archive.",
+    clozeNeed:"Fill in the blank needs at least 10 words that have an example sentence.",writeNeed:"Write the word needs at least 10 words that have an example sentence.",writeLabel:"Type the missing word",writePlaceholder:"Type the word",sortTag:"Tag",sortGroup:"Group",hsNoTag:"No tag",hsCount:"{n} selected",hsActions:"Actions",hsExit:"Finish selecting",hsArchive:"Send to the Archive",hsTag:"Tag",hsMemorize:"Add to Memorized",hsForget:"Remove from Memorized",hsTagTitle:"Tag the selected words",hsDoneArchive:"{n} words sent to the archive",hsDoneTag:"Tag “{tag}” added to {n} words",hsDoneMemorize:"{n} words added to Memorized",hsDoneForget:"{n} words removed from Memorized",hsTagFull:"{n} words already have the most tags and were skipped.",quizSound:"Read the sentence aloud",writeSpace:"Space",writeHint:"Hint: show the letters",writeErase:"Delete the last letter",writeCheck:"Check",writeNext:"Next word",writeAnswerIs:"Correct spelling:",archivedWord:"This word is archived. Reactivate it from Settings → Show archive.",
     dailyLimitReached:"Daily limit reached. Change it in Settings.",dailyLimitPremium:"A daily goal above 20 words comes with Premium.",
     levelA1:"Beginner",levelA2:"Elementary",levelB1:"Intermediate",levelB2:"Upper intermediate",levelC1:"Advanced",levelC2:"Proficient",system:"System",light:"Light",dark:"Dark",newTest:"New 10-question test",wordLabel:"Word",chooseWord:"Choose the correct word",wrongSelected:"Incorrect answers",unlimited:"Unlimited",settingsAction:"Settings",randomAction:"Random word",openDetails:"Open details",memorizedOpenDetails:"Memorized — open details",rememberCue:"Memorized",forgetCue:"Remove memorized",archiveCue:"↓ Archive",archiveToast:"Archived",undo:"Undo",wordFallback:"Word",detailsLoadError:"Word details could not be loaded.",alertClose:"Close alert",optionShow:"Show options",close:"Close",searchAction:"Search",testAction:"Test active words",recallAction:"Test memorized words",limitPlaceholder:"Enter a limit",statusFilter:"Status filter",sortOrder:"Sort order",swipeActions:"Swipe actions",fontSmall:"Small",fontNormal:"Normal",fontLarge:"Large",fontXLarge:"Extra large",showMore:"Show more ({count})",groupToday:"Today",groupYesterday:"Yesterday",groupEarlier:"Earlier",
     addNewAction:"Add new words",wordsAdded:"{n} words added.",freeWordLimit:"The free plan includes {n} words from {band}. You can continue with another level or go Premium.",wordbaseNone:"There is no word database for this language pair yet.",wordbaseUnavailable:"The word database cannot be reached right now. Check your connection and try again.",notInWordbase:"“{word}” is not in the word database.",inYourList:"This word is already in your list.",levelUpTitle:"Congratulations!",levelUpAsk:"Congratulations! You have added every word of this level to your list. Do you want to move to the next level?",levelUpAll:"Congratulations! You have completed every level and taken all the words I have.",levelUpYes:"Yes, move up",levelUpNo:"Not now",levelUpOk:"OK",levelChanged:"Level set to {level}.",soonTag:"Soon",levelEmpty:"Nothing is ready for this level yet. You can choose another level in Settings.",
@@ -2617,7 +2631,7 @@ const I18N={
     archiveEmpty:"Arşiv boş.",archiveNoMatch:"Filtreye uygun arşiv kelimesi yok.",selected:"seçili",words:"kelime",
     testDone:"Test tamamlandı",correct:"doğru",wrong:"yanlış",bravo:"Bravo!",testNeed:"10 soruluk Test için aktif, Ezberimde olmayan ve detay verisi bulunan en az 10 kelime gerekli.",
     recallNeed:"Hatırla testi için Ezberimde en az 10 aktif kelime gerekli.",
-    clozeNeed:"Boşluk Doldurma için cümlesi olan en az 10 kelime gerekli.",writeNeed:"Kelimeyi Yaz için cümlesi olan en az 10 kelime gerekli.",writeLabel:"Boşluktaki kelimeyi yaz",writePlaceholder:"Kelimeyi yaz",hsCount:"{n} seçili",hsActions:"İşlemler",hsExit:"Seçimi bitir",hsArchive:"Arşive Gönder",hsTag:"Etiketle",hsMemorize:"Ezberimde Listesine Al",hsForget:"Ezberimde Listesinden Çıkar",hsTagTitle:"Seçilen kelimeleri etiketle",hsDoneArchive:"{n} kelime arşive gönderildi",hsDoneTag:"{n} kelimeye “{tag}” etiketi eklendi",hsDoneMemorize:"{n} kelime ezberimde listesine alındı",hsDoneForget:"{n} kelime ezberimde listesinden çıkarıldı",hsTagFull:"{n} kelimede etiket sınırı dolu, eklenmedi.",quizSound:"Cümleyi sesli oku",writeSpace:"Boşluk",writeHint:"İpucu: harfleri göster",writeErase:"Son harfi sil",writeCheck:"Kontrol et",writeNext:"Sonraki kelime",writeAnswerIs:"Doğrusu:",archivedWord:"Bu kelime arşivde. Ayarlar → Arşivi göster bölümünden tekrar aktif hale getirebilirsiniz.",
+    clozeNeed:"Boşluk Doldurma için cümlesi olan en az 10 kelime gerekli.",writeNeed:"Kelimeyi Yaz için cümlesi olan en az 10 kelime gerekli.",writeLabel:"Boşluktaki kelimeyi yaz",writePlaceholder:"Kelimeyi yaz",sortTag:"Etiket",sortGroup:"Grup",hsNoTag:"Etiketsiz",hsCount:"{n} seçili",hsActions:"İşlemler",hsExit:"Seçimi bitir",hsArchive:"Arşive Gönder",hsTag:"Etiketle",hsMemorize:"Ezberimde Listesine Al",hsForget:"Ezberimde Listesinden Çıkar",hsTagTitle:"Seçilen kelimeleri etiketle",hsDoneArchive:"{n} kelime arşive gönderildi",hsDoneTag:"{n} kelimeye “{tag}” etiketi eklendi",hsDoneMemorize:"{n} kelime ezberimde listesine alındı",hsDoneForget:"{n} kelime ezberimde listesinden çıkarıldı",hsTagFull:"{n} kelimede etiket sınırı dolu, eklenmedi.",quizSound:"Cümleyi sesli oku",writeSpace:"Boşluk",writeHint:"İpucu: harfleri göster",writeErase:"Son harfi sil",writeCheck:"Kontrol et",writeNext:"Sonraki kelime",writeAnswerIs:"Doğrusu:",archivedWord:"Bu kelime arşivde. Ayarlar → Arşivi göster bölümünden tekrar aktif hale getirebilirsiniz.",
     dailyLimitReached:"Günlük limite ulaşıldı. Ayarlardaki limiti değiştirin.",dailyLimitPremium:"20 kelimenin üzerindeki günlük hedef Premium ile açılır.",
     levelA1:"Başlangıç",levelA2:"Temel",levelB1:"Orta",levelB2:"Orta üstü",levelC1:"İleri",levelC2:"Uzman",system:"Sistem",light:"Açık",dark:"Koyu",newTest:"Yeni 10 Soruluk Test",wordLabel:"Kelime",chooseWord:"Doğru kelimeyi seç",wrongSelected:"Yanlış işaretlediklerin",unlimited:"Sınırsız",settingsAction:"Ayarlar",randomAction:"Rastgele kelime",openDetails:"Detayı aç",memorizedOpenDetails:"Ezberimde — detayı aç",rememberCue:"Ezberimde",forgetCue:"Ezberimden Çıkar",archiveCue:"↓ Arşivle",archiveToast:"Arşivlendi",undo:"Geri al",wordFallback:"Kelime",detailsLoadError:"Kelime detayı alınamadı.",alertClose:"Uyarıyı kapat",optionShow:"Seçenekleri göster",close:"Kapat",searchAction:"Ara",testAction:"Aktif kelimelerden test",recallAction:"Ezberimdeki kelimelerden test",limitPlaceholder:"Limit girin",statusFilter:"Durum filtresi",sortOrder:"Sıralama",swipeActions:"Kaydırma eylemleri",fontSmall:"Küçük",fontNormal:"Normal",fontLarge:"Büyük",fontXLarge:"Çok büyük",showMore:"Daha fazla göster ({count})",groupToday:"Bugün",groupYesterday:"Dün",groupEarlier:"Öncekiler",
     addNewAction:"Yeni kelime ekle",wordsAdded:"{n} kelime eklendi.",freeWordLimit:"Ücretsiz planda {band} seviyesinden {n} kelime alabilirsin. Başka bir seviyeden devam edebilir ya da Premium’a geçebilirsin.",wordbaseNone:"Bu dil çifti için kelime veritabanı henüz yok.",wordbaseUnavailable:"Kelime veritabanına şu an ulaşılamıyor. İnternet bağlantını kontrol edip tekrar dene.",notInWordbase:"“{word}” kelime veritabanında yok.",inYourList:"Bu kelime zaten listende.",levelUpTitle:"Tebrikler!",levelUpAsk:"Tebrikler! Bu seviyedeki tüm kelimeleri listene aldın, yeni seviyeye geçmek ister misin?",levelUpAll:"Tebrikler! Tüm seviyeleri tamamladın, bendeki kelimelerin hepsini çektin.",levelUpYes:"Evet, geç",levelUpNo:"Şimdi değil",levelUpOk:"Tamam",levelChanged:"Seviye {level} olarak ayarlandı.",soonTag:"Yakında",levelEmpty:"Bu seviyenin kelimeleri henüz hazırlanıyor. Ayarlar’dan başka bir seviye seçebilirsin.",
@@ -2638,7 +2652,7 @@ const I18N={
     archiveEmpty:"L’archive est vide.",archiveNoMatch:"Aucun mot archivé ne correspond aux filtres.",selected:"sélectionné",words:"mots",
     testDone:"Test terminé",correct:"correct",wrong:"incorrect",bravo:"Bravo !",testNeed:"Le test de 10 questions nécessite au moins 10 mots actifs non mémorisés avec leurs détails.",
     recallNeed:"La révision nécessite au moins 10 mots mémorisés actifs.",
-    clozeNeed:"Compléter la phrase nécessite au moins 10 mots avec une phrase d'exemple.",writeNeed:"Écrire le mot demande au moins 10 mots avec une phrase d'exemple.",writeLabel:"Saisissez le mot manquant",writePlaceholder:"Saisissez le mot",hsCount:"{n} sélectionnés",hsActions:"Opérations",hsExit:"Terminer la sélection",hsArchive:"Envoyer aux archives",hsTag:"Étiqueter",hsMemorize:"Ajouter aux mémorisés",hsForget:"Retirer des mémorisés",hsTagTitle:"Étiqueter les mots sélectionnés",hsDoneArchive:"{n} mots envoyés aux archives",hsDoneTag:"Étiquette « {tag} » ajoutée à {n} mots",hsDoneMemorize:"{n} mots ajoutés aux mémorisés",hsDoneForget:"{n} mots retirés des mémorisés",hsTagFull:"{n} mots ont déjà le maximum d’étiquettes et ont été ignorés.",quizSound:"Lire la phrase à voix haute",writeSpace:"Espace",writeHint:"Indice : afficher les lettres",writeErase:"Effacer la dernière lettre",writeCheck:"Vérifier",writeNext:"Mot suivant",writeAnswerIs:"Orthographe correcte :",archivedWord:"Ce mot est archivé. Réactivez-le via Réglages → Afficher l’archive.",
+    clozeNeed:"Compléter la phrase nécessite au moins 10 mots avec une phrase d'exemple.",writeNeed:"Écrire le mot demande au moins 10 mots avec une phrase d'exemple.",writeLabel:"Saisissez le mot manquant",writePlaceholder:"Saisissez le mot",sortTag:"Étiquette",sortGroup:"Groupe",hsNoTag:"Sans étiquette",hsCount:"{n} sélectionnés",hsActions:"Opérations",hsExit:"Terminer la sélection",hsArchive:"Envoyer aux archives",hsTag:"Étiqueter",hsMemorize:"Ajouter aux mémorisés",hsForget:"Retirer des mémorisés",hsTagTitle:"Étiqueter les mots sélectionnés",hsDoneArchive:"{n} mots envoyés aux archives",hsDoneTag:"Étiquette « {tag} » ajoutée à {n} mots",hsDoneMemorize:"{n} mots ajoutés aux mémorisés",hsDoneForget:"{n} mots retirés des mémorisés",hsTagFull:"{n} mots ont déjà le maximum d’étiquettes et ont été ignorés.",quizSound:"Lire la phrase à voix haute",writeSpace:"Espace",writeHint:"Indice : afficher les lettres",writeErase:"Effacer la dernière lettre",writeCheck:"Vérifier",writeNext:"Mot suivant",writeAnswerIs:"Orthographe correcte :",archivedWord:"Ce mot est archivé. Réactivez-le via Réglages → Afficher l’archive.",
     dailyLimitReached:"Limite quotidienne atteinte. Modifiez-la dans Réglages.",dailyLimitPremium:"Un objectif du jour au-delà de 20 mots est réservé à Premium.",
     levelA1:"Débutant",levelA2:"Élémentaire",levelB1:"Intermédiaire",levelB2:"Intermédiaire supérieur",levelC1:"Avancé",levelC2:"Maîtrise",system:"Système",light:"Clair",dark:"Sombre",newTest:"Nouveau test de 10 questions",wordLabel:"Mot",chooseWord:"Choisissez le bon mot",wrongSelected:"Réponses incorrectes",unlimited:"Illimité",settingsAction:"Réglages",randomAction:"Mot aléatoire",openDetails:"Ouvrir les détails",memorizedOpenDetails:"Mémorisé — ouvrir les détails",rememberCue:"Mémorisé",forgetCue:"Retirer des mémorisés",archiveCue:"↓ Archiver",archiveToast:"Archivé",undo:"Annuler",wordFallback:"Mot",detailsLoadError:"Impossible de charger les détails du mot.",alertClose:"Fermer l’alerte",optionShow:"Afficher les options",close:"Fermer",searchAction:"Rechercher",testAction:"Tester les mots actifs",recallAction:"Tester les mots mémorisés",limitPlaceholder:"Saisir une limite",statusFilter:"Filtre de statut",sortOrder:"Ordre de tri",swipeActions:"Actions par glissement",fontSmall:"Petit",fontNormal:"Normal",fontLarge:"Grand",fontXLarge:"Très grand",showMore:"Afficher plus ({count})",groupToday:"Aujourd’hui",groupYesterday:"Hier",groupEarlier:"Plus tôt",
     addNewAction:"Ajouter de nouveaux mots",wordsAdded:"{n} mots ajoutés.",freeWordLimit:"Le plan gratuit inclut {n} mots du niveau {band}. Vous pouvez continuer avec un autre niveau ou passer à Premium.",wordbaseNone:"Il n’y a pas encore de base de mots pour cette paire de langues.",wordbaseUnavailable:"La base de mots est inaccessible pour le moment. Vérifiez votre connexion et réessayez.",notInWordbase:"« {word} » n’est pas dans la base de mots.",inYourList:"Ce mot est déjà dans votre liste.",levelUpTitle:"Félicitations !",levelUpAsk:"Félicitations ! Vous avez ajouté tous les mots de ce niveau à votre liste. Voulez-vous passer au niveau suivant ?",levelUpAll:"Félicitations ! Vous avez terminé tous les niveaux et récupéré tous les mots que j’ai.",levelUpYes:"Oui, passer",levelUpNo:"Pas maintenant",levelUpOk:"OK",levelChanged:"Niveau réglé sur {level}.",soonTag:"Bientôt",levelEmpty:"Les mots de ce niveau sont encore en préparation. Vous pouvez choisir un autre niveau dans les Réglages.",
@@ -2659,7 +2673,7 @@ const I18N={
     archiveEmpty:"Das Archiv ist leer.",archiveNoMatch:"Keine archivierten Wörter entsprechen den Filtern.",selected:"ausgewählt",words:"Wörter",
     testDone:"Test abgeschlossen",correct:"richtig",wrong:"falsch",bravo:"Bravo!",testNeed:"Für den 10-Fragen-Test werden mindestens 10 aktive, nicht gelernte Wörter mit Details benötigt.",
     recallNeed:"Für Wiederholen werden mindestens 10 aktive gelernte Wörter benötigt.",
-    clozeNeed:"Lückentext braucht mindestens 10 Wörter mit einem Beispielsatz.",writeNeed:"Wort schreiben braucht mindestens 10 Wörter mit einem Beispielsatz.",writeLabel:"Geben Sie das fehlende Wort ein",writePlaceholder:"Wort eingeben",hsCount:"{n} ausgewählt",hsActions:"Aktionen",hsExit:"Auswahl beenden",hsArchive:"Ins Archiv senden",hsTag:"Taggen",hsMemorize:"Zu „Gelernt“ hinzufügen",hsForget:"Aus „Gelernt“ entfernen",hsTagTitle:"Ausgewählte Wörter taggen",hsDoneArchive:"{n} Wörter ins Archiv gesendet",hsDoneTag:"Tag „{tag}“ zu {n} Wörtern hinzugefügt",hsDoneMemorize:"{n} Wörter zu „Gelernt“ hinzugefügt",hsDoneForget:"{n} Wörter aus „Gelernt“ entfernt",hsTagFull:"{n} Wörter haben schon die höchste Tag-Anzahl und wurden übersprungen.",quizSound:"Satz vorlesen",writeSpace:"Leerzeichen",writeHint:"Tipp: Buchstaben zeigen",writeErase:"Letzten Buchstaben löschen",writeCheck:"Prüfen",writeNext:"Nächstes Wort",writeAnswerIs:"Richtig geschrieben:",archivedWord:"Dieses Wort ist archiviert. Reaktivieren Sie es unter Einstellungen → Archiv anzeigen.",
+    clozeNeed:"Lückentext braucht mindestens 10 Wörter mit einem Beispielsatz.",writeNeed:"Wort schreiben braucht mindestens 10 Wörter mit einem Beispielsatz.",writeLabel:"Geben Sie das fehlende Wort ein",writePlaceholder:"Wort eingeben",sortTag:"Schlagwort",sortGroup:"Gruppe",hsNoTag:"Ohne Schlagwort",hsCount:"{n} ausgewählt",hsActions:"Aktionen",hsExit:"Auswahl beenden",hsArchive:"Ins Archiv senden",hsTag:"Taggen",hsMemorize:"Zu „Gelernt“ hinzufügen",hsForget:"Aus „Gelernt“ entfernen",hsTagTitle:"Ausgewählte Wörter taggen",hsDoneArchive:"{n} Wörter ins Archiv gesendet",hsDoneTag:"Tag „{tag}“ zu {n} Wörtern hinzugefügt",hsDoneMemorize:"{n} Wörter zu „Gelernt“ hinzugefügt",hsDoneForget:"{n} Wörter aus „Gelernt“ entfernt",hsTagFull:"{n} Wörter haben schon die höchste Tag-Anzahl und wurden übersprungen.",quizSound:"Satz vorlesen",writeSpace:"Leerzeichen",writeHint:"Tipp: Buchstaben zeigen",writeErase:"Letzten Buchstaben löschen",writeCheck:"Prüfen",writeNext:"Nächstes Wort",writeAnswerIs:"Richtig geschrieben:",archivedWord:"Dieses Wort ist archiviert. Reaktivieren Sie es unter Einstellungen → Archiv anzeigen.",
     dailyLimitReached:"Tageslimit erreicht. Ändern Sie es in den Einstellungen.",dailyLimitPremium:"Ein Tagesziel über 20 Wörter gibt es mit Premium.",
     levelA1:"Anfänger",levelA2:"Grundstufe",levelB1:"Mittelstufe",levelB2:"Gehobene Mittelstufe",levelC1:"Fortgeschritten",levelC2:"Experte",system:"System",light:"Hell",dark:"Dunkel",newTest:"Neuer Test mit 10 Fragen",wordLabel:"Wort",chooseWord:"Wählen Sie das richtige Wort",wrongSelected:"Falsche Antworten",
     unlimited:"Unbegrenzt",settingsAction:"Einstellungen",randomAction:"Zufälliges Wort",openDetails:"Details öffnen",memorizedOpenDetails:"Gelernt — Details öffnen",rememberCue:"Gelernt",forgetCue:"Aus Gelernt entfernen",archiveCue:"↓ Archivieren",archiveToast:"Archiviert",undo:"Rückgängig",wordFallback:"Wort",detailsLoadError:"Wortdetails konnten nicht geladen werden.",alertClose:"Warnung schließen",optionShow:"Optionen anzeigen",close:"Schließen",searchAction:"Suchen",testAction:"Aktive Wörter testen",recallAction:"Gelernte Wörter testen",limitPlaceholder:"Limit eingeben",statusFilter:"Statusfilter",sortOrder:"Sortierung",swipeActions:"Wischaktionen",fontSmall:"Klein",fontNormal:"Normal",fontLarge:"Groß",fontXLarge:"Sehr groß",showMore:"Mehr anzeigen ({count})",groupToday:"Heute",groupYesterday:"Gestern",groupEarlier:"Früher",
@@ -2681,7 +2695,7 @@ const I18N={
     archiveEmpty:"El archivo está vacío.",archiveNoMatch:"Ninguna palabra archivada coincide con los filtros.",selected:"seleccionados",words:"palabras",
     testDone:"Test terminado",correct:"correctas",wrong:"incorrectas",bravo:"¡Bravo!",testNeed:"El test de 10 preguntas necesita al menos 10 palabras activas no memorizadas con detalles.",
     recallNeed:"Repasar necesita al menos 10 palabras memorizadas activas.",
-    clozeNeed:"Completar la frase necesita al menos 10 palabras con una frase de ejemplo.",writeNeed:"Escribir la palabra necesita al menos 10 palabras con una frase de ejemplo.",writeLabel:"Escribe la palabra que falta",writePlaceholder:"Escribe la palabra",hsCount:"{n} seleccionadas",hsActions:"Acciones",hsExit:"Terminar la selección",hsArchive:"Enviar al archivo",hsTag:"Etiquetar",hsMemorize:"Añadir a memorizadas",hsForget:"Quitar de memorizadas",hsTagTitle:"Etiquetar las palabras seleccionadas",hsDoneArchive:"{n} palabras enviadas al archivo",hsDoneTag:"Etiqueta «{tag}» añadida a {n} palabras",hsDoneMemorize:"{n} palabras añadidas a memorizadas",hsDoneForget:"{n} palabras quitadas de memorizadas",hsTagFull:"{n} palabras ya tienen el máximo de etiquetas y se omitieron.",quizSound:"Leer la frase en voz alta",writeSpace:"Espacio",writeHint:"Pista: mostrar las letras",writeErase:"Borrar la última letra",writeCheck:"Comprobar",writeNext:"Siguiente palabra",writeAnswerIs:"Ortografía correcta:",archivedWord:"Esta palabra está archivada. Reactívala en Ajustes → Mostrar archivo.",
+    clozeNeed:"Completar la frase necesita al menos 10 palabras con una frase de ejemplo.",writeNeed:"Escribir la palabra necesita al menos 10 palabras con una frase de ejemplo.",writeLabel:"Escribe la palabra que falta",writePlaceholder:"Escribe la palabra",sortTag:"Etiqueta",sortGroup:"Grupo",hsNoTag:"Sin etiqueta",hsCount:"{n} seleccionadas",hsActions:"Acciones",hsExit:"Terminar la selección",hsArchive:"Enviar al archivo",hsTag:"Etiquetar",hsMemorize:"Añadir a memorizadas",hsForget:"Quitar de memorizadas",hsTagTitle:"Etiquetar las palabras seleccionadas",hsDoneArchive:"{n} palabras enviadas al archivo",hsDoneTag:"Etiqueta «{tag}» añadida a {n} palabras",hsDoneMemorize:"{n} palabras añadidas a memorizadas",hsDoneForget:"{n} palabras quitadas de memorizadas",hsTagFull:"{n} palabras ya tienen el máximo de etiquetas y se omitieron.",quizSound:"Leer la frase en voz alta",writeSpace:"Espacio",writeHint:"Pista: mostrar las letras",writeErase:"Borrar la última letra",writeCheck:"Comprobar",writeNext:"Siguiente palabra",writeAnswerIs:"Ortografía correcta:",archivedWord:"Esta palabra está archivada. Reactívala en Ajustes → Mostrar archivo.",
     dailyLimitReached:"Se alcanzó el límite diario. Cámbialo en Ajustes.",dailyLimitPremium:"Un objetivo diario de más de 20 palabras llega con Premium.",
     levelA1:"Principiante",levelA2:"Elemental",levelB1:"Intermedio",levelB2:"Intermedio alto",levelC1:"Avanzado",levelC2:"Dominio",system:"Sistema",light:"Claro",dark:"Oscuro",newTest:"Nuevo test de 10 preguntas",wordLabel:"Palabra",chooseWord:"Elige la palabra correcta",wrongSelected:"Respuestas incorrectas",
     unlimited:"Ilimitado",settingsAction:"Ajustes",randomAction:"Palabra aleatoria",openDetails:"Abrir detalles",memorizedOpenDetails:"Memorizado — abrir detalles",rememberCue:"Memorizado",forgetCue:"Quitar de memorizados",archiveCue:"↓ Archivar",archiveToast:"Archivado",undo:"Deshacer",wordFallback:"Palabra",detailsLoadError:"No se pudieron cargar los detalles de la palabra.",alertClose:"Cerrar aviso",optionShow:"Mostrar opciones",close:"Cerrar",searchAction:"Buscar",testAction:"Probar palabras activas",recallAction:"Probar palabras memorizadas",limitPlaceholder:"Introduce un límite",statusFilter:"Filtro de estado",sortOrder:"Orden",swipeActions:"Acciones de deslizamiento",fontSmall:"Pequeño",fontNormal:"Normal",fontLarge:"Grande",fontXLarge:"Muy grande",showMore:"Mostrar más ({count})",groupToday:"Hoy",groupYesterday:"Ayer",groupEarlier:"Anteriores",
@@ -2703,7 +2717,7 @@ const I18N={
     archiveEmpty:"L’archivio è vuoto.",archiveNoMatch:"Nessuna parola archiviata corrisponde ai filtri.",selected:"selezionati",words:"parole",
     testDone:"Test completato",correct:"corrette",wrong:"errate",bravo:"Bravo!",testNeed:"Il test da 10 domande richiede almeno 10 parole attive non memorizzate con dettagli.",
     recallNeed:"Ripassa richiede almeno 10 parole memorizzate attive.",
-    clozeNeed:"Completa la frase richiede almeno 10 parole con una frase di esempio.",writeNeed:"Scrivi la parola richiede almeno 10 parole con una frase di esempio.",writeLabel:"Scrivi la parola mancante",writePlaceholder:"Scrivi la parola",hsCount:"{n} selezionate",hsActions:"Azioni",hsExit:"Termina la selezione",hsArchive:"Invia all’archivio",hsTag:"Etichetta",hsMemorize:"Aggiungi ai memorizzati",hsForget:"Rimuovi dai memorizzati",hsTagTitle:"Etichetta le parole selezionate",hsDoneArchive:"{n} parole inviate all’archivio",hsDoneTag:"Etichetta «{tag}» aggiunta a {n} parole",hsDoneMemorize:"{n} parole aggiunte ai memorizzati",hsDoneForget:"{n} parole rimosse dai memorizzati",hsTagFull:"{n} parole hanno già il massimo di etichette e sono state saltate.",quizSound:"Leggi la frase ad alta voce",writeSpace:"Spazio",writeHint:"Suggerimento: mostra le lettere",writeErase:"Cancella l’ultima lettera",writeCheck:"Controlla",writeNext:"Parola successiva",writeAnswerIs:"Ortografia corretta:",archivedWord:"Questa parola è archiviata. Riattivala da Impostazioni → Mostra archivio.",
+    clozeNeed:"Completa la frase richiede almeno 10 parole con una frase di esempio.",writeNeed:"Scrivi la parola richiede almeno 10 parole con una frase di esempio.",writeLabel:"Scrivi la parola mancante",writePlaceholder:"Scrivi la parola",sortTag:"Etichetta",sortGroup:"Gruppo",hsNoTag:"Senza etichetta",hsCount:"{n} selezionate",hsActions:"Azioni",hsExit:"Termina la selezione",hsArchive:"Invia all’archivio",hsTag:"Etichetta",hsMemorize:"Aggiungi ai memorizzati",hsForget:"Rimuovi dai memorizzati",hsTagTitle:"Etichetta le parole selezionate",hsDoneArchive:"{n} parole inviate all’archivio",hsDoneTag:"Etichetta «{tag}» aggiunta a {n} parole",hsDoneMemorize:"{n} parole aggiunte ai memorizzati",hsDoneForget:"{n} parole rimosse dai memorizzati",hsTagFull:"{n} parole hanno già il massimo di etichette e sono state saltate.",quizSound:"Leggi la frase ad alta voce",writeSpace:"Spazio",writeHint:"Suggerimento: mostra le lettere",writeErase:"Cancella l’ultima lettera",writeCheck:"Controlla",writeNext:"Parola successiva",writeAnswerIs:"Ortografia corretta:",archivedWord:"Questa parola è archiviata. Riattivala da Impostazioni → Mostra archivio.",
     dailyLimitReached:"Limite giornaliero raggiunto. Modificalo nelle Impostazioni.",dailyLimitPremium:"Un obiettivo giornaliero oltre 20 parole è incluso in Premium.",
     levelA1:"Principiante",levelA2:"Elementare",levelB1:"Intermedio",levelB2:"Intermedio superiore",levelC1:"Avanzato",levelC2:"Padronanza",system:"Sistema",light:"Chiaro",dark:"Scuro",newTest:"Nuovo test di 10 domande",wordLabel:"Parola",chooseWord:"Scegli la parola corretta",wrongSelected:"Risposte errate",
     unlimited:"Illimitato",settingsAction:"Impostazioni",randomAction:"Parola casuale",openDetails:"Apri dettagli",memorizedOpenDetails:"Memorizzato — apri dettagli",rememberCue:"Memorizzato",forgetCue:"Rimuovi dai memorizzati",archiveCue:"↓ Archivia",archiveToast:"Archiviato",undo:"Annulla",wordFallback:"Parola",detailsLoadError:"Impossibile caricare i dettagli della parola.",alertClose:"Chiudi avviso",optionShow:"Mostra opzioni",close:"Chiudi",searchAction:"Cerca",testAction:"Testa parole attive",recallAction:"Testa parole memorizzate",limitPlaceholder:"Inserisci un limite",statusFilter:"Filtro di stato",sortOrder:"Ordinamento",swipeActions:"Azioni di scorrimento",fontSmall:"Piccolo",fontNormal:"Normale",fontLarge:"Grande",fontXLarge:"Molto grande",showMore:"Mostra altri ({count})",groupToday:"Oggi",groupYesterday:"Ieri",groupEarlier:"Precedenti",
@@ -3372,7 +3386,7 @@ function applyAppLanguage(){
   for(const level of ["A1","A2","B1","B2","C1","C2"])setDropdownText("difficultyDropdown",level,`${level} · ${t(`level${level}`)}`);       // levelA1 … levelC2
   setDropdownText("themeDropdown","system",t("system"));setDropdownText("themeDropdown","light",t("light"));setDropdownText("themeDropdown","dark",t("dark"));
   setDropdownText("historyStatusDropdown","all",t("all"));setDropdownText("historyStatusDropdown","active",t("active"));setDropdownText("historyStatusDropdown","memorized",t("memorized"));
-  setDropdownText("historySortDropdown","none",t("noSort"));
+  setDropdownText("historySortDropdown","none",t("noSort"));setDropdownText("historySortDropdown","tag",t("sortTag"));setDropdownText("historySortDropdown","group",t("sortGroup"));
   setDropdownText("archiveStatusDropdown","all",t("all"));setDropdownText("archiveStatusDropdown","active",t("fromActive"));setDropdownText("archiveStatusDropdown","memorized",t("fromMemorized"));
   setDropdownText("archiveSortDropdown","none",t("noSort"));
 
@@ -4303,6 +4317,84 @@ document.addEventListener("keydown",event=>{
   if(historySelect.on&&event.key==="Escape"&&!document.querySelector("#historyDetails.open,#relatedWordPopup.open,#archiveOverlay.open"))endHistorySelection();
 },true);
 
+/* ---------- History: grouped views (letters for A–Z and Z–A, tags, kinds of word), each group opening and closing like the categories of the Watch list ---------- */
+const HISTORY_GROUPED_SORTS=["az","za","tag","group"];
+// the kinds of word, in the order they are listed; the words of the list say theirs ("isim (eril)", "fiil", "sıfat" ...) and the first word of it decides
+const HISTORY_TYPE_ORDER=["noun","verb","adjective","adverb","pronoun","determiner","preposition","conjunction","numeral","interjection","phrase","other"];
+const HISTORY_TYPE_NAMES={
+  noun:["isim","nom","noun","sustantivo","nome","nomen","substantiv"],verb:["fiil","verbe","verb","verbo"],adjective:["sıfat","adjectif","adjective","adjetivo","aggettivo","adjektiv"],
+  adverb:["zarf","adverbe","adverb","adverbio","avverbio"],pronoun:["zamir","pronom","pronoun","pronombre","pronome","pronomen"],determiner:["belirleyici","déterminant","determiner","determinante","artikel"],
+  preposition:["edat","préposition","preposition","preposición","preposizione","präposition"],conjunction:["bağlaç","conjonction","conjunction","conjunción","congiunzione","konjunktion"],
+  numeral:["sayı","nombre","numeral","number","numeral","numerale","zahl"],interjection:["ünlem","interjection","interjección","interiezione","interjektion"],phrase:["kalıp","expression","phrase","expresión","espressione","ausdruck"]
+};
+let historyTypeLookup=null;                                                        // made on first use: it needs the language settings
+const HISTORY_GROUP_LABELS={
+  tr:{noun:"İsim",verb:"Fiil",adjective:"Sıfat",adverb:"Zarf",pronoun:"Zamir",determiner:"Belirleyici",preposition:"Edat",conjunction:"Bağlaç",numeral:"Sayı",interjection:"Ünlem",phrase:"Kalıp",other:"Diğer"},
+  en:{noun:"Noun",verb:"Verb",adjective:"Adjective",adverb:"Adverb",pronoun:"Pronoun",determiner:"Determiner",preposition:"Preposition",conjunction:"Conjunction",numeral:"Number",interjection:"Interjection",phrase:"Phrase",other:"Other"},
+  fr:{noun:"Nom",verb:"Verbe",adjective:"Adjectif",adverb:"Adverbe",pronoun:"Pronom",determiner:"Déterminant",preposition:"Préposition",conjunction:"Conjonction",numeral:"Nombre",interjection:"Interjection",phrase:"Expression",other:"Autre"},
+  de:{noun:"Nomen",verb:"Verb",adjective:"Adjektiv",adverb:"Adverb",pronoun:"Pronomen",determiner:"Artikelwort",preposition:"Präposition",conjunction:"Konjunktion",numeral:"Zahlwort",interjection:"Interjektion",phrase:"Redewendung",other:"Andere"},
+  es:{noun:"Sustantivo",verb:"Verbo",adjective:"Adjetivo",adverb:"Adverbio",pronoun:"Pronombre",determiner:"Determinante",preposition:"Preposición",conjunction:"Conjunción",numeral:"Numeral",interjection:"Interjección",phrase:"Locución",other:"Otro"},
+  it:{noun:"Nome",verb:"Verbo",adjective:"Aggettivo",adverb:"Avverbio",pronoun:"Pronome",determiner:"Determinante",preposition:"Preposizione",conjunction:"Congiunzione",numeral:"Numerale",interjection:"Interiezione",phrase:"Espressione",other:"Altro"}
+};
+function historyTypeGroup(type){
+  if(!historyTypeLookup)historyTypeLookup=new Map(Object.entries(HISTORY_TYPE_NAMES).flatMap(([group,names])=>names.map(name=>[looseText(name),group])));
+  const first=looseText(String(type||"").split(/[\/(]/)[0]);
+  const exact=historyTypeLookup.get(first)||historyTypeLookup.get(first.split(" ")[0]);
+  if(exact)return exact;
+  for(const [name,group] of historyTypeLookup)if(name.length>=4&&first.includes(name))return group;      // "şahıs zamiri" is a pronoun, "zamir" being in it
+  return "other";
+}
+function historyGroupLabel(group){return (HISTORY_GROUP_LABELS[getAppLanguage()]||HISTORY_GROUP_LABELS.en)[group]||group;}
+function historyLetter(word){
+  const letter=looseText(word).charAt(0).toLocaleUpperCase(getTargetLanguageCode());
+  return /^[A-Z]$/.test(letter)?letter:"#";
+}
+function historyCollapsedSet(){const saved=window.VocVocPrefs?.get("historyCollapsed",[]);return new Set(Array.isArray(saved)?saved:[]);}
+const HISTORY_CHEVRON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+// words (already filtered and sorted) -> the heads of the groups with the chips under the open ones; a word with several tags is in every one of its groups
+function groupedHistoryHtml(words,sort,chip,searching){
+  const collator=sortCollator(),groups=new Map();
+  const add=(key,label,word)=>{let group=groups.get(key);if(!group){group={key,label,words:[]};groups.set(key,group);}group.words.push(word);};
+  if(sort==="tag"){
+    const tagsOf=new Map();
+    for(const record of VocVocData.getWords())if(record.tags?.length)tagsOf.set(normalizeHistoryKey(record.word),record.tags);
+    for(const word of words){const tags=tagsOf.get(normalizeHistoryKey(word));if(tags?.length)for(const tag of tags)add(tag,"#"+tag,word);else add("",t("hsNoTag"),word);}
+  }else if(sort==="group"){
+    for(const word of words){const group=historyTypeGroup(getHistoryWordData(word)?.type);add(group,historyGroupLabel(group),word);}
+  }else{
+    for(const word of words){const letter=historyLetter(word);add(letter,letter,word);}
+  }
+  const list=[...groups.values()];
+  if(sort==="group")list.sort((a,b)=>HISTORY_TYPE_ORDER.indexOf(a.key)-HISTORY_TYPE_ORDER.indexOf(b.key));
+  else{
+    const last=group=>group.key===""||group.key==="#";                        // "no tag" and the signs come after the others
+    const direction=sort==="za"?-1:1;
+    list.sort((a,b)=>last(a)-last(b)||direction*collator.compare(a.key,b.key));
+  }
+  if(sort==="tag"||sort==="group")for(const group of list)group.words.sort((a,b)=>collator.compare(a,b));
+  const collapsed=historyCollapsedSet();
+  let room=historyShownCount,hidden=0,html="";
+  for(const group of list){
+    const closed=!searching&&collapsed.has(sort+":"+group.key);
+    html+=`<div class="history-group-head"><button type="button" class="history-group-btn" aria-expanded="${!closed}" data-history-group="${encodeDomText(group.key)}"><span class="history-group-chevron" aria-hidden="true">${HISTORY_CHEVRON}</span><span class="history-group-name">${esc(group.label)}</span><span class="history-group-count">${group.words.length}</span></button></div>`;
+    if(closed)continue;
+    const shown=group.words.slice(0,Math.max(0,room));
+    room-=shown.length;hidden+=group.words.length-shown.length;
+    html+=shown.map(chip).join("");
+  }
+  return {html,hidden};
+}
+document.addEventListener("click",event=>{
+  const head=event.target.closest("[data-history-group]");
+  if(!head)return;
+  event.preventDefault();
+  const key=decodeDomText(head.dataset.historyGroup),id=(document.getElementById("historySort")?.value||"none")+":"+key,collapsed=historyCollapsedSet();
+  if(collapsed.has(id))collapsed.delete(id);else collapsed.add(id);
+  window.VocVocPrefs?.set("historyCollapsed",[...collapsed]);
+  preservePageScroll(()=>renderHistory());
+  [...document.querySelectorAll("#historyArea [data-history-group]")].find(button=>button.dataset.historyGroup===head.dataset.historyGroup)?.focus({preventScroll:true});
+});
+
 // Paging of the two long lists. Rendering every word made start-up, every re-render and every full-page layout (opening any dialog)
 // grow with the size of the vocabulary; a page is built instead and the rest is one button (or one filter) away.
 const HISTORY_CHIP_PAGE=400,MAIN_CARD_PAGE=100,CARD_GROUP_KEYS=["groupToday","groupYesterday","groupEarlier"];
@@ -4361,15 +4453,22 @@ function renderHistory(){
   // Page size limits the DOM, not the list: the filter above always searches every word, and "Show more" reveals the rest.
   const signature=`${byTag?"#":""}${q}|${status}|${sort}`;
   if(signature!==historyShownSignature){historyShownSignature=signature;historyShownCount=HISTORY_CHIP_PAGE;}
-  const hiddenCount=Math.max(0,words.length-historyShownCount);
-  words=words.slice(0,historyShownCount);
   const scores=studyScores();
-  area.innerHTML=words.map(w=>{
+  const chip=w=>{
     const key=normalizeHistoryKey(w),isMem=memorized.has(key),encoded=encodeDomText(w),score=isMem?0:(scores.get(key)||0);
     return `<button type="button" class="history-chip ui-pill${isMem?' memorized':''} score-${score}"
       data-history-word="${encoded}" data-score="${score}"
       title="${isMem?t("memorizedOpenDetails"):chipTitle(score)}"><span${langAttr()}>${esc(w)}</span>${isMem?' ✓':''}</button>`;
-  }).join('')+showMoreButton("history",hiddenCount);
+  };
+  let body,hiddenCount;
+  if(HISTORY_GROUPED_SORTS.includes(sort)){                            // letters, tags or kinds of word, each group opening and closing
+    const grouped=groupedHistoryHtml(words,sort,chip,Boolean(q||byTag));
+    body=grouped.html;hiddenCount=grouped.hidden;
+  }else{
+    hiddenCount=Math.max(0,words.length-historyShownCount);
+    body=words.slice(0,historyShownCount).map(chip).join('');
+  }
+  area.innerHTML=body+showMoreButton("history",hiddenCount);
   if(historySelect.words.size){const present=new Set(allHistory.map(normalizeHistoryKey));for(const key of [...historySelect.words.keys()])if(!present.has(key))historySelect.words.delete(key);}
   syncHistorySelection();
   refreshArchiveButtonState();

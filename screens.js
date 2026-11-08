@@ -954,6 +954,11 @@
       setTimeout(end,30000);
     });}
   });
+  // small settings of the other pages of the app (which groups of the History list are closed ...), kept in this browser
+  window.VocVocPrefs=Object.freeze({
+    get(name,fallback){try{const value=JSON.parse(store.get('VOCVOC_PREF_'+name)||'null');return value===null?fallback:value;}catch(_){return fallback;}},
+    set(name,value){store.set('VOCVOC_PREF_'+name,JSON.stringify(value));}
+  });
   function readTapped(event){
     const target=event.target.closest?.('.flip-examples p');                                  // the words of the tests are read by index.html when the sound button is on
     if(!target)return;
