@@ -82,20 +82,27 @@ describe('Choosing the next words',()=>{
 describe('The packs that ship with the app',()=>{
   const files=fs.readdirSync(dir).filter(name=>/\.json$/.test(name)&&name!=='index.json').sort();
   const load=name=>JSON.parse(fs.readFileSync(path.join(dir,name),'utf8').replace(/\r\n/g,'\n'));
-  it('there is a pack for each target language of a Turkish speaker that has no course (French has one)',()=>{
-    assert.deepEqual(files,['de-tr.json','en-tr.json','es-tr.json','it-tr.json']);
+  it('every single-file pack is named after a real pair, and a pair is never both a pack and a course',()=>{
+    const index=JSON.parse(fs.readFileSync(path.join(dir,'index.json'),'utf8'));
+    assert(files.length>0,'there are packs');
+    for(const name of files){
+      const id=name.replace('.json','');
+      assert(Packs.pairOf(id),`${name} is not a pair`);
+      assert(!index.courses.some(course=>course.id===id),`${id} is both a pack and a course`);
+    }
   });
   it('French has a course instead of a single pack: A1 is complete, the index lists the chunks and every chunk is where the index says',()=>{
     const index=JSON.parse(fs.readFileSync(path.join(dir,'index.json'),'utf8')),course=index.courses.find(item=>item.id==='fr-tr');
     assert(course,'the index lists the course');assert.equal(course.levels.A1,695);assert(course.words>=1445);
     assert(!index.packs.some(entry=>entry.id==='fr-tr'),'a pair is either a pack or a course');
     for(const chunk of course.chunks)assert(fs.existsSync(path.join(dir,'fr-tr',chunk.id+'.json')),chunk.id);
+    for(const other of index.courses)for(const chunk of other.chunks)assert(fs.existsSync(path.join(dir,other.id,chunk.id+'.json')),`${other.id}/${chunk.id}`);
   });
   it('every pack is valid, is named after its pair and has 40 words in a beginner level',()=>{
     for(const name of files){
       const pack=load(name);
       assert.deepEqual(Packs.validatePack(pack),[],name);
-      assert.equal(name,`${pack.id}.json`);assert.equal(pack.native,'tr');assert.equal(pack.level,'A1-A2');assert.equal(pack.words.length,40);
+      assert.equal(name,`${pack.id}.json`);assert(Packs.SUPPORTED.includes(pack.native));assert.equal(Packs.pairId(pack.target,pack.native),pack.id);assert.equal(pack.level,'A1-A2');assert.equal(pack.words.length,40);
     }
   });
   it('every word has a Turkish meaning, a type and EXACTLY two examples, each with its respelling and translation',()=>{
@@ -124,8 +131,9 @@ describe('The packs that ship with the app',()=>{
     assert(Packs.validatePack(bad).some(message=>/exampleTranslation/.test(message)));
   });
   it('the same 40 ideas come in the same order in every language (so progress means the same everywhere)',()=>{
-    const meanings=files.map(name=>load(name).words.map(entry=>entry.meaning));
-    for(const list of meanings.slice(1)){
+    const byNative={};      // meanings are written in the native language, so only packs of one native language can be compared
+    for(const name of files){const pack=load(name);(byNative[pack.native]=byNative[pack.native]||[]).push(pack.words.map(entry=>entry.meaning));}
+    for(const meanings of Object.values(byNative))for(const list of meanings.slice(1)){
       assert.equal(list.length,meanings[0].length);
       // greetings, courtesy words and numbers keep their Turkish meaning; a few nouns differ slightly in wording per language, so compare the first word of each meaning
       const lead=meaning=>meaning.split(/[;,]/)[0].trim();

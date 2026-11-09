@@ -139,6 +139,14 @@ describe('The compact form and its content rules',()=>{
     assert(lint(compact('merci',{x:[phrase.slice(0,5)]})).errors.some(message=>/\[phrase/.test(message)));
     assert(lint(compact('merci',{x:[[...phrase.slice(0,4),'wagon',phrase[5]]]})).errors.some(message=>/Turkish letters/.test(message)));
   });
+  it('warns about the two respelling rules a letter table cannot hold: Turkish words end in -ne for a French reader, English "to" and "the" follow the next sound',()=>{
+    const turkish=(respelling)=>({w:'kan',t:'nom',m:'sang',e:[['Kan akıyor.',respelling,'Le sang coule.'],['Kan kırmızı.','kane kîrmîzî','Le sang est rouge.']]});
+    assert(lint(turkish('kan akîyor'),{native:'fr',target:'tr'}).warnings.some(message=>/-ne/.test(message)));
+    assert(!lint(turkish('kane akîyor'),{native:'fr',target:'tr'}).warnings.some(message=>/-ne/.test(message)));
+    const english=(respelling)=>({w:'go',t:'fiil',m:'gitmek',e:[['I go to school.',respelling,'Okula giderim.'],['I go to a park.','ay go tu ı park','Parka giderim.']]});
+    assert(lint(english('ay go tu skul'),{native:'tr',target:'en'}).warnings.some(message=>/"to" should be tı/.test(message)));
+    assert(!lint(english('ay go tı skul'),{native:'tr',target:'en'}).warnings.some(message=>/"to" should be/.test(message)));
+  });
   it('checks synonyms and antonyms: at most four, never the word itself, never twice',()=>{
     assert.deepEqual(lint(compact('grand',{s:['énorme','vaste'],a:['petit']})).errors,[]);
     assert(lint(compact('grand',{s:['a','b','c','d','e']})).errors.some(message=>/at most four/.test(message)));
@@ -152,8 +160,8 @@ describe('The compact form and its content rules',()=>{
   });
   it('only warns about the kind label, long meanings and a sentence that does not use the word',()=>{
     assert(lint(compact('a',{t:'noun'})).warnings.some(message=>/type "noun"/.test(message)));
-    for(const good of ['fiil','sıfat/zarf','isim (eril/dişil)','kalıp'])assert(Wordbase.TYPE_PATTERN.test(good),good);
-    for(const bad of ['noun','isim','isim (neutral)','fiil/'])assert(!Wordbase.TYPE_PATTERN.test(bad),bad);
+    for(const good of ['fiil','sıfat/zarf','isim (eril/dişil)','kalıp','isim'])assert(Wordbase.TYPE_PATTERN.test(good),good);     // a bare "isim" is a noun of a language without gender (English, Turkish)
+    for(const bad of ['noun','isim (neutral)','fiil/'])assert(!Wordbase.TYPE_PATTERN.test(bad),bad);
     assert(lint(compact('a',{m:'x'.repeat(81)})).warnings.some(message=>/meaning is long/.test(message)));
     assert(lint(compact('chat',{e:[['Il dort.','il dor','Uyuyor.'],compact('chat').e[1]]})).warnings.some(message=>/does not seem to use/.test(message)));
   });

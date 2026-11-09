@@ -16,15 +16,20 @@ const repoRoot=path.resolve(__dirname,'..');
 
 const KEYS=new Set(['w','t','m','s','a','e','x']);
 // The labels of a word's kind, in Turkish (a word of several kinds joins them with "/", e.g. "sıfat/zarf").
-const TYPE_LABEL='(?:isim \\((?:eril|dişil|eril\\/dişil)\\)|fiil|sıfat|zarf|edat|bağlaç|zamir|belirleyici|ünlem|sayı|kalıp)';
+// A noun is "isim" alone when the target language has no grammatical gender (English, Turkish), else "isim (eril)" etc.
+const TYPE_LABEL='(?:isim(?: \\((?:eril|dişil|nötr|eril\\/dişil)\\))?|fiil|sıfat|zarf|edat|bağlaç|zamir|belirleyici|ünlem|sayı|kalıp)';
 const TYPE_PATTERN=new RegExp(`^${TYPE_LABEL}(?:/${TYPE_LABEL})*$`);
-// A respelling is written with Turkish letters (and â î û) and ordinary punctuation: no IPA, no q, w, x.
+// The same list for a French-speaking learner (native fr).
+const TYPE_LABEL_FR='(?:nom(?: \\((?:masculin|féminin|masculin\\/féminin)\\))?|verbe|adjectif|adverbe|préposition|postposition|conjonction|pronom|déterminant|interjection|numéral|locution)';
+const TYPE_PATTERN_FR=new RegExp(`^${TYPE_LABEL_FR}(?:/${TYPE_LABEL_FR})*$`);
+// A respelling is written with the letters of the learner's own language and ordinary punctuation: no IPA, no q, w, x.
 const RESPELLING=/^[a-zA-ZçğıöşüÇĞİÖŞÜâîûÂÎÛ0-9 ,.;:!?'’\-–—()…/"«»]+$/;
+const RESPELLING_FR=/^[a-zA-ZàâäçéèêëîïôöùûüœÀÂÇÉÈÊÎÔÛ0-9 ,.;:!?'’\-–—()…/"«»]+$/;
 const FORBIDDEN_LETTER=/[qwxQWX]/;
 const BATCH_FILE=/^(A1|A2|B1|B2|C1|C2)-(\d{3})\.jsonl$/;
 
 const lf=text=>text.replace(/\r\n/g,'\n');
-const plain=text=>String(text).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const plain=text=>String(text).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/ı/g,'i').replace(/ß/g,'ss');
 const isLine=value=>typeof value==='string'&&value.trim().length>0;
 const wordsOfText=text=>plain(text).split(/[^a-z0-9]+/).filter(Boolean);
 
@@ -245,7 +250,28 @@ const irregularStem=word=>{
   const plainWord=plain(word).replace(/^(se|s) /,'').replace(/^s'/,'');
   return IRREGULAR_FORMS[plainWord]?IRREGULAR_FORMS[plainWord].split(' '):null;
 };
-function usesWord(sentence,word){
+// The French rules above know French verbs. Any other target language gets a plain check: a sentence word that starts like the headword
+// (its first letters; short words must appear whole). It only feeds a warning, so it may be a little generous.
+function usesWordGeneric(sentence,word,target){
+  const tokens=wordsOfText(sentence);
+  if(target==='tr'){      // suffixes pile up behind the stem: a verb is looked for without -mek/-mak, and the last consonant may soften (kitap -> kitabı, et -> edebilir)
+    const soft={t:'d',k:'g',p:'b',c:'c'};
+    return wordsOfText(word).some(part=>{
+      const cut=part.replace(/(mek|mak)$/,''),stem=cut.length>=2?cut:part,last=stem.slice(-1);       // "emek" is a noun, not "e" + -mek
+      const forms=[stem];if(soft[last])forms.push(stem.slice(0,-1)+soft[last]);
+      if(stem.length>=3)forms.push(stem.slice(0,-1));
+      if(stem.length>=4&&/[aeiou][^aeiou]$/.test(stem))forms.push(stem.slice(0,-2)+last,stem.slice(0,-2)+(soft[last]||last));       // oğul -> oğlum, burun -> burnu: the last vowel may drop
+      return tokens.some(token=>forms.some(form=>token===form||(form.length>=2&&token.startsWith(form))));
+    });
+  }
+  return wordsOfText(word).some(part=>{
+    if(part.length<=3)return tokens.some(token=>token===part||(token.startsWith(part)&&token.length<=part.length+3)||token.startsWith(part+part.slice(-1)));       // sews, rowed, begged
+    const size=Math.max(3,part.length-2);
+    return tokens.some(token=>token.startsWith(part.slice(0,size)));
+  });
+}
+function usesWord(sentence,word,target='fr'){
+  if(target!=='fr')return usesWordGeneric(sentence,word,target);
   const tokens=wordsOfText(sentence);
   const forms=irregularStem(word);
   if(forms&&tokens.some(token=>forms.includes(token)||token===plain(word)))return true;
@@ -258,25 +284,51 @@ function usesWord(sentence,word){
   });
 }
 
+// Two respelling rules a letter table cannot enforce (see wordbase/STYLE-tr-fr.md and STYLE-en-tr.md):
+//  - to a French reader, a vowel + word-final n looks like a nasal vowel: Turkish words are respelled with -ne (kan -> kane, ben -> bène);
+//  - English "to" is tı before a consonant and tu before a vowel or at the end of a phrase, "the" is zı before a consonant and zi before a vowel.
+const FINAL_N=/[aeiouyîéèûâêô]n(?=$|[\s,.;:!?)…»"—–-])/i;
+const edgeWord=word=>word.replace(/^[^A-Za-zçğıöşüÇĞİÖŞÜâîû']+|[^A-Za-zçğıöşüÇĞİÖŞÜâîû']+$/g,'');
+function respellingRuleProblems(source,text,{native,target}){
+  const problems=[];
+  if(native==='fr'&&FINAL_N.test(text))problems.push(`a word ends in a vowel + n: write -ne (nasal vowel to a French reader): ${text}`);
+  if(native==='tr'&&target==='en'&&typeof source==='string'){
+    const sourceWords=source.split(/\s+/),words=text.split(/\s+/);
+    if(sourceWords.length===words.length)words.forEach((word,index)=>{
+      const spoken=edgeWord(sourceWords[index]).toLowerCase(),written=edgeWord(word);
+      if(spoken!=='to'&&spoken!=='the')return;
+      const next=index+1<words.length?edgeWord(words[index+1]):'',phraseEnd=index===words.length-1||/[,.;:!?)…]$/.test(word),vowel=/^[aeıioöuü]/i.test(next);
+      const wanted=spoken==='to'?(phraseEnd||vowel?'tu':'tı'):(!phraseEnd&&vowel?'zi':'zı');
+      if(['tu','tı','zı','zi'].includes(written)&&written!==wanted)problems.push(`"${spoken}" should be ${wanted} here, not ${written}: ${text}`);
+    });
+  }
+  return problems;
+}
+
 // {errors:[], warnings:[]} for one compact word
-function lintWord(raw,{native='tr'}={}){
+// The label list and the respelling alphabet are known only for French words explained in Turkish (wordbase/STYLE.md); other pairs
+// are checked for structure only until their style rules are written down here.
+function lintWord(raw,{native='tr',target='fr'}={}){
   const errors=[],warnings=[];
   if(!raw||typeof raw!=='object'||Array.isArray(raw))return {errors:['not an object'],warnings};
   for(const key of Object.keys(raw))if(!KEYS.has(key))errors.push(`unknown key ${key}`);
   for(const key of ['w','t','m'])if(!isLine(raw[key]))errors.push(`${key} is missing`);
   if(errors.length)return {errors,warnings};
-  const respelling=(text,where)=>{
+  const respelling=(text,where,source)=>{
     if(!isLine(text)){errors.push(`${where}: respelling is missing`);return;}
+    for(const message of respellingRuleProblems(source,text,{native,target}))warnings.push(`${where}: ${message}`);
     if(native==='tr'&&(!RESPELLING.test(text)||FORBIDDEN_LETTER.test(text)))errors.push(`${where}: respelling must use Turkish letters only (no IPA, q, w, x): ${text}`);
+    if(native==='fr'&&(!RESPELLING_FR.test(text)||FORBIDDEN_LETTER.test(text)))errors.push(`${where}: respelling must use French letters only (no IPA, q, w, x): ${text}`);
   };
-  if(!TYPE_PATTERN.test(raw.t))warnings.push(`type "${raw.t}" is not in the list of labels`);
+  if(native==='tr'&&!TYPE_PATTERN.test(raw.t))warnings.push(`type "${raw.t}" is not in the list of labels`);
+  if(native==='fr'&&!TYPE_PATTERN_FR.test(raw.t))warnings.push(`type "${raw.t}" is not in the list of labels`);
   if(raw.m.length>80)warnings.push('meaning is long (over 80 characters)');
   if(!Array.isArray(raw.e)||raw.e.length!==2)errors.push('e: exactly two examples');
   else raw.e.forEach((example,index)=>{
     const where=`e[${index}]`;
     if(!Array.isArray(example)||example.length!==3||!isLine(example[0])||!isLine(example[2])){errors.push(`${where}: [sentence, respelling, translation]`);return;}
-    respelling(example[1],where);
-    if(!usesWord(example[0],raw.w))warnings.push(`${where}: the sentence does not seem to use "${raw.w}"`);
+    respelling(example[1],where,example[0]);
+    if(!usesWord(example[0],raw.w,target))warnings.push(`${where}: the sentence does not seem to use "${raw.w}"`);
     if(example[0].length>140)warnings.push(`${where}: long sentence`);
   });
   if(Array.isArray(raw.e)&&raw.e.length===2&&Array.isArray(raw.e[0])&&Array.isArray(raw.e[1])&&raw.e[0][0]===raw.e[1][0])errors.push('e: the two examples are the same');
@@ -285,9 +337,9 @@ function lintWord(raw,{native='tr'}={}){
     else raw.x.forEach((item,index)=>{
       const where=`x[${index}]`;
       if(!Array.isArray(item)||item.length!==6||item.some(part=>!isLine(part))){errors.push(`${where}: [phrase, respelling, meaning, sentence, sentence respelling, sentence translation]`);return;}
-      respelling(item[1],`${where} phrase`);respelling(item[4],`${where} sentence`);
+      respelling(item[1],`${where} phrase`,item[0]);respelling(item[4],`${where} sentence`,item[3]);
       const parts=wordsOfText(item[0]).filter(part=>part.length>=3);
-      if(parts.length&&!parts.some(part=>usesWord(item[3],part)))warnings.push(`${where}: the sentence does not seem to use "${item[0]}"`);
+      if(parts.length&&!parts.some(part=>usesWord(item[3],part,target)))warnings.push(`${where}: the sentence does not seem to use "${item[0]}"`);
     });
   }
   const own=plain(raw.w),seen=new Set();
@@ -350,7 +402,7 @@ function checkCourse(root,pair){
     const lemma=lemmas[entries.length];
     const name=BATCH_FILE.exec(source.file);
     if(!name)errors.push(`${source.file}: the name must look like A1-001.jsonl`);
-    const result=lintWord(source.raw,{native:parsed.native});
+    const result=lintWord(source.raw,{native:parsed.native,target:parsed.target});
     for(const message of result.errors)errors.push(`${where}${source.raw&&source.raw.w?` (${source.raw.w})`:''}: ${message}`);
     for(const message of result.warnings)warnings.push(`${where} (${source.raw.w}): ${message}`);
     if(!lemma){errors.push(`${where}: more words than the lemma list has`);return;}
@@ -429,7 +481,7 @@ function sampleOf(root,pair,{level=null,count=50}={}){
   const result=checkCourse(root,pair),pool=result.entries.filter(entry=>!level||entry.level===level);
   const step=pool.length/Math.min(count,pool.length||1),chosen=Array.from({length:Math.min(count,pool.length)},(_,index)=>pool[Math.floor(index*step)]);
   const lines=[`# ${pair}: ${chosen.length} words to proofread (${level||'all levels'}, spread evenly over ${pool.length} written words)`,'',
-    'For each card check: the meaning, the gender and kind, that the sentences are natural, that every respelling reads like the French when read with Turkish letters, and the translations.',''];
+    'For each card check: the meaning, the gender and kind, that the sentences are natural, that every respelling reads like the target language when read with the letters of the native language, and the translations.',''];
   chosen.forEach((entry,index)=>{
     const word=entry.record;
     lines.push(`## ${index+1}. ${word.word} (${word.type}) [${entry.level}]`,'',`- Anlam: ${word.meaning}`);
