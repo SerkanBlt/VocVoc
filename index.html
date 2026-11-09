@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.42.29">
+  <meta name="vocvoc-shell" content="1.42.30">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -2428,7 +2428,7 @@ body{
           <div class="settings-dropdown-menu ui-dropdown-menu">
             <button type="button" class="ui-dropdown-option" data-value="tr" onclick="requestLearningLanguageChange('nativeLanguageDropdown','nativeLanguage','tr','Türkçe')">Türkçe</button>
             <button type="button" class="ui-dropdown-option locked" data-value="en" data-lock="Soon" disabled aria-disabled="true" onclick="requestLearningLanguageChange('nativeLanguageDropdown','nativeLanguage','en','English')">English</button>
-            <button type="button" class="ui-dropdown-option locked" data-value="fr" data-lock="Soon" disabled aria-disabled="true" onclick="requestLearningLanguageChange('nativeLanguageDropdown','nativeLanguage','fr','Français')">Français</button>
+            <button type="button" class="ui-dropdown-option" data-value="fr" onclick="requestLearningLanguageChange('nativeLanguageDropdown','nativeLanguage','fr','Français')">Français</button>
             <button type="button" class="ui-dropdown-option locked" data-value="de" data-lock="Soon" disabled aria-disabled="true" onclick="requestLearningLanguageChange('nativeLanguageDropdown','nativeLanguage','de','Deutsch')">Deutsch</button>
             <button type="button" class="ui-dropdown-option locked" data-value="es" data-lock="Soon" disabled aria-disabled="true" onclick="requestLearningLanguageChange('nativeLanguageDropdown','nativeLanguage','es','Español')">Español</button>
             <button type="button" class="ui-dropdown-option locked" data-value="it" data-lock="Soon" disabled aria-disabled="true" onclick="requestLearningLanguageChange('nativeLanguageDropdown','nativeLanguage','it','Italiano')">Italiano</button>
@@ -2445,11 +2445,11 @@ body{
           </button>
           <div class="settings-dropdown-menu ui-dropdown-menu">
             <button type="button" class="ui-dropdown-option" data-value="fr" onclick="requestLearningLanguageChange('targetLanguageDropdown','targetLanguage','fr','Français')">Français</button>
-            <button type="button" class="ui-dropdown-option locked" data-value="en" data-lock="Soon" disabled aria-disabled="true" onclick="requestLearningLanguageChange('targetLanguageDropdown','targetLanguage','en','English')">English</button>
+            <button type="button" class="ui-dropdown-option" data-value="en" onclick="requestLearningLanguageChange('targetLanguageDropdown','targetLanguage','en','English')">English</button>
             <button type="button" class="ui-dropdown-option locked" data-value="de" data-lock="Soon" disabled aria-disabled="true" onclick="requestLearningLanguageChange('targetLanguageDropdown','targetLanguage','de','Deutsch')">Deutsch</button>
             <button type="button" class="ui-dropdown-option locked" data-value="es" data-lock="Soon" disabled aria-disabled="true" onclick="requestLearningLanguageChange('targetLanguageDropdown','targetLanguage','es','Español')">Español</button>
             <button type="button" class="ui-dropdown-option locked" data-value="it" data-lock="Soon" disabled aria-disabled="true" onclick="requestLearningLanguageChange('targetLanguageDropdown','targetLanguage','it','Italiano')">Italiano</button>
-            <button type="button" class="ui-dropdown-option locked" data-value="tr" data-lock="Soon" disabled aria-disabled="true" onclick="requestLearningLanguageChange('targetLanguageDropdown','targetLanguage','tr','Türkçe')">Türkçe</button>
+            <button type="button" class="ui-dropdown-option" data-value="tr" onclick="requestLearningLanguageChange('targetLanguageDropdown','targetLanguage','tr','Türkçe')">Türkçe</button>
           </div>
           <input type="hidden" id="targetLanguageSelect" value="fr">
         </div>
@@ -3330,12 +3330,20 @@ function setDropdownText(id,value,text){
   const btn=[...dd.querySelectorAll(".ui-dropdown-option")].find(x=>x.dataset.value===String(value));
   if(btn)btn.textContent=text;
 }
-// Only Turkish (original) and French (learning) can be chosen for now; the other languages are listed but locked until their words are ready.
-const OPEN_LANGUAGES=Object.freeze({nativeLanguage:"tr",targetLanguage:"fr"});
+// The pairs whose words are ready, named <learning>-<original>. A language can be chosen only when it makes one of these pairs; choosing the language
+// the other box already has swaps the two (learning French with Turkish as original -> choosing Turkish as learning language makes French the original).
+const OPEN_PAIRS=Object.freeze(["fr-tr","en-tr","tr-fr"]);
+// the settings to change for "field becomes value", or null when that would not be a pair with words
+function languageChangePatch(field,value){
+  const settings=VocVocData.getDb().settings,native=settings.nativeLanguage||"tr",target=settings.targetLanguage||"fr",patch={[field]:value};
+  if(field==="nativeLanguage"&&value===target)patch.targetLanguage=native;
+  if(field==="targetLanguage"&&value===native)patch.nativeLanguage=target;
+  return OPEN_PAIRS.includes((patch.targetLanguage||target)+"-"+(patch.nativeLanguage||native))?patch:null;
+}
 function syncLanguageLocks(){
   for(const [dropdown,field] of [["nativeLanguageDropdown","nativeLanguage"],["targetLanguageDropdown","targetLanguage"]]){
     document.querySelectorAll("#"+dropdown+" .ui-dropdown-option").forEach(button=>{
-      const locked=button.dataset.value!==OPEN_LANGUAGES[field];
+      const locked=!languageChangePatch(field,button.dataset.value);
       button.classList.toggle("locked",locked);button.disabled=locked;
       if(locked){button.dataset.lock=t("soonTag");button.setAttribute("aria-disabled","true");}
       else{delete button.dataset.lock;button.removeAttribute("aria-disabled");}
@@ -3480,8 +3488,9 @@ function requestLearningLanguageChange(dropdownId,field,value,label){
   if(!["nativeLanguage","targetLanguage"].includes(field))return;
   const settings=VocVocData.getSettings();
   const current=settings[field]||(field==="nativeLanguage"?"tr":"fr");
-  if(current===value||value!==OPEN_LANGUAGES[field]){syncUiDropdown(dropdownId,current);return;}   // the languages that are not open yet cannot be chosen
-  pendingLearningLanguageChange={dropdownId,field,value,label,current};
+  const patch=languageChangePatch(field,value);
+  if(current===value||!patch){syncUiDropdown(dropdownId,current);return;}   // the languages that are not open yet cannot be chosen
+  pendingLearningLanguageChange={dropdownId,field,value,label,current,patch};
   const overlay=document.getElementById("languageChangeOverlay");
   if(overlay)overlay.style.display="flex";
 }
@@ -3495,11 +3504,12 @@ async function confirmLearningLanguageChange(){
   const change=pendingLearningLanguageChange;
   invalidateAsyncWork();
   // If the atomic reset+language commit fails nothing was changed: close the dialog, restore the dropdown, tell the user.
-  try{await VocVocData.changeLanguage({[change.field]:change.value});}
+  try{await VocVocData.changeLanguage(change.patch);}
   catch(error){cancelLearningLanguageChange();reportStorageError(error);return;}
-  const inputId=change.field==="nativeLanguage"?"nativeLanguageSelect":"targetLanguageSelect";
-  const input=document.getElementById(inputId);if(input)input.value=change.value;
-  syncUiDropdown(change.dropdownId,change.value);
+  for(const [field,value] of Object.entries(change.patch)){       // both boxes when the two languages were swapped
+    const input=document.getElementById(field==="nativeLanguage"?"nativeLanguageSelect":"targetLanguageSelect");if(input)input.value=value;
+    syncUiDropdown(field==="nativeLanguage"?"nativeLanguageDropdown":"targetLanguageDropdown",value);
+  }
   pendingLearningLanguageChange=null;
   const overlay=document.getElementById("languageChangeOverlay");if(overlay)overlay.style.display="none";
   await clearWordProgressOnly({alreadyCommitted:true});
@@ -4324,8 +4334,8 @@ const HISTORY_TYPE_ORDER=["noun","verb","adjective","adverb","pronoun","determin
 const HISTORY_TYPE_NAMES={
   noun:["isim","nom","noun","sustantivo","nome","nomen","substantiv"],verb:["fiil","verbe","verb","verbo"],adjective:["sıfat","adjectif","adjective","adjetivo","aggettivo","adjektiv"],
   adverb:["zarf","adverbe","adverb","adverbio","avverbio"],pronoun:["zamir","pronom","pronoun","pronombre","pronome","pronomen"],determiner:["belirleyici","déterminant","determiner","determinante","artikel"],
-  preposition:["edat","préposition","preposition","preposición","preposizione","präposition"],conjunction:["bağlaç","conjonction","conjunction","conjunción","congiunzione","konjunktion"],
-  numeral:["sayı","nombre","numeral","number","numeral","numerale","zahl"],interjection:["ünlem","interjection","interjección","interiezione","interjektion"],phrase:["kalıp","expression","phrase","expresión","espressione","ausdruck"]
+  preposition:["edat","postposition","postposizione","préposition","preposition","preposición","preposizione","präposition"],conjunction:["bağlaç","conjonction","conjunction","conjunción","congiunzione","konjunktion"],
+  numeral:["sayı","nombre","numeral","number","numeral","numerale","zahl"],interjection:["ünlem","interjection","interjección","interiezione","interjektion"],phrase:["kalıp","locution","expression","phrase","expresión","espressione","ausdruck"]
 };
 let historyTypeLookup=null;                                                        // made on first use: it needs the language settings
 const HISTORY_GROUP_LABELS={

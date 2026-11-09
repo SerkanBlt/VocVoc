@@ -11,15 +11,6 @@
       "bytes": 25129
     },
     {
-      "id": "en-tr",
-      "target": "en",
-      "native": "tr",
-      "level": "A1-A2",
-      "version": 2,
-      "words": 40,
-      "bytes": 26282
-    },
-    {
       "id": "es-tr",
       "target": "es",
       "native": "tr",
@@ -39,6 +30,69 @@
     }
   ],
   "courses": [
+    {
+      "id": "en-tr",
+      "target": "en",
+      "native": "tr",
+      "version": 1,
+      "words": 3276,
+      "levels": {
+        "A1": 745,
+        "A2": 963,
+        "B1": 1568
+      },
+      "orderBytes": 30706,
+      "chunks": [
+        {
+          "id": "A1-01",
+          "level": "A1",
+          "words": 373,
+          "bytes": 146464
+        },
+        {
+          "id": "A1-02",
+          "level": "A1",
+          "words": 372,
+          "bytes": 119144
+        },
+        {
+          "id": "A2-01",
+          "level": "A2",
+          "words": 482,
+          "bytes": 180999
+        },
+        {
+          "id": "A2-02",
+          "level": "A2",
+          "words": 481,
+          "bytes": 165500
+        },
+        {
+          "id": "B1-01",
+          "level": "B1",
+          "words": 392,
+          "bytes": 158004
+        },
+        {
+          "id": "B1-02",
+          "level": "B1",
+          "words": 392,
+          "bytes": 165647
+        },
+        {
+          "id": "B1-03",
+          "level": "B1",
+          "words": 392,
+          "bytes": 175708
+        },
+        {
+          "id": "B1-04",
+          "level": "B1",
+          "words": 392,
+          "bytes": 154828
+        }
+      ]
+    },
     {
       "id": "fr-tr",
       "target": "fr",
@@ -192,6 +246,69 @@
           "level": "C2",
           "words": 500,
           "bytes": 211801
+        }
+      ]
+    },
+    {
+      "id": "tr-fr",
+      "target": "tr",
+      "native": "fr",
+      "version": 1,
+      "words": 3184,
+      "levels": {
+        "A1": 690,
+        "A2": 902,
+        "B1": 1592
+      },
+      "orderBytes": 32805,
+      "chunks": [
+        {
+          "id": "A1-01",
+          "level": "A1",
+          "words": 345,
+          "bytes": 117853
+        },
+        {
+          "id": "A1-02",
+          "level": "A1",
+          "words": 345,
+          "bytes": 109666
+        },
+        {
+          "id": "A2-01",
+          "level": "A2",
+          "words": 451,
+          "bytes": 150209
+        },
+        {
+          "id": "A2-02",
+          "level": "A2",
+          "words": 451,
+          "bytes": 155900
+        },
+        {
+          "id": "B1-01",
+          "level": "B1",
+          "words": 398,
+          "bytes": 166978
+        },
+        {
+          "id": "B1-02",
+          "level": "B1",
+          "words": 398,
+          "bytes": 153932
+        },
+        {
+          "id": "B1-03",
+          "level": "B1",
+          "words": 398,
+          "bytes": 168294
+        },
+        {
+          "id": "B1-04",
+          "level": "B1",
+          "words": 398,
+          "bytes": 158708
         }
       ]
     }

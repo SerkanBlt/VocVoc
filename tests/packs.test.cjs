@@ -124,7 +124,7 @@ describe('The packs that ship with the app',()=>{
         assert(words.some(word=>item.exampleText.toLowerCase().includes(word)),`${name}: the sentence of "${item.text}" does not use it`);
       }
     }
-    assert(count>=75,'a good share of the words has idioms: '+count);
+    assert(count>=55,'a good share of the words has idioms: '+count);
   });
   it('a pack word with expressions still validates when an expression lacks its sentence translation (the checker names it)',()=>{
     const bad=sample({words:[{word:'x',meaning:'y',expressions:[{text:'t',translation:'m',exampleText:'e'}]}]});
