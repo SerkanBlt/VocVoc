@@ -1,0 +1,50 @@
+{"w":"pequeño","t":"sıfat","m":"küçük; ufak","s":["chico"],"a":["grande"],"e":[["Tengo un perro pequeño.","","Küçük bir köpeğim var."],["Mi habitación es pequeña.","","Odam küçük."]]}
+{"w":"bueno","t":"sıfat","m":"iyi; güzel","s":[],"a":["malo"],"e":[["Este libro es muy bueno.","","Bu kitap çok iyi."],["Mi padre es una buena persona.","","Babam iyi bir insan."]],"x":[["buenos días","","günaydın","Buenos días, ¿cómo estás?","","Günaydın, nasılsın?"]]}
+{"w":"malo","t":"sıfat","m":"kötü; hasta","s":[],"a":["bueno"],"e":[["Hace mal tiempo hoy.","","Bugün hava kötü."],["El café está malo.","","Kahve kötü."]]}
+{"w":"nuevo","t":"sıfat","m":"yeni","s":[],"a":["viejo"],"e":[["Tengo un teléfono nuevo.","","Yeni bir telefonum var."],["Mi vecino es nuevo aquí.","","Komşum burada yeni."]]}
+{"w":"viejo","t":"sıfat","m":"eski; yaşlı","s":[],"a":["nuevo","joven"],"e":[["Mi coche es muy viejo.","","Arabam çok eski."],["El abuelo es viejo.","","Dede yaşlı."]]}
+{"w":"joven","t":"sıfat","m":"genç","s":[],"a":["viejo"],"e":[["Mi profesora es joven.","","Öğretmenim genç."],["Los jóvenes salen por la noche.","","Gençler geceleri dışarı çıkar."]]}
+{"w":"alto","t":"sıfat","m":"uzun boylu; yüksek","s":[],"a":["bajo"],"e":[["Mi hermano es muy alto.","","Kardeşim çok uzun boylu."],["Esa montaña es alta.","","O dağ yüksek."]]}
+{"w":"largo","t":"sıfat","m":"uzun","s":[],"a":["corto"],"e":[["Ella tiene el pelo largo.","","Onun saçı uzun."],["El camino es largo.","","Yol uzun."]]}
+{"w":"corto","t":"sıfat","m":"kısa","s":[],"a":["largo"],"e":[["Mi falda es corta.","","Eteğim kısa."],["Es una película corta.","","Kısa bir film."]]}
+{"w":"gordo","t":"sıfat","m":"şişman; kalın","s":[],"a":["delgado"],"e":[["Mi gato es gordo.","","Kedim şişman."],["Es un libro muy gordo.","","Çok kalın bir kitap."]]}
+{"w":"delgado","t":"sıfat","m":"zayıf; ince","s":[],"a":["gordo"],"e":[["Mi hermana es delgada.","","Kız kardeşim zayıf."],["Este libro es delgado.","","Bu kitap ince."]]}
+{"w":"guapo","t":"sıfat","m":"yakışıklı; güzel","s":["bonito"],"a":["feo"],"e":[["Tu novio es muy guapo.","","Erkek arkadaşın çok yakışıklı."],["Ella está guapa hoy.","","O bugün güzel görünüyor."]]}
+{"w":"bonito","t":"sıfat","m":"güzel; hoş","s":["guapo"],"a":["feo"],"e":[["Tienes una casa muy bonita.","","Çok güzel bir evin var."],["Qué día más bonito.","","Ne güzel bir gün."]]}
+{"w":"feo","t":"sıfat","m":"çirkin","s":[],"a":["guapo","bonito"],"e":[["Ese edificio es feo.","","O bina çirkin."],["Hace un tiempo feo.","","Hava kötü."]]}
+{"w":"fácil","t":"sıfat","m":"kolay","s":[],"a":["difícil"],"e":[["El examen es fácil.","","Sınav kolay."],["Es fácil llegar a mi casa.","","Evime gelmek kolay."]]}
+{"w":"difícil","t":"sıfat","m":"zor","s":[],"a":["fácil"],"e":[["El español no es difícil.","","İspanyolca zor değil."],["Es una pregunta difícil.","","Zor bir soru."]]}
+{"w":"rápido","t":"sıfat","m":"hızlı; çabuk","s":[],"a":["lento"],"e":[["Mi coche es muy rápido.","","Arabam çok hızlı."],["Es un tren rápido.","","Hızlı bir tren."]]}
+{"w":"lento","t":"sıfat","m":"yavaş","s":[],"a":["rápido"],"e":[["El autobús es lento.","","Otobüs yavaş."],["Mi ordenador es muy lento.","","Bilgisayarım çok yavaş."]]}
+{"w":"caliente","t":"sıfat","m":"sıcak; ateşli","s":[],"a":["frío"],"e":[["Quiero un café caliente.","","Sıcak bir kahve istiyorum."],["El agua está caliente.","","Su sıcak."]]}
+{"w":"frío","t":"sıfat","m":"soğuk","s":[],"a":["caliente"],"e":[["La sopa está fría.","","Çorba soğuk."],["Quiero una bebida fría.","","Soğuk bir içecek istiyorum."]],"x":[["hace frío","","hava soğuk","Hoy hace frío.","","Bugün hava soğuk."]]}
+{"w":"barato","t":"sıfat","m":"ucuz","s":[],"a":["caro"],"e":[["Este hotel es barato.","","Bu otel ucuz."],["Compro fruta barata en el mercado.","","Pazardan ucuz meyve alıyorum."]]}
+{"w":"caro","t":"sıfat","m":"pahalı","s":[],"a":["barato"],"e":[["Este coche es muy caro.","","Bu araba çok pahalı."],["La vida aquí es cara.","","Burada hayat pahalı."]]}
+{"w":"lleno","t":"sıfat","m":"dolu","s":[],"a":["vacío"],"e":[["El autobús está lleno.","","Otobüs dolu."],["El vaso está lleno de agua.","","Bardak suyla dolu."]]}
+{"w":"vacío","t":"sıfat","m":"boş","s":[],"a":["lleno"],"e":[["La botella está vacía.","","Şişe boş."],["La calle está vacía.","","Sokak boş."]]}
+{"w":"limpio","t":"sıfat","m":"temiz","s":[],"a":["sucio"],"e":[["Mi habitación está limpia.","","Odam temiz."],["La cocina siempre está limpia.","","Mutfak hep temiz."]]}
+{"w":"sucio","t":"sıfat","m":"kirli","s":[],"a":["limpio"],"e":[["Mis zapatos están sucios.","","Ayakkabılarım kirli."],["El suelo está sucio.","","Zemin kirli."]]}
+{"w":"feliz","t":"sıfat","m":"mutlu","s":["contento"],"a":["triste"],"e":[["Estoy muy feliz hoy.","","Bugün çok mutluyum."],["Los niños son felices.","","Çocuklar mutlu."]],"x":[["feliz cumpleaños","","doğum günün kutlu olsun","¡Feliz cumpleaños, Ana!","","Doğum günün kutlu olsun, Ana!"]]}
+{"w":"triste","t":"sıfat","m":"üzgün; hüzünlü","s":[],"a":["feliz","contento"],"e":[["Mi madre está triste.","","Annem üzgün."],["Es una película muy triste.","","Çok hüzünlü bir film."]]}
+{"w":"contento","t":"sıfat","m":"memnun; sevinçli","s":["feliz"],"a":["triste"],"e":[["Estoy contento con mi trabajo.","","İşimden memnunum."],["Mi padre está contento.","","Babam sevinçli."]]}
+{"w":"cansado","t":"sıfat","m":"yorgun","s":[],"a":[],"e":[["Estoy muy cansado.","","Çok yorgunum."],["Los niños están cansados.","","Çocuklar yorgun."]]}
+{"w":"enfermo","t":"sıfat","m":"hasta","s":[],"a":["sano"],"e":[["Mi hijo está enfermo.","","Oğlum hasta."],["Hoy no voy a trabajar porque estoy enfermo.","","Hasta olduğum için bugün çalışmaya gitmiyorum."]]}
+{"w":"mejor","t":"sıfat","m":"daha iyi; en iyi","s":[],"a":["peor"],"e":[["Este café es mejor.","","Bu kahve daha iyi."],["Ana es mi mejor amiga.","","Ana benim en iyi arkadaşım."]]}
+{"w":"peor","t":"sıfat","m":"daha kötü; en kötü","s":[],"a":["mejor"],"e":[["Hoy el tiempo es peor.","","Bugün hava daha kötü."],["Es el peor día de la semana.","","Haftanın en kötü günü."]]}
+{"w":"mayor","t":"sıfat","m":"daha büyük; yaşlı","s":[],"a":["menor"],"e":[["Mi hermano es mayor que yo.","","Kardeşim benden büyük."],["Mi abuelo es una persona mayor.","","Dedem yaşlı bir insan."]]}
+{"w":"menor","t":"sıfat","m":"daha küçük; yaşça küçük","s":[],"a":["mayor"],"e":[["Mi hermana es menor que yo.","","Kız kardeşim benden küçük."],["Soy el hijo menor.","","Ben en küçük oğulum."]]}
+{"w":"igual","t":"sıfat","m":"aynı; eşit","s":["mismo"],"a":["diferente"],"e":[["Los dos coches son iguales.","","İki araba aynı."],["Para mí es igual.","","Benim için fark etmez."]]}
+{"w":"diferente","t":"sıfat","m":"farklı","s":[],"a":["igual"],"e":[["Mi hermano es diferente a mí.","","Kardeşim benden farklı."],["Quiero un color diferente.","","Farklı bir renk istiyorum."]]}
+{"w":"importante","t":"sıfat","m":"önemli","s":[],"a":[],"e":[["La familia es importante.","","Aile önemlidir."],["Tengo una reunión importante.","","Önemli bir toplantım var."]]}
+{"w":"listo","t":"sıfat","m":"hazır; zeki","s":[],"a":["tonto"],"e":[["La cena está lista.","","Akşam yemeği hazır."],["Mi hija es muy lista.","","Kızım çok zeki."]]}
+{"w":"loco","t":"sıfat","m":"deli; çılgın","s":[],"a":[],"e":[["Estás loco.","","Sen delisin."],["Es una idea loca.","","Çılgın bir fikir."]],"x":[["volverse loco","","çıldırmak","Me vuelvo loco con este ruido.","","Bu gürültüden çıldıracağım."]]}
+{"w":"simpático","t":"sıfat","m":"sempatik; cana yakın","s":["amable"],"a":["antipático"],"e":[["Mi vecino es muy simpático.","","Komşum çok cana yakın."],["Su hermana es simpática.","","Kız kardeşi sempatik."]]}
+{"w":"casa","t":"isim (dişil)","m":"ev; hane","s":["hogar"],"a":[],"e":[["Mi casa es pequeña.","","Evim küçük."],["Estoy en casa.","","Evdeyim."]],"x":[["en casa","","evde","Hoy me quedo en casa.","","Bugün evde kalıyorum."]]}
+{"w":"piso","t":"isim (eril)","m":"daire; kat","s":["apartamento"],"a":[],"e":[["Vivo en un piso en el centro.","","Merkezde bir dairede yaşıyorum."],["Mi piso está en el tercer piso.","","Dairem üçüncü katta."]]}
+{"w":"habitación","t":"isim (dişil)","m":"oda; yatak odası","s":["cuarto"],"a":[],"e":[["Mi habitación es azul.","","Odam mavi."],["Quiero una habitación doble.","","Çift kişilik bir oda istiyorum."]]}
+{"w":"cuarto","t":"isim (eril)","m":"oda; çeyrek","s":["habitación"],"a":[],"e":[["Mi cuarto está limpio.","","Odam temiz."],["Son las tres y cuarto.","","Saat üçü çeyrek geçiyor."]]}
+{"w":"cocina","t":"isim (dişil)","m":"mutfak; yemek pişirme","s":[],"a":[],"e":[["Mi madre está en la cocina.","","Annem mutfakta."],["Me gusta la cocina española.","","İspanyol mutfağını severim."]]}
+{"w":"baño","t":"isim (eril)","m":"banyo; tuvalet","s":[],"a":[],"e":[["El baño está limpio.","","Banyo temiz."],["¿Dónde está el baño?","","Tuvalet nerede?"]]}
+{"w":"salón","t":"isim (eril)","m":"oturma odası; salon","s":[],"a":[],"e":[["Vemos la tele en el salón.","","Televizyonu oturma odasında izliyoruz."],["El salón es muy grande.","","Oturma odası çok büyük."]]}
+{"w":"dormitorio","t":"isim (eril)","m":"yatak odası","s":[],"a":[],"e":[["Mi dormitorio tiene una ventana.","","Yatak odamın bir penceresi var."],["Duermo en el dormitorio.","","Yatak odasında uyuyorum."]]}
+{"w":"jardín","t":"isim (eril)","m":"bahçe","s":[],"a":[],"e":[["Mi casa tiene un jardín.","","Evimin bir bahçesi var."],["Los niños juegan en el jardín.","","Çocuklar bahçede oynuyor."]]}

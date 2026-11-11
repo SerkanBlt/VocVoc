@@ -1,0 +1,50 @@
+{"w":"roca","t":"isim (dişil)","m":"kaya","s":[],"a":[],"e":[["Subimos a una roca grande.","","Büyük bir kayaya tırmandık."],["El mar golpea las rocas.","","Deniz kayalara vuruyor."]]}
+{"w":"cueva","t":"isim (dişil)","m":"mağara","s":[],"a":[],"e":[["Entramos en una cueva oscura.","","Karanlık bir mağaraya girdik."],["El oso vive en la cueva.","","Ayı mağarada yaşıyor."]]}
+{"w":"nube","t":"isim (dişil)","m":"bulut","s":[],"a":[],"e":[["Hay muchas nubes hoy.","","Bugün çok bulut var."],["Una nube tapa el sol.","","Bir bulut güneşi kapatıyor."]],"x":[["estar en las nubes","","dalgın olmak","Siempre estás en las nubes.","","Hep dalgınsın."]]}
+{"w":"tormenta","t":"isim (dişil)","m":"fırtına; sağanak","s":[],"a":[],"e":[["Esta noche habrá tormenta.","","Bu gece fırtına olacak."],["Tengo miedo de las tormentas.","","Fırtınalardan korkarım."]]}
+{"w":"trueno","t":"isim (eril)","m":"gök gürültüsü","s":[],"a":[],"e":[["Oí un trueno muy fuerte.","","Çok güçlü bir gök gürültüsü duydum."],["El perro teme a los truenos.","","Köpek gök gürültüsünden korkuyor."]]}
+{"w":"niebla","t":"isim (dişil)","m":"sis","s":[],"a":[],"e":[["Hay mucha niebla en la carretera.","","Yolda çok sis var."],["No veo nada con esta niebla.","","Bu sisle hiçbir şey göremiyorum."]]}
+{"w":"hielo","t":"isim (eril)","m":"buz","s":[],"a":[],"e":[["Quiero agua con hielo.","","Buzlu su istiyorum."],["El lago tiene una capa de hielo.","","Gölün üstünde bir buz tabakası var."]]}
+{"w":"grado","t":"isim (eril)","m":"derece; kademe","s":[],"a":[],"e":[["Hoy hacemos veinte grados.","","Bugün hava yirmi derece."],["Tiene fiebre de treinta y ocho grados.","","Ateşi otuz sekiz derece."]]}
+{"w":"temperatura","t":"isim (dişil)","m":"sıcaklık; ateş","s":[],"a":[],"e":[["La temperatura baja por la noche.","","Sıcaklık geceleri düşer."],["Mide la temperatura al niño.","","Çocuğun ateşini ölç."]]}
+{"w":"clima","t":"isim (eril)","m":"iklim","s":[],"a":[],"e":[["Me gusta el clima de esta región.","","Bu bölgenin iklimini seviyorum."],["El clima está cambiando.","","İklim değişiyor."]]}
+{"w":"planeta","t":"isim (eril)","m":"gezegen","s":[],"a":[],"e":[["La Tierra es un planeta.","","Dünya bir gezegendir."],["Marte es un planeta rojo.","","Mars kırmızı bir gezegendir."]]}
+{"w":"estrella","t":"isim (dişil)","m":"yıldız","s":[],"a":[],"e":[["Esta noche se ven muchas estrellas.","","Bu gece çok yıldız görünüyor."],["Es una estrella de cine.","","O bir sinema yıldızı."]]}
+{"w":"naturaleza","t":"isim (dişil)","m":"doğa","s":[],"a":[],"e":[["Me gusta pasear por la naturaleza.","","Doğada yürümeyi severim."],["Hay que cuidar la naturaleza.","","Doğaya iyi bakmak gerekir."]]}
+{"w":"medio ambiente","t":"kalıp","m":"çevre","s":[],"a":[],"e":[["Cuidamos el medio ambiente.","","Çevreyi koruyoruz."],["El plástico daña el medio ambiente.","","Plastik çevreye zarar verir."]]}
+{"w":"contaminación","t":"isim (dişil)","m":"kirlilik","s":[],"a":[],"e":[["Hay mucha contaminación en la ciudad.","","Şehirde çok kirlilik var."],["Los coches causan contaminación.","","Arabalar kirliliğe neden olur."]]}
+{"w":"energía","t":"isim (dişil)","m":"enerji","s":[],"a":[],"e":[["Hoy tengo mucha energía.","","Bugün çok enerjim var."],["Usamos energía solar en casa.","","Evde güneş enerjisi kullanıyoruz."]]}
+{"w":"electricidad","t":"isim (dişil)","m":"elektrik","s":[],"a":[],"e":[["Se fue la electricidad anoche.","","Dün gece elektrikler gitti."],["Pagamos la electricidad cada mes.","","Elektriği her ay ödüyoruz."]]}
+{"w":"gas","t":"isim (eril)","m":"gaz; doğalgaz","s":[],"a":[],"e":[["Cocino con gas.","","Gazla yemek pişiriyorum."],["Abre la ventana, huele a gas.","","Pencereyi aç, gaz kokuyor."]]}
+{"w":"petróleo","t":"isim (eril)","m":"petrol","s":[],"a":[],"e":[["El petróleo es muy caro.","","Petrol çok pahalı."],["Ese país produce petróleo.","","O ülke petrol üretiyor."]]}
+{"w":"pila","t":"isim (dişil)","m":"pil; yığın; lavabo teknesi","s":["batería"],"a":[],"e":[["Cambia las pilas del mando.","","Kumandanın pillerini değiştir."],["Hay una pila de platos.","","Bir yığın tabak var."]]}
+{"w":"cable","t":"isim (eril)","m":"kablo","s":[],"a":[],"e":[["Este cable es muy corto.","","Bu kablo çok kısa."],["Necesito un cable para el móvil.","","Telefon için bir kabloya ihtiyacım var."]]}
+{"w":"enchufe","t":"isim (eril)","m":"priz; fiş","s":[],"a":[],"e":[["¿Hay un enchufe aquí cerca?","","Burada yakında bir priz var mı?"],["Saca el enchufe de la pared.","","Fişi duvardan çek."]]}
+{"w":"foco","t":"isim (eril)","m":"ampul; spot ışığı; odak","s":["bombilla"],"a":[],"e":[["Se fundió el foco del pasillo.","","Koridordaki ampul patladı."],["Un foco ilumina el escenario.","","Bir spot sahneyi aydınlatıyor."]]}
+{"w":"vela","t":"isim (dişil)","m":"mum; yelken","s":[],"a":[],"e":[["Encendemos una vela en la mesa.","","Masada bir mum yakıyoruz."],["El barco lleva una vela blanca.","","Teknenin beyaz bir yelkeni var."]]}
+{"w":"humo","t":"isim (eril)","m":"duman","s":[],"a":[],"e":[["Sale humo de la cocina.","","Mutfaktan duman çıkıyor."],["No me gusta el humo del tabaco.","","Sigara dumanını sevmem."]]}
+{"w":"ceniza","t":"isim (dişil)","m":"kül","s":[],"a":[],"e":[["Hay ceniza en la chimenea.","","Şöminede kül var."],["Tira la ceniza del cigarro.","","Sigaranın külünü at."]]}
+{"w":"llama","t":"isim (dişil)","m":"alev; lama","s":[],"a":[],"e":[["La llama de la vela se apaga.","","Mumun alevi sönüyor."],["Una llama come hierba en el zoo.","","Hayvanat bahçesinde bir lama ot yiyor."]]}
+{"w":"insecto","t":"isim (eril)","m":"böcek","s":[],"a":[],"e":[["Un insecto entró en la casa.","","Eve bir böcek girdi."],["En verano hay muchos insectos.","","Yazın çok böcek olur."]]}
+{"w":"mosca","t":"isim (dişil)","m":"sinek","s":[],"a":[],"e":[["Una mosca vuela por la cocina.","","Mutfakta bir sinek uçuyor."],["Las moscas odian el frío.","","Sinekler soğuktan nefret eder."]]}
+{"w":"mosquito","t":"isim (eril)","m":"sivrisinek","s":[],"a":[],"e":[["Un mosquito me picó anoche.","","Dün gece bir sivrisinek beni ısırdı."],["Hay muchos mosquitos junto al río.","","Nehrin yanında çok sivrisinek var."]]}
+{"w":"araña","t":"isim (dişil)","m":"örümcek; avize","s":[],"a":[],"e":[["Hay una araña en la pared.","","Duvarda bir örümcek var."],["La araña del salón es muy bonita.","","Salondaki avize çok güzel."]]}
+{"w":"hormiga","t":"isim (dişil)","m":"karınca","s":[],"a":[],"e":[["Las hormigas trabajan mucho.","","Karıncalar çok çalışır."],["Vi hormigas en la cocina.","","Mutfakta karınca gördüm."]]}
+{"w":"mariposa","t":"isim (dişil)","m":"kelebek","s":[],"a":[],"e":[["Una mariposa vuela por el jardín.","","Bahçede bir kelebek uçuyor."],["Las mariposas tienen colores bonitos.","","Kelebeklerin renkleri güzeldir."]]}
+{"w":"abeja","t":"isim (dişil)","m":"arı","s":[],"a":[],"e":[["Las abejas hacen miel.","","Arılar bal yapar."],["Una abeja me picó en la mano.","","Bir arı elimi soktu."]]}
+{"w":"serpiente","t":"isim (dişil)","m":"yılan","s":[],"a":[],"e":[["Vimos una serpiente en el camino.","","Yolda bir yılan gördük."],["Le tengo miedo a las serpientes.","","Yılanlardan korkarım."]]}
+{"w":"ratón","t":"isim (eril)","m":"fare; mouse","s":[],"a":[],"e":[["El gato persigue al ratón.","","Kedi fareyi kovalıyor."],["Mi ratón del ordenador no funciona.","","Bilgisayarımın faresi çalışmıyor."]]}
+{"w":"conejo","t":"isim (eril)","m":"tavşan","s":[],"a":[],"e":[["El conejo come zanahorias.","","Tavşan havuç yiyor."],["Mi hija tiene un conejo blanco.","","Kızımın beyaz bir tavşanı var."]]}
+{"w":"oveja","t":"isim (dişil)","m":"koyun","s":[],"a":[],"e":[["Las ovejas están en el campo.","","Koyunlar tarlada."],["La oveja da lana.","","Koyun yün verir."]]}
+{"w":"cabra","t":"isim (dişil)","m":"keçi","s":[],"a":[],"e":[["La cabra come hierba.","","Keçi ot yiyor."],["Hacemos queso de cabra.","","Keçi peyniri yapıyoruz."]]}
+{"w":"gallina","t":"isim (dişil)","m":"tavuk","s":[],"a":[],"e":[["La gallina pone huevos.","","Tavuk yumurta yumurtlar."],["Mi abuela tiene gallinas.","","Büyükannemin tavukları var."]]}
+{"w":"gallo","t":"isim (eril)","m":"horoz","s":[],"a":[],"e":[["El gallo canta al amanecer.","","Horoz şafakta öter."],["Hay un gallo en la granja.","","Çiftlikte bir horoz var."]]}
+{"w":"pez","t":"isim (eril)","m":"balık","s":[],"a":[],"e":[["Tengo un pez en casa.","","Evde bir balığım var."],["El pez nada en el río.","","Balık nehirde yüzüyor."]]}
+{"w":"tortuga","t":"isim (dişil)","m":"kaplumbağa","s":[],"a":[],"e":[["La tortuga camina muy despacio.","","Kaplumbağa çok yavaş yürür."],["Vimos tortugas en la playa.","","Plajda kaplumbağalar gördük."]]}
+{"w":"rana","t":"isim (dişil)","m":"kurbağa","s":[],"a":[],"e":[["La rana salta al agua.","","Kurbağa suya atlıyor."],["Por la noche cantan las ranas.","","Geceleri kurbağalar ötüyor."]]}
+{"w":"lobo","t":"isim (eril)","m":"kurt","s":[],"a":[],"e":[["El lobo vive en el bosque.","","Kurt ormanda yaşar."],["Oímos aullar a un lobo.","","Bir kurdun ulduğunu duyduk."]]}
+{"w":"oso","t":"isim (eril)","m":"ayı","s":[],"a":[],"e":[["El oso duerme en invierno.","","Ayı kışın uyur."],["El niño tiene un oso de peluche.","","Çocuğun bir oyuncak ayısı var."]]}
+{"w":"león","t":"isim (eril)","m":"aslan","s":[],"a":[],"e":[["El león es el rey de la selva.","","Aslan ormanın kralıdır."],["Vimos un león en el zoo.","","Hayvanat bahçesinde bir aslan gördük."]]}
+{"w":"tigre","t":"isim (eril)","m":"kaplan","s":[],"a":[],"e":[["El tigre tiene rayas negras.","","Kaplanın siyah çizgileri var."],["Un tigre corre muy rápido.","","Kaplan çok hızlı koşar."]]}
+{"w":"elefante","t":"isim (eril)","m":"fil","s":[],"a":[],"e":[["El elefante es enorme.","","Fil kocamandır."],["Los niños dan de comer al elefante.","","Çocuklar file yem veriyor."]]}
+{"w":"mono","t":"isim (eril)","m":"maymun","s":[],"a":[],"e":[["El mono come plátanos.","","Maymun muz yiyor."],["Un mono salta de árbol en árbol.","","Bir maymun ağaçtan ağaca atlıyor."]]}

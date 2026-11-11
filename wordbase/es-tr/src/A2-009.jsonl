@@ -1,0 +1,50 @@
+{"w":"general","t":"sıfat","m":"genel","s":[],"a":[],"e":[["Tengo una idea general del tema.","","Konu hakkında genel bir fikrim var."],["En general, me gusta mi trabajo.","","Genel olarak işimi seviyorum."]]}
+{"w":"especial","t":"sıfat","m":"özel; olağanüstü","s":[],"a":[],"e":[["Hoy es un día muy especial.","","Bugün çok özel bir gün."],["Quiero algo especial para cenar.","","Akşam yemeği için özel bir şey istiyorum."]]}
+{"w":"normal","t":"sıfat","m":"normal; olağan","s":[],"a":[],"e":[["Es normal estar cansado.","","Yorgun olmak normal."],["Hoy fue un día normal.","","Bugün sıradan bir gündü."]]}
+{"w":"raro","t":"sıfat","m":"tuhaf; nadir","s":[],"a":[],"e":[["Es raro que no llame.","","Aramaması tuhaf."],["Es una planta muy rara.","","Bu çok nadir bir bitki."]]}
+{"w":"extraño","t":"sıfat","m":"garip; yabancı","s":[],"a":[],"e":[["Oí un ruido extraño.","","Garip bir ses duydum."],["Hay un hombre extraño en la puerta.","","Kapıda yabancı bir adam var."]]}
+{"w":"curioso","t":"sıfat","m":"meraklı; ilginç","s":[],"a":[],"e":[["Mi hijo es muy curioso.","","Oğlum çok meraklı."],["Es una historia curiosa.","","İlginç bir hikâye."]]}
+{"w":"posible","t":"sıfat","m":"mümkün; olası","s":[],"a":["imposible"],"e":[["¿Es posible pagar con tarjeta?","","Kartla ödemek mümkün mü?"],["Llámame lo antes posible.","","Beni mümkün olan en kısa sürede ara."]]}
+{"w":"imposible","t":"sıfat","m":"imkânsız","s":[],"a":["posible"],"e":[["Es imposible llegar a tiempo.","","Zamanında varmak imkânsız."],["Me pides algo imposible.","","Benden imkânsız bir şey istiyorsun."]]}
+{"w":"necesario","t":"sıfat","m":"gerekli; zorunlu","s":[],"a":["innecesario"],"e":[["Es necesario beber agua.","","Su içmek gerekli."],["No es necesario llamar.","","Aramak gerekli değil."]]}
+{"w":"útil","t":"sıfat","m":"yararlı; faydalı","s":[],"a":["inútil"],"e":[["Este diccionario es muy útil.","","Bu sözlük çok yararlı."],["Tu consejo me fue útil.","","Tavsiyen bana faydalı oldu."]]}
+{"w":"inútil","t":"sıfat","m":"işe yaramaz; boşuna","s":[],"a":["útil"],"e":[["Es inútil discutir con él.","","Onunla tartışmak boşuna."],["Esta herramienta es inútil.","","Bu alet işe yaramaz."]]}
+{"w":"correcto","t":"sıfat","m":"doğru; uygun","s":[],"a":["incorrecto"],"e":[["Tu respuesta es correcta.","","Cevabın doğru."],["¿Es correcto escribirlo así?","","Bunu böyle yazmak doğru mu?"]]}
+{"w":"exacto","t":"sıfat","m":"tam; kesin","s":[],"a":[],"e":[["Necesito el precio exacto.","","Kesin fiyata ihtiyacım var."],["Son las tres exactas.","","Saat tam üç."]]}
+{"w":"perfecto","t":"sıfat","m":"mükemmel; kusursuz","s":[],"a":[],"e":[["Tu español es perfecto.","","İspanyolcan mükemmel."],["Hace un día perfecto para la playa.","","Plaj için mükemmel bir gün."]]}
+{"w":"terrible","t":"sıfat","m":"berbat; korkunç","s":[],"a":[],"e":[["Hizo un tiempo terrible ayer.","","Dün hava berbattı."],["Tengo un dolor de cabeza terrible.","","Korkunç bir baş ağrım var."]]}
+{"w":"horrible","t":"sıfat","m":"korkunç; iğrenç","s":[],"a":[],"e":[["La comida estaba horrible.","","Yemek iğrençti."],["Tuve una pesadilla horrible.","","Korkunç bir kabus gördüm."]]}
+{"w":"fantástico","t":"sıfat","m":"harika; fantastik","s":[],"a":[],"e":[["Fue un viaje fantástico.","","Harika bir geziydi."],["Me encantan las historias fantásticas.","","Fantastik hikâyeleri çok severim."]]}
+{"w":"increíble","t":"sıfat","m":"inanılmaz","s":[],"a":[],"e":[["Es una historia increíble.","","İnanılmaz bir hikâye."],["¡Qué increíble, ganamos!","","Ne inanılmaz, kazandık!"]]}
+{"w":"maravilloso","t":"sıfat","m":"harika; muhteşem","s":[],"a":[],"e":[["Pasamos un día maravilloso.","","Harika bir gün geçirdik."],["La vista desde aquí es maravillosa.","","Buradan manzara muhteşem."]]}
+{"w":"excelente","t":"sıfat","m":"mükemmel; çok iyi","s":[],"a":[],"e":[["Sacó una nota excelente.","","Mükemmel bir not aldı."],["El servicio fue excelente.","","Servis mükemmeldi."]]}
+{"w":"genial","t":"sıfat","m":"harika; süper","s":[],"a":[],"e":[["¡Qué idea tan genial!","","Ne harika bir fikir!"],["La fiesta estuvo genial.","","Parti harikaydı."]]}
+{"w":"precioso","t":"sıfat","m":"çok güzel; değerli","s":[],"a":[],"e":[["Tienes una casa preciosa.","","Çok güzel bir evin var."],["El tiempo es muy precioso.","","Zaman çok değerli."]]}
+{"w":"hermoso","t":"sıfat","m":"güzel; muhteşem","s":[],"a":[],"e":[["Es un paisaje hermoso.","","Güzel bir manzara."],["Tienes una hermosa sonrisa.","","Güzel bir gülüşün var."]]}
+{"w":"lindo","t":"sıfat","m":"şirin; tatlı","s":[],"a":[],"e":[["Qué lindo es tu perro.","","Köpeğin ne şirin."],["Es un pueblo muy lindo.","","Çok şirin bir köy."]]}
+{"w":"agradable","t":"sıfat","m":"hoş; keyifli","s":[],"a":["desagradable"],"e":[["Pasamos una tarde agradable.","","Keyifli bir öğleden sonra geçirdik."],["Tu vecino es muy agradable.","","Komşun çok hoş biri."]]}
+{"w":"cómodo","t":"sıfat","m":"rahat","s":[],"a":["incómodo"],"e":[["Este sillón es muy cómodo.","","Bu koltuk çok rahat."],["No me siento cómodo aquí.","","Burada kendimi rahat hissetmiyorum."]]}
+{"w":"peligroso","t":"sıfat","m":"tehlikeli","s":[],"a":["seguro"],"e":[["Esta calle es peligrosa de noche.","","Bu sokak geceleri tehlikeli."],["Es peligroso conducir con sueño.","","Uykuluyken araba kullanmak tehlikeli."]]}
+{"w":"brillante","t":"sıfat","m":"parlak; zeki","s":[],"a":["opaco"],"e":[["Las estrellas son muy brillantes.","","Yıldızlar çok parlak."],["Es una idea brillante.","","Parlak bir fikir."]]}
+{"w":"común","t":"sıfat","m":"ortak; yaygın","s":[],"a":[],"e":[["Tenemos un amigo común.","","Ortak bir arkadaşımız var."],["Es un nombre muy común.","","Çok yaygın bir isim."]]}
+{"w":"típico","t":"sıfat","m":"tipik; geleneksel","s":[],"a":[],"e":[["Es un plato típico de España.","","İspanya'ya özgü bir yemek."],["¡Qué típico de ti!","","Tam senlik!"]]}
+{"w":"tradicional","t":"sıfat","m":"geleneksel","s":[],"a":[],"e":[["Preparamos una cena tradicional.","","Geleneksel bir akşam yemeği hazırlıyoruz."],["Mi familia es muy tradicional.","","Ailem çok gelenekseldir."]]}
+{"w":"popular","t":"sıfat","m":"popüler; halk","s":[],"a":[],"e":[["Es un cantante muy popular.","","Çok popüler bir şarkıcı."],["La música popular me encanta.","","Halk müziğine bayılırım."]]}
+{"w":"conocido","t":"sıfat","m":"tanınmış; bilinen","s":[],"a":["desconocido"],"e":[["Es un actor muy conocido.","","Çok tanınmış bir oyuncu."],["Esta canción me es conocida.","","Bu şarkı bana tanıdık geliyor."]]}
+{"w":"principal","t":"sıfat","m":"ana; baş","s":[],"a":[],"e":[["La calle principal está cerrada.","","Ana cadde kapalı."],["Mi problema principal es el tiempo.","","Asıl sorunum zaman."]]}
+{"w":"único","t":"sıfat","m":"tek; eşsiz","s":[],"a":[],"e":[["Soy hijo único.","","Tek çocuğum."],["Es una oportunidad única.","","Eşsiz bir fırsat."]]}
+{"w":"entero","t":"sıfat","m":"bütün; tam","s":[],"a":[],"e":[["Me comí la pizza entera.","","Pizzanın hepsini yedim."],["Estudié el día entero.","","Bütün gün ders çalıştım."]]}
+{"w":"total","t":"sıfat","m":"toplam; tam","s":[],"a":[],"e":[["El precio total es veinte euros.","","Toplam fiyat yirmi avro."],["Hubo un silencio total.","","Tam bir sessizlik oldu."]]}
+{"w":"completo","t":"sıfat","m":"tam; eksiksiz; dolu","s":[],"a":["incompleto"],"e":[["El hotel está completo.","","Otel dolu."],["Quiero un desayuno completo.","","Eksiksiz bir kahvaltı istiyorum."]]}
+{"w":"cantidad","t":"isim (dişil)","m":"miktar; adet","s":[],"a":[],"e":[["Necesito una cantidad pequeña de sal.","","Küçük bir miktar tuza ihtiyacım var."],["Había gran cantidad de gente.","","Çok sayıda insan vardı."]]}
+{"w":"resto","t":"isim (eril)","m":"geri kalan; artık","s":[],"a":[],"e":[["Te explico el resto mañana.","","Geri kalanını yarın anlatırım."],["El resto de la clase ya se fue.","","Sınıfın geri kalanı gitti."]]}
+{"w":"trozo","t":"isim (eril)","m":"parça; dilim","s":[],"a":[],"e":[["Quiero un trozo de pastel.","","Bir dilim pasta istiyorum."],["Corté el pan en trozos.","","Ekmeği parçalara kestim."]]}
+{"w":"grupo","t":"isim (eril)","m":"grup; topluluk","s":[],"a":[],"e":[["Trabajamos en grupo.","","Grup halinde çalışıyoruz."],["Mi grupo favorito toca esta noche.","","Favori grubum bu gece çalıyor."]]}
+{"w":"montón","t":"isim (eril)","m":"yığın; bir sürü","s":[],"a":[],"e":[["Hay un montón de ropa en la silla.","","Sandalyede bir yığın giysi var."],["Tengo un montón de trabajo.","","Bir sürü işim var."]],"x":[["un montón de","","bir sürü","Tengo un montón de amigos.","","Bir sürü arkadaşım var."]]}
+{"w":"tipo","t":"isim (eril)","m":"tür; çeşit; herif","s":[],"a":[],"e":[["¿Qué tipo de música te gusta?","","Ne tür müzik seversin?"],["Ese tipo es muy simpático.","","O adam çok sempatik."]]}
+{"w":"manera","t":"isim (dişil)","m":"yol; tarz","s":[],"a":["modo"],"e":[["Hay una manera más fácil.","","Daha kolay bir yol var."],["No me gusta su manera de hablar.","","Konuşma tarzını sevmiyorum."]],"x":[["de todas maneras","","her halükârda","De todas maneras, iré a la fiesta.","","Her halükârda partiye gideceğim."]]}
+{"w":"modo","t":"isim (eril)","m":"biçim; tarz; mod","s":[],"a":["manera"],"e":[["Tiene un modo raro de hablar.","","Tuhaf bir konuşma biçimi var."],["Pon el móvil en modo avión.","","Telefonu uçak moduna al."]]}
+{"w":"sistema","t":"isim (eril)","m":"sistem","s":[],"a":[],"e":[["El sistema no funciona hoy.","","Sistem bugün çalışmıyor."],["Tenemos un buen sistema de transporte.","","İyi bir ulaşım sistemimiz var."]]}
+{"w":"estilo","t":"isim (eril)","m":"stil; tarz","s":[],"a":[],"e":[["Me gusta tu estilo de vestir.","","Giyim tarzını beğeniyorum."],["Es una casa de estilo moderno.","","Modern tarzda bir ev."]]}
+{"w":"rápidamente","t":"zarf","m":"hızlıca; çabucak","s":["deprisa"],"a":["lentamente"],"e":[["Come rápidamente porque tenemos prisa.","","Çabuk ye, çünkü acelemiz var."],["Corrió rápidamente a casa.","","Eve hızlıca koştu."]]}
+{"w":"lentamente","t":"zarf","m":"yavaşça; ağır ağır","s":["despacio"],"a":["rápidamente"],"e":[["Habla lentamente, por favor.","","Yavaş konuş lütfen."],["El tren avanza lentamente.","","Tren yavaşça ilerliyor."]]}

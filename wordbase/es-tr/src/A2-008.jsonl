@@ -1,0 +1,50 @@
+{"w":"sabor","t":"isim (eril)","m":"tat; lezzet","s":[],"a":[],"e":[["Me gusta el sabor de este helado.","","Bu dondurmanın tadını seviyorum."],["¿Qué sabor prefieres, fresa o limón?","","Hangi tadı tercih edersin, çilek mi limon mu?"]]}
+{"w":"delicioso","t":"sıfat","m":"nefis; lezzetli","s":["rico","sabroso"],"a":[],"e":[["La tarta está deliciosa.","","Pasta nefis."],["Fue una cena deliciosa.","","Nefis bir akşam yemeğiydi."]]}
+{"w":"amargo","t":"sıfat","m":"acı; buruk","s":[],"a":["dulce"],"e":[["Este café está muy amargo.","","Bu kahve çok acı."],["Fue una experiencia amarga.","","Acı bir deneyimdi."]]}
+{"w":"ácido","t":"sıfat","m":"ekşi; asidik","s":[],"a":["dulce"],"e":[["El limón es muy ácido.","","Limon çok ekşidir."],["Esta salsa tiene un sabor ácido.","","Bu sosun ekşi bir tadı var."]]}
+{"w":"picante","t":"sıfat","m":"acı; baharatlı","s":[],"a":[],"e":[["No me gusta la comida picante.","","Acı yemeği sevmem."],["La salsa es muy picante.","","Sos çok acı."]]}
+{"w":"crudo","t":"sıfat","m":"çiğ; pişmemiş","s":[],"a":["cocido"],"e":[["No como pescado crudo.","","Çiğ balık yemem."],["La carne está cruda todavía.","","Et hâlâ çiğ."]]}
+{"w":"fresco","t":"sıfat","m":"taze; serin","s":[],"a":[],"e":[["El pescado está muy fresco.","","Balık çok taze."],["Por la noche hace fresco.","","Geceleri hava serin olur."]]}
+{"w":"tímido","t":"sıfat","m":"utangaç; çekingen","s":[],"a":[],"e":[["Mi hijo es muy tímido.","","Oğlum çok utangaç."],["Es tímido con las chicas.","","Kızların yanında çekingen."]]}
+{"w":"alegre","t":"sıfat","m":"neşeli; sevinçli","s":["contento"],"a":["triste"],"e":[["Ella es una chica muy alegre.","","O çok neşeli bir kız."],["La música es alegre.","","Müzik neşeli."]]}
+{"w":"nervioso","t":"sıfat","m":"gergin; sinirli","s":[],"a":["tranquilo"],"e":[["Estoy nervioso por el examen.","","Sınav yüzünden gerginim."],["Mi perro se pone nervioso con los truenos.","","Köpeğim gök gürültüsünde huzursuzlanıyor."]]}
+{"w":"enfadado","t":"sıfat","m":"kızgın; öfkeli","s":[],"a":[],"e":[["Mi madre está enfadada conmigo.","","Annem bana kızgın."],["No te pongas enfadado.","","Kızma."]]}
+{"w":"preocupado","t":"sıfat","m":"endişeli; kaygılı","s":[],"a":["tranquilo"],"e":[["Estoy preocupado por mi hermano.","","Kardeşim için endişeliyim."],["Tiene cara de preocupada.","","Endişeli bir yüzü var."]]}
+{"w":"sorprendido","t":"sıfat","m":"şaşırmış","s":[],"a":[],"e":[["Estoy muy sorprendido con la noticia.","","Habere çok şaşırdım."],["Ella me miró sorprendida.","","Bana şaşkın şaşkın baktı."]]}
+{"w":"aburrido","t":"sıfat","m":"sıkıcı; sıkılmış","s":[],"a":["divertido"],"e":[["La película es muy aburrida.","","Film çok sıkıcı."],["Estoy aburrido en casa.","","Evde sıkıldım."]]}
+{"w":"divertido","t":"sıfat","m":"eğlenceli","s":[],"a":["aburrido"],"e":[["La fiesta fue muy divertida.","","Parti çok eğlenceliydi."],["Mi profesor es divertido.","","Öğretmenim eğlenceli biri."]]}
+{"w":"gracioso","t":"sıfat","m":"komik; esprili","s":[],"a":[],"e":[["Tu amigo es muy gracioso.","","Arkadaşın çok komik."],["No me parece gracioso.","","Bana komik gelmiyor."]]}
+{"w":"serio","t":"sıfat","m":"ciddi","s":[],"a":[],"e":[["El jefe es una persona seria.","","Patron ciddi bir insan."],["Es un problema serio.","","Ciddi bir sorun."]],"x":[["en serio","","ciddi olarak","¿Lo dices en serio?","","Ciddi mi söylüyorsun?"]]}
+{"w":"orgulloso","t":"sıfat","m":"gururlu; kibirli","s":[],"a":[],"e":[["Estoy orgulloso de mi hija.","","Kızımla gurur duyuyorum."],["Es muy orgulloso y no pide ayuda.","","Çok gururlu, yardım istemez."]]}
+{"w":"celoso","t":"sıfat","m":"kıskanç","s":[],"a":[],"e":[["Mi novio es muy celoso.","","Sevgilim çok kıskanç."],["No seas celoso.","","Kıskanç olma."]]}
+{"w":"generoso","t":"sıfat","m":"cömert","s":[],"a":[],"e":[["Mi tío es muy generoso.","","Amcam çok cömert."],["Fue un regalo generoso.","","Cömert bir hediyeydi."]]}
+{"w":"perezoso","t":"sıfat","m":"tembel","s":[],"a":[],"e":[["Hoy estoy muy perezoso.","","Bugün çok tembelim."],["El gato es perezoso.","","Kedi tembel."]]}
+{"w":"valiente","t":"sıfat","m":"cesur; yürekli","s":["bravo"],"a":["cobarde"],"e":[["El bombero es muy valiente.","","İtfaiyeci çok cesur."],["Fue valiente al decir la verdad.","","Gerçeği söylerken cesurdu."]]}
+{"w":"sano","t":"sıfat","m":"sağlıklı","s":[],"a":["enfermo"],"e":[["Comer fruta es sano.","","Meyve yemek sağlıklıdır."],["Mi abuelo está sano y fuerte.","","Dedem sağlıklı ve güçlü."]],"x":[["sano y salvo","","sağ salim","Llegaron sanos y salvos.","","Sağ salim vardılar."]]}
+{"w":"herido","t":"sıfat","m":"yaralı","s":[],"a":[],"e":[["El jugador está herido.","","Oyuncu yaralı."],["Hay dos heridos en el accidente.","","Kazada iki yaralı var."]]}
+{"w":"muerto","t":"sıfat","m":"ölü","s":[],"a":["vivo"],"e":[["El pájaro está muerto.","","Kuş ölü."],["Estoy muerto de cansancio.","","Yorgunluktan ölüyorum."]]}
+{"w":"vivo","t":"sıfat","m":"canlı; yaşayan; capcanlı","s":[],"a":["muerto"],"e":[["Mi abuela todavía está viva.","","Büyükannem hâlâ hayatta."],["Es un pez vivo.","","Bu canlı bir balık."]]}
+{"w":"despierto","t":"sıfat","m":"uyanık","s":[],"a":["dormido"],"e":[["Estoy despierto desde las seis.","","Altıdan beri uyanığım."],["El bebé está despierto.","","Bebek uyanık."]]}
+{"w":"dormido","t":"sıfat","m":"uyumuş; uykuda","s":[],"a":["despierto"],"e":[["El niño está dormido.","","Çocuk uyuyor."],["Me quedé dormido en el sofá.","","Koltukta uyuyakaldım."]]}
+{"w":"borracho","t":"sıfat","m":"sarhoş","s":[],"a":[],"e":[["Estaba borracho y no podía conducir.","","Sarhoştu ve araba kullanamıyordu."],["No hables con ese borracho.","","O sarhoşla konuşma."]]}
+{"w":"casado","t":"sıfat","m":"evli","s":[],"a":["soltero"],"e":[["Mi hermano está casado.","","Ağabeyim evli."],["Están casados desde hace diez años.","","On yıldır evliler."]]}
+{"w":"soltero","t":"sıfat","m":"bekâr","s":[],"a":["casado"],"e":[["Mi primo todavía está soltero.","","Kuzenim hâlâ bekâr."],["Ella es soltera y vive sola.","","O bekâr ve yalnız yaşıyor."]]}
+{"w":"moreno","t":"sıfat","m":"esmer; kara saçlı","s":[],"a":["rubio"],"e":[["Mi hermana es morena.","","Kız kardeşim esmer."],["Prefiero los chicos morenos.","","Esmer erkekleri tercih ederim."]]}
+{"w":"rubio","t":"sıfat","m":"sarışın; sarı","s":[],"a":["moreno"],"e":[["Mi hijo es rubio.","","Oğlum sarışın."],["Tiene el pelo rubio.","","Sarı saçlı."]]}
+{"w":"redondo","t":"sıfat","m":"yuvarlak","s":[],"a":[],"e":[["La mesa es redonda.","","Masa yuvarlak."],["La Tierra es casi redonda.","","Dünya neredeyse yuvarlak."]]}
+{"w":"recto","t":"sıfat","m":"düz; dik","s":[],"a":["curvo"],"e":[["Sigue recto hasta el semáforo.","","Trafik ışığına kadar düz git."],["Dibuja una línea recta.","","Düz bir çizgi çiz."]]}
+{"w":"plano","t":"sıfat","m":"düz; yassı","s":[],"a":[],"e":[["El suelo es plano.","","Zemin düz."],["Necesito un plato plano.","","Düz bir tabağa ihtiyacım var."]]}
+{"w":"enorme","t":"sıfat","m":"kocaman; devasa","s":[],"a":[],"e":[["Vive en una casa enorme.","","Kocaman bir evde yaşıyor."],["Hay un perro enorme en la calle.","","Sokakta kocaman bir köpek var."]]}
+{"w":"ligero","t":"sıfat","m":"hafif","s":[],"a":["pesado"],"e":[["Mi mochila es muy ligera.","","Sırt çantam çok hafif."],["Prefiero una cena ligera.","","Hafif bir akşam yemeğini tercih ederim."]]}
+{"w":"pesado","t":"sıfat","m":"ağır; sıkıcı","s":[],"a":["ligero"],"e":[["Esta caja es muy pesada.","","Bu kutu çok ağır."],["No seas pesado, déjame en paz.","","Sıkıcı olma, rahat bırak beni."]]}
+{"w":"antiguo","t":"sıfat","m":"eski; antik","s":[],"a":["moderno"],"e":[["Vivimos en una casa antigua.","","Eski bir evde yaşıyoruz."],["Roma es una ciudad antigua.","","Roma antik bir şehirdir."]]}
+{"w":"moderno","t":"sıfat","m":"modern; çağdaş","s":[],"a":["antiguo"],"e":[["Es un edificio muy moderno.","","Çok modern bir bina."],["Me gusta el arte moderno.","","Modern sanatı severim."]]}
+{"w":"actual","t":"sıfat","m":"şimdiki; güncel","s":[],"a":[],"e":[["¿Cuál es tu trabajo actual?","","Şimdiki işin ne?"],["La situación actual es difícil.","","Güncel durum zor."]]}
+{"w":"anterior","t":"sıfat","m":"önceki","s":[],"a":["siguiente"],"e":[["Lo vi el día anterior.","","Onu bir önceki gün gördüm."],["Mi trabajo anterior era mejor.","","Önceki işim daha iyiydi."]]}
+{"w":"siguiente","t":"sıfat","m":"sonraki; ertesi","s":[],"a":["anterior"],"e":[["El siguiente tren sale en diez minutos.","","Sonraki tren on dakika sonra kalkıyor."],["Al día siguiente me fui.","","Ertesi gün gittim."]]}
+{"w":"pasado","t":"sıfat","m":"geçen; geçmiş","s":[],"a":[],"e":[["El año pasado viajé a Italia.","","Geçen yıl İtalya'ya seyahat ettim."],["Eso ya es pasado.","","Bu artık geçmişte kaldı."]]}
+{"w":"diario","t":"sıfat","m":"günlük","s":[],"a":[],"e":[["Hago ejercicio diario.","","Günlük egzersiz yapıyorum."],["Es mi rutina diaria.","","Bu benim günlük rutinim."]]}
+{"w":"nacional","t":"sıfat","m":"ulusal; yerli","s":[],"a":["internacional"],"e":[["Es el equipo nacional de fútbol.","","Bu milli futbol takımı."],["Escucho las noticias nacionales.","","Ulusal haberleri dinliyorum."]]}
+{"w":"internacional","t":"sıfat","m":"uluslararası","s":[],"a":["nacional"],"e":[["Trabajo en una empresa internacional.","","Uluslararası bir şirkette çalışıyorum."],["El aeropuerto internacional está lejos.","","Uluslararası havalimanı uzakta."]]}
+{"w":"público","t":"sıfat","m":"kamusal; halka açık","s":[],"a":["privado"],"e":[["Voy en transporte público.","","Toplu taşımayla gidiyorum."],["Es un parque público.","","Bu halka açık bir park."]]}
+{"w":"privado","t":"sıfat","m":"özel; gizli","s":[],"a":["público"],"e":[["Estudio en un colegio privado.","","Özel bir okulda okuyorum."],["Es una conversación privada.","","Bu özel bir konuşma."]]}

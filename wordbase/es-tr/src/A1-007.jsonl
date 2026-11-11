@@ -1,0 +1,50 @@
+{"w":"puerta","t":"isim (dişil)","m":"kapı; giriş","s":[],"a":[],"e":[["Abre la puerta, por favor.","","Kapıyı aç lütfen."],["Alguien llama a la puerta.","","Biri kapıyı çalıyor."]]}
+{"w":"ventana","t":"isim (dişil)","m":"pencere","s":[],"a":[],"e":[["Abro la ventana.","","Pencereyi açıyorum."],["Mi cama está junto a la ventana.","","Yatağım pencerenin yanında."]]}
+{"w":"pared","t":"isim (dişil)","m":"duvar","s":[],"a":[],"e":[["La pared es blanca.","","Duvar beyaz."],["Hay un cuadro en la pared.","","Duvarda bir tablo var."]]}
+{"w":"techo","t":"isim (eril)","m":"tavan; çatı","s":[],"a":["suelo"],"e":[["El techo es muy alto.","","Tavan çok yüksek."],["Hay una lámpara en el techo.","","Tavanda bir lamba var."]]}
+{"w":"suelo","t":"isim (eril)","m":"zemin; yer","s":[],"a":["techo"],"e":[["El suelo está sucio.","","Zemin kirli."],["El gato duerme en el suelo.","","Kedi yerde uyuyor."]]}
+{"w":"escalera","t":"isim (dişil)","m":"merdiven","s":[],"a":[],"e":[["Subo por la escalera.","","Merdivenle çıkıyorum."],["La escalera es muy larga.","","Merdiven çok uzun."]]}
+{"w":"mesa","t":"isim (dişil)","m":"masa","s":[],"a":[],"e":[["La comida está en la mesa.","","Yemek masada."],["Reservo una mesa para dos.","","İki kişilik bir masa ayırtıyorum."]],"x":[["poner la mesa","","sofrayı kurmak","Pongo la mesa para cenar.","","Akşam yemeği için sofrayı kuruyorum."]]}
+{"w":"silla","t":"isim (dişil)","m":"sandalye","s":[],"a":[],"e":[["Hay cuatro sillas en la cocina.","","Mutfakta dört sandalye var."],["Siéntate en esta silla.","","Bu sandalyeye otur."]]}
+{"w":"cama","t":"isim (dişil)","m":"yatak; karyola","s":[],"a":[],"e":[["Mi cama es grande.","","Yatağım büyük."],["Estoy en la cama.","","Yataktayım."]],"x":[["hacer la cama","","yatağı yapmak","Hago la cama cada mañana.","","Her sabah yatağımı yaparım."]]}
+{"w":"sofá","t":"isim (eril)","m":"kanepe; koltuk","s":[],"a":[],"e":[["El gato duerme en el sofá.","","Kedi kanepede uyuyor."],["Vemos la tele en el sofá.","","Televizyonu kanepede izliyoruz."]]}
+{"w":"armario","t":"isim (eril)","m":"dolap; gardırop","s":[],"a":[],"e":[["La ropa está en el armario.","","Giysiler dolapta."],["Mi armario es muy pequeño.","","Gardırobum çok küçük."]]}
+{"w":"lámpara","t":"isim (dişil)","m":"lamba; abajur","s":[],"a":[],"e":[["Enciendo la lámpara.","","Lambayı yakıyorum."],["Hay una lámpara en mi mesa.","","Masamda bir lamba var."]]}
+{"w":"televisión","t":"isim (dişil)","m":"televizyon","s":["tele"],"a":[],"e":[["Veo la televisión por la noche.","","Geceleri televizyon izlerim."],["La televisión está en el salón.","","Televizyon oturma odasında."]]}
+{"w":"teléfono","t":"isim (eril)","m":"telefon","s":[],"a":[],"e":[["Mi teléfono es nuevo.","","Telefonum yeni."],["El teléfono suena.","","Telefon çalıyor."]]}
+{"w":"ordenador","t":"isim (eril)","m":"bilgisayar","s":["computadora"],"a":[],"e":[["Trabajo con el ordenador.","","Bilgisayarla çalışıyorum."],["Mi ordenador es muy lento.","","Bilgisayarım çok yavaş."]]}
+{"w":"llave","t":"isim (dişil)","m":"anahtar; musluk","s":[],"a":[],"e":[["¿Dónde está mi llave?","","Anahtarım nerede?"],["Cierro la puerta con llave.","","Kapıyı anahtarla kilitliyorum."]]}
+{"w":"cosa","t":"isim (dişil)","m":"şey; nesne","s":[],"a":[],"e":[["Tengo muchas cosas en la mesa.","","Masada çok şeyim var."],["Es una cosa importante.","","Bu önemli bir şey."]]}
+{"w":"calle","t":"isim (dişil)","m":"sokak; cadde","s":[],"a":[],"e":[["Vivo en esta calle.","","Bu sokakta yaşıyorum."],["Hay mucha gente en la calle.","","Sokakta çok insan var."]]}
+{"w":"ciudad","t":"isim (dişil)","m":"şehir; kent","s":[],"a":["pueblo"],"e":[["Madrid es una ciudad grande.","","Madrid büyük bir şehirdir."],["Vivo en la ciudad.","","Şehirde yaşıyorum."]]}
+{"w":"pueblo","t":"isim (eril)","m":"köy; kasaba; halk","s":[],"a":["ciudad"],"e":[["Mi abuela vive en un pueblo.","","Babaannem bir köyde yaşıyor."],["El pueblo es pequeño y bonito.","","Köy küçük ve güzel."]]}
+{"w":"país","t":"isim (eril)","m":"ülke","s":[],"a":[],"e":[["España es un país bonito.","","İspanya güzel bir ülke."],["¿De qué país eres?","","Hangi ülkedensin?"]]}
+{"w":"mundo","t":"isim (eril)","m":"dünya; evren","s":[],"a":[],"e":[["Quiero viajar por el mundo.","","Dünyayı gezmek istiyorum."],["Hay mucha gente en el mundo.","","Dünyada çok insan var."]],"x":[["todo el mundo","","herkes","Todo el mundo lo sabe.","","Herkes bunu biliyor."]]}
+{"w":"plaza","t":"isim (dişil)","m":"meydan; yer","s":[],"a":[],"e":[["Quedamos en la plaza.","","Meydanda buluşuyoruz."],["La plaza es muy grande.","","Meydan çok büyük."]]}
+{"w":"tienda","t":"isim (dişil)","m":"dükkan; mağaza; çadır","s":[],"a":[],"e":[["Voy a la tienda.","","Dükkâna gidiyorum."],["La tienda abre a las nueve.","","Mağaza dokuzda açılıyor."]]}
+{"w":"supermercado","t":"isim (eril)","m":"süpermarket","s":[],"a":[],"e":[["Compro fruta en el supermercado.","","Süpermarketten meyve alıyorum."],["El supermercado está cerca.","","Süpermarket yakın."]]}
+{"w":"mercado","t":"isim (eril)","m":"pazar; çarşı","s":[],"a":[],"e":[["Voy al mercado los sábados.","","Cumartesi günleri pazara giderim."],["En el mercado todo es barato.","","Pazarda her şey ucuz."]]}
+{"w":"banco","t":"isim (eril)","m":"banka; bank","s":[],"a":[],"e":[["El banco abre a las ocho.","","Banka sekizde açılıyor."],["Nos sentamos en un banco del parque.","","Parktaki bir banka oturuyoruz."]]}
+{"w":"hotel","t":"isim (eril)","m":"otel","s":[],"a":[],"e":[["El hotel está cerca de la playa.","","Otel plaja yakın."],["Reservo una habitación en el hotel.","","Otelde bir oda ayırtıyorum."]]}
+{"w":"restaurante","t":"isim (eril)","m":"restoran; lokanta","s":[],"a":[],"e":[["Comemos en un restaurante.","","Bir restoranda yemek yiyoruz."],["Este restaurante es muy caro.","","Bu restoran çok pahalı."]]}
+{"w":"bar","t":"isim (eril)","m":"bar; kafe","s":[],"a":[],"e":[["Tomo un café en el bar.","","Barda kahve içiyorum."],["Mis amigos están en el bar.","","Arkadaşlarım barda."]]}
+{"w":"café","t":"isim (eril)","m":"kahve; kafe","s":[],"a":[],"e":[["Quiero un café con leche.","","Sütlü kahve istiyorum."],["Quedamos en un café del centro.","","Merkezdeki bir kafede buluşuyoruz."]]}
+{"w":"escuela","t":"isim (dişil)","m":"okul","s":["colegio"],"a":[],"e":[["Los niños van a la escuela.","","Çocuklar okula gidiyor."],["Mi escuela está cerca.","","Okulum yakın."]]}
+{"w":"colegio","t":"isim (eril)","m":"okul; lise","s":["escuela"],"a":[],"e":[["Mi hija va al colegio.","","Kızım okula gidiyor."],["El colegio empieza a las nueve.","","Okul dokuzda başlıyor."]]}
+{"w":"hospital","t":"isim (eril)","m":"hastane","s":[],"a":[],"e":[["Mi madre trabaja en el hospital.","","Annem hastanede çalışıyor."],["El hospital está lejos.","","Hastane uzak."]]}
+{"w":"farmacia","t":"isim (dişil)","m":"eczane","s":[],"a":[],"e":[["Compro aspirinas en la farmacia.","","Eczaneden aspirin alıyorum."],["La farmacia cierra a las ocho.","","Eczane sekizde kapanıyor."]]}
+{"w":"iglesia","t":"isim (dişil)","m":"kilise","s":[],"a":[],"e":[["La iglesia es muy vieja.","","Kilise çok eski."],["Hay una iglesia en la plaza.","","Meydanda bir kilise var."]]}
+{"w":"parque","t":"isim (eril)","m":"park","s":[],"a":[],"e":[["Los niños juegan en el parque.","","Çocuklar parkta oynuyor."],["Paseo por el parque.","","Parkta yürüyüş yapıyorum."]]}
+{"w":"playa","t":"isim (dişil)","m":"plaj; kumsal","s":[],"a":[],"e":[["En verano voy a la playa.","","Yazın plaja giderim."],["La playa está llena de gente.","","Plaj insanla dolu."]]}
+{"w":"mar","t":"isim (eril)","m":"deniz","s":[],"a":[],"e":[["El mar es azul.","","Deniz mavi."],["Vivo cerca del mar.","","Denize yakın yaşıyorum."]]}
+{"w":"río","t":"isim (eril)","m":"nehir; ırmak","s":[],"a":[],"e":[["El río es largo.","","Nehir uzun."],["Paseamos junto al río.","","Nehir kenarında yürüyoruz."]]}
+{"w":"montaña","t":"isim (dişil)","m":"dağ","s":[],"a":[],"e":[["La montaña es muy alta.","","Dağ çok yüksek."],["Vamos a la montaña en invierno.","","Kışın dağa gidiyoruz."]]}
+{"w":"campo","t":"isim (eril)","m":"kır; tarla; saha","s":[],"a":["ciudad"],"e":[["Mis abuelos viven en el campo.","","Büyükanne ve büyükbabam kırda yaşıyor."],["Los niños juegan en el campo de fútbol.","","Çocuklar futbol sahasında oynuyor."]]}
+{"w":"coche","t":"isim (eril)","m":"araba; otomobil","s":["auto"],"a":[],"e":[["Mi coche es rojo.","","Arabam kırmızı."],["Voy al trabajo en coche.","","İşe arabayla gidiyorum."]]}
+{"w":"autobús","t":"isim (eril)","m":"otobüs","s":[],"a":[],"e":[["Tomo el autobús cada día.","","Her gün otobüse biniyorum."],["El autobús llega tarde.","","Otobüs geç geliyor."]]}
+{"w":"tren","t":"isim (eril)","m":"tren","s":[],"a":[],"e":[["El tren sale a las diez.","","Tren ona çıkıyor."],["Viajo en tren a Madrid.","","Madrid'e trenle seyahat ediyorum."]]}
+{"w":"avión","t":"isim (eril)","m":"uçak","s":[],"a":[],"e":[["El avión llega a las seis.","","Uçak altıda geliyor."],["Viajo en avión a México.","","Meksika'ya uçakla seyahat ediyorum."]]}
+{"w":"metro","t":"isim (eril)","m":"metro; metre","s":[],"a":[],"e":[["Voy al trabajo en metro.","","İşe metroyla gidiyorum."],["La estación de metro está cerca.","","Metro istasyonu yakın."]]}
+{"w":"taxi","t":"isim (eril)","m":"taksi","s":[],"a":[],"e":[["Tomo un taxi al hotel.","","Otele taksiyle gidiyorum."],["El taxi es caro.","","Taksi pahalı."]]}
+{"w":"bicicleta","t":"isim (dişil)","m":"bisiklet","s":[],"a":[],"e":[["Voy al parque en bicicleta.","","Parka bisikletle gidiyorum."],["Mi bicicleta es nueva.","","Bisikletim yeni."]]}
+{"w":"barco","t":"isim (eril)","m":"gemi; tekne","s":[],"a":[],"e":[["El barco sale del puerto.","","Gemi limandan çıkıyor."],["Viajamos en barco.","","Gemiyle seyahat ediyoruz."]]}
