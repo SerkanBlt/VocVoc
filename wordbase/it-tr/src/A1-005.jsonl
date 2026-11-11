@@ -1,0 +1,50 @@
+{"w":"cognome","t":"isim (eril)","m":"soyadı","s":[],"a":["nome"],"e":[["Il mio cognome è Rossi.","","Soyadım Rossi."],["Come si scrive il tuo cognome?","","Soyadın nasıl yazılıyor?"]]}
+{"w":"età","t":"isim (dişil)","m":"yaş","s":[],"a":[],"e":[["Che età hai?","","Kaç yaşındasın?"],["Mia nonna ha una certa età.","","Ninem yaşlı biri."]]}
+{"w":"anno","t":"isim (eril)","m":"yıl; yaş","s":[],"a":[],"e":[["Un anno ha dodici mesi.","","Bir yıl on iki aydır."],["Ho trent'anni.","","Otuz yaşındayım."]],"x":[["buon anno","","mutlu yıllar","Buon anno a tutti!","","Herkese mutlu yıllar!"]]}
+{"w":"casa","t":"isim (dişil)","m":"ev","s":[],"a":[],"e":[["La mia casa è piccola.","","Evim küçük."],["Torno a casa alle sei.","","Saat altıda eve dönüyorum."]],"x":[["a casa","","evde; eve","Stasera resto a casa.","","Bu akşam evde kalıyorum."]]}
+{"w":"stanza","t":"isim (dişil)","m":"oda","s":["camera"],"a":[],"e":[["Questa stanza è grande.","","Bu oda büyük."],["Ho una stanza per gli ospiti.","","Misafirler için bir odam var."]]}
+{"w":"camera","t":"isim (dişil)","m":"oda; yatak odası","s":["stanza"],"a":[],"e":[["La mia camera è al primo piano.","","Odam birinci katta."],["Vorrei una camera singola.","","Tek kişilik bir oda istiyorum."]]}
+{"w":"cucina","t":"isim (dişil)","m":"mutfak; yemek (mutfak sanatı)","s":[],"a":[],"e":[["La cucina è piccola ma bella.","","Mutfak küçük ama güzel."],["Amo la cucina italiana.","","İtalyan mutfağını seviyorum."]]}
+{"w":"bagno","t":"isim (eril)","m":"banyo; tuvalet","s":[],"a":[],"e":[["Il bagno è a destra.","","Banyo sağda."],["Faccio il bagno la sera.","","Akşamları banyo yapıyorum."]]}
+{"w":"porta","t":"isim (dişil)","m":"kapı","s":[],"a":["finestra"],"e":[["Apri la porta, per favore.","","Kapıyı aç, lütfen."],["La porta è chiusa.","","Kapı kapalı."]]}
+{"w":"finestra","t":"isim (dişil)","m":"pencere","s":[],"a":[],"e":[["Chiudo la finestra.","","Pencereyi kapatıyorum."],["Dalla finestra vedo il mare.","","Pencereden deniz görünüyor."]]}
+{"w":"letto","t":"isim (eril)","m":"yatak","s":[],"a":[],"e":[["Il letto è comodo.","","Yatak rahat."],["Vado a letto presto.","","Erken yatıyorum."]],"x":[["andare a letto","","yatmak, uyumaya gitmek","Stasera vado a letto presto.","","Bu akşam erken yatıyorum."]]}
+{"w":"tavolo","t":"isim (eril)","m":"masa","s":[],"a":[],"e":[["Il libro è sul tavolo.","","Kitap masanın üstünde."],["Prenotiamo un tavolo per due.","","İki kişilik bir masa ayırtıyoruz."]]}
+{"w":"sedia","t":"isim (dişil)","m":"sandalye","s":[],"a":[],"e":[["Prendi una sedia.","","Bir sandalye al."],["Ci sono quattro sedie intorno al tavolo.","","Masanın etrafında dört sandalye var."]]}
+{"w":"giardino","t":"isim (eril)","m":"bahçe","s":[],"a":[],"e":[["Il giardino è pieno di fiori.","","Bahçe çiçeklerle dolu."],["I bambini giocano in giardino.","","Çocuklar bahçede oynuyor."]]}
+{"w":"piano","t":"isim (eril)","m":"kat; plan; piyano","s":[],"a":[],"e":[["Abito al terzo piano.","","Üçüncü katta oturuyorum."],["Il mio piano è semplice.","","Planım basit."]]}
+{"w":"acqua","t":"isim (dişil)","m":"su","s":[],"a":[],"e":[["Vorrei un bicchiere d'acqua.","","Bir bardak su istiyorum."],["L'acqua è fredda.","","Su soğuk."]]}
+{"w":"pane","t":"isim (eril)","m":"ekmek","s":[],"a":[],"e":[["Compro il pane ogni mattina.","","Her sabah ekmek alıyorum."],["Mangio pane e formaggio.","","Ekmek ve peynir yiyorum."]]}
+{"w":"latte","t":"isim (eril)","m":"süt","s":[],"a":[],"e":[["Bevo il latte a colazione.","","Kahvaltıda süt içiyorum."],["Un caffè con latte, per favore.","","Sütlü bir kahve, lütfen."]]}
+{"w":"caffè","t":"isim (eril)","m":"kahve; kahvehane, kafe","s":[],"a":[],"e":[["Prendo un caffè.","","Bir kahve alıyorum."],["Ci vediamo al caffè in piazza.","","Meydandaki kafede buluşuyoruz."]]}
+{"w":"tè","t":"isim (eril)","m":"çay","s":[],"a":[],"e":[["Preferisco il tè al caffè.","","Çayı kahveye tercih ediyorum."],["Vuoi un tè caldo?","","Sıcak bir çay ister misin?"]]}
+{"w":"vino","t":"isim (eril)","m":"şarap","s":[],"a":[],"e":[["Il vino rosso è buono.","","Kırmızı şarap güzel."],["Un bicchiere di vino bianco, per favore.","","Bir kadeh beyaz şarap, lütfen."]]}
+{"w":"birra","t":"isim (dişil)","m":"bira","s":[],"a":[],"e":[["Prendo una birra fredda.","","Soğuk bir bira alıyorum."],["Mio padre beve la birra.","","Babam bira içiyor."]]}
+{"w":"succo","t":"isim (eril)","m":"meyve suyu; öz","s":[],"a":[],"e":[["Bevo un succo di arancia.","","Bir portakal suyu içiyorum."],["Il succo di mela è dolce.","","Elma suyu tatlı."]]}
+{"w":"carne","t":"isim (dişil)","m":"et","s":[],"a":[],"e":[["Non mangio carne.","","Et yemiyorum."],["La carne è fresca.","","Et taze."]]}
+{"w":"pesce","t":"isim (eril)","m":"balık","s":[],"a":[],"e":[["Il pesce è buonissimo.","","Balık çok lezzetli."],["Mangiamo pesce il venerdì.","","Cuma günleri balık yiyoruz."]]}
+{"w":"pollo","t":"isim (eril)","m":"tavuk","s":[],"a":[],"e":[["Stasera cucino il pollo.","","Bu akşam tavuk pişiriyorum."],["Il pollo con le patate è buono.","","Patatesli tavuk güzel."]]}
+{"w":"uovo","t":"isim (eril)","m":"yumurta","s":[],"a":[],"e":[["Mangio un uovo a colazione.","","Kahvaltıda bir yumurta yiyorum."],["Compro sei uova.","","Altı yumurta alıyorum."]]}
+{"w":"formaggio","t":"isim (eril)","m":"peynir","s":[],"a":[],"e":[["Mi piace il formaggio.","","Peyniri severim."],["Vorrei pane e formaggio.","","Ekmek ve peynir istiyorum."]]}
+{"w":"pasta","t":"isim (dişil)","m":"makarna; hamur işi","s":[],"a":[],"e":[["Mangio la pasta ogni giorno.","","Her gün makarna yiyorum."],["La pasta è pronta.","","Makarna hazır."]]}
+{"w":"pizza","t":"isim (dişil)","m":"pizza","s":[],"a":[],"e":[["Ordiniamo una pizza.","","Bir pizza sipariş ediyoruz."],["La pizza margherita è la mia preferita.","","Margherita pizza benim favorim."]]}
+{"w":"riso","t":"isim (eril)","m":"pirinç; pilav","s":[],"a":[],"e":[["Mangio il riso con le verdure.","","Pilavı sebzeyle yiyorum."],["Compro un chilo di riso.","","Bir kilo pirinç alıyorum."]]}
+{"w":"patata","t":"isim (dişil)","m":"patates","s":[],"a":[],"e":[["Cuciniamo le patate al forno.","","Patatesleri fırında pişiriyoruz."],["Una patata è già nel piatto.","","Bir patates zaten tabakta."]]}
+{"w":"pomodoro","t":"isim (eril)","m":"domates","s":[],"a":[],"e":[["Il pomodoro è rosso.","","Domates kırmızı."],["Compro i pomodori al mercato.","","Domatesleri pazardan alıyorum."]]}
+{"w":"insalata","t":"isim (dişil)","m":"salata","s":[],"a":[],"e":[["Prendo un'insalata mista.","","Karışık salata alıyorum."],["L'insalata è fresca.","","Salata taze."]]}
+{"w":"verdura","t":"isim (dişil)","m":"sebze","s":[],"a":[],"e":[["Mangio molta verdura.","","Çok sebze yiyorum."],["La verdura è fresca oggi.","","Sebze bugün taze."]]}
+{"w":"frutta","t":"isim (dişil)","m":"meyve","s":[],"a":[],"e":[["Mi piace la frutta.","","Meyveyi severim."],["Dopo cena mangio la frutta.","","Akşam yemeğinden sonra meyve yiyorum."]]}
+{"w":"mela","t":"isim (dişil)","m":"elma","s":[],"a":[],"e":[["Mangio una mela.","","Bir elma yiyorum."],["Le mele sono rosse.","","Elmalar kırmızı."]]}
+{"w":"arancia","t":"isim (dişil)","m":"portakal","s":[],"a":[],"e":[["L'arancia è dolce.","","Portakal tatlı."],["Bevo un succo d'arancia.","","Bir portakal suyu içiyorum."]]}
+{"w":"banana","t":"isim (dişil)","m":"muz","s":[],"a":[],"e":[["Mangio una banana a colazione.","","Kahvaltıda bir muz yiyorum."],["Le banane sono gialle.","","Muzlar sarı."]]}
+{"w":"zucchero","t":"isim (eril)","m":"şeker","s":[],"a":[],"e":[["Vuoi lo zucchero nel caffè?","","Kahvene şeker ister misin?"],["Non metto zucchero nel tè.","","Çaya şeker koymuyorum."]]}
+{"w":"sale","t":"isim (eril)","m":"tuz","s":[],"a":[],"e":[["Passami il sale, per favore.","","Tuzu uzatır mısın, lütfen?"],["Manca il sale nella pasta.","","Makarnada tuz eksik."]]}
+{"w":"olio","t":"isim (eril)","m":"yağ; zeytinyağı","s":[],"a":[],"e":[["Uso l'olio d'oliva.","","Zeytinyağı kullanıyorum."],["Aggiungo un po' d'olio all'insalata.","","Salataya biraz yağ ekliyorum."]]}
+{"w":"burro","t":"isim (eril)","m":"tereyağı","s":[],"a":[],"e":[["Mangio pane e burro.","","Ekmek ve tereyağı yiyorum."],["Il burro è nel frigo.","","Tereyağı buzdolabında."]]}
+{"w":"gelato","t":"isim (eril)","m":"dondurma","s":[],"a":[],"e":[["Voglio un gelato al limone.","","Limonlu bir dondurma istiyorum."],["Ai bambini piace il gelato.","","Çocuklar dondurmayı sever."]]}
+{"w":"torta","t":"isim (dişil)","m":"pasta, kek","s":[],"a":[],"e":[["Mia nonna fa una torta.","","Ninem bir pasta yapıyor."],["La torta di compleanno è buona.","","Doğum günü pastası güzel."]]}
+{"w":"dolce","t":"isim (eril)","m":"tatlı","s":[],"a":[],"e":[["Come dolce prendo il gelato.","","Tatlı olarak dondurma alıyorum."],["Questo dolce è troppo dolce.","","Bu tatlı çok şekerli."]]}
+{"w":"colazione","t":"isim (dişil)","m":"kahvaltı","s":[],"a":[],"e":[["Faccio colazione alle sette.","","Saat yedide kahvaltı yapıyorum."],["La colazione è inclusa nel prezzo.","","Kahvaltı fiyata dahil."]],"x":[["fare colazione","","kahvaltı yapmak","Facciamo colazione al bar.","","Barda kahvaltı yapıyoruz."]]}
+{"w":"pranzo","t":"isim (eril)","m":"öğle yemeği","s":[],"a":[],"e":[["Il pranzo è alle dodici.","","Öğle yemeği on ikide."],["Oggi pranzo con un'amica.","","Bugün bir arkadaşımla öğle yemeği yiyorum."]]}
+{"w":"cena","t":"isim (dişil)","m":"akşam yemeği","s":[],"a":[],"e":[["La cena è pronta.","","Akşam yemeği hazır."],["Dopo cena guardo la televisione.","","Akşam yemeğinden sonra televizyon izliyorum."]]}
+{"w":"cibo","t":"isim (eril)","m":"yiyecek, yemek","s":[],"a":[],"e":[["Il cibo italiano è buonissimo.","","İtalyan yemekleri çok lezzetli."],["Compro il cibo per il gatto.","","Kedi için mama alıyorum."]]}

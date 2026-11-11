@@ -20,7 +20,7 @@ function prefixOf(w){
 }
 
 function word(raw){
-  let w=raw.toLowerCase().replace(/[’']/g,'');
+  let w=raw.toLowerCase().replace(/[’']/g,'').replace(/[éèê]/g,'e').replace(/[àâ]/g,'a');     // a loanword with a French accent: Café
   const plain=PLAIN.has(w);                                  // a short word whose ending is not weakened (der, den, es ...)
   let out='';
   const pre=prefixOf(w);
@@ -34,6 +34,7 @@ function word(raw){
     if(c==='d'&&n1==='t'){out+='t';i++;continue;}                                                          // Stadt
     if(c==='c'&&n1==='h'){out+='h';i++;continue;}
     if(c==='c'&&n1==='k'){out+='k';i++;continue;}
+    if(c==='c'){out+=/[eiy]/.test(n1)?'ts':'k';continue;}                                                  // a loanword: Café, Computer, Cent
     if(c==='p'&&n1==='h'){out+='f';i++;continue;}
     if(c==='q'&&n1==='u'){out+='kv';i++;continue;}
     if(c==='t'&&n1==='z'){out+='ts';i++;continue;}

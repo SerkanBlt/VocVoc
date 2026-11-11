@@ -1,0 +1,50 @@
+{"w":"Supermarkt","t":"isim (eril)","m":"süpermarket","s":[],"a":[],"e":[["Ich gehe in den Supermarkt.","","Süpermarkete gidiyorum."],["Der Supermarkt ist bis zehn Uhr offen.","","Süpermarket saat ona kadar açık."]]}
+{"w":"Markt","t":"isim (eril)","m":"pazar","s":[],"a":[],"e":[["Auf dem Markt gibt es frisches Obst.","","Pazarda taze meyve var."],["Wir gehen am Samstag auf den Markt.","","Cumartesi pazara gidiyoruz."]]}
+{"w":"Käse","t":"isim (eril)","m":"peynir","s":[],"a":[],"e":[["Ich esse Brot mit Käse.","","Peynirli ekmek yiyorum."],["Der Käse ist sehr lecker.","","Peynir çok lezzetli."]]}
+{"w":"Fisch","t":"isim (eril)","m":"balık","s":[],"a":[],"e":[["Ich esse gern Fisch.","","Balık yemeyi severim."],["Im See gibt es viele Fische.","","Gölde çok balık var."]]}
+{"w":"Reis","t":"isim (eril)","m":"pirinç; pilav","s":[],"a":[],"e":[["Wir essen Fleisch mit Reis.","","Pilavla et yiyoruz."],["Ich koche heute Reis.","","Bugün pilav pişiriyorum."]]}
+{"w":"Salat","t":"isim (eril)","m":"salata","s":[],"a":[],"e":[["Ich mache einen Salat.","","Bir salata yapıyorum."],["Der Salat ist frisch.","","Salata taze."]]}
+{"w":"Kuchen","t":"isim (eril)","m":"pasta; kek","s":[],"a":[],"e":[["Meine Oma backt einen Kuchen.","","Büyükannem bir kek yapıyor."],["Möchtest du ein Stück Kuchen?","","Bir dilim pasta ister misin?"]]}
+{"w":"Zucker","t":"isim (eril)","m":"şeker","s":[],"a":[],"e":[["Ich trinke den Tee ohne Zucker.","","Çayı şekersiz içerim."],["Der Zucker ist alle.","","Şeker bitti."]]}
+{"w":"Kaffee","t":"isim (eril)","m":"kahve","s":[],"a":[],"e":[["Ich trinke morgens Kaffee.","","Sabahları kahve içerim."],["Zwei Kaffee, bitte!","","İki kahve, lütfen!"]]}
+{"w":"Tee","t":"isim (eril)","m":"çay","s":[],"a":[],"e":[["Möchten Sie einen Tee?","","Bir çay ister misiniz?"],["Der Tee ist noch heiß.","","Çay hâlâ sıcak."]]}
+{"w":"Saft","t":"isim (eril)","m":"meyve suyu","s":[],"a":[],"e":[["Die Kinder trinken Saft.","","Çocuklar meyve suyu içiyor."],["Ich nehme einen Orangensaft.","","Bir portakal suyu alıyorum."]]}
+{"w":"Wein","t":"isim (eril)","m":"şarap","s":[],"a":[],"e":[["Er trinkt ein Glas Wein.","","O bir kadeh şarap içiyor."],["Der Wein ist rot.","","Şarap kırmızı."]]}
+{"w":"Löffel","t":"isim (eril)","m":"kaşık","s":[],"a":[],"e":[["Ich brauche einen Löffel für die Suppe.","","Çorba için bir kaşığa ihtiyacım var."],["Der Löffel liegt neben dem Teller.","","Kaşık tabağın yanında."]]}
+{"w":"Teller","t":"isim (eril)","m":"tabak","s":[],"a":[],"e":[["Der Teller ist leer.","","Tabak boş."],["Ich stelle die Teller auf den Tisch.","","Tabakları masaya koyuyorum."]]}
+{"w":"Messer","t":"isim (nötr)","m":"bıçak","s":[],"a":[],"e":[["Ich brauche ein Messer.","","Bir bıçağa ihtiyacım var."],["Das Messer ist scharf.","","Bıçak keskin."]]}
+{"w":"Tag","t":"isim (eril)","m":"gün","s":[],"a":["Nacht"],"e":[["Heute ist ein schöner Tag.","","Bugün güzel bir gün."],["Guten Tag!","","İyi günler!"]],"x":[["jeden Tag","","her gün","Ich lerne jeden Tag Deutsch.","","Her gün Almanca çalışıyorum."]]}
+{"w":"Monat","t":"isim (eril)","m":"ay","s":[],"a":[],"e":[["Ein Jahr hat zwölf Monate.","","Bir yılda on iki ay var."],["Nächsten Monat habe ich Urlaub.","","Gelecek ay iznim var."]]}
+{"w":"Montag","t":"isim (eril)","m":"pazartesi","s":[],"a":[],"e":[["Am Montag arbeite ich.","","Pazartesi günü çalışıyorum."],["Montag ist der erste Tag der Woche.","","Pazartesi haftanın ilk günüdür."]]}
+{"w":"Dienstag","t":"isim (eril)","m":"salı","s":[],"a":[],"e":[["Am Dienstag habe ich Unterricht.","","Salı günü dersim var."],["Dienstag ist mein Lieblingstag.","","Salı en sevdiğim gün."]]}
+{"w":"Mittwoch","t":"isim (eril)","m":"çarşamba","s":[],"a":[],"e":[["Am Mittwoch gehe ich zum Arzt.","","Çarşamba günü doktora gidiyorum."],["Mittwoch ist die Mitte der Woche.","","Çarşamba haftanın ortasıdır."]]}
+{"w":"Donnerstag","t":"isim (eril)","m":"perşembe","s":[],"a":[],"e":[["Am Donnerstag kommt mein Onkel.","","Perşembe günü amcam geliyor."],["Donnerstag habe ich Zeit.","","Perşembe günü vaktim var."]]}
+{"w":"Freitag","t":"isim (eril)","m":"cuma","s":[],"a":[],"e":[["Am Freitag fahren wir nach Berlin.","","Cuma günü Berlin'e gidiyoruz."],["Endlich ist Freitag!","","Nihayet cuma!"]]}
+{"w":"Samstag","t":"isim (eril)","m":"cumartesi","s":[],"a":[],"e":[["Am Samstag gehen wir auf den Markt.","","Cumartesi günü pazara gidiyoruz."],["Samstag ist mein Geburtstag.","","Cumartesi benim doğum günüm."]]}
+{"w":"Sonntag","t":"isim (eril)","m":"pazar","s":[],"a":[],"e":[["Am Sonntag schlafe ich lange.","","Pazar günü uzun uyuyorum."],["Sonntag besuchen wir Oma.","","Pazar günü büyükannemizi ziyaret ediyoruz."]]}
+{"w":"Januar","t":"isim (eril)","m":"ocak","s":[],"a":[],"e":[["Im Januar ist es kalt.","","Ocak ayında hava soğuk."],["Mein Geburtstag ist im Januar.","","Doğum günüm ocak ayında."]]}
+{"w":"Februar","t":"isim (eril)","m":"şubat","s":[],"a":[],"e":[["Der Februar ist kurz.","","Şubat kısa bir aydır."],["Im Februar schneit es oft.","","Şubat ayında sık sık kar yağar."]]}
+{"w":"März","t":"isim (eril)","m":"mart","s":[],"a":[],"e":[["Im März beginnt der Frühling.","","Mart ayında ilkbahar başlıyor."],["Wir fahren im März nach Wien.","","Mart ayında Viyana'ya gidiyoruz."]]}
+{"w":"April","t":"isim (eril)","m":"nisan","s":[],"a":[],"e":[["Im April regnet es oft.","","Nisan ayında sık sık yağmur yağar."],["Mein Bruder hat im April Geburtstag.","","Erkek kardeşimin doğum günü nisan ayında."]]}
+{"w":"Mai","t":"isim (eril)","m":"mayıs","s":[],"a":[],"e":[["Im Mai ist das Wetter schön.","","Mayıs ayında hava güzel."],["Der erste Mai ist ein Feiertag.","","Bir Mayıs bir tatil günüdür."]]}
+{"w":"Juni","t":"isim (eril)","m":"haziran","s":[],"a":[],"e":[["Im Juni wird es warm.","","Haziran ayında hava ısınıyor."],["Wir haben im Juni Urlaub.","","Haziran ayında iznimiz var."]]}
+{"w":"Juli","t":"isim (eril)","m":"temmuz","s":[],"a":[],"e":[["Im Juli ist es heiß.","","Temmuz ayında hava sıcak."],["Die Schule endet im Juli.","","Okul temmuzda bitiyor."]]}
+{"w":"August","t":"isim (eril)","m":"ağustos","s":[],"a":[],"e":[["Im August reisen wir nach Italien.","","Ağustos ayında İtalya'ya seyahat ediyoruz."],["Der August hat einunddreißig Tage.","","Ağustos otuz bir gün çeker."]]}
+{"w":"September","t":"isim (eril)","m":"eylül","s":[],"a":[],"e":[["Im September beginnt die Schule.","","Eylül ayında okul başlıyor."],["Im September ist es oft noch warm.","","Eylül ayında hava çoğu zaman hâlâ sıcaktır."]]}
+{"w":"Oktober","t":"isim (eril)","m":"ekim","s":[],"a":[],"e":[["Im Oktober fallen die Blätter.","","Ekim ayında yapraklar dökülür."],["Mein Kurs beginnt im Oktober.","","Kursum ekim ayında başlıyor."]]}
+{"w":"November","t":"isim (eril)","m":"kasım","s":[],"a":[],"e":[["Im November ist es grau.","","Kasım ayında hava gridir."],["Im November regnet es viel.","","Kasım ayında çok yağmur yağar."]]}
+{"w":"Dezember","t":"isim (eril)","m":"aralık","s":[],"a":[],"e":[["Im Dezember ist es kalt.","","Aralık ayında hava soğuk."],["Weihnachten ist im Dezember.","","Noel aralık ayındadır."]]}
+{"w":"Frühling","t":"isim (eril)","m":"ilkbahar","s":[],"a":[],"e":[["Im Frühling blühen die Blumen.","","İlkbaharda çiçekler açar."],["Der Frühling ist meine Lieblingszeit.","","İlkbahar en sevdiğim zaman."]]}
+{"w":"Sommer","t":"isim (eril)","m":"yaz","s":[],"a":["Winter"],"e":[["Im Sommer ist es sehr heiß.","","Yazın hava çok sıcak."],["Wir fahren im Sommer ans Meer.","","Yazın denize gidiyoruz."]]}
+{"w":"Herbst","t":"isim (eril)","m":"sonbahar","s":[],"a":[],"e":[["Im Herbst regnet es oft.","","Sonbaharda sık sık yağmur yağar."],["Der Herbst ist bunt.","","Sonbahar rengârenk."]]}
+{"w":"Winter","t":"isim (eril)","m":"kış","s":[],"a":["Sommer"],"e":[["Im Winter ist es kalt.","","Kışın hava soğuk."],["Wir mögen den Winter nicht.","","Kışı sevmiyoruz."]]}
+{"w":"Regen","t":"isim (eril)","m":"yağmur","s":[],"a":[],"e":[["Der Regen hört nicht auf.","","Yağmur dinmiyor."],["Ich gehe nicht gern im Regen.","","Yağmurda yürümeyi sevmem."]]}
+{"w":"Schnee","t":"isim (eril)","m":"kar","s":[],"a":[],"e":[["Der Schnee ist weiß.","","Kar beyaz."],["Im Winter liegt viel Schnee.","","Kışın çok kar var."]]}
+{"w":"Wind","t":"isim (eril)","m":"rüzgâr","s":[],"a":[],"e":[["Heute ist viel Wind.","","Bugün çok rüzgâr var."],["Der Wind ist kalt.","","Rüzgâr soğuk."]]}
+{"w":"Grad","t":"isim (eril)","m":"derece","s":[],"a":[],"e":[["Heute sind es zehn Grad.","","Bugün hava on derece."],["Im Sommer hat es dreißig Grad.","","Yazın hava otuz derece olur."]]}
+{"w":"Körper","t":"isim (eril)","m":"vücut; beden","s":[],"a":[],"e":[["Mein Körper ist müde.","","Vücudum yorgun."],["Sport ist gut für den Körper.","","Spor vücut için iyidir."]]}
+{"w":"Kopf","t":"isim (eril)","m":"baş; kafa","s":[],"a":[],"e":[["Mein Kopf tut weh.","","Başım ağrıyor."],["Er hat einen Hut auf dem Kopf.","","Başında bir şapka var."]]}
+{"w":"Mund","t":"isim (eril)","m":"ağız","s":[],"a":[],"e":[["Mach bitte den Mund auf.","","Lütfen ağzını aç."],["Sie hat einen kleinen Mund.","","Onun küçük bir ağzı var."]]}
+{"w":"Zahn","t":"isim (eril)","m":"diş","s":[],"a":[],"e":[["Mein Zahn tut weh.","","Dişim ağrıyor."],["Ich putze die Zähne zweimal am Tag.","","Dişlerimi günde iki kez fırçalıyorum."]]}
+{"w":"Fuß","t":"isim (eril)","m":"ayak","s":[],"a":[],"e":[["Mein Fuß tut weh.","","Ayağım ağrıyor."],["Wir gehen zu Fuß zur Schule.","","Okula yürüyerek gidiyoruz."]],"x":[["zu Fuß","","yürüyerek","Ich gehe zu Fuß zur Arbeit.","","İşe yürüyerek gidiyorum."]]}
+{"w":"Bauch","t":"isim (eril)","m":"karın; göbek","s":[],"a":[],"e":[["Mein Bauch tut weh.","","Karnım ağrıyor."],["Das Baby liegt auf dem Bauch.","","Bebek karnının üstünde yatıyor."]]}

@@ -1171,7 +1171,7 @@ Appetit	nm	A2
 Kindergarten	nm	A2
 Abschluss	nm	A2
 Studiengang	nm	A2
-Gehalt	nm	A2
+Gehalt	nn	A2
 Urlaubstag	nm	A2
 Ausflug	nm	A2
 Strand	nm	A2
@@ -1204,7 +1204,7 @@ Zoo	nm	A2
 Tanz	nm	A2
 Gesang	nm	A2
 Ton	nm	A2
-Konzert	nm	A2
+Konzert	nn	A2
 Besuch	nm	A2
 Aufenthalt	nm	A2
 Abflug	nm	A2
@@ -1214,15 +1214,15 @@ Zoll	nm	A2
 Reisepass	nm	A2
 Schalter	nm	A2
 Zweck	nm	A2
-Aufnahme	nm	A2
+Aufnahme	nf	A2
 Arztbesuch	nm	A2
-Impfung	nm	A2
+Impfung	nf	A2
 Tropfen	nm	A2
 Honig	nm	A2
 Pfeffer	nm	A2
 Joghurt	nm	A2
-Hähnchen	nm	A2
-Zwiebel	nm	A2
+Hähnchen	nn	A2
+Zwiebel	nf	A2
 Kohl	nm	A2
 Mitarbeiterin	nf	A2
 Lehrerin	nf	A2
@@ -1501,10 +1501,10 @@ Reifen	nm	A2
 Stock	nm	A2
 Ballon	nm	A2
 Mitarbeiter	nm	A2
-Dauer	nm	A2
+Dauer	nf	A2
 Geldbeutel	nm	A2
 Video	nn	A2
-Fotoapparat	nn	A2
+Fotoapparat	nm	A2
 Weihnachten	nn	A2
 Gasthaus	nn	A2
 Wohnheim	nn	A2
@@ -2451,7 +2451,7 @@ Beifall	nm	B1
 Bericht	nm	B1
 Besitzer	nm	B1
 Beschluss	nm	B1
-Beschwerde	nm	B1
+Beschwerde	nf	B1
 Betrieb	nm	B1
 Betrug	nm	B1
 Beweis	nm	B1
@@ -2489,7 +2489,7 @@ Gegensatz	nm	B1
 Gegenstand	nm	B1
 Geist	nm	B1
 Genuss	nm	B1
-Gesetz	nm	B1
+Gesetz	nn	B1
 Gewinn	nm	B1
 Glaube	nm	B1
 Grundsatz	nm	B1
@@ -2503,7 +2503,7 @@ Hof	nm	B1
 Hörer	nm	B1
 Irrtum	nm	B1
 Jahrgang	nm	B1
-Jahrhundert	nm	B1
+Jahrhundert	nn	B1
 Kampf	nm	B1
 Kanal	nm	B1
 Kandidat	nm	B1
@@ -2520,7 +2520,7 @@ Kontinent	nm	B1
 Kreis	nm	B1
 Kreislauf	nm	B1
 Krimi	nm	B1
-Kunstwerk	nm	B1
+Kunstwerk	nn	B1
 Laden	nm	B1
 Lebenslauf	nm	B1
 Leser	nm	B1
@@ -2576,7 +2576,7 @@ Staat	nm	B1
 Standpunkt	nm	B1
 Stamm	nm	B1
 Stoff	nm	B1
-Strafe	nm	B1
+Strafe	nf	B1
 Streik	nm	B1
 Strom	nm	B1
 Sturz	nm	B1
@@ -2654,7 +2654,7 @@ Ausstattung	nf	B1
 Auswahl	nf	B1
 Bedingung	nf	B1
 Bedienung	nf	B1
-Bedürfnis	nf	B1
+Bedürfnis	nn	B1
 Behörde	nf	B1
 Beleidigung	nf	B1
 Bemerkung	nf	B1
@@ -2831,7 +2831,7 @@ Schicht	nf	B1
 Schlange	nf	B1
 Schnur	nf	B1
 Schönheit	nf	B1
-Schreibtisch	nf	B1
+Schreibtisch	nm	B1
 Schrift	nf	B1
 Schuld	nf	B1
 Schwäche	nf	B1
@@ -2852,7 +2852,7 @@ Szene	nf	B1
 Tätigkeit	nf	B1
 Tendenz	nf	B1
 Theorie	nf	B1
-Titel	nf	B1
+Titel	nm	B1
 Trennung	nf	B1
 Überlegung	nf	B1
 Übernachtung	nf	B1
@@ -2898,7 +2898,7 @@ Wirkung	nf	B1
 Wirtschaft	nf	B1
 Wissenschaft	nf	B1
 Wohngemeinschaft	nf	B1
-Wohnsitz	nf	B1
+Wohnsitz	nm	B1
 Wurzel	nf	B1
 Wüste	nf	B1
 Zahlung	nf	B1
@@ -2914,7 +2914,7 @@ Archiv	nn	B1
 Argument	nn	B1
 Benzin	nn	B1
 Bewusstsein	nn	B1
-Charakter	nn	B1
+Charakter	nm	B1
 Chaos	nn	B1
 Drittel	nn	B1
 Ehepaar	nn	B1
@@ -2952,7 +2952,7 @@ Loch	nn	B1
 Material	nn	B1
 Mitleid	nn	B1
 Modell	nn	B1
-Moment	nn	B1
+Moment	nm	B1
 Muster	nn	B1
 Niveau	nn	B1
 Objekt	nn	B1
@@ -3127,7 +3127,7 @@ irgendetwas	pron	B1
 Augenblick	nm	B1
 Bescheid	nm	B1
 Blick	nm	B1
-Volk	nm	B1
+Volk	nn	B1
 Held	nm	B1
 Engel	nm	B1
 Haufen	nm	B1

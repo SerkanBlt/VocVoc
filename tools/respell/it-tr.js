@@ -8,6 +8,7 @@ const isV=ch=>!!ch&&V.includes(ch);
 
 function word(raw){
   const w=raw.toLowerCase().replace(/[’']/g,'').replace(/[àèéìíòóùú]/g,ch=>ACCENT[ch]);
+  if(w==='weekend')return 'vikend';
   const dz=DZ.test(w),compound=/sera$/.test(w);       // an s between vowels is z, but not at the start of a second word (stasera)
   let out='';
   for(let i=0;i<w.length;i++){
@@ -34,6 +35,7 @@ function word(raw){
       out+=isV(prev)&&isV(n1)&&!(compound&&/^sera$/.test(w.slice(i)))?'z':'s';continue;
     }
     if(c==='x'){out+='ks';continue;}
+    if(c==='w'){out+='v';continue;}                                                                    // a loanword: w is v
     if(c==='i'&&isV(n1)&&!(prev==='z'&&i===1)){                                                         // ia, ie, io, iu: a glide (but zio)
       if(!prev||!isV(prev)){out+='y';continue;}
     }

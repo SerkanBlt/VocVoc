@@ -1,0 +1,50 @@
+{"w":"zaino","t":"isim (eril)","m":"sırt çantası","s":[],"a":[],"e":[["Il mio zaino è pesante.","","Sırt çantam ağır."],["Metto i libri nello zaino.","","Kitapları sırt çantasına koyuyorum."]]}
+{"w":"chiave","t":"isim (dişil)","m":"anahtar","s":[],"a":[],"e":[["Dove sono le mie chiavi?","","Anahtarlarım nerede?"],["Chiudo la porta con la chiave.","","Kapıyı anahtarla kilitliyorum."]]}
+{"w":"telefono","t":"isim (eril)","m":"telefon","s":[],"a":[],"e":[["Il telefono suona.","","Telefon çalıyor."],["Parlo al telefono con mia madre.","","Telefonda annemle konuşuyorum."]]}
+{"w":"cellulare","t":"isim (eril)","m":"cep telefonu","s":[],"a":[],"e":[["Ho dimenticato il cellulare a casa.","","Cep telefonumu evde unuttum."],["Il mio cellulare è nuovo.","","Cep telefonum yeni."]]}
+{"w":"computer","t":"isim (eril)","m":"bilgisayar","s":[],"a":[],"e":[["Lavoro al computer tutto il giorno.","","Bütün gün bilgisayarda çalışıyorum."],["Il computer è sul tavolo.","","Bilgisayar masanın üstünde."]]}
+{"w":"televisione","t":"isim (dişil)","m":"televizyon","s":[],"a":[],"e":[["Guardo la televisione la sera.","","Akşamları televizyon izliyorum."],["La televisione è accesa.","","Televizyon açık."]]}
+{"w":"radio","t":"isim (dişil)","m":"radyo","s":[],"a":[],"e":[["Ascolto la radio in macchina.","","Arabada radyo dinliyorum."],["La radio è vecchia ma funziona.","","Radyo eski ama çalışıyor."]]}
+{"w":"foto","t":"isim (dişil)","m":"fotoğraf","s":[],"a":[],"e":[["Faccio una foto del mare.","","Denizin bir fotoğrafını çekiyorum."],["Questa foto è molto bella.","","Bu fotoğraf çok güzel."]]}
+{"w":"lettera","t":"isim (dişil)","m":"mektup; harf","s":[],"a":[],"e":[["Scrivo una lettera a un amico.","","Bir arkadaşa mektup yazıyorum."],["La A è la prima lettera.","","A ilk harftir."]]}
+{"w":"giornale","t":"isim (eril)","m":"gazete","s":[],"a":[],"e":[["Mio padre legge il giornale.","","Babam gazete okuyor."],["Compro il giornale al bar.","","Gazeteyi bardan alıyorum."]]}
+{"w":"film","t":"isim (eril)","m":"film","s":[],"a":[],"e":[["Stasera guardiamo un film.","","Bu akşam bir film izliyoruz."],["Questo film è molto lungo.","","Bu film çok uzun."]]}
+{"w":"musica","t":"isim (dişil)","m":"müzik","s":[],"a":[],"e":[["Ascolto musica ogni giorno.","","Her gün müzik dinliyorum."],["Mi piace la musica italiana.","","İtalyan müziğini severim."]]}
+{"w":"canzone","t":"isim (dişil)","m":"şarkı","s":[],"a":[],"e":[["Questa canzone è bellissima.","","Bu şarkı çok güzel."],["Cantiamo una canzone insieme.","","Birlikte bir şarkı söylüyoruz."]]}
+{"w":"soldi","t":"isim (eril)","m":"para","s":["denaro"],"a":[],"e":[["Non ho soldi oggi.","","Bugün param yok."],["Quanti soldi hai nel portafoglio?","","Cüzdanında ne kadar para var?"]]}
+{"w":"euro","t":"isim (eril)","m":"avro, euro","s":[],"a":[],"e":[["Il caffè costa un euro.","","Kahve bir euro."],["Ho venti euro.","","Yirmi euro'm var."]]}
+{"w":"prezzo","t":"isim (eril)","m":"fiyat","s":[],"a":[],"e":[["Qual è il prezzo di questa borsa?","","Bu çantanın fiyatı nedir?"],["I prezzi sono bassi qui.","","Buradaki fiyatlar düşük."]]}
+{"w":"testa","t":"isim (dişil)","m":"baş, kafa","s":[],"a":[],"e":[["Ho mal di testa.","","Başım ağrıyor."],["Il cappello è sulla testa.","","Şapka başın üstünde."]],"x":[["mal di testa","","baş ağrısı","Ho un forte mal di testa.","","Çok şiddetli bir baş ağrım var."]]}
+{"w":"faccia","t":"isim (dişil)","m":"yüz","s":[],"a":[],"e":[["Mi lavo la faccia la mattina.","","Sabahları yüzümü yıkıyorum."],["Ha una faccia simpatica.","","Sempatik bir yüzü var."]]}
+{"w":"occhio","t":"isim (eril)","m":"göz","s":[],"a":[],"e":[["Ho gli occhi verdi.","","Gözlerim yeşil."],["Chiudi gli occhi!","","Gözlerini kapat!"]]}
+{"w":"naso","t":"isim (eril)","m":"burun","s":[],"a":[],"e":[["Ho il naso freddo.","","Burnum soğuk."],["Il suo naso è piccolo.","","Burnu küçük."]]}
+{"w":"bocca","t":"isim (dişil)","m":"ağız","s":[],"a":[],"e":[["Apri la bocca, per favore.","","Ağzını aç, lütfen."],["Non parlare con la bocca piena.","","Ağzın doluyken konuşma."]]}
+{"w":"orecchio","t":"isim (eril)","m":"kulak","s":[],"a":[],"e":[["Ho male all'orecchio.","","Kulağım ağrıyor."],["Il gatto ha le orecchie piccole.","","Kedinin küçük kulakları var."]]}
+{"w":"mano","t":"isim (dişil)","m":"el","s":[],"a":[],"e":[["Mi lavo le mani.","","Ellerimi yıkıyorum."],["Ho una borsa in mano.","","Elimde bir çanta var."]]}
+{"w":"braccio","t":"isim (eril)","m":"kol","s":[],"a":[],"e":[["Ho male al braccio.","","Koluma ağrı giriyor."],["Il bambino dorme tra le braccia della mamma.","","Çocuk annesinin kollarında uyuyor."]]}
+{"w":"gamba","t":"isim (dişil)","m":"bacak","s":[],"a":[],"e":[["Ho male alla gamba.","","Bacağım ağrıyor."],["Il cane ha quattro gambe.","","Köpeğin dört bacağı var."]]}
+{"w":"piede","t":"isim (eril)","m":"ayak","s":[],"a":[],"e":[["Ho male al piede.","","Ayağım ağrıyor."],["Vado a scuola a piedi.","","Okula yürüyerek gidiyorum."]],"x":[["a piedi","","yürüyerek","Andiamo a piedi in centro.","","Merkeze yürüyerek gidiyoruz."]]}
+{"w":"corpo","t":"isim (eril)","m":"vücut, beden","s":[],"a":[],"e":[["Il corpo umano ha due braccia.","","İnsan vücudunun iki kolu var."],["Faccio sport per il corpo.","","Vücudum için spor yapıyorum."]]}
+{"w":"cuore","t":"isim (eril)","m":"kalp; yürek","s":[],"a":[],"e":[["Il mio cuore batte forte.","","Kalbim hızlı atıyor."],["Ti amo con tutto il cuore.","","Seni bütün kalbimle seviyorum."]],"x":[["con tutto il cuore","","bütün kalbimle","Grazie con tutto il cuore!","","Bütün kalbimle teşekkür ederim!"]]}
+{"w":"capello","t":"isim (eril)","m":"saç (teli)","s":[],"a":[],"e":[["Ho i capelli lunghi.","","Saçlarım uzun."],["Mia sorella ha i capelli neri.","","Ablamın siyah saçları var."]]}
+{"w":"dente","t":"isim (eril)","m":"diş","s":[],"a":[],"e":[["Mi lavo i denti dopo cena.","","Akşam yemeğinden sonra dişlerimi fırçalıyorum."],["Ho mal di denti.","","Dişim ağrıyor."]]}
+{"w":"vestito","t":"isim (eril)","m":"elbise; takım elbise; giysi","s":[],"a":[],"e":[["Porto un vestito rosso.","","Kırmızı bir elbise giyiyorum."],["Compro un vestito nuovo.","","Yeni bir elbise alıyorum."]]}
+{"w":"camicia","t":"isim (dişil)","m":"gömlek","s":[],"a":[],"e":[["Porto una camicia bianca.","","Beyaz bir gömlek giyiyorum."],["La camicia è nell'armadio.","","Gömlek dolapta."]]}
+{"w":"pantaloni","t":"isim (eril)","m":"pantolon","s":[],"a":[],"e":[["I pantaloni sono troppo lunghi.","","Pantolon çok uzun."],["Compro dei pantaloni neri.","","Siyah bir pantolon alıyorum."]]}
+{"w":"gonna","t":"isim (dişil)","m":"etek","s":[],"a":[],"e":[["Porto una gonna blu.","","Mavi bir etek giyiyorum."],["La gonna è troppo corta.","","Etek çok kısa."]]}
+{"w":"scarpa","t":"isim (dişil)","m":"ayakkabı","s":[],"a":[],"e":[["Ho le scarpe nuove.","","Yeni ayakkabılarım var."],["Compro un paio di scarpe.","","Bir çift ayakkabı alıyorum."]]}
+{"w":"giacca","t":"isim (dişil)","m":"ceket","s":[],"a":[],"e":[["Metto la giacca perché fa freddo.","","Hava soğuk olduğu için ceketimi giyiyorum."],["La giacca è blu.","","Ceket lacivert."]]}
+{"w":"cappello","t":"isim (eril)","m":"şapka","s":[],"a":[],"e":[["Porto un cappello in estate.","","Yazın şapka takıyorum."],["Il cappello è sul letto.","","Şapka yatağın üstünde."]]}
+{"w":"maglia","t":"isim (dişil)","m":"kazak, tişört","s":[],"a":[],"e":[["Metto una maglia di lana.","","Yün bir kazak giyiyorum."],["La maglia è troppo piccola.","","Kazak çok küçük."]]}
+{"w":"cane","t":"isim (eril)","m":"köpek","s":[],"a":[],"e":[["Il mio cane si chiama Max.","","Köpeğimin adı Max."],["Porto il cane al parco.","","Köpeği parka götürüyorum."]]}
+{"w":"gatto","t":"isim (eril)","m":"kedi","s":[],"a":[],"e":[["Il gatto dorme sul letto.","","Kedi yatakta uyuyor."],["Ho due gatti.","","İki kedim var."]]}
+{"w":"animale","t":"isim (eril)","m":"hayvan","s":[],"a":[],"e":[["Il cane è un animale simpatico.","","Köpek sempatik bir hayvandır."],["Ci sono molti animali nel parco.","","Parkta çok hayvan var."]]}
+{"w":"uccello","t":"isim (eril)","m":"kuş","s":[],"a":[],"e":[["Un uccello canta sull'albero.","","Bir kuş ağaçta ötüyor."],["Gli uccelli volano nel cielo.","","Kuşlar gökyüzünde uçuyor."]]}
+{"w":"cavallo","t":"isim (eril)","m":"at","s":[],"a":[],"e":[["Il cavallo corre veloce.","","At hızlı koşuyor."],["Mi piace andare a cavallo.","","At binmeyi severim."]]}
+{"w":"sole","t":"isim (eril)","m":"güneş","s":[],"a":["luna"],"e":[["Oggi c'è il sole.","","Bugün hava güneşli."],["Il sole è caldo in estate.","","Güneş yazın sıcaktır."]]}
+{"w":"luna","t":"isim (dişil)","m":"ay (gök cismi)","s":[],"a":["sole"],"e":[["La luna è bellissima stasera.","","Ay bu akşam çok güzel."],["Di notte vedo la luna.","","Geceleri ayı görüyorum."]]}
+{"w":"cielo","t":"isim (eril)","m":"gökyüzü, gök","s":[],"a":[],"e":[["Il cielo è blu.","","Gökyüzü mavi."],["Non ci sono nuvole nel cielo.","","Gökyüzünde bulut yok."]]}
+{"w":"pioggia","t":"isim (dişil)","m":"yağmur","s":[],"a":[],"e":[["Oggi c'è la pioggia.","","Bugün yağmur var."],["Non esco sotto la pioggia.","","Yağmurun altında dışarı çıkmıyorum."]]}
+{"w":"neve","t":"isim (dişil)","m":"kar","s":[],"a":[],"e":[["In inverno c'è la neve.","","Kışın kar olur."],["La neve è bianca e fredda.","","Kar beyaz ve soğuktur."]]}
+{"w":"vento","t":"isim (eril)","m":"rüzgâr","s":[],"a":[],"e":[["Oggi c'è molto vento.","","Bugün çok rüzgâr var."],["Il vento è freddo.","","Rüzgâr soğuk."]]}
+{"w":"mare","t":"isim (eril)","m":"deniz","s":[],"a":["montagna"],"e":[["In estate vado al mare.","","Yazın denize gidiyorum."],["Il mare è molto calmo.","","Deniz çok sakin."]]}

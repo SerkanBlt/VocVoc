@@ -1,0 +1,50 @@
+{"w":"fame","t":"isim (dişil)","m":"açlık","s":[],"a":["sete"],"e":[["Ho molta fame.","","Çok acıktım."],["La fame è un brutto problema.","","Açlık kötü bir sorundur."]],"x":[["avere fame","","acıkmak","Hai fame? Mangiamo qualcosa.","","Acıktın mı? Bir şeyler yiyelim."]]}
+{"w":"sete","t":"isim (dişil)","m":"susuzluk","s":[],"a":["fame"],"e":[["Ho tanta sete.","","Çok susadım."],["Dopo la corsa ho sete.","","Koşudan sonra susuyorum."]],"x":[["avere sete","","susamak","Ho sete, vorrei dell'acqua.","","Susadım, biraz su istiyorum."]]}
+{"w":"spaghetti","t":"isim (eril)","m":"spagetti","s":[],"a":[],"e":[["Mangio gli spaghetti al pomodoro.","","Domates soslu spagetti yiyorum."],["Gli spaghetti sono pronti.","","Spagettiler hazır."]]}
+{"w":"panino","t":"isim (eril)","m":"sandviç; küçük ekmek","s":[],"a":[],"e":[["Vorrei un panino al formaggio.","","Peynirli bir sandviç istiyorum."],["Compro due panini per pranzo.","","Öğle yemeği için iki sandviç alıyorum."]]}
+{"w":"prosciutto","t":"isim (eril)","m":"jambon","s":[],"a":[],"e":[["Il prosciutto è molto buono.","","Jambon çok lezzetli."],["Mi dà dieci fette di prosciutto?","","Bana on dilim jambon verir misiniz?"]]}
+{"w":"salame","t":"isim (eril)","m":"salam","s":[],"a":[],"e":[["Mangio il salame con il pane.","","Salamı ekmekle yiyorum."],["Il salame è sul tavolo.","","Salam masanın üstünde."]]}
+{"w":"biscotto","t":"isim (eril)","m":"bisküvi; kurabiye","s":[],"a":[],"e":[["Prendo un biscotto con il caffè.","","Kahvenin yanında bir bisküvi alıyorum."],["I biscotti sono nella scatola.","","Bisküviler kutunun içinde."]]}
+{"w":"cioccolato","t":"isim (eril)","m":"çikolata","s":[],"a":[],"e":[["Mi piace il cioccolato fondente.","","Bitter çikolatayı severim."],["Il bambino vuole il cioccolato.","","Çocuk çikolata istiyor."]]}
+{"w":"limone","t":"isim (eril)","m":"limon","s":[],"a":[],"e":[["Aggiungo un limone al tè.","","Çaya bir limon ekliyorum."],["Il limone è molto aspro.","","Limon çok ekşi."]]}
+{"w":"fragola","t":"isim (dişil)","m":"çilek","s":[],"a":[],"e":[["Le fragole sono dolci.","","Çilekler tatlı."],["Voglio un gelato alla fragola.","","Çilekli bir dondurma istiyorum."]]}
+{"w":"uva","t":"isim (dişil)","m":"üzüm","s":[],"a":[],"e":[["L'uva è matura.","","Üzüm olgun."],["Compro un chilo di uva.","","Bir kilo üzüm alıyorum."]]}
+{"w":"carota","t":"isim (dişil)","m":"havuç","s":[],"a":[],"e":[["Mangio una carota cruda.","","Çiğ bir havuç yiyorum."],["La zuppa ha due carote.","","Çorbada iki havuç var."]]}
+{"w":"cipolla","t":"isim (dişil)","m":"soğan","s":[],"a":[],"e":[["Taglio una cipolla.","","Bir soğan doğruyorum."],["La cipolla mi fa piangere.","","Soğan beni ağlatıyor."]]}
+{"w":"zuppa","t":"isim (dişil)","m":"çorba","s":["minestra"],"a":[],"e":[["La zuppa è calda.","","Çorba sıcak."],["Stasera mangiamo una zuppa di verdure.","","Bu akşam sebze çorbası yiyoruz."]]}
+{"w":"minestra","t":"isim (dişil)","m":"sebze çorbası; çorba","s":["zuppa"],"a":[],"e":[["Mia nonna fa una buona minestra.","","Büyükannem güzel bir çorba yapar."],["Vuoi un piatto di minestra?","","Bir tabak çorba ister misin?"]]}
+{"w":"appartamento","t":"isim (eril)","m":"apartman dairesi; daire","s":[],"a":[],"e":[["Abito in un piccolo appartamento.","","Küçük bir dairede oturuyorum."],["L'appartamento è al terzo piano.","","Daire üçüncü katta."]]}
+{"w":"divano","t":"isim (eril)","m":"kanepe; koltuk","s":[],"a":[],"e":[["Il gatto dorme sul divano.","","Kedi kanepede uyuyor."],["Il divano è molto comodo.","","Kanepe çok rahat."]]}
+{"w":"armadio","t":"isim (eril)","m":"dolap; gardırop","s":[],"a":[],"e":[["I vestiti sono nell'armadio.","","Giysiler dolabın içinde."],["Compriamo un armadio nuovo.","","Yeni bir gardırop alıyoruz."]]}
+{"w":"specchio","t":"isim (eril)","m":"ayna","s":[],"a":[],"e":[["Mi guardo allo specchio.","","Aynada kendime bakıyorum."],["Lo specchio è in bagno.","","Ayna banyoda."]]}
+{"w":"lampada","t":"isim (dişil)","m":"lamba; abajur","s":[],"a":[],"e":[["Accendo la lampada.","","Lambayı yakıyorum."],["Ho una lampada sulla scrivania.","","Masamda bir lamba var."]]}
+{"w":"muro","t":"isim (eril)","m":"duvar","s":[],"a":[],"e":[["Il quadro è sul muro.","","Tablo duvarda."],["Il muro del giardino è alto.","","Bahçenin duvarı yüksek."]]}
+{"w":"tetto","t":"isim (eril)","m":"çatı","s":[],"a":[],"e":[["Il gatto è sul tetto.","","Kedi çatıda."],["Il tetto è rosso.","","Çatı kırmızı."]]}
+{"w":"scala","t":"isim (dişil)","m":"merdiven","s":[],"a":[],"e":[["Faccio le scale a piedi.","","Merdivenleri yürüyerek çıkıyorum."],["La scala è stretta.","","Merdiven dar."]]}
+{"w":"ascensore","t":"isim (eril)","m":"asansör","s":[],"a":[],"e":[["Prendo l'ascensore.","","Asansöre biniyorum."],["L'ascensore non funziona.","","Asansör çalışmıyor."]]}
+{"w":"cortile","t":"isim (eril)","m":"avlu; iç bahçe","s":[],"a":[],"e":[["I bambini giocano nel cortile.","","Çocuklar avluda oynuyor."],["Il cortile è piccolo ma bello.","","Avlu küçük ama güzel."]]}
+{"w":"fotografia","t":"isim (dişil)","m":"fotoğraf; fotoğrafçılık","s":["foto"],"a":[],"e":[["Faccio una fotografia al cane.","","Köpeğin fotoğrafını çekiyorum."],["Mi piace la fotografia.","","Fotoğrafçılığı severim."]]}
+{"w":"pittura","t":"isim (dişil)","m":"resim; boya","s":[],"a":[],"e":[["Mi piace la pittura moderna.","","Modern resmi severim."],["La pittura del muro è fresca.","","Duvarın boyası taze."]]}
+{"w":"sport","t":"isim (eril)","m":"spor","s":[],"a":[],"e":[["Faccio sport ogni giorno.","","Her gün spor yapıyorum."],["Il mio sport preferito è il nuoto.","","En sevdiğim spor yüzme."]],"x":[["fare sport","","spor yapmak","Fai sport il sabato?","","Cumartesi spor yapar mısın?"]]}
+{"w":"calcio","t":"isim (eril)","m":"futbol; tekme","s":[],"a":[],"e":[["Giochiamo a calcio nel parco.","","Parkta futbol oynuyoruz."],["Guardo il calcio in televisione.","","Televizyonda futbol izliyorum."]]}
+{"w":"squadra","t":"isim (dişil)","m":"takım; ekip","s":[],"a":[],"e":[["La mia squadra vince sempre.","","Takımım hep kazanıyor."],["Siamo una buona squadra.","","İyi bir ekibiz."]]}
+{"w":"partita","t":"isim (dişil)","m":"maç; parti","s":[],"a":[],"e":[["La partita inizia alle otto.","","Maç saat sekizde başlıyor."],["Giochiamo una partita a carte.","","Bir parti iskambil oynuyoruz."]]}
+{"w":"palla","t":"isim (dişil)","m":"top","s":[],"a":[],"e":[["Il bambino calcia la palla.","","Çocuk topa vuruyor."],["La palla è sotto il tavolo.","","Top masanın altında."]]}
+{"w":"passeggiata","t":"isim (dişil)","m":"yürüyüş; gezinti","s":[],"a":[],"e":[["Facciamo una passeggiata nel parco.","","Parkta yürüyüşe çıkıyoruz."],["La passeggiata è lunga.","","Yürüyüş uzun."]],"x":[["fare una passeggiata","","yürüyüşe çıkmak","Dopo cena facciamo una passeggiata.","","Akşam yemeğinden sonra yürüyüşe çıkıyoruz."]]}
+{"w":"carino","t":"sıfat","m":"sevimli; hoş; tatlı","s":["grazioso"],"a":[],"e":[["Che bel cane carino!","","Ne sevimli bir köpek!"],["Sei molto carino oggi.","","Bugün çok tatlısın."]]}
+{"w":"magro","t":"sıfat","m":"zayıf; yağsız","s":["snello"],"a":["grasso"],"e":[["Mio fratello è molto magro.","","Kardeşim çok zayıf."],["Preferisco la carne magra.","","Yağsız eti tercih ederim."]]}
+{"w":"grasso","t":"sıfat","m":"şişman; yağlı","s":[],"a":["magro"],"e":[["Il gatto è un po' grasso.","","Kedi biraz şişman."],["Questo formaggio è troppo grasso.","","Bu peynir çok yağlı."]]}
+{"w":"forte","t":"sıfat","m":"güçlü; sert; şiddetli","s":[],"a":["debole"],"e":[["Mio padre è molto forte.","","Babam çok güçlüdür."],["Il caffè è troppo forte.","","Kahve çok sert."]]}
+{"w":"debole","t":"sıfat","m":"zayıf; güçsüz","s":[],"a":["forte"],"e":[["Dopo la malattia sono debole.","","Hastalıktan sonra güçsüzüm."],["La luce è troppo debole.","","Işık çok zayıf."]]}
+{"w":"veloce","t":"sıfat","m":"hızlı","s":["rapido"],"a":["lento"],"e":[["Questo treno è molto veloce.","","Bu tren çok hızlı."],["Marco è un corridore veloce.","","Marco hızlı bir koşucudur."]]}
+{"w":"lento","t":"sıfat","m":"yavaş","s":[],"a":["veloce"],"e":[["La tartaruga è lenta.","","Kaplumbağa yavaştır."],["Internet oggi è molto lento.","","İnternet bugün çok yavaş."]]}
+{"w":"ricco","t":"sıfat","m":"zengin","s":[],"a":["povero"],"e":[["Il signore è molto ricco.","","Bey çok zengin."],["Questa città è ricca di storia.","","Bu şehir tarih bakımından zengin."]]}
+{"w":"povero","t":"sıfat","m":"fakir; zavallı","s":[],"a":["ricco"],"e":[["Era una famiglia povera.","","Fakir bir aileydi."],["Povero Marco, è malato!","","Zavallı Marco, hasta!"]]}
+{"w":"sano","t":"sıfat","m":"sağlıklı","s":[],"a":["malato"],"e":[["La frutta è sana.","","Meyve sağlıklıdır."],["Mia nonna è sana e felice.","","Büyükannem sağlıklı ve mutlu."]]}
+{"w":"malato","t":"sıfat","m":"hasta","s":[],"a":["sano"],"e":[["Oggi sono malato.","","Bugün hastayım."],["Il bambino è malato da due giorni.","","Çocuk iki gündür hasta."]]}
+{"w":"simile","t":"sıfat","m":"benzer","s":[],"a":["diverso"],"e":[["Le due borse sono simili.","","İki çanta birbirine benziyor."],["Ho un'idea simile alla tua.","","Seninkine benzer bir fikrim var."]]}
+{"w":"uguale","t":"sıfat","m":"aynı; eşit","s":["identico"],"a":["diverso"],"e":[["Siamo uguali, non cambia niente.","","Aynıyız, hiçbir şey değişmiyor."],["Le due case sono uguali.","","İki ev aynı."]]}
+{"w":"pulito","t":"sıfat","m":"temiz","s":[],"a":["sporco"],"e":[["La camera è pulita.","","Oda temiz."],["Ho le mani pulite.","","Ellerim temiz."]]}
+{"w":"sporco","t":"sıfat","m":"kirli","s":[],"a":["pulito"],"e":[["Le scarpe sono sporche.","","Ayakkabılar kirli."],["Il bagno è sporco.","","Banyo kirli."]]}
+{"w":"leggero","t":"sıfat","m":"hafif","s":[],"a":["pesante"],"e":[["La mia valigia è leggera.","","Valizim hafif."],["Preferisco una cena leggera.","","Hafif bir akşam yemeğini tercih ederim."]]}
+{"w":"pesante","t":"sıfat","m":"ağır","s":[],"a":["leggero"],"e":[["Questa borsa è troppo pesante.","","Bu çanta çok ağır."],["Il cibo è un po' pesante.","","Yemek biraz ağır."]]}

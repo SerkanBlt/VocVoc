@@ -1,0 +1,50 @@
+{"w":"caro","t":"sıfat","m":"pahalı; sevgili","s":[],"a":["economico"],"e":[["Questo vestito è troppo caro.","","Bu elbise çok pahalı."],["Caro Marco, come stai?","","Sevgili Marco, nasılsın?"]]}
+{"w":"economico","t":"sıfat","m":"ucuz; ekonomik","s":[],"a":["caro"],"e":[["Cerco un hotel economico.","","Ucuz bir otel arıyorum."],["Questa macchina è economica.","","Bu araba ekonomik."]]}
+{"w":"amaro","t":"sıfat","m":"acı","s":[],"a":["dolce"],"e":[["Il caffè è amaro.","","Kahve acı."],["Non mi piace il cioccolato amaro.","","Acı çikolatayı sevmem."]]}
+{"w":"salato","t":"sıfat","m":"tuzlu","s":[],"a":["dolce"],"e":[["La zuppa è troppo salata.","","Çorba çok tuzlu."],["Preferisco i dolci ai biscotti salati.","","Tuzlu bisküvi yerine tatlıyı tercih ederim."]]}
+{"w":"buio","t":"sıfat","m":"karanlık","s":["scuro"],"a":["chiaro"],"e":[["La stanza è buia.","","Oda karanlık."],["Fuori è già buio.","","Dışarısı şimdiden karanlık."]]}
+{"w":"chiaro","t":"sıfat","m":"açık (renk); aydınlık; net","s":["luminoso"],"a":["scuro"],"e":[["Porto una camicia chiara.","","Açık renkli bir gömlek giyiyorum."],["La spiegazione è chiara.","","Açıklama net."]]}
+{"w":"stretto","t":"sıfat","m":"dar","s":[],"a":["largo"],"e":[["Le scarpe sono strette.","","Ayakkabılar dar."],["La strada è molto stretta.","","Yol çok dar."]]}
+{"w":"largo","t":"sıfat","m":"geniş; bol","s":["ampio"],"a":["stretto"],"e":[["Il fiume è largo.","","Nehir geniş."],["Questi pantaloni sono troppo larghi.","","Bu pantolon çok bol."]]}
+{"w":"mi chiamo","t":"kalıp","m":"benim adım; adım ...","s":[],"a":[],"e":[["Ciao, mi chiamo Anna.","","Merhaba, adım Anna."],["Mi chiamo Luca e sono italiano.","","Adım Luca ve İtalyanım."]]}
+{"w":"come ti chiami","t":"kalıp","m":"adın ne?","s":[],"a":[],"e":[["Ciao! Come ti chiami?","","Merhaba! Adın ne?"],["E tu, come ti chiami?","","Peki sen, adın ne?"]]}
+{"w":"come va","t":"kalıp","m":"nasıl gidiyor?; ne haber?","s":[],"a":[],"e":[["Ciao Paolo, come va?","","Merhaba Paolo, nasıl gidiyor?"],["Come va il lavoro?","","İş nasıl gidiyor?"]]}
+{"w":"come stai","t":"kalıp","m":"nasılsın?","s":[],"a":[],"e":[["Ciao Maria, come stai?","","Merhaba Maria, nasılsın?"],["Come stai oggi?","","Bugün nasılsın?"]]}
+{"w":"quindi","t":"bağlaç","m":"bu yüzden; yani; dolayısıyla","s":["perciò"],"a":[],"e":[["Piove, quindi resto a casa.","","Yağmur yağıyor, bu yüzden evde kalıyorum."],["Sei stanco, quindi riposa.","","Yorgunsun, o halde dinlen."]]}
+{"w":"però","t":"bağlaç","m":"ama; fakat","s":["ma"],"a":[],"e":[["Voglio uscire, però piove.","","Çıkmak istiyorum ama yağmur yağıyor."],["È caro, però è bello.","","Pahalı ama güzel."]]}
+{"w":"perciò","t":"bağlaç","m":"bu yüzden; bundan dolayı","s":["quindi"],"a":[],"e":[["Ho fame, perciò mangio.","","Acıktım, bu yüzden yiyorum."],["Sono malato, perciò non vengo.","","Hastayım, bu yüzden gelmiyorum."]]}
+{"w":"oppure","t":"bağlaç","m":"ya da; veyahut","s":["o"],"a":[],"e":[["Vuoi il tè oppure il caffè?","","Çay mı istersin yoksa kahve mi?"],["Andiamo a piedi oppure in autobus?","","Yürüyerek mi gidelim yoksa otobüsle mi?"]]}
+{"w":"ciò","t":"zamir","m":"bu; şu; o şey","s":[],"a":[],"e":[["Ciò che dici è vero.","","Söylediğin şey doğru."],["Non capisco ciò che vuoi.","","Ne istediğini anlamıyorum."]],"x":[["ciò che","","...dığı şey","Ciò che mangio è sano.","","Yediğim şey sağlıklıdır."]]}
+{"w":"signor","t":"isim (eril)","m":"bay; efendi","s":["signore"],"a":["signora"],"e":[["Buongiorno, signor Rossi.","","Günaydın, Bay Rossi."],["Il signor Bianchi è qui.","","Bay Bianchi burada."]]}
+{"w":"quanti","t":"belirleyici","m":"kaç; kaç tane","s":[],"a":[],"e":[["Quanti anni hai?","","Kaç yaşındasın?"],["Quanti libri leggi al mese?","","Ayda kaç kitap okursun?"]]}
+{"w":"tipo","t":"isim (eril)","m":"tür; çeşit; tip","s":["genere"],"a":[],"e":[["Che tipo di musica ti piace?","","Ne tür müzik seviyorsun?"],["Marco è un tipo simpatico.","","Marco sempatik biri."]]}
+{"w":"luogo","t":"isim (eril)","m":"yer; mekan","s":["posto"],"a":[],"e":[["Questo è un bel luogo.","","Burası güzel bir yer."],["Qual è il luogo di nascita?","","Doğum yeri neresi?"]]}
+{"w":"posto","t":"isim (eril)","m":"yer; koltuk; yer (oturacak)","s":["luogo"],"a":[],"e":[["C'è un posto libero?","","Boş bir yer var mı?"],["Questo posto è occupato.","","Bu yer dolu."]]}
+{"w":"parte","t":"isim (dişil)","m":"bölüm; kısım; taraf","s":[],"a":[],"e":[["Questa è la parte più bella.","","En güzel kısım burası."],["Abito dall'altra parte della città.","","Şehrin öbür tarafında oturuyorum."]]}
+{"w":"fine","t":"isim (dişil)","m":"son; bitiş","s":["conclusione"],"a":["inizio"],"e":[["La fine del film è triste.","","Filmin sonu üzücü."],["Alla fine pago io.","","Sonunda ben ödüyorum."]],"x":[["alla fine","","sonunda","Alla fine siamo arrivati.","","Sonunda vardık."]]}
+{"w":"inizio","t":"isim (eril)","m":"başlangıç; giriş","s":["principio"],"a":["fine"],"e":[["L'inizio della lezione è alle nove.","","Dersin başlangıcı dokuzda."],["All'inizio il film è noioso.","","Başta film sıkıcı."]]}
+{"w":"numero","t":"isim (eril)","m":"sayı; numara","s":[],"a":[],"e":[["Qual è il tuo numero di telefono?","","Telefon numaran kaç?"],["Il mio numero preferito è sette.","","En sevdiğim sayı yedi."]]}
+{"w":"telefonata","t":"isim (dişil)","m":"telefon görüşmesi; arama","s":["chiamata"],"a":[],"e":[["Faccio una telefonata a mia madre.","","Annemi arıyorum."],["Ricevo una telefonata importante.","","Önemli bir telefon alıyorum."]]}
+{"w":"messaggio","t":"isim (eril)","m":"mesaj","s":[],"a":[],"e":[["Ti mando un messaggio.","","Sana bir mesaj gönderiyorum."],["Ho un messaggio da Anna.","","Anna'dan bir mesajım var."]]}
+{"w":"indirizzo","t":"isim (eril)","m":"adres","s":[],"a":[],"e":[["Qual è il tuo indirizzo?","","Adresin nedir?"],["Scrivo l'indirizzo sulla busta.","","Adresi zarfa yazıyorum."]]}
+{"w":"email","t":"isim (dişil)","m":"e-posta","s":["posta elettronica"],"a":[],"e":[["Ti scrivo una email.","","Sana bir e-posta yazıyorum."],["Qual è la tua email?","","E-posta adresin nedir?"]]}
+{"w":"internet","t":"isim (eril)","m":"internet","s":["rete"],"a":[],"e":[["Cerco la ricetta su internet.","","Tarifi internette arıyorum."],["Non c'è internet in camera.","","Odada internet yok."]]}
+{"w":"sito","t":"isim (eril)","m":"web sitesi; site","s":[],"a":[],"e":[["Visito il sito del museo.","","Müzenin web sitesini geziyorum."],["Il sito è molto chiaro.","","Site çok net."]]}
+{"w":"luce","t":"isim (dişil)","m":"ışık; lamba","s":[],"a":["buio"],"e":[["Accendo la luce.","","Işığı yakıyorum."],["Nella stanza c'è poca luce.","","Odada az ışık var."]]}
+{"w":"fuoco","t":"isim (eril)","m":"ateş; yangın","s":[],"a":[],"e":[["Il fuoco è caldo.","","Ateş sıcak."],["Facciamo un fuoco nel bosco.","","Ormanda bir ateş yakıyoruz."]]}
+{"w":"terra","t":"isim (dişil)","m":"toprak; yer; dünya","s":[],"a":[],"e":[["Il libro è per terra.","","Kitap yerde."],["La terra è molto secca.","","Toprak çok kuru."]]}
+{"w":"isola","t":"isim (dişil)","m":"ada","s":[],"a":[],"e":[["Passo le vacanze su un'isola.","","Tatili bir adada geçiriyorum."],["La Sicilia è un'isola grande.","","Sicilya büyük bir ada."]]}
+{"w":"lago","t":"isim (eril)","m":"göl","s":[],"a":[],"e":[["Il lago è molto bello.","","Göl çok güzel."],["Nuotiamo nel lago.","","Gölde yüzüyoruz."]]}
+{"w":"spiaggia","t":"isim (dişil)","m":"plaj; kumsal","s":[],"a":[],"e":[["Andiamo in spiaggia domani.","","Yarın plaja gidiyoruz."],["La spiaggia è piena di gente.","","Plaj insanla dolu."]]}
+{"w":"campagna","t":"isim (dişil)","m":"kır; kırsal alan; köy","s":[],"a":["città"],"e":[["Vivo in campagna.","","Kırsalda yaşıyorum."],["La campagna è tranquilla.","","Kırsal sakin."]]}
+{"w":"bosco","t":"isim (eril)","m":"orman","s":["foresta"],"a":[],"e":[["Camminiamo nel bosco.","","Ormanda yürüyoruz."],["Il bosco è buio la sera.","","Orman akşamları karanlık."]]}
+{"w":"erba","t":"isim (dişil)","m":"çimen; ot","s":[],"a":[],"e":[["I bambini giocano sull'erba.","","Çocuklar çimenin üstünde oynuyor."],["L'erba del giardino è alta.","","Bahçenin çimi uzun."]]}
+{"w":"ombrello","t":"isim (eril)","m":"şemsiye","s":[],"a":[],"e":[["Prendo l'ombrello perché piove.","","Yağmur yağdığı için şemsiyemi alıyorum."],["Ho dimenticato l'ombrello a casa.","","Şemsiyeyi evde unuttum."]]}
+{"w":"occhiali","t":"isim (eril)","m":"gözlük","s":[],"a":[],"e":[["Porto gli occhiali da vista.","","Numaralı gözlük takıyorum."],["Dove sono i miei occhiali?","","Gözlüğüm nerede?"]]}
+{"w":"orologio","t":"isim (eril)","m":"saat (kol/duvar)","s":[],"a":[],"e":[["Il mio orologio è nuovo.","","Saatim yeni."],["L'orologio sul muro è fermo.","","Duvardaki saat duruyor."]]}
+{"w":"anello","t":"isim (eril)","m":"yüzük","s":[],"a":[],"e":[["Ha un anello d'oro.","","Altın bir yüzüğü var."],["Perdo spesso il mio anello.","","Yüzüğümü sık sık kaybediyorum."]]}
+{"w":"regalo","t":"isim (eril)","m":"hediye","s":[],"a":[],"e":[["Compro un regalo per Anna.","","Anna için bir hediye alıyorum."],["Grazie per il regalo!","","Hediye için teşekkürler!"]]}
+{"w":"sacchetto","t":"isim (eril)","m":"poşet; küçük torba","s":[],"a":[],"e":[["Metto il pane in un sacchetto.","","Ekmeği bir poşete koyuyorum."],["Un sacchetto di carta, per favore.","","Bir kâğıt poşet lütfen."]]}
+{"w":"scatola","t":"isim (dişil)","m":"kutu","s":["scatolone"],"a":[],"e":[["I biscotti sono nella scatola.","","Bisküviler kutunun içinde."],["Apro la scatola del regalo.","","Hediye kutusunu açıyorum."]]}
+{"w":"valigia","t":"isim (dişil)","m":"valiz","s":[],"a":[],"e":[["Preparo la valigia per il viaggio.","","Yolculuk için valizi hazırlıyorum."],["La mia valigia è molto pesante.","","Valizim çok ağır."]],"x":[["fare la valigia","","valiz hazırlamak","Domani parto, devo fare la valigia.","","Yarın yola çıkıyorum, valizimi hazırlamalıyım."]]}
+{"w":"passaporto","t":"isim (eril)","m":"pasaport","s":[],"a":[],"e":[["Ho il passaporto in borsa.","","Pasaportum çantada."],["Mi serve il passaporto per viaggiare.","","Seyahat etmek için pasaporta ihtiyacım var."]]}

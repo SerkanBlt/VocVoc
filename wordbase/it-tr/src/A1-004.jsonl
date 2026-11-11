@@ -1,0 +1,50 @@
+{"w":"solo","t":"zarf","m":"yalnızca, sadece; yalnız","s":["soltanto","solamente"],"a":[],"e":[["Voglio solo un caffè.","","Sadece bir kahve istiyorum."],["Oggi sono solo a casa.","","Bugün evde yalnızım."]]}
+{"w":"chi","t":"zamir","m":"kim","s":[],"a":[],"e":[["Chi è quella ragazza?","","O kız kim?"],["Chi parla italiano qui?","","Burada kim İtalyanca konuşuyor?"]]}
+{"w":"dove","t":"zarf","m":"nerede; nereye","s":[],"a":[],"e":[["Dove abiti?","","Nerede oturuyorsun?"],["Dove vai domani?","","Yarın nereye gidiyorsun?"]]}
+{"w":"quanto","t":"zarf","m":"ne kadar; kaç","s":[],"a":[],"e":[["Quanto costa questo libro?","","Bu kitap ne kadar?"],["Quanto tempo hai?","","Ne kadar zamanın var?"]]}
+{"w":"quale","t":"sıfat","m":"hangi; hangisi","s":[],"a":[],"e":[["Quale colore preferisci?","","Hangi rengi tercih ediyorsun?"],["Quali scarpe compri?","","Hangi ayakkabıları alıyorsun?"]]}
+{"w":"questo","t":"belirleyici","m":"bu","s":[],"a":["quello"],"e":[["Questo libro è bello.","","Bu kitap güzel."],["Questa casa è grande.","","Bu ev büyük."]]}
+{"w":"quello","t":"belirleyici","m":"şu; o","s":[],"a":["questo"],"e":[["Quello zaino è nuovo.","","O sırt çantası yeni."],["Quella ragazza è mia amica.","","O kız benim arkadaşım."]]}
+{"w":"mio","t":"belirleyici","m":"benim","s":[],"a":[],"e":[["Questo è il mio telefono.","","Bu benim telefonum."],["Mia sorella lavora qui.","","Kız kardeşim burada çalışıyor."]]}
+{"w":"tuo","t":"belirleyici","m":"senin","s":[],"a":[],"e":[["Dov'è il tuo zaino?","","Senin sırt çantan nerede?"],["Tua madre è gentile.","","Annen nazik biri."]]}
+{"w":"suo","t":"belirleyici","m":"onun; sizin (nazik)","s":[],"a":[],"e":[["Il suo nome è Marco.","","Onun adı Marco."],["Sua moglie è simpatica.","","Karısı sempatik biri."]]}
+{"w":"nostro","t":"belirleyici","m":"bizim","s":[],"a":[],"e":[["Questa è la nostra casa.","","Burası bizim evimiz."],["I nostri amici arrivano domani.","","Arkadaşlarımız yarın geliyor."]]}
+{"w":"vostro","t":"belirleyici","m":"sizin (çoğul)","s":[],"a":[],"e":[["Dov'è la vostra scuola?","","Sizin okulunuz nerede?"],["I vostri figli sono bravi.","","Çocuklarınız çok başarılı."]]}
+{"w":"tutto","t":"zamir","m":"her şey; hepsi","s":[],"a":["niente"],"e":[["Ho capito tutto.","","Her şeyi anladım."],["Tutto va bene.","","Her şey yolunda."]],"x":[["tutto il giorno","","bütün gün","Lavoro tutto il giorno.","","Bütün gün çalışıyorum."]]}
+{"w":"niente","t":"zamir","m":"hiçbir şey","s":["nulla"],"a":["tutto"],"e":[["Non ho niente da mangiare.","","Yiyecek hiçbir şeyim yok."],["Non c'è niente di nuovo.","","Yeni bir şey yok."]],"x":[["di niente","","bir şey değil (rica ederim)","Grazie! – Di niente.","","Teşekkürler! – Bir şey değil."]]}
+{"w":"qualcosa","t":"zamir","m":"bir şey","s":[],"a":["niente"],"e":[["Vuoi qualcosa da bere?","","İçecek bir şey ister misin?"],["Ho qualcosa per te.","","Senin için bir şeyim var."]]}
+{"w":"qualcuno","t":"zamir","m":"biri, birisi","s":[],"a":["nessuno"],"e":[["C'è qualcuno alla porta.","","Kapıda biri var."],["Conosci qualcuno qui?","","Burada tanıdığın biri var mı?"]]}
+{"w":"ogni","t":"belirleyici","m":"her","s":[],"a":[],"e":[["Studio ogni giorno.","","Her gün çalışıyorum."],["Ogni persona è diversa.","","Her insan farklıdır."]]}
+{"w":"alcuni","t":"belirleyici","m":"bazı; birkaç","s":[],"a":[],"e":[["Alcuni amici arrivano stasera.","","Bazı arkadaşlar bu akşam geliyor."],["Ho alcune domande.","","Birkaç sorum var."]]}
+{"w":"altro","t":"sıfat","m":"başka, diğer","s":[],"a":["stesso"],"e":[["Vorrei un altro caffè.","","Bir kahve daha istiyorum."],["L'altra camera è più grande.","","Diğer oda daha büyük."]]}
+{"w":"stesso","t":"sıfat","m":"aynı; kendisi","s":[],"a":["diverso"],"e":[["Abbiamo lo stesso nome.","","Aynı adı taşıyoruz."],["Vivo nella stessa città.","","Aynı şehirde yaşıyorum."]]}
+{"w":"famiglia","t":"isim (dişil)","m":"aile","s":[],"a":[],"e":[["La mia famiglia è grande.","","Ailem kalabalık."],["Ceno con la famiglia.","","Akşam yemeğini ailemle yiyorum."]]}
+{"w":"madre","t":"isim (dişil)","m":"anne","s":["mamma"],"a":["padre"],"e":[["Mia madre lavora in banca.","","Annem bankada çalışıyor."],["La madre di Luca è simpatica.","","Luca'nın annesi sempatik biri."]]}
+{"w":"padre","t":"isim (eril)","m":"baba","s":["papà"],"a":["madre"],"e":[["Mio padre è medico.","","Babam doktor."],["Il padre di Anna è alto.","","Anna'nın babası uzun boylu."]]}
+{"w":"mamma","t":"isim (dişil)","m":"anne (günlük)","s":["madre"],"a":["papà"],"e":[["Mamma, ho fame!","","Anne, acıktım!"],["La mamma cucina il pranzo.","","Annem öğle yemeği pişiriyor."]]}
+{"w":"papà","t":"isim (eril)","m":"baba (günlük)","s":["padre"],"a":["mamma"],"e":[["Papà arriva alle sei.","","Babam altıda geliyor."],["Mio papà legge il giornale.","","Babam gazete okuyor."]]}
+{"w":"figlio","t":"isim (eril)","m":"oğul; çocuk","s":[],"a":["figlia"],"e":[["Ho un figlio di tre anni.","","Üç yaşında bir oğlum var."],["Mio figlio studia all'università.","","Oğlum üniversitede okuyor."]]}
+{"w":"figlia","t":"isim (dişil)","m":"kız evlat","s":[],"a":["figlio"],"e":[["Mia figlia ha dieci anni.","","Kızım on yaşında."],["La figlia di Marta canta bene.","","Marta'nın kızı güzel şarkı söylüyor."]]}
+{"w":"fratello","t":"isim (eril)","m":"erkek kardeş; ağabey","s":[],"a":["sorella"],"e":[["Ho un fratello piccolo.","","Küçük bir erkek kardeşim var."],["Mio fratello abita a Roma.","","Ağabeyim Roma'da oturuyor."]]}
+{"w":"sorella","t":"isim (dişil)","m":"kız kardeş; abla","s":[],"a":["fratello"],"e":[["Mia sorella studia medicina.","","Ablam tıp okuyor."],["Ho due sorelle.","","İki kız kardeşim var."]]}
+{"w":"nonno","t":"isim (eril)","m":"büyükbaba, dede","s":[],"a":["nonna"],"e":[["Mio nonno ha ottant'anni.","","Dedem seksen yaşında."],["Il nonno racconta una storia.","","Dede bir hikâye anlatıyor."]]}
+{"w":"nonna","t":"isim (dişil)","m":"büyükanne, nine","s":[],"a":["nonno"],"e":[["Mia nonna cucina bene.","","Babaannem çok güzel yemek yapıyor."],["Domenica vado dalla nonna.","","Pazar günü ninemi ziyaret ediyorum."]]}
+{"w":"zio","t":"isim (eril)","m":"amca; dayı","s":[],"a":["zia"],"e":[["Mio zio vive a Milano.","","Amcam Milano'da yaşıyor."],["Lo zio porta un regalo.","","Dayım bir hediye getiriyor."]]}
+{"w":"zia","t":"isim (dişil)","m":"teyze; hala","s":[],"a":["zio"],"e":[["Mia zia è molto gentile.","","Teyzem çok nazik biri."],["Vado dalla zia sabato.","","Cumartesi halamın yanına gidiyorum."]]}
+{"w":"marito","t":"isim (eril)","m":"koca, eş","s":[],"a":["moglie"],"e":[["Mio marito lavora in ufficio.","","Eşim ofiste çalışıyor."],["Il marito di Laura è italiano.","","Laura'nın kocası İtalyan."]]}
+{"w":"moglie","t":"isim (dişil)","m":"karı, eş","s":[],"a":["marito"],"e":[["Mia moglie è insegnante.","","Eşim öğretmen."],["Presento mia moglie.","","Eşimi tanıştırıyorum."]]}
+{"w":"genitori","t":"isim (eril)","m":"ebeveynler, anne baba","s":[],"a":[],"e":[["I miei genitori abitano qui.","","Annem babam burada oturuyor."],["Telefono ai genitori ogni sera.","","Her akşam anne babamı arıyorum."]]}
+{"w":"bambino","t":"isim (eril)","m":"çocuk; erkek çocuk","s":[],"a":["bambina"],"e":[["Il bambino gioca in giardino.","","Çocuk bahçede oynuyor."],["Ci sono molti bambini nel parco.","","Parkta çok çocuk var."]]}
+{"w":"bambina","t":"isim (dişil)","m":"kız çocuk","s":[],"a":["bambino"],"e":[["La bambina dorme.","","Küçük kız uyuyor."],["Quella bambina ha cinque anni.","","O kız çocuğu beş yaşında."]]}
+{"w":"ragazzo","t":"isim (eril)","m":"genç, delikanlı; erkek arkadaş","s":[],"a":["ragazza"],"e":[["Quel ragazzo è mio fratello.","","O genç benim erkek kardeşim."],["Sara ha un ragazzo simpatico.","","Sara'nın sempatik bir erkek arkadaşı var."]]}
+{"w":"ragazza","t":"isim (dişil)","m":"genç kız; kız arkadaş","s":[],"a":["ragazzo"],"e":[["Quella ragazza studia con me.","","O genç kız benimle birlikte çalışıyor."],["Marco ha una ragazza.","","Marco'nun bir kız arkadaşı var."]]}
+{"w":"uomo","t":"isim (eril)","m":"erkek, adam; insan","s":[],"a":["donna"],"e":[["Un uomo aspetta alla fermata.","","Bir adam durakta bekliyor."],["Gli uomini lavorano in cucina.","","Erkekler mutfakta çalışıyor."]]}
+{"w":"donna","t":"isim (dişil)","m":"kadın","s":[],"a":["uomo"],"e":[["Una donna entra nel negozio.","","Bir kadın mağazaya giriyor."],["Quella donna è la mia insegnante.","","O kadın benim öğretmenim."]]}
+{"w":"persona","t":"isim (dişil)","m":"kişi, insan","s":[],"a":[],"e":[["Siamo quattro persone.","","Dört kişiyiz."],["Marco è una persona gentile.","","Marco nazik biri."]],"x":[["di persona","","bizzat, yüz yüze","Voglio parlarti di persona.","","Seninle yüz yüze konuşmak istiyorum."]]}
+{"w":"amico","t":"isim (eril)","m":"arkadaş, dost","s":[],"a":["nemico"],"e":[["Marco è il mio migliore amico.","","Marco benim en iyi arkadaşım."],["Ho molti amici a Roma.","","Roma'da çok arkadaşım var."]]}
+{"w":"amica","t":"isim (dişil)","m":"kız arkadaş (dost)","s":[],"a":[],"e":[["Giulia è la mia amica.","","Giulia benim arkadaşım."],["Esco con un'amica stasera.","","Bu akşam bir arkadaşımla çıkıyorum."]]}
+{"w":"signore","t":"isim (eril)","m":"bay; efendi","s":[],"a":["signora"],"e":[["Buongiorno, signore!","","Günaydın, efendim!"],["Quel signore è il direttore.","","O bey müdür."]]}
+{"w":"signora","t":"isim (dişil)","m":"bayan; hanımefendi","s":[],"a":["signore"],"e":[["Buonasera, signora Rossi.","","İyi akşamlar, Bayan Rossi."],["La signora aspetta l'autobus.","","Hanımefendi otobüsü bekliyor."]]}
+{"w":"signorina","t":"isim (dişil)","m":"bayan (evli olmayan); genç hanım","s":[],"a":[],"e":[["La signorina Bianchi è qui.","","Bayan Bianchi burada."],["Scusi, signorina, che ore sono?","","Affedersiniz, hanımefendi, saat kaç?"]]}
+{"w":"gente","t":"isim (dişil)","m":"insanlar, halk","s":[],"a":[],"e":[["C'è molta gente in piazza.","","Meydanda çok insan var."],["La gente di qui è gentile.","","Buranın insanları nazik."]]}
+{"w":"nome","t":"isim (eril)","m":"ad, isim","s":[],"a":["cognome"],"e":[["Il mio nome è Anna.","","Benim adım Anna."],["Come scrivi il tuo nome?","","Adını nasıl yazıyorsun?"]]}

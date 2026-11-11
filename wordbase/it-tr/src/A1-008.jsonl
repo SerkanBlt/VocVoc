@@ -1,0 +1,50 @@
+{"w":"pagare","t":"fiil","m":"ödemek","s":[],"a":[],"e":[["Pago il conto al bar.","","Hesabı barda ödüyorum."],["Oggi pagate voi?","","Bugün siz mi ödüyorsunuz?"]]}
+{"w":"aprire","t":"fiil","m":"açmak","s":[],"a":["chiudere"],"e":[["Apro la finestra.","","Pencereyi açıyorum."],["Il negozio apre alle nove.","","Mağaza dokuzda açılıyor."]]}
+{"w":"chiudere","t":"fiil","m":"kapatmak","s":[],"a":["aprire"],"e":[["Chiudo la porta a chiave.","","Kapıyı anahtarla kilitliyorum."],["La banca chiude alle cinque.","","Banka beşte kapanıyor."]]}
+{"w":"leggere","t":"fiil","m":"okumak","s":[],"a":[],"e":[["Leggo un libro ogni sera.","","Her akşam bir kitap okuyorum."],["Mio padre legge il giornale.","","Babam gazete okuyor."]]}
+{"w":"scrivere","t":"fiil","m":"yazmak","s":[],"a":[],"e":[["Scrivo una lettera a mia nonna.","","Ninem için bir mektup yazıyorum."],["Come si scrive il tuo nome?","","Adın nasıl yazılıyor?"]]}
+{"w":"ascoltare","t":"fiil","m":"dinlemek","s":[],"a":[],"e":[["Ascolto la musica in macchina.","","Arabada müzik dinliyorum."],["Ascolta, per favore!","","Dinle, lütfen!"]]}
+{"w":"guardare","t":"fiil","m":"bakmak; izlemek","s":[],"a":[],"e":[["Guardo un film stasera.","","Bu akşam bir film izliyorum."],["Guarda, che bel cielo!","","Bak, ne güzel gökyüzü!"]]}
+{"w":"giocare","t":"fiil","m":"oynamak","s":[],"a":[],"e":[["I bambini giocano in giardino.","","Çocuklar bahçede oynuyor."],["Giochiamo a calcio domenica.","","Pazar günü futbol oynuyoruz."]]}
+{"w":"dormire","t":"fiil","m":"uyumak","s":[],"a":[],"e":[["Dormo otto ore a notte.","","Geceleri sekiz saat uyuyorum."],["Il bambino dorme già.","","Çocuk çoktan uyuyor."]]}
+{"w":"cucinare","t":"fiil","m":"yemek pişirmek","s":[],"a":[],"e":[["Mia madre cucina bene.","","Annem çok güzel yemek yapıyor."],["Stasera cucino la pasta.","","Bu akşam makarna pişiriyorum."]]}
+{"w":"aiutare","t":"fiil","m":"yardım etmek","s":[],"a":[],"e":[["Mi aiuti con i compiti?","","Ödevlerimde bana yardım eder misin?"],["Aiuto mia madre in cucina.","","Mutfakta anneme yardım ediyorum."]]}
+{"w":"chiedere","t":"fiil","m":"sormak; istemek","s":[],"a":["rispondere"],"e":[["Chiedo una cosa al professore.","","Hocaya bir şey soruyorum."],["Chiedo il conto al cameriere.","","Garsondan hesabı istiyorum."]]}
+{"w":"rispondere","t":"fiil","m":"cevap vermek","s":[],"a":["chiedere"],"e":[["Rispondo alla domanda.","","Soruya cevap veriyorum."],["Perché non rispondi al telefono?","","Neden telefona cevap vermiyorsun?"]]}
+{"w":"cercare","t":"fiil","m":"aramak","s":[],"a":["trovare"],"e":[["Cerco le mie chiavi.","","Anahtarlarımı arıyorum."],["Cerchiamo un albergo in centro.","","Merkezde bir otel arıyoruz."]]}
+{"w":"conoscere","t":"fiil","m":"tanımak; tanışmak","s":[],"a":[],"e":[["Conosco bene questa città.","","Bu şehri iyi tanıyorum."],["Conosci Marco?","","Marco'yu tanıyor musun?"]]}
+{"w":"sentire","t":"fiil","m":"duymak; hissetmek","s":[],"a":[],"e":[["Non sento niente.","","Hiçbir şey duymuyorum."],["Mi sento stanco oggi.","","Bugün kendimi yorgun hissediyorum."]]}
+{"w":"credere","t":"fiil","m":"inanmak; sanmak","s":[],"a":[],"e":[["Non ti credo!","","Sana inanmıyorum!"],["Credo che sia vero.","","Sanırım doğru."]]}
+{"w":"vivere","t":"fiil","m":"yaşamak","s":["abitare"],"a":["morire"],"e":[["Vivo in Italia da due anni.","","İki yıldır İtalya'da yaşıyorum."],["Mio nonno vive in campagna.","","Dedem kırda yaşıyor."]]}
+{"w":"bisognare","t":"fiil","m":"gerekmek, lazım olmak","s":[],"a":[],"e":[["Bisogna studiare ogni giorno.","","Her gün çalışmak gerekir."],["Bisogna partire presto.","","Erken yola çıkmak gerekiyor."]],"x":[["bisogna","","gerekir","Bisogna aspettare il treno.","","Treni beklemek gerekiyor."]]}
+{"w":"costare","t":"fiil","m":"(fiyat) olmak, tutmak","s":[],"a":[],"e":[["Quanto costa questo libro?","","Bu kitap ne kadar?"],["Le scarpe costano trenta euro.","","Ayakkabılar otuz euro."]]}
+{"w":"preferire","t":"fiil","m":"tercih etmek","s":[],"a":[],"e":[["Preferisco il tè al caffè.","","Çayı kahveye tercih ediyorum."],["Che cosa preferisci?","","Neyi tercih ediyorsun?"]]}
+{"w":"desiderare","t":"fiil","m":"istemek, arzulamek","s":["volere"],"a":[],"e":[["Desidera un caffè, signora?","","Kahve ister misiniz, hanımefendi?"],["Desidero una vacanza al mare.","","Denizde bir tatil istiyorum."]]}
+{"w":"cominciare","t":"fiil","m":"başlamak","s":["iniziare"],"a":["finire"],"e":[["La lezione comincia alle nove.","","Ders dokuzda başlıyor."],["Comincio a lavorare domani.","","Yarın çalışmaya başlıyorum."]]}
+{"w":"finire","t":"fiil","m":"bitirmek; bitmek","s":[],"a":["cominciare"],"e":[["Finisco il lavoro alle sei.","","İşi altıda bitiriyorum."],["Il film finisce tardi.","","Film geç bitiyor."]]}
+{"w":"cantare","t":"fiil","m":"şarkı söylemek","s":[],"a":[],"e":[["Mia figlia canta bene.","","Kızım güzel şarkı söylüyor."],["Cantiamo una canzone italiana.","","Bir İtalyan şarkısı söylüyoruz."]]}
+{"w":"ballare","t":"fiil","m":"dans etmek","s":[],"a":[],"e":[["Ballo alla festa.","","Partide dans ediyorum."],["Vuoi ballare con me?","","Benimle dans etmek ister misin?"]]}
+{"w":"camminare","t":"fiil","m":"yürümek","s":[],"a":[],"e":[["Cammino nel parco ogni mattina.","","Her sabah parkta yürüyorum."],["Il bambino cammina già.","","Çocuk artık yürüyor."]]}
+{"w":"correre","t":"fiil","m":"koşmak","s":[],"a":[],"e":[["Corro nel parco la domenica.","","Pazar günleri parkta koşuyorum."],["Il cane corre veloce.","","Köpek hızlı koşuyor."]]}
+{"w":"viaggiare","t":"fiil","m":"seyahat etmek","s":[],"a":[],"e":[["Mi piace viaggiare in treno.","","Trenle seyahat etmeyi severim."],["Viaggiamo molto in estate.","","Yazın çok seyahat ediyoruz."]]}
+{"w":"visitare","t":"fiil","m":"gezmek, ziyaret etmek","s":[],"a":[],"e":[["Visito il museo domani.","","Yarın müzeyi geziyorum."],["Visitiamo la nonna la domenica.","","Pazar günleri ninemi ziyaret ediyoruz."]]}
+{"w":"telefonare","t":"fiil","m":"telefon etmek, aramak","s":[],"a":[],"e":[["Telefono a mia madre ogni sera.","","Her akşam annemi arıyorum."],["Ti telefono domani.","","Seni yarın arayacağım."]]}
+{"w":"imparare","t":"fiil","m":"öğrenmek","s":[],"a":[],"e":[["Imparo l'italiano a scuola.","","İtalyancayı okulda öğreniyorum."],["I bambini imparano in fretta.","","Çocuklar çabuk öğrenir."]]}
+{"w":"dimenticare","t":"fiil","m":"unutmak","s":[],"a":["ricordare"],"e":[["Dimentico sempre le chiavi.","","Anahtarları hep unutuyorum."],["Non dimenticare il biglietto!","","Bileti unutma!"]]}
+{"w":"ricordare","t":"fiil","m":"hatırlamak; hatırlatmak","s":[],"a":["dimenticare"],"e":[["Non ricordo il tuo nome.","","Adını hatırlamıyorum."],["Ricordo bene quel giorno.","","O günü iyi hatırlıyorum."]]}
+{"w":"portare","t":"fiil","m":"getirmek, taşımak; giymek","s":[],"a":[],"e":[["Porto il pane a casa.","","Eve ekmek getiriyorum."],["Oggi porto un vestito nuovo.","","Bugün yeni bir elbise giyiyorum."]]}
+{"w":"usare","t":"fiil","m":"kullanmak","s":[],"a":[],"e":[["Uso il computer ogni giorno.","","Her gün bilgisayar kullanıyorum."],["Posso usare il tuo telefono?","","Telefonunu kullanabilir miyim?"]]}
+{"w":"aspettare","t":"fiil","m":"beklemek","s":[],"a":[],"e":[["Aspetto l'autobus alla fermata.","","Otobüsü durakta bekliyorum."],["Ti aspetto davanti alla stazione.","","Seni istasyonun önünde bekliyorum."]]}
+{"w":"restare","t":"fiil","m":"kalmak","s":["rimanere"],"a":[],"e":[["Resto a casa stasera.","","Bu akşam evde kalıyorum."],["Quanto resti a Roma?","","Roma'da ne kadar kalıyorsun?"]]}
+{"w":"rimanere","t":"fiil","m":"kalmak","s":["restare"],"a":[],"e":[["Rimango a casa domani.","","Yarın evde kalıyorum."],["Rimaniamo in hotel due notti.","","Otelde iki gece kalıyoruz."]]}
+{"w":"sedersi","t":"fiil","m":"oturmak (yerine oturmak)","s":[],"a":["alzarsi"],"e":[["Mi siedo vicino alla finestra.","","Pencerenin yanına oturuyorum."],["Prego, si sieda!","","Buyurun, oturun!"]]}
+{"w":"alzarsi","t":"fiil","m":"kalkmak (yataktan)","s":[],"a":["sedersi"],"e":[["Mi alzo alle sette.","","Yedide kalkıyorum."],["A che ora ti alzi la domenica?","","Pazar günleri saat kaçta kalkıyorsun?"]]}
+{"w":"svegliarsi","t":"fiil","m":"uyanmak","s":[],"a":["addormentarsi"],"e":[["Mi sveglio alle sei.","","Altıda uyanıyorum."],["Il bambino si sveglia presto.","","Çocuk erken uyanıyor."]]}
+{"w":"lavarsi","t":"fiil","m":"yıkanmak; (ellerini, yüzünü) yıkamak","s":[],"a":[],"e":[["Mi lavo le mani.","","Ellerimi yıkıyorum."],["Mi lavo la faccia la mattina.","","Sabahları yüzümü yıkıyorum."]]}
+{"w":"vestirsi","t":"fiil","m":"giyinmek","s":[],"a":[],"e":[["Mi vesto in fretta.","","Çabuk giyiniyorum."],["La bambina si veste da sola.","","Küçük kız tek başına giyiniyor."]]}
+{"w":"sembrare","t":"fiil","m":"gibi görünmek, benzemek","s":[],"a":[],"e":[["Sembri stanco oggi.","","Bugün yorgun görünüyorsun."],["Mi sembra una buona idea.","","Bana iyi bir fikir gibi geliyor."]]}
+{"w":"diventare","t":"fiil","m":"olmak, haline gelmek","s":[],"a":[],"e":[["Voglio diventare medico.","","Doktor olmak istiyorum."],["Il cielo diventa grigio.","","Gökyüzü griye dönüyor."]]}
+{"w":"nascere","t":"fiil","m":"doğmak","s":[],"a":["morire"],"e":[["Sono nato a Roma.","","Roma'da doğdum."],["Mia figlia è nata in estate.","","Kızım yazın doğdu."]]}
+{"w":"morire","t":"fiil","m":"ölmek","s":[],"a":["nascere","vivere"],"e":[["Il fiore muore senza acqua.","","Çiçek susuz ölür."],["Muoio di fame!","","Açlıktan ölüyorum!"]],"x":[["morire di fame","","açlıktan ölmek","Muoio di fame, mangiamo!","","Açlıktan ölüyorum, yemek yiyelim!"]]}
+{"w":"città","t":"isim (dişil)","m":"şehir","s":[],"a":[],"e":[["Roma è una bella città.","","Roma güzel bir şehir."],["Abito in una città piccola.","","Küçük bir şehirde oturuyorum."]]}
+{"w":"paese","t":"isim (eril)","m":"ülke; köy","s":[],"a":[],"e":[["L'Italia è un bel paese.","","İtalya güzel bir ülke."],["Mio nonno vive in un piccolo paese.","","Dedem küçük bir köyde yaşıyor."]]}

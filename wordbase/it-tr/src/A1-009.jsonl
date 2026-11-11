@@ -1,0 +1,50 @@
+{"w":"strada","t":"isim (dişil)","m":"yol, cadde, sokak","s":["via"],"a":[],"e":[["La strada è lunga.","","Yol uzun."],["Attraverso la strada con attenzione.","","Caddeyi dikkatle geçiyorum."]]}
+{"w":"via","t":"isim (dişil)","m":"cadde, sokak; yol","s":["strada"],"a":[],"e":[["Abito in via Roma.","","Roma Caddesi'nde oturuyorum."],["Questa via porta alla stazione.","","Bu cadde istasyona çıkıyor."]]}
+{"w":"piazza","t":"isim (dişil)","m":"meydan","s":[],"a":[],"e":[["Ci vediamo in piazza.","","Meydanda buluşuyoruz."],["La piazza è piena di gente.","","Meydan insan dolu."]]}
+{"w":"negozio","t":"isim (eril)","m":"mağaza, dükkân","s":[],"a":[],"e":[["Il negozio apre alle nove.","","Mağaza dokuzda açılıyor."],["Compro le scarpe in un negozio in centro.","","Ayakkabıları merkezdeki bir mağazadan alıyorum."]]}
+{"w":"supermercato","t":"isim (eril)","m":"süpermarket","s":[],"a":[],"e":[["Faccio la spesa al supermercato.","","Alışverişi süpermarkette yapıyorum."],["Il supermercato è vicino a casa.","","Süpermarket eve yakın."]]}
+{"w":"mercato","t":"isim (eril)","m":"pazar, çarşı","s":[],"a":[],"e":[["Sabato vado al mercato.","","Cumartesi pazara gidiyorum."],["Al mercato la frutta è fresca.","","Pazarda meyve taze."]]}
+{"w":"ristorante","t":"isim (eril)","m":"restoran","s":[],"a":[],"e":[["Stasera mangiamo al ristorante.","","Bu akşam restoranda yiyoruz."],["Questo ristorante è molto buono.","","Bu restoran çok iyi."]]}
+{"w":"bar","t":"isim (eril)","m":"bar; kafe","s":[],"a":[],"e":[["Prendo un caffè al bar.","","Barda bir kahve içiyorum."],["Il bar è chiuso la domenica.","","Bar pazar günleri kapalı."]]}
+{"w":"albergo","t":"isim (eril)","m":"otel","s":["hotel"],"a":[],"e":[["Cerco un albergo in centro.","","Merkezde bir otel arıyorum."],["L'albergo ha cento camere.","","Otelin yüz odası var."]]}
+{"w":"hotel","t":"isim (eril)","m":"otel","s":["albergo"],"a":[],"e":[["Il nostro hotel è vicino al mare.","","Otelimiz denize yakın."],["Prenotiamo un hotel per tre notti.","","Üç gece için bir otel ayırtıyoruz."]]}
+{"w":"banca","t":"isim (dişil)","m":"banka","s":[],"a":[],"e":[["La banca apre alle otto.","","Banka sekizde açılıyor."],["Lavoro in una banca.","","Bir bankada çalışıyorum."]]}
+{"w":"posta","t":"isim (dişil)","m":"postane; posta","s":[],"a":[],"e":[["Vado alla posta a spedire una lettera.","","Mektup göndermek için postaneye gidiyorum."],["La posta è chiusa oggi.","","Postane bugün kapalı."]]}
+{"w":"farmacia","t":"isim (dişil)","m":"eczane","s":[],"a":[],"e":[["Cerco una farmacia aperta.","","Açık bir eczane arıyorum."],["La farmacia è dopo la banca.","","Eczane bankanın hemen ardında."]]}
+{"w":"ospedale","t":"isim (eril)","m":"hastane","s":[],"a":[],"e":[["Mio padre è in ospedale.","","Babam hastanede."],["L'ospedale è vicino alla stazione.","","Hastane istasyona yakın."]]}
+{"w":"scuola","t":"isim (dişil)","m":"okul","s":[],"a":[],"e":[["I bambini vanno a scuola.","","Çocuklar okula gidiyor."],["La mia scuola è grande.","","Okulum büyük."]]}
+{"w":"università","t":"isim (dişil)","m":"üniversite","s":[],"a":[],"e":[["Studio all'università di Roma.","","Roma Üniversitesi'nde okuyorum."],["L'università comincia a settembre.","","Üniversite eylülde başlıyor."]]}
+{"w":"chiesa","t":"isim (dişil)","m":"kilise","s":[],"a":[],"e":[["La chiesa è in piazza.","","Kilise meydanda."],["Visitiamo una chiesa antica.","","Eski bir kiliseyi geziyoruz."]]}
+{"w":"museo","t":"isim (eril)","m":"müze","s":[],"a":[],"e":[["Domenica visito il museo.","","Pazar günü müzeyi geziyorum."],["Il museo è chiuso il lunedì.","","Müze pazartesi günleri kapalı."]]}
+{"w":"cinema","t":"isim (eril)","m":"sinema","s":[],"a":[],"e":[["Stasera andiamo al cinema.","","Bu akşam sinemaya gidiyoruz."],["Il cinema è vicino a casa mia.","","Sinema evime yakın."]]}
+{"w":"teatro","t":"isim (eril)","m":"tiyatro","s":[],"a":[],"e":[["Sabato vado a teatro.","","Cumartesi tiyatroya gidiyorum."],["Il teatro è molto bello.","","Tiyatro çok güzel."]]}
+{"w":"parco","t":"isim (eril)","m":"park","s":[],"a":[],"e":[["I bambini giocano nel parco.","","Çocuklar parkta oynuyor."],["Cammino nel parco ogni mattina.","","Her sabah parkta yürüyorum."]]}
+{"w":"stazione","t":"isim (dişil)","m":"istasyon, gar","s":[],"a":[],"e":[["La stazione è lontana.","","İstasyon uzak."],["Ti aspetto alla stazione.","","Seni istasyonda bekliyorum."]]}
+{"w":"aeroporto","t":"isim (eril)","m":"havalimanı","s":[],"a":[],"e":[["L'aeroporto è fuori città.","","Havalimanı şehrin dışında."],["Arrivo all'aeroporto alle sei.","","Havalimanına altıda varıyorum."]]}
+{"w":"fermata","t":"isim (dişil)","m":"durak","s":[],"a":[],"e":[["La fermata dell'autobus è qui.","","Otobüs durağı burada."],["Scendo alla prossima fermata.","","Bir sonraki durakta iniyorum."]]}
+{"w":"ufficio","t":"isim (eril)","m":"ofis, büro","s":[],"a":[],"e":[["Lavoro in un ufficio.","","Bir ofiste çalışıyorum."],["Esco dall'ufficio alle sei.","","Ofisten altıda çıkıyorum."]]}
+{"w":"biglietto","t":"isim (eril)","m":"bilet","s":[],"a":[],"e":[["Compro un biglietto per Roma.","","Roma için bir bilet alıyorum."],["Il biglietto costa dieci euro.","","Bilet on euro."]]}
+{"w":"treno","t":"isim (eril)","m":"tren","s":[],"a":[],"e":[["Il treno parte alle otto.","","Tren sekizde kalkıyor."],["Viaggio in treno.","","Trenle seyahat ediyorum."]]}
+{"w":"autobus","t":"isim (eril)","m":"otobüs","s":[],"a":[],"e":[["Prendo l'autobus ogni mattina.","","Her sabah otobüse biniyorum."],["L'autobus è in ritardo.","","Otobüs gecikmeli."]]}
+{"w":"macchina","t":"isim (dişil)","m":"araba; makine","s":["auto"],"a":[],"e":[["Ho una macchina rossa.","","Kırmızı bir arabam var."],["Vado al lavoro in macchina.","","İşe arabayla gidiyorum."]],"x":[["in macchina","","arabayla","Andiamo al mare in macchina.","","Denize arabayla gidiyoruz."]]}
+{"w":"auto","t":"isim (dişil)","m":"araba, otomobil","s":["macchina"],"a":[],"e":[["L'auto è nel garage.","","Araba garajda."],["Mio padre ha un'auto nuova.","","Babamın yeni bir arabası var."]]}
+{"w":"aereo","t":"isim (eril)","m":"uçak","s":[],"a":[],"e":[["L'aereo parte alle dieci.","","Uçak ona kalkıyor."],["Viaggio in aereo per lavoro.","","İş için uçakla seyahat ediyorum."]]}
+{"w":"bicicletta","t":"isim (dişil)","m":"bisiklet","s":[],"a":[],"e":[["Vado a scuola in bicicletta.","","Okula bisikletle gidiyorum."],["La mia bicicletta è nuova.","","Bisikletim yeni."]]}
+{"w":"taxi","t":"isim (eril)","m":"taksi","s":[],"a":[],"e":[["Prendiamo un taxi.","","Bir taksiye biniyoruz."],["Il taxi costa troppo.","","Taksi çok pahalı."]]}
+{"w":"metropolitana","t":"isim (dişil)","m":"metro","s":[],"a":[],"e":[["Prendo la metropolitana per andare al lavoro.","","İşe gitmek için metroya biniyorum."],["La metropolitana è veloce.","","Metro hızlı."]]}
+{"w":"nave","t":"isim (dişil)","m":"gemi","s":[],"a":[],"e":[["La nave parte domani.","","Gemi yarın kalkıyor."],["Viaggiamo in nave fino a Napoli.","","Napoli'ye kadar gemiyle seyahat ediyoruz."]]}
+{"w":"moto","t":"isim (dişil)","m":"motosiklet","s":[],"a":[],"e":[["Mio fratello ha una moto.","","Ağabeyimin bir motosikleti var."],["Vado in moto al lavoro.","","İşe motosikletle gidiyorum."]]}
+{"w":"viaggio","t":"isim (eril)","m":"yolculuk, seyahat","s":[],"a":[],"e":[["Il viaggio è lungo.","","Yolculuk uzun."],["Buon viaggio!","","İyi yolculuklar!"]],"x":[["buon viaggio","","iyi yolculuklar","Buon viaggio, a presto!","","İyi yolculuklar, görüşürüz!"]]}
+{"w":"lavoro","t":"isim (eril)","m":"iş; çalışma","s":[],"a":[],"e":[["Ho un lavoro interessante.","","İlginç bir işim var."],["Vado al lavoro in autobus.","","İşe otobüsle gidiyorum."]]}
+{"w":"professione","t":"isim (dişil)","m":"meslek","s":[],"a":[],"e":[["Qual è la tua professione?","","Mesleğin nedir?"],["La sua professione è molto difficile.","","Mesleği çok zor."]]}
+{"w":"insegnante","t":"isim (eril)","m":"öğretmen","s":[],"a":[],"e":[["Mia sorella è insegnante.","","Ablam öğretmen."],["L'insegnante spiega la lezione.","","Öğretmen dersi anlatıyor."]]}
+{"w":"studente","t":"isim (eril)","m":"öğrenci","s":[],"a":[],"e":[["Sono uno studente di medicina.","","Tıp öğrencisiyim."],["Gli studenti sono in classe.","","Öğrenciler sınıfta."]]}
+{"w":"medico","t":"isim (eril)","m":"doktor, hekim","s":["dottore"],"a":[],"e":[["Mio padre è medico.","","Babam doktor."],["Vado dal medico domani.","","Yarın doktora gidiyorum."]]}
+{"w":"dottore","t":"isim (eril)","m":"doktor; (unvan) bay","s":["medico"],"a":[],"e":[["Il dottore è in ospedale.","","Doktor hastanede."],["Buongiorno, dottore!","","Günaydın, doktor bey!"]]}
+{"w":"cameriere","t":"isim (eril)","m":"garson","s":[],"a":[],"e":[["Il cameriere porta il menu.","","Garson menüyü getiriyor."],["Chiamo il cameriere.","","Garsonu çağırıyorum."]]}
+{"w":"libro","t":"isim (eril)","m":"kitap","s":[],"a":[],"e":[["Leggo un libro interessante.","","İlginç bir kitap okuyorum."],["Il libro è sul tavolo.","","Kitap masanın üstünde."]]}
+{"w":"quaderno","t":"isim (eril)","m":"defter","s":[],"a":[],"e":[["Scrivo nel quaderno.","","Deftere yazıyorum."],["Ho un quaderno nuovo.","","Yeni bir defterim var."]]}
+{"w":"penna","t":"isim (dişil)","m":"kalem, tükenmez kalem","s":[],"a":[],"e":[["Hai una penna?","","Bir kalemin var mı?"],["Scrivo con la penna blu.","","Mavi kalemle yazıyorum."]]}
+{"w":"matita","t":"isim (dişil)","m":"kurşun kalem","s":[],"a":[],"e":[["Disegno con la matita.","","Kurşun kalemle çiziyorum."],["La matita è sul quaderno.","","Kurşun kalem defterin üstünde."]]}
+{"w":"carta","t":"isim (dişil)","m":"kâğıt; kart","s":[],"a":[],"e":[["Ho bisogno di un foglio di carta.","","Bir kâğıda ihtiyacım var."],["Pago con la carta.","","Kartla ödüyorum."]],"x":[["carta d'identità","","kimlik kartı","Ho dimenticato la carta d'identità.","","Kimlik kartımı unuttum."]]}
+{"w":"borsa","t":"isim (dişil)","m":"çanta","s":[],"a":[],"e":[["La mia borsa è nera.","","Çantam siyah."],["Metto il telefono nella borsa.","","Telefonu çantaya koyuyorum."]]}

@@ -1,0 +1,50 @@
+{"w":"Gruppe","t":"isim (dişil)","m":"grup","s":[],"a":[],"e":[["Wir sind eine kleine Gruppe.","","Biz küçük bir grubuz."],["Die Gruppe trifft sich am Montag.","","Grup pazartesi buluşuyor."]]}
+{"w":"Ecke","t":"isim (dişil)","m":"köşe","s":[],"a":[],"e":[["Die Bäckerei ist an der Ecke.","","Fırın köşede."],["Der Tisch steht in der Ecke.","","Masa köşede duruyor."]]}
+{"w":"Mitte","t":"isim (dişil)","m":"orta; merkez","s":[],"a":[],"e":[["Der Tisch steht in der Mitte.","","Masa ortada duruyor."],["Er wohnt in der Mitte der Stadt.","","O, şehrin ortasında oturuyor."]]}
+{"w":"Hand","t":"isim (dişil)","m":"el","s":[],"a":[],"e":[["Ich habe etwas in der Hand.","","Elimde bir şey var."],["Gib mir bitte deine Hand.","","Lütfen bana elini ver."]]}
+{"w":"Nase","t":"isim (dişil)","m":"burun","s":[],"a":[],"e":[["Meine Nase ist kalt.","","Burnum soğuk."],["Er hat eine große Nase.","","Onun büyük bir burnu var."]]}
+{"w":"Entschuldigung","t":"isim (dişil)","m":"özür; pardon","s":[],"a":[],"e":[["Entschuldigung, wo ist der Bahnhof?","","Pardon, gar nerede?"],["Ich bitte um Entschuldigung.","","Özür dilerim."]]}
+{"w":"Apotheke","t":"isim (dişil)","m":"eczane","s":[],"a":[],"e":[["Die Apotheke ist neben der Bank.","","Eczane bankanın yanında."],["Ich gehe in die Apotheke.","","Eczaneye gidiyorum."]]}
+{"w":"Pizza","t":"isim (dişil)","m":"pizza","s":[],"a":[],"e":[["Ich bestelle eine Pizza.","","Bir pizza sipariş ediyorum."],["Die Pizza ist sehr lecker.","","Pizza çok lezzetli."]]}
+{"w":"Karte","t":"isim (dişil)","m":"kart; bilet; harita","s":[],"a":[],"e":[["Kann ich mit Karte bezahlen?","","Kartla ödeyebilir miyim?"],["Wir brauchen eine Karte von der Stadt.","","Şehrin bir haritasına ihtiyacımız var."]]}
+{"w":"Wasser","t":"isim (nötr)","m":"su","s":[],"a":[],"e":[["Ich trinke ein Glas Wasser.","","Bir bardak su içiyorum."],["Das Wasser ist kalt.","","Su soğuk."]]}
+{"w":"Vater","t":"isim (eril)","m":"baba","s":[],"a":["Mutter"],"e":[["Mein Vater arbeitet bei der Bank.","","Babam bankada çalışıyor."],["Der Vater kocht heute.","","Baba bugün yemek yapıyor."]]}
+{"w":"Bruder","t":"isim (eril)","m":"erkek kardeş; ağabey","s":[],"a":["Schwester"],"e":[["Mein Bruder ist zehn Jahre alt.","","Erkek kardeşim on yaşında."],["Ich habe zwei Brüder.","","İki erkek kardeşim var."]]}
+{"w":"Sohn","t":"isim (eril)","m":"oğul; erkek evlat","s":[],"a":["Tochter"],"e":[["Mein Sohn geht zur Schule.","","Oğlum okula gidiyor."],["Sie haben einen Sohn und eine Tochter.","","Bir oğulları ve bir kızları var."]]}
+{"w":"Opa","t":"isim (eril)","m":"büyükbaba; dede","s":[],"a":["Oma"],"e":[["Mein Opa ist achtzig Jahre alt.","","Dedem seksen yaşında."],["Opa liest die Zeitung.","","Dede gazete okuyor."]]}
+{"w":"Onkel","t":"isim (eril)","m":"amca; dayı; enişte","s":[],"a":["Tante"],"e":[["Mein Onkel wohnt in Köln.","","Amcam Köln'de oturuyor."],["Der Onkel kommt am Sonntag.","","Amca pazar günü geliyor."]]}
+{"w":"Mann","t":"isim (eril)","m":"adam; erkek; koca","s":[],"a":["Frau"],"e":[["Der Mann liest die Zeitung.","","Adam gazete okuyor."],["Das ist mein Mann.","","Bu benim eşim."]]}
+{"w":"Junge","t":"isim (eril)","m":"oğlan; erkek çocuk","s":[],"a":["Mädchen"],"e":[["Der Junge spielt Fußball.","","Oğlan futbol oynuyor."],["Wir haben zwei Jungen.","","İki oğlumuz var."]]}
+{"w":"Freund","t":"isim (eril)","m":"arkadaş; erkek arkadaş","s":[],"a":["Feind"],"e":[["Das ist mein Freund Tim.","","Bu arkadaşım Tim."],["Sie hat viele Freunde.","","Onun çok arkadaşı var."]]}
+{"w":"Mensch","t":"isim (eril)","m":"insan","s":[],"a":[],"e":[["Jeder Mensch braucht Wasser.","","Her insanın suya ihtiyacı var."],["Er ist ein netter Mensch.","","O hoş bir insan."]]}
+{"w":"Herr","t":"isim (eril)","m":"bay; beyefendi","s":[],"a":["Frau"],"e":[["Guten Tag, Herr Müller!","","İyi günler, Bay Müller!"],["Der Herr wartet an der Tür.","","Beyefendi kapıda bekliyor."]]}
+{"w":"Name","t":"isim (eril)","m":"ad; isim","s":[],"a":[],"e":[["Wie ist Ihr Name?","","Adınız nedir?"],["Mein Name ist Anna.","","Adım Anna."]]}
+{"w":"Vorname","t":"isim (eril)","m":"ad; ön ad","s":[],"a":["Nachname"],"e":[["Mein Vorname ist Tim.","","Adım Tim."],["Wie ist Ihr Vorname?","","Adınız nedir?"]]}
+{"w":"Nachname","t":"isim (eril)","m":"soyadı","s":[],"a":["Vorname"],"e":[["Mein Nachname ist Müller.","","Soyadım Müller."],["Wie schreibt man Ihren Nachnamen?","","Soyadınız nasıl yazılıyor?"]]}
+{"w":"Kollege","t":"isim (eril)","m":"iş arkadaşı; meslektaş","s":[],"a":[],"e":[["Mein Kollege ist sehr nett.","","İş arkadaşım çok hoş biri."],["Ich esse mit meinen Kollegen.","","İş arkadaşlarımla yemek yiyorum."]]}
+{"w":"Nachbar","t":"isim (eril)","m":"komşu","s":[],"a":[],"e":[["Mein Nachbar ist freundlich.","","Komşum güler yüzlü."],["Wir haben neue Nachbarn.","","Yeni komşularımız var."]]}
+{"w":"Lehrer","t":"isim (eril)","m":"öğretmen","s":[],"a":["Schüler"],"e":[["Der Lehrer erklärt die Aufgabe.","","Öğretmen ödevi açıklıyor."],["Mein Bruder ist Lehrer.","","Ağabeyim öğretmen."]]}
+{"w":"Schüler","t":"isim (eril)","m":"öğrenci (okul)","s":[],"a":["Lehrer"],"e":[["Der Schüler macht die Hausaufgaben.","","Öğrenci ev ödevini yapıyor."],["In der Klasse sind zwanzig Schüler.","","Sınıfta yirmi öğrenci var."]]}
+{"w":"Student","t":"isim (eril)","m":"üniversite öğrencisi","s":[],"a":[],"e":[["Er ist Student in Berlin.","","O Berlin'de üniversite öğrencisi."],["Die Studenten lernen in der Bibliothek.","","Öğrenciler kütüphanede çalışıyor."]]}
+{"w":"Arzt","t":"isim (eril)","m":"doktor; hekim","s":[],"a":[],"e":[["Ich gehe zum Arzt.","","Doktora gidiyorum."],["Mein Vater ist Arzt.","","Babam doktor."]]}
+{"w":"Gast","t":"isim (eril)","m":"misafir; konuk","s":[],"a":["Gastgeber"],"e":[["Wir haben heute Gäste.","","Bugün misafirlerimiz var."],["Der Gast bestellt eine Suppe.","","Konuk bir çorba sipariş ediyor."]]}
+{"w":"Geburtstag","t":"isim (eril)","m":"doğum günü","s":[],"a":[],"e":[["Morgen habe ich Geburtstag.","","Yarın doğum günüm."],["Alles Gute zum Geburtstag!","","Doğum günün kutlu olsun!"]]}
+{"w":"Computer","t":"isim (eril)","m":"bilgisayar","s":["Rechner"],"a":[],"e":[["Mein Computer ist neu.","","Bilgisayarım yeni."],["Ich arbeite am Computer.","","Bilgisayarda çalışıyorum."]]}
+{"w":"Brief","t":"isim (eril)","m":"mektup","s":[],"a":[],"e":[["Ich schreibe einen Brief.","","Bir mektup yazıyorum."],["Der Brief ist für dich.","","Mektup senin için."]]}
+{"w":"Stift","t":"isim (eril)","m":"kalem","s":[],"a":[],"e":[["Hast du einen Stift?","","Kalemin var mı?"],["Ich schreibe mit einem Stift.","","Kalemle yazıyorum."]]}
+{"w":"Schlüssel","t":"isim (eril)","m":"anahtar","s":[],"a":[],"e":[["Wo ist mein Schlüssel?","","Anahtarım nerede?"],["Ich habe zwei Schlüssel.","","İki anahtarım var."]]}
+{"w":"Preis","t":"isim (eril)","m":"fiyat; ödül","s":[],"a":[],"e":[["Der Preis ist niedrig.","","Fiyat düşük."],["Was ist der Preis für die Karte?","","Biletin fiyatı nedir?"]]}
+{"w":"Euro","t":"isim (eril)","m":"avro","s":[],"a":[],"e":[["Das Brot kostet zwei Euro.","","Ekmek iki avro."],["Haben Sie fünf Euro?","","Beş avronuz var mı?"]]}
+{"w":"Cent","t":"isim (eril)","m":"sent","s":[],"a":[],"e":[["Das Brötchen kostet fünfzig Cent.","","Poğaça elli sent."],["Ein Euro hat hundert Cent.","","Bir avro yüz sent eder."]]}
+{"w":"Tisch","t":"isim (eril)","m":"masa","s":[],"a":[],"e":[["Das Buch liegt auf dem Tisch.","","Kitap masanın üstünde."],["Wir reservieren einen Tisch.","","Bir masa ayırtıyoruz."]]}
+{"w":"Stuhl","t":"isim (eril)","m":"sandalye","s":[],"a":[],"e":[["Der Stuhl ist sehr bequem.","","Sandalye çok rahat."],["Wir brauchen noch einen Stuhl.","","Bir sandalyeye daha ihtiyacımız var."]]}
+{"w":"Schrank","t":"isim (eril)","m":"dolap","s":[],"a":[],"e":[["Die Jacke hängt im Schrank.","","Ceket dolapta asılı."],["Der Schrank ist zu klein.","","Dolap çok küçük."]]}
+{"w":"Garten","t":"isim (eril)","m":"bahçe","s":[],"a":[],"e":[["Die Kinder spielen im Garten.","","Çocuklar bahçede oynuyor."],["Wir haben einen großen Garten.","","Büyük bir bahçemiz var."]]}
+{"w":"Balkon","t":"isim (eril)","m":"balkon","s":[],"a":[],"e":[["Wir frühstücken auf dem Balkon.","","Balkonda kahvaltı ediyoruz."],["Die Wohnung hat einen kleinen Balkon.","","Dairenin küçük bir balkonu var."]]}
+{"w":"Platz","t":"isim (eril)","m":"yer; meydan; koltuk","s":[],"a":[],"e":[["Ist hier noch ein Platz frei?","","Burada hâlâ boş bir yer var mı?"],["Der Platz in der Stadt ist groß.","","Şehirdeki meydan büyük."]]}
+{"w":"Park","t":"isim (eril)","m":"park","s":[],"a":[],"e":[["Wir gehen im Park spazieren.","","Parkta yürüyüşe çıkıyoruz."],["Der Park ist schön grün.","","Park güzel ve yemyeşil."]]}
+{"w":"Beruf","t":"isim (eril)","m":"meslek","s":[],"a":[],"e":[["Was ist Ihr Beruf?","","Mesleğiniz nedir?"],["Sein Beruf ist Lehrer.","","Mesleği öğretmenlik."]]}
+{"w":"Bahnhof","t":"isim (eril)","m":"tren garı; gar","s":[],"a":[],"e":[["Der Bahnhof ist nicht weit.","","Gar uzak değil."],["Ich hole dich am Bahnhof ab.","","Seni garda karşılıyorum."]]}
+{"w":"Flughafen","t":"isim (eril)","m":"havalimanı","s":[],"a":[],"e":[["Der Flughafen ist weit von der Stadt.","","Havalimanı şehre uzak."],["Wir sind schon am Flughafen.","","Biz zaten havalimanındayız."]]}
+{"w":"Bus","t":"isim (eril)","m":"otobüs","s":[],"a":[],"e":[["Der Bus kommt gleich.","","Otobüs hemen geliyor."],["Ich fahre mit dem Bus zur Arbeit.","","İşe otobüsle gidiyorum."]]}
+{"w":"Zug","t":"isim (eril)","m":"tren","s":[],"a":[],"e":[["Der Zug fährt um acht Uhr ab.","","Tren saat sekizde kalkıyor."],["Wir fahren mit dem Zug nach München.","","Münih'e trenle gidiyoruz."]]}

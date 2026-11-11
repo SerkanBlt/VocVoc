@@ -1,0 +1,50 @@
+{"w":"zusammen","t":"zarf","m":"birlikte; beraber","s":["gemeinsam"],"a":["allein"],"e":[["Wir essen heute zusammen.","","Bugün birlikte yemek yiyoruz."],["Zusammen sind wir stark.","","Birlikte güçlüyüz."]],"x":[["zusammen sein","","birlikte olmak (ilişki)","Ana und Tim sind schon lange zusammen.","","Ana ile Tim uzun zamandır birlikte."]]}
+{"w":"allein","t":"zarf","m":"yalnız; tek başına","s":[],"a":["zusammen"],"e":[["Ich wohne allein in der Stadt.","","Şehirde tek başıma yaşıyorum."],["Das Kind kann schon allein essen.","","Çocuk artık tek başına yemek yiyebiliyor."]]}
+{"w":"mehr","t":"zarf","m":"daha fazla; daha çok","s":[],"a":["weniger"],"e":[["Ich möchte mehr Wasser trinken.","","Daha fazla su içmek istiyorum."],["Heute habe ich mehr Zeit.","","Bugün daha çok vaktim var."]],"x":[["nicht mehr","","artık değil","Er wohnt nicht mehr hier.","","O artık burada oturmuyor."]]}
+{"w":"wenig","t":"zarf","m":"az; pek az","s":[],"a":["viel"],"e":[["Er isst sehr wenig.","","O çok az yiyor."],["Wir haben wenig Zeit.","","Çok az vaktimiz var."]]}
+{"w":"ganz","t":"zarf","m":"tamamen; oldukça","s":["völlig"],"a":[],"e":[["Das Essen ist ganz gut.","","Yemek oldukça iyi."],["Ich habe das ganz vergessen.","","Bunu tamamen unuttum."]]}
+{"w":"genau","t":"zarf","m":"tam; tam olarak","s":["exakt"],"a":[],"e":[["Es ist genau drei Uhr.","","Saat tam üç."],["Ja, genau!","","Evet, kesinlikle!"]]}
+{"w":"leider","t":"zarf","m":"maalesef; ne yazık ki","s":[],"a":[],"e":[["Ich habe leider keine Zeit.","","Maalesef vaktim yok."],["Leider ist das Wetter schlecht.","","Ne yazık ki hava kötü."]]}
+{"w":"natürlich","t":"zarf","m":"tabii; elbette","s":["selbstverständlich"],"a":[],"e":[["Natürlich helfe ich dir.","","Tabii ki sana yardım ederim."],["Kommst du mit? Natürlich!","","Geliyor musun? Elbette!"]]}
+{"w":"sicher","t":"zarf","m":"kesinlikle; büyük ihtimalle","s":["bestimmt"],"a":[],"e":[["Er kommt sicher bald.","","O büyük ihtimalle yakında gelir."],["Das ist sicher richtig.","","Bu kesinlikle doğru."]]}
+{"w":"wirklich","t":"zarf","m":"gerçekten","s":["tatsächlich"],"a":[],"e":[["Das Essen ist wirklich lecker.","","Yemek gerçekten lezzetli."],["Hast du das wirklich gesagt?","","Bunu gerçekten söyledin mi?"]]}
+{"w":"zurück","t":"zarf","m":"geri","s":[],"a":["vor"],"e":[["Ich komme gleich zurück.","","Hemen geri geliyorum."],["Bitte geh einen Schritt zurück.","","Lütfen bir adım geri git."]]}
+{"w":"oben","t":"zarf","m":"yukarıda; üstte","s":[],"a":["unten"],"e":[["Das Buch liegt oben im Schrank.","","Kitap dolabın üst kısmında duruyor."],["Mein Zimmer ist oben.","","Odam yukarıda."]]}
+{"w":"unten","t":"zarf","m":"aşağıda; altta","s":[],"a":["oben"],"e":[["Der Hund wartet unten.","","Köpek aşağıda bekliyor."],["Die Schuhe stehen unten.","","Ayakkabılar aşağıda duruyor."]]}
+{"w":"links","t":"zarf","m":"solda; sola","s":[],"a":["rechts"],"e":[["Die Bank ist links.","","Banka solda."],["Bitte biegen Sie links ab.","","Lütfen sola dönün."]]}
+{"w":"rechts","t":"zarf","m":"sağda; sağa","s":[],"a":["links"],"e":[["Das Hotel ist rechts.","","Otel sağda."],["Dann fahren Sie rechts.","","Sonra sağa gidin."]]}
+{"w":"geradeaus","t":"zarf","m":"dümdüz; ileri","s":[],"a":[],"e":[["Gehen Sie bitte geradeaus.","","Lütfen dümdüz gidin."],["Der Bahnhof ist geradeaus.","","Gar ileride."]]}
+{"w":"draußen","t":"zarf","m":"dışarıda","s":[],"a":["drinnen"],"e":[["Die Kinder spielen draußen.","","Çocuklar dışarıda oynuyor."],["Draußen ist es kalt.","","Dışarısı soğuk."]]}
+{"w":"drinnen","t":"zarf","m":"içeride","s":[],"a":["draußen"],"e":[["Es regnet, wir bleiben drinnen.","","Yağmur yağıyor, içeride kalıyoruz."],["Drinnen ist es warm.","","İçerisi sıcak."]]}
+{"w":"überall","t":"zarf","m":"her yerde; heryerde","s":[],"a":[],"e":[["Ich suche überall meinen Schlüssel.","","Anahtarımı her yerde arıyorum."],["Hier gibt es überall Blumen.","","Burada her yerde çiçek var."]]}
+{"w":"hinten","t":"zarf","m":"arkada","s":[],"a":["vorne"],"e":[["Ich sitze im Bus hinten.","","Otobüste arkada oturuyorum."],["Hinten ist noch ein Platz frei.","","Arkada hâlâ boş bir yer var."]]}
+{"w":"vorne","t":"zarf","m":"önde; ön tarafta","s":[],"a":["hinten"],"e":[["Der Lehrer steht vorne.","","Öğretmen önde duruyor."],["Vorne ist noch ein Platz frei.","","Önde hâlâ boş bir yer var."]]}
+{"w":"früh","t":"zarf","m":"erken","s":[],"a":["spät"],"e":[["Ich stehe jeden Tag früh auf.","","Her gün erken kalkıyorum."],["Der Zug kommt zu früh.","","Tren çok erken geliyor."]],"x":[["früh am Morgen","","sabahın erken saatinde","Er geht früh am Morgen zur Arbeit.","","O sabahın erken saatinde işe gidiyor."]]}
+{"w":"spät","t":"zarf","m":"geç","s":[],"a":["früh"],"e":[["Heute komme ich spät nach Hause.","","Bugün eve geç geliyorum."],["Wie spät ist es?","","Saat kaç?"]]}
+{"w":"lange","t":"zarf","m":"uzun süre; uzun zamandır","s":[],"a":["kurz"],"e":[["Ich warte schon lange.","","Uzun zamandır bekliyorum."],["Wie lange dauert der Kurs?","","Kurs ne kadar sürüyor?"]]}
+{"w":"schnell","t":"zarf","m":"hızlı; çabuk","s":[],"a":["langsam"],"e":[["Das Auto fährt sehr schnell.","","Araba çok hızlı gidiyor."],["Komm schnell!","","Çabuk gel!"]]}
+{"w":"langsam","t":"zarf","m":"yavaş; yavaşça","s":[],"a":["schnell"],"e":[["Bitte sprechen Sie langsam.","","Lütfen yavaş konuşun."],["Der Bus fährt langsam.","","Otobüs yavaş gidiyor."]]}
+{"w":"endlich","t":"zarf","m":"sonunda; nihayet","s":[],"a":[],"e":[["Endlich ist Freitag!","","Nihayet cuma!"],["Der Bus kommt endlich.","","Otobüs sonunda geliyor."]]}
+{"w":"plötzlich","t":"zarf","m":"birdenbire; aniden","s":["auf einmal"],"a":[],"e":[["Plötzlich regnet es.","","Birdenbire yağmur yağıyor."],["Er kommt plötzlich nach Hause.","","O aniden eve geliyor."]]}
+{"w":"nun","t":"zarf","m":"şimdi; artık","s":["jetzt"],"a":[],"e":[["Nun müssen wir gehen.","","Şimdi gitmemiz gerekiyor."],["Was machen wir nun?","","Şimdi ne yapıyoruz?"]]}
+{"w":"also","t":"zarf","m":"yani; öyleyse","s":[],"a":[],"e":[["Es ist spät, also gehe ich nach Hause.","","Geç oldu, o yüzden eve gidiyorum."],["Also, bis morgen!","","Öyleyse, yarına kadar!"]]}
+{"w":"gehen","t":"fiil","m":"gitmek; yürümek","s":[],"a":["kommen"],"e":[["Ich gehe jeden Tag zur Schule.","","Her gün okula gidiyorum."],["Wie geht es dir?","","Nasılsın?"]],"x":[["Wie geht's?","","Nasılsın? (günlük)","Hallo Tim, wie geht's?","","Merhaba Tim, nasılsın?"]]}
+{"w":"kommen","t":"fiil","m":"gelmek","s":[],"a":["gehen"],"e":[["Ich komme aus der Türkei.","","Türkiye'denim."],["Kommst du heute Abend?","","Bu akşam geliyor musun?"]]}
+{"w":"machen","t":"fiil","m":"yapmak; etmek","s":["tun"],"a":[],"e":[["Was machst du heute?","","Bugün ne yapıyorsun?"],["Ich mache die Hausaufgaben.","","Ödevimi yapıyorum."]]}
+{"w":"sagen","t":"fiil","m":"söylemek; demek","s":[],"a":[],"e":[["Was sagt er?","","O ne diyor?"],["Sag mir bitte deinen Namen.","","Lütfen bana adını söyle."]]}
+{"w":"sehen","t":"fiil","m":"görmek","s":[],"a":[],"e":[["Ich sehe einen Vogel im Baum.","","Ağaçta bir kuş görüyorum."],["Wir sehen uns morgen.","","Yarın görüşürüz."]]}
+{"w":"geben","t":"fiil","m":"vermek","s":[],"a":["nehmen"],"e":[["Gibst du mir bitte das Salz?","","Bana tuzu verir misin?"],["Ich gebe dir mein Buch.","","Sana kitabımı veriyorum."]],"x":[["es gibt","","var","Hier gibt es einen Supermarkt.","","Burada bir süpermarket var."]]}
+{"w":"nehmen","t":"fiil","m":"almak; (ulaşım aracına) binmek","s":[],"a":["geben"],"e":[["Ich nehme einen Kaffee.","","Bir kahve alıyorum."],["Wir nehmen den Bus.","","Otobüse biniyoruz."]]}
+{"w":"finden","t":"fiil","m":"bulmak; (fikir olarak) bulmak","s":[],"a":["suchen"],"e":[["Ich finde meinen Schlüssel nicht.","","Anahtarımı bulamıyorum."],["Wie findest du den Film?","","Filmi nasıl buluyorsun?"]]}
+{"w":"denken","t":"fiil","m":"düşünmek","s":["glauben"],"a":[],"e":[["Ich denke oft an dich.","","Sık sık seni düşünüyorum."],["Was denkst du?","","Sen ne düşünüyorsun?"]]}
+{"w":"glauben","t":"fiil","m":"inanmak; sanmak","s":["meinen"],"a":[],"e":[["Ich glaube dir.","","Sana inanıyorum."],["Er glaubt, es ist zu spät.","","O, çok geç olduğunu sanıyor."]]}
+{"w":"brauchen","t":"fiil","m":"ihtiyacı olmak; gerek duymak","s":[],"a":[],"e":[["Ich brauche einen Stift.","","Bir kaleme ihtiyacım var."],["Du brauchst keine Angst zu haben.","","Korkmana gerek yok."]]}
+{"w":"bleiben","t":"fiil","m":"kalmak","s":[],"a":["gehen"],"e":[["Ich bleibe heute zu Hause.","","Bugün evde kalıyorum."],["Bleib bitte hier!","","Lütfen burada kal!"]]}
+{"w":"heißen","t":"fiil","m":"adı ... olmak; denmek","s":[],"a":[],"e":[["Ich heiße Anna.","","Adım Anna."],["Wie heißt du?","","Adın ne?"]]}
+{"w":"lernen","t":"fiil","m":"öğrenmek; çalışmak","s":[],"a":["lehren"],"e":[["Ich lerne Deutsch.","","Almanca öğreniyorum."],["Er lernt jeden Tag zwei Stunden.","","O her gün iki saat çalışıyor."]]}
+{"w":"arbeiten","t":"fiil","m":"çalışmak","s":[],"a":[],"e":[["Mein Vater arbeitet bei einer Bank.","","Babam bir bankada çalışıyor."],["Ich arbeite heute nicht.","","Bugün çalışmıyorum."]]}
+{"w":"wohnen","t":"fiil","m":"oturmak; ikamet etmek","s":["leben"],"a":[],"e":[["Wir wohnen in Berlin.","","Berlin'de oturuyoruz."],["Wo wohnst du?","","Nerede oturuyorsun?"]]}
+{"w":"leben","t":"fiil","m":"yaşamak","s":["wohnen"],"a":["sterben"],"e":[["Meine Oma lebt auf dem Dorf.","","Babaannem köyde yaşıyor."],["Ich lebe gern in dieser Stadt.","","Bu şehirde yaşamayı seviyorum."]]}
+{"w":"essen","t":"fiil","m":"yemek yemek; yemek","s":[],"a":["trinken"],"e":[["Wir essen um sieben Uhr.","","Saat yedide yemek yiyoruz."],["Ich esse gern Fisch.","","Balık yemeyi severim."]]}
+{"w":"trinken","t":"fiil","m":"içmek","s":[],"a":["essen"],"e":[["Ich trinke morgens einen Tee.","","Sabahları bir çay içerim."],["Was möchten Sie trinken?","","Ne içmek istersiniz?"]]}
+{"w":"schlafen","t":"fiil","m":"uyumak","s":[],"a":["wachen"],"e":[["Das Baby schläft schon.","","Bebek çoktan uyuyor."],["Ich schlafe heute lange.","","Bugün uzun uyuyorum."]]}

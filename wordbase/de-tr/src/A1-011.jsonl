@@ -1,0 +1,50 @@
+{"w":"Rücken","t":"isim (eril)","m":"sırt; arka","s":[],"a":[],"e":[["Mein Rücken tut weh.","","Sırtım ağrıyor."],["Er liegt auf dem Rücken.","","O sırtüstü yatıyor."]]}
+{"w":"Mantel","t":"isim (eril)","m":"palto; manto","s":[],"a":[],"e":[["Im Winter trage ich einen Mantel.","","Kışın palto giyerim."],["Der Mantel ist zu teuer.","","Palto çok pahalı."]]}
+{"w":"Rock","t":"isim (eril)","m":"etek","s":[],"a":[],"e":[["Sie trägt einen roten Rock.","","O kırmızı bir etek giyiyor."],["Der Rock ist zu kurz.","","Etek çok kısa."]]}
+{"w":"Schuh","t":"isim (eril)","m":"ayakkabı","s":[],"a":[],"e":[["Ich brauche neue Schuhe.","","Yeni ayakkabılara ihtiyacım var."],["Der Schuh ist zu klein.","","Ayakkabı çok küçük."]]}
+{"w":"Pullover","t":"isim (eril)","m":"kazak","s":[],"a":[],"e":[["Der Pullover ist warm.","","Kazak sıcak tutuyor."],["Ich trage einen blauen Pullover.","","Mavi bir kazak giyiyorum."]]}
+{"w":"Hund","t":"isim (eril)","m":"köpek","s":[],"a":[],"e":[["Mein Hund heißt Max.","","Köpeğimin adı Max."],["Der Hund spielt im Garten.","","Köpek bahçede oynuyor."]]}
+{"w":"Vogel","t":"isim (eril)","m":"kuş","s":[],"a":[],"e":[["Der Vogel singt im Baum.","","Kuş ağaçta ötüyor."],["Im Park gibt es viele Vögel.","","Parkta çok kuş var."]]}
+{"w":"Baum","t":"isim (eril)","m":"ağaç","s":[],"a":[],"e":[["Der Baum ist sehr hoch.","","Ağaç çok yüksek."],["Im Garten stehen drei Bäume.","","Bahçede üç ağaç duruyor."]]}
+{"w":"Satz","t":"isim (eril)","m":"cümle","s":[],"a":[],"e":[["Bitte schreibe einen Satz.","","Lütfen bir cümle yaz."],["Der Satz ist sehr lang.","","Cümle çok uzun."]]}
+{"w":"Fehler","t":"isim (eril)","m":"hata; yanlış","s":[],"a":[],"e":[["Das ist ein Fehler.","","Bu bir hata."],["In dem Text sind zwei Fehler.","","Metinde iki hata var."]]}
+{"w":"Kurs","t":"isim (eril)","m":"kurs","s":[],"a":[],"e":[["Ich besuche einen Deutschkurs.","","Bir Almanca kursuna gidiyorum."],["Der Kurs beginnt am Montag.","","Kurs pazartesi başlıyor."]]}
+{"w":"Unterricht","t":"isim (eril)","m":"ders; eğitim","s":[],"a":[],"e":[["Der Unterricht beginnt um acht Uhr.","","Ders saat sekizde başlıyor."],["Der Unterricht ist heute interessant.","","Ders bugün ilginç."]]}
+{"w":"Test","t":"isim (eril)","m":"test; sınav","s":[],"a":[],"e":[["Morgen schreiben wir einen Test.","","Yarın bir sınav yazıyoruz."],["Der Test ist leicht.","","Test kolay."]]}
+{"w":"Film","t":"isim (eril)","m":"film","s":[],"a":[],"e":[["Der Film beginnt um acht Uhr.","","Film saat sekizde başlıyor."],["Wir sehen einen lustigen Film.","","Komik bir film izliyoruz."]]}
+{"w":"Sport","t":"isim (eril)","m":"spor","s":[],"a":[],"e":[["Ich mache jeden Tag Sport.","","Her gün spor yapıyorum."],["Sport ist gesund.","","Spor sağlıklıdır."]]}
+{"w":"Fußball","t":"isim (eril)","m":"futbol; futbol topu","s":[],"a":[],"e":[["Die Jungen spielen Fußball.","","Oğlanlar futbol oynuyor."],["Am Samstag sehen wir Fußball.","","Cumartesi futbol izliyoruz."]]}
+{"w":"Berg","t":"isim (eril)","m":"dağ","s":[],"a":[],"e":[["Der Berg ist sehr hoch.","","Dağ çok yüksek."],["Wir wandern in den Bergen.","","Dağlarda yürüyüş yapıyoruz."]]}
+{"w":"See","t":"isim (eril)","m":"göl","s":[],"a":[],"e":[["Wir schwimmen im See.","","Gölde yüzüyoruz."],["Der See ist sehr klar.","","Göl çok berrak."]]}
+{"w":"Fluss","t":"isim (eril)","m":"nehir; ırmak","s":[],"a":[],"e":[["Der Fluss ist breit.","","Nehir geniş."],["Die Stadt liegt an einem Fluss.","","Şehir bir nehrin kıyısında."]]}
+{"w":"Anfang","t":"isim (eril)","m":"başlangıç; baş","s":[],"a":["Ende"],"e":[["Am Anfang ist es schwer.","","Başlangıçta zordur."],["Der Anfang des Films ist lustig.","","Filmin başlangıcı komik."]]}
+{"w":"Teil","t":"isim (eril)","m":"parça; bölüm; kısım","s":[],"a":["Ganze"],"e":[["Das ist nur ein Teil.","","Bu sadece bir parça."],["Der erste Teil des Films ist gut.","","Filmin ilk bölümü güzel."]]}
+{"w":"Ort","t":"isim (eril)","m":"yer; mekân; küçük yerleşim","s":[],"a":[],"e":[["Das ist ein schöner Ort.","","Bu güzel bir yer."],["Name und Ort bitte.","","Ad ve yer lütfen."]]}
+{"w":"Spaß","t":"isim (eril)","m":"eğlence; keyif; şaka","s":[],"a":[],"e":[["Das macht viel Spaß!","","Bu çok eğlenceli!"],["Ich habe nur Spaß gemacht.","","Ben sadece şaka yaptım."]],"x":[["Spaß machen","","eğlenceli olmak; keyif vermek","Deutsch lernen macht mir Spaß.","","Almanca öğrenmek bana keyif veriyor."]]}
+{"w":"Hunger","t":"isim (eril)","m":"açlık","s":[],"a":["Durst"],"e":[["Ich habe großen Hunger.","","Çok açım."],["Hast du keinen Hunger?","","Acıkmadın mı?"]]}
+{"w":"Durst","t":"isim (eril)","m":"susuzluk","s":[],"a":["Hunger"],"e":[["Ich habe Durst.","","Susadım."],["Hast du Durst? Hier ist Wasser.","","Susadın mı? İşte su."]]}
+{"w":"Meter","t":"isim (eril)","m":"metre","s":[],"a":[],"e":[["Der Weg ist hundert Meter lang.","","Yol yüz metre uzunluğunda."],["Die Wohnung ist fünf Meter breit.","","Daire beş metre genişliğinde."]]}
+{"w":"Liter","t":"isim (eril)","m":"litre","s":[],"a":[],"e":[["Ich kaufe einen Liter Milch.","","Bir litre süt alıyorum."],["Das Auto braucht fünf Liter.","","Araba beş litre yakıyor."]]}
+{"w":"Weg","t":"isim (eril)","m":"yol; güzergâh","s":[],"a":[],"e":[["Wo ist der Weg zum Bahnhof?","","Gara giden yol nerede?"],["Ich bin auf dem Weg zur Arbeit.","","İşe giderken yoldayım."]],"x":[["auf dem Weg sein","","yolda olmak","Wir sind schon auf dem Weg nach Hause.","","Biz zaten eve giderken yoldayız."]]}
+{"w":"Urlaub","t":"isim (eril)","m":"tatil; izin","s":[],"a":[],"e":[["Im Sommer machen wir Urlaub am Meer.","","Yazın denizde tatil yapıyoruz."],["Nächste Woche habe ich Urlaub.","","Gelecek hafta iznim var."]]}
+{"w":"Vormittag","t":"isim (eril)","m":"öğleden önce; sabah","s":[],"a":["Nachmittag"],"e":[["Am Vormittag habe ich Unterricht.","","Öğleden önce dersim var."],["Der Vormittag ist ruhig.","","Öğleden önce sakin geçer."]]}
+{"w":"Mittag","t":"isim (eril)","m":"öğle","s":[],"a":[],"e":[["Am Mittag essen wir zusammen.","","Öğlen birlikte yemek yiyoruz."],["Es ist schon Mittag.","","Öğle oldu bile."]]}
+{"w":"Nachmittag","t":"isim (eril)","m":"öğleden sonra","s":[],"a":["Vormittag"],"e":[["Am Nachmittag spiele ich Fußball.","","Öğleden sonra futbol oynuyorum."],["Der Nachmittag ist frei.","","Öğleden sonra boş."]]}
+{"w":"Abend","t":"isim (eril)","m":"akşam","s":[],"a":["Morgen"],"e":[["Am Abend sehen wir einen Film.","","Akşam bir film izliyoruz."],["Guten Abend!","","İyi akşamlar!"]]}
+{"w":"Hut","t":"isim (eril)","m":"şapka","s":[],"a":[],"e":[["Er trägt einen schwarzen Hut.","","O siyah bir şapka takıyor."],["Der Hut ist zu groß.","","Şapka çok büyük."]]}
+{"w":"Kind","t":"isim (nötr)","m":"çocuk","s":[],"a":[],"e":[["Das Kind spielt im Garten.","","Çocuk bahçede oynuyor."],["Wir haben zwei Kinder.","","İki çocuğumuz var."]]}
+{"w":"Mädchen","t":"isim (nötr)","m":"kız; kız çocuk","s":[],"a":["Junge"],"e":[["Das Mädchen ist fünf Jahre alt.","","Kız beş yaşında."],["Die Mädchen tanzen auf der Party.","","Kızlar partide dans ediyor."]]}
+{"w":"Baby","t":"isim (nötr)","m":"bebek","s":[],"a":[],"e":[["Das Baby schläft.","","Bebek uyuyor."],["Sie hat ein Baby.","","Onun bir bebeği var."]]}
+{"w":"Alter","t":"isim (nötr)","m":"yaş; yaşlılık","s":[],"a":["Jugend"],"e":[["Wie ist Ihr Alter?","","Yaşınız kaç?"],["Im Alter hat man mehr Zeit.","","Yaşlılıkta insanın daha çok zamanı olur."]]}
+{"w":"Telefon","t":"isim (nötr)","m":"telefon","s":[],"a":[],"e":[["Das Telefon klingelt.","","Telefon çalıyor."],["Ich brauche deine Telefonnummer.","","Telefon numarana ihtiyacım var."]]}
+{"w":"Handy","t":"isim (nötr)","m":"cep telefonu","s":[],"a":[],"e":[["Mein Handy ist neu.","","Cep telefonum yeni."],["Wo ist mein Handy?","","Cep telefonum nerede?"]]}
+{"w":"Internet","t":"isim (nötr)","m":"internet","s":[],"a":[],"e":[["Hier gibt es kein Internet.","","Burada internet yok."],["Ich kaufe im Internet ein.","","İnternetten alışveriş yapıyorum."]]}
+{"w":"Buch","t":"isim (nötr)","m":"kitap","s":[],"a":[],"e":[["Ich lese ein Buch.","","Bir kitap okuyorum."],["Das Buch ist sehr dick.","","Kitap çok kalın."]]}
+{"w":"Heft","t":"isim (nötr)","m":"defter","s":[],"a":[],"e":[["Ich schreibe in mein Heft.","","Defterime yazıyorum."],["Das Heft ist leer.","","Defter boş."]]}
+{"w":"Foto","t":"isim (nötr)","m":"fotoğraf","s":[],"a":["Bild"],"e":[["Ich mache ein Foto.","","Bir fotoğraf çekiyorum."],["Das Foto ist schön.","","Fotoğraf güzel."]]}
+{"w":"Bild","t":"isim (nötr)","m":"resim; görüntü","s":[],"a":[],"e":[["Das Bild hängt an der Wand.","","Resim duvarda asılı."],["Das Kind malt ein Bild.","","Çocuk bir resim çiziyor."]]}
+{"w":"Geld","t":"isim (nötr)","m":"para","s":[],"a":[],"e":[["Ich habe kein Geld.","","Param yok."],["Wie viel Geld brauchst du?","","Ne kadar paraya ihtiyacın var?"]]}
+{"w":"Fenster","t":"isim (nötr)","m":"pencere","s":[],"a":[],"e":[["Mach bitte das Fenster auf.","","Lütfen pencereyi aç."],["Das Fenster ist schmutzig.","","Pencere kirli."]]}
+{"w":"Zimmer","t":"isim (nötr)","m":"oda","s":[],"a":[],"e":[["Mein Zimmer ist klein.","","Odam küçük."],["Die Wohnung hat vier Zimmer.","","Dairede dört oda var."]]}
+{"w":"Haus","t":"isim (nötr)","m":"ev; bina","s":[],"a":[],"e":[["Das Haus hat einen Garten.","","Evin bir bahçesi var."],["Ich gehe nach Hause.","","Eve gidiyorum."]],"x":[["nach Hause","","eve","Wir gehen jetzt nach Hause.","","Şimdi eve gidiyoruz."]]}
+{"w":"Dorf","t":"isim (nötr)","m":"köy","s":[],"a":["Stadt"],"e":[["Meine Oma wohnt in einem Dorf.","","Büyükannem bir köyde oturuyor."],["Das Dorf ist sehr ruhig.","","Köy çok sakin."]]}

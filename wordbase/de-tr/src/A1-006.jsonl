@@ -1,0 +1,50 @@
+{"w":"wiederholen","t":"fiil","m":"tekrarlamak; tekrar etmek","s":[],"a":[],"e":[["Können Sie das bitte wiederholen?","","Bunu lütfen tekrar eder misiniz?"],["Wir wiederholen die Wörter.","","Kelimeleri tekrar ediyoruz."]]}
+{"w":"gefallen","t":"fiil","m":"hoşuna gitmek; beğenilmek","s":[],"a":["missfallen"],"e":[["Das Bild gefällt mir.","","Bu resim hoşuma gidiyor."],["Gefällt dir die Stadt?","","Şehri beğeniyor musun?"]]}
+{"w":"bezahlen","t":"fiil","m":"ödemek","s":[],"a":[],"e":[["Ich bezahle die Rechnung.","","Hesabı ödüyorum."],["Kann ich mit Karte bezahlen?","","Kartla ödeyebilir miyim?"]]}
+{"w":"reisen","t":"fiil","m":"seyahat etmek","s":[],"a":[],"e":[["Wir reisen im Sommer nach Italien.","","Yazın İtalya'ya seyahat ediyoruz."],["Sie reist gern allein.","","O yalnız seyahat etmeyi sever."]]}
+{"w":"fliegen","t":"fiil","m":"uçmak; uçakla gitmek","s":[],"a":[],"e":[["Der Vogel fliegt über den Baum.","","Kuş ağacın üstünden uçuyor."],["Wir fliegen morgen nach Wien.","","Yarın Viyana'ya uçuyoruz."]]}
+{"w":"lachen","t":"fiil","m":"gülmek","s":[],"a":["weinen"],"e":[["Die Kinder lachen laut.","","Çocuklar yüksek sesle gülüyor."],["Warum lachst du?","","Neden gülüyorsun?"]]}
+{"w":"duschen","t":"fiil","m":"duş almak","s":[],"a":[],"e":[["Ich dusche jeden Morgen.","","Her sabah duş alıyorum."],["Er duscht lange.","","O uzun uzun duş alıyor."]]}
+{"w":"gut","t":"sıfat","m":"iyi","s":[],"a":["schlecht"],"e":[["Das Essen ist sehr gut.","","Yemek çok iyi."],["Er ist ein guter Lehrer.","","O iyi bir öğretmen."]]}
+{"w":"schlecht","t":"sıfat","m":"kötü; bozuk","s":[],"a":["gut"],"e":[["Das Wetter ist schlecht.","","Hava kötü."],["Mir ist schlecht.","","Kendimi kötü hissediyorum."]]}
+{"w":"groß","t":"sıfat","m":"büyük; uzun boylu","s":[],"a":["klein"],"e":[["Das Haus ist sehr groß.","","Ev çok büyük."],["Mein Bruder ist groß.","","Ağabeyim uzun boylu."]]}
+{"w":"klein","t":"sıfat","m":"küçük; kısa boylu","s":[],"a":["groß"],"e":[["Unsere Wohnung ist klein.","","Dairemiz küçük."],["Das kleine Mädchen lacht.","","Küçük kız gülüyor."]]}
+{"w":"neu","t":"sıfat","m":"yeni","s":[],"a":["alt"],"e":[["Ich habe ein neues Handy.","","Yeni bir telefonum var."],["Das Buch ist ganz neu.","","Kitap tamamen yeni."]]}
+{"w":"alt","t":"sıfat","m":"yaşlı; eski","s":[],"a":["neu","jung"],"e":[["Mein Opa ist schon alt.","","Dedem artık yaşlı."],["Das Auto ist alt.","","Araba eski."]],"x":[["Wie alt bist du?","","Kaç yaşındasın?","Wie alt bist du, Tim?","","Kaç yaşındasın, Tim?"]]}
+{"w":"jung","t":"sıfat","m":"genç","s":[],"a":["alt"],"e":[["Die Lehrerin ist noch jung.","","Öğretmen hâlâ genç."],["Als junger Mann wohnt er allein.","","Genç bir adam olarak yalnız yaşıyor."]]}
+{"w":"schön","t":"sıfat","m":"güzel","s":["hübsch"],"a":["hässlich"],"e":[["Die Stadt ist sehr schön.","","Şehir çok güzel."],["Heute ist schönes Wetter.","","Bugün hava güzel."]]}
+{"w":"lang","t":"sıfat","m":"uzun","s":[],"a":["kurz"],"e":[["Der Weg ist lang.","","Yol uzun."],["Sie hat lange Haare.","","Onun uzun saçları var."]]}
+{"w":"kurz","t":"sıfat","m":"kısa","s":[],"a":["lang"],"e":[["Der Film ist kurz.","","Film kısa."],["Ich habe eine kurze Frage.","","Kısa bir sorum var."]]}
+{"w":"hoch","t":"sıfat","m":"yüksek","s":[],"a":["niedrig"],"e":[["Der Berg ist sehr hoch.","","Dağ çok yüksek."],["Das Haus ist hoch.","","Bina yüksek."]]}
+{"w":"dick","t":"sıfat","m":"kalın; şişman","s":[],"a":["dünn"],"e":[["Das Buch ist sehr dick.","","Kitap çok kalın."],["Im Winter trage ich einen dicken Mantel.","","Kışın kalın bir palto giyerim."]]}
+{"w":"dünn","t":"sıfat","m":"ince; zayıf","s":[],"a":["dick"],"e":[["Die Jacke ist zu dünn.","","Ceket çok ince."],["Er ist groß und dünn.","","O uzun boylu ve zayıf."]]}
+{"w":"schwer","t":"sıfat","m":"ağır; zor","s":[],"a":["leicht"],"e":[["Die Tasche ist sehr schwer.","","Çanta çok ağır."],["Deutsch ist nicht so schwer.","","Almanca o kadar zor değil."]]}
+{"w":"leicht","t":"sıfat","m":"hafif; kolay","s":[],"a":["schwer"],"e":[["Mein Rucksack ist leicht.","","Sırt çantam hafif."],["Die Aufgabe ist leicht.","","Ödev kolay."]]}
+{"w":"billig","t":"sıfat","m":"ucuz","s":["günstig"],"a":["teuer"],"e":[["Das Brot ist billig.","","Ekmek ucuz."],["Ich suche ein billiges Hotel.","","Ucuz bir otel arıyorum."]]}
+{"w":"teuer","t":"sıfat","m":"pahalı","s":[],"a":["billig"],"e":[["Die Uhr ist zu teuer.","","Saat çok pahalı."],["In der Stadt ist alles teuer.","","Şehirde her şey pahalı."]]}
+{"w":"heiß","t":"sıfat","m":"sıcak; çok sıcak","s":[],"a":["kalt"],"e":[["Im Sommer ist es sehr heiß.","","Yazın hava çok sıcak."],["Der Tee ist heiß.","","Çay sıcak."]]}
+{"w":"kalt","t":"sıfat","m":"soğuk","s":[],"a":["heiß","warm"],"e":[["Im Winter ist es kalt.","","Kışın hava soğuk."],["Ich möchte ein kaltes Wasser.","","Soğuk bir su istiyorum."]]}
+{"w":"warm","t":"sıfat","m":"ılık; sıcak","s":[],"a":["kalt"],"e":[["Heute ist es schön warm.","","Bugün hava güzel ve sıcak."],["Ich esse gern etwas Warmes.","","Sıcak bir şeyler yemeyi severim."]]}
+{"w":"voll","t":"sıfat","m":"dolu; kalabalık","s":[],"a":["leer"],"e":[["Das Glas ist voll.","","Bardak dolu."],["Der Bus ist heute sehr voll.","","Otobüs bugün çok kalabalık."]]}
+{"w":"leer","t":"sıfat","m":"boş","s":[],"a":["voll"],"e":[["Die Flasche ist leer.","","Şişe boş."],["Der Park ist am Morgen leer.","","Park sabahları boş."]]}
+{"w":"offen","t":"sıfat","m":"açık","s":[],"a":["geschlossen"],"e":[["Die Tür ist offen.","","Kapı açık."],["Der Laden ist bis acht Uhr offen.","","Dükkân saat sekize kadar açık."]]}
+{"w":"richtig","t":"sıfat","m":"doğru","s":[],"a":["falsch"],"e":[["Die Antwort ist richtig.","","Cevap doğru."],["Das ist nicht der richtige Bus.","","Bu doğru otobüs değil."]]}
+{"w":"falsch","t":"sıfat","m":"yanlış","s":[],"a":["richtig"],"e":[["Das ist leider falsch.","","Bu maalesef yanlış."],["Ich habe die falsche Nummer.","","Yanlış numaram var."]]}
+{"w":"wichtig","t":"sıfat","m":"önemli","s":[],"a":["unwichtig"],"e":[["Die Familie ist mir wichtig.","","Aile benim için önemli."],["Das ist ein wichtiger Termin.","","Bu önemli bir randevu."]]}
+{"w":"einfach","t":"sıfat","m":"kolay; basit","s":["leicht"],"a":["schwierig"],"e":[["Die Übung ist einfach.","","Alıştırma kolay."],["Das Essen ist einfach, aber gut.","","Yemek basit ama güzel."]]}
+{"w":"schwierig","t":"sıfat","m":"zor; güç","s":["schwer"],"a":["einfach"],"e":[["Die Aufgabe ist schwierig.","","Ödev zor."],["Das ist eine schwierige Frage.","","Bu zor bir soru."]]}
+{"w":"interessant","t":"sıfat","m":"ilginç; ilgi çekici","s":[],"a":["langweilig"],"e":[["Der Film ist sehr interessant.","","Film çok ilginç."],["Das ist ein interessantes Buch.","","Bu ilginç bir kitap."]]}
+{"w":"langweilig","t":"sıfat","m":"sıkıcı","s":[],"a":["interessant"],"e":[["Der Unterricht ist heute langweilig.","","Ders bugün sıkıcı."],["Ich finde den Film langweilig.","","Filmi sıkıcı buluyorum."]]}
+{"w":"lustig","t":"sıfat","m":"komik; neşeli","s":[],"a":["traurig"],"e":[["Der Film ist sehr lustig.","","Film çok komik."],["Sie ist ein lustiges Mädchen.","","O neşeli bir kız."]]}
+{"w":"nett","t":"sıfat","m":"hoş; sevimli; nazik","s":["freundlich"],"a":[],"e":[["Der Nachbar ist sehr nett.","","Komşu çok hoş biri."],["Das ist nett von dir.","","Bu senin tarafından çok nazik."]]}
+{"w":"freundlich","t":"sıfat","m":"güler yüzlü; nazik","s":["nett"],"a":["unfreundlich"],"e":[["Die Lehrerin ist freundlich.","","Öğretmen güler yüzlü."],["Er grüßt immer freundlich.","","O hep güler yüzle selam verir."]]}
+{"w":"müde","t":"sıfat","m":"yorgun; uykulu","s":[],"a":["wach"],"e":[["Ich bin heute sehr müde.","","Bugün çok yorgunum."],["Das Kind ist müde und geht ins Bett.","","Çocuk uykulu ve yatağa gidiyor."]]}
+{"w":"krank","t":"sıfat","m":"hasta","s":[],"a":["gesund"],"e":[["Mein Sohn ist krank.","","Oğlum hasta."],["Sie bleibt krank zu Hause.","","O hasta olduğu için evde kalıyor."]]}
+{"w":"gesund","t":"sıfat","m":"sağlıklı","s":[],"a":["krank"],"e":[["Obst ist gesund.","","Meyve sağlıklıdır."],["Ich esse gesund.","","Sağlıklı besleniyorum."]]}
+{"w":"hungrig","t":"sıfat","m":"aç","s":[],"a":["satt"],"e":[["Ich bin sehr hungrig.","","Çok açım."],["Die Kinder sind hungrig.","","Çocuklar aç."]]}
+{"w":"glücklich","t":"sıfat","m":"mutlu","s":[],"a":["traurig"],"e":[["Sie ist sehr glücklich.","","O çok mutlu."],["Wir sind glücklich zusammen.","","Birlikte mutluyuz."]]}
+{"w":"traurig","t":"sıfat","m":"üzgün; hüzünlü","s":[],"a":["glücklich","lustig"],"e":[["Warum bist du so traurig?","","Neden bu kadar üzgünsün?"],["Der Film ist traurig.","","Film hüzünlü."]]}
+{"w":"böse","t":"sıfat","m":"kızgın; kötü","s":[],"a":["lieb"],"e":[["Bist du böse auf mich?","","Bana kızgın mısın?"],["Der Hund ist nicht böse.","","Köpek kötü değil."]]}
+{"w":"laut","t":"sıfat","m":"gürültülü; yüksek sesli","s":[],"a":["leise"],"e":[["Die Musik ist zu laut.","","Müzik çok yüksek sesli."],["Auf der Straße ist es laut.","","Sokakta gürültülü."]]}
+{"w":"leise","t":"sıfat","m":"sessiz; alçak sesli","s":[],"a":["laut"],"e":[["Sei bitte leise!","","Lütfen sessiz ol!"],["Das Baby schläft, wir sprechen leise.","","Bebek uyuyor, alçak sesle konuşuyoruz."]]}
+{"w":"sauber","t":"sıfat","m":"temiz","s":[],"a":["schmutzig"],"e":[["Die Küche ist sauber.","","Mutfak temiz."],["Ich brauche ein sauberes Glas.","","Temiz bir bardağa ihtiyacım var."]]}

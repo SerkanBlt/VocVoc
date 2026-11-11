@@ -1,0 +1,50 @@
+{"w":"bravo","t":"sıfat","m":"başarılı, iyi; yetenekli","s":[],"a":[],"e":[["Mia figlia è brava a scuola.","","Kızım okulda başarılı."],["Sei bravo a cucinare!","","Yemek yapmakta çok iyisin!"]]}
+{"w":"alto","t":"sıfat","m":"uzun boylu; yüksek","s":[],"a":["basso"],"e":[["Mio fratello è alto.","","Ağabeyim uzun boylu."],["Quella montagna è molto alta.","","O dağ çok yüksek."]]}
+{"w":"basso","t":"sıfat","m":"kısa boylu; alçak","s":[],"a":["alto"],"e":[["Il mio amico è basso.","","Arkadaşım kısa boylu."],["Il prezzo è basso.","","Fiyat düşük."]]}
+{"w":"lungo","t":"sıfat","m":"uzun","s":[],"a":["corto"],"e":[["Ho i capelli lunghi.","","Saçlarım uzun."],["Il viaggio è lungo.","","Yolculuk uzun."]]}
+{"w":"corto","t":"sıfat","m":"kısa","s":[],"a":["lungo"],"e":[["La gonna è corta.","","Etek kısa."],["Questa strada è più corta.","","Bu yol daha kısa."]]}
+{"w":"caldo","t":"sıfat","m":"sıcak","s":[],"a":["freddo"],"e":[["Il caffè è caldo.","","Kahve sıcak."],["In estate fa caldo.","","Yazın hava sıcak."]],"x":[["fa caldo","","hava sıcak","Oggi fa molto caldo.","","Bugün hava çok sıcak."]]}
+{"w":"freddo","t":"sıfat","m":"soğuk","s":[],"a":["caldo"],"e":[["L'acqua è fredda.","","Su soğuk."],["In inverno fa freddo.","","Kışın hava soğuk."]],"x":[["avere freddo","","üşümek","Ho freddo, chiudo la finestra.","","Üşüyorum, pencereyi kapatıyorum."]]}
+{"w":"facile","t":"sıfat","m":"kolay","s":["semplice"],"a":["difficile"],"e":[["L'esercizio è facile.","","Alıştırma kolay."],["Non è facile imparare una lingua.","","Bir dil öğrenmek kolay değil."]]}
+{"w":"difficile","t":"sıfat","m":"zor","s":[],"a":["facile"],"e":[["Questa domanda è difficile.","","Bu soru zor."],["L'italiano non è difficile per me.","","İtalyanca benim için zor değil."]]}
+{"w":"giusto","t":"sıfat","m":"doğru; adil","s":[],"a":["sbagliato"],"e":[["La risposta è giusta.","","Cevap doğru."],["Hai ragione, è giusto così.","","Haklısın, böyle doğru."]]}
+{"w":"sbagliato","t":"sıfat","m":"yanlış, hatalı","s":[],"a":["giusto"],"e":[["Questa risposta è sbagliata.","","Bu cevap yanlış."],["Ho preso la strada sbagliata.","","Yanlış yola saptım."]]}
+{"w":"vero","t":"sıfat","m":"doğru; gerçek","s":[],"a":["falso"],"e":[["Non è vero!","","Bu doğru değil!"],["Questa è una storia vera.","","Bu gerçek bir hikâye."]],"x":[["non è vero?","","değil mi?","Sei stanco, non è vero?","","Yorgunsun, değil mi?"]]}
+{"w":"falso","t":"sıfat","m":"yanlış; sahte","s":[],"a":["vero"],"e":[["Questa notizia è falsa.","","Bu haber yanlış."],["Questo è un biglietto falso.","","Bu sahte bir bilet."]]}
+{"w":"felice","t":"sıfat","m":"mutlu","s":["contento"],"a":["triste"],"e":[["Sono felice oggi.","","Bugün mutluyum."],["I bambini sono felici.","","Çocuklar mutlu."]]}
+{"w":"triste","t":"sıfat","m":"üzgün; hüzünlü","s":[],"a":["felice","contento"],"e":[["Oggi sono un po' triste.","","Bugün biraz üzgünüm."],["Questo film è molto triste.","","Bu film çok hüzünlü."]]}
+{"w":"contento","t":"sıfat","m":"memnun, sevinçli","s":["felice"],"a":["triste"],"e":[["Sono contento del mio lavoro.","","İşimden memnunum."],["Mia madre è contenta.","","Annem memnun."]]}
+{"w":"stanco","t":"sıfat","m":"yorgun","s":[],"a":[],"e":[["Sono stanco dopo il lavoro.","","İşten sonra yorgunum."],["Siamo stanche e andiamo a letto.","","Yorgunuz ve yatmaya gidiyoruz."]]}
+{"w":"pieno","t":"sıfat","m":"dolu; tok","s":[],"a":["vuoto"],"e":[["Il bicchiere è pieno.","","Bardak dolu."],["L'autobus è pieno di gente.","","Otobüs insan dolu."]]}
+{"w":"vuoto","t":"sıfat","m":"boş","s":[],"a":["pieno"],"e":[["Il frigo è vuoto.","","Buzdolabı boş."],["La piazza è vuota di notte.","","Meydan geceleri boş."]]}
+{"w":"aperto","t":"sıfat","m":"açık","s":[],"a":["chiuso"],"e":[["Il negozio è aperto.","","Mağaza açık."],["La finestra è aperta.","","Pencere açık."]]}
+{"w":"chiuso","t":"sıfat","m":"kapalı","s":[],"a":["aperto"],"e":[["La banca è chiusa oggi.","","Banka bugün kapalı."],["La porta è chiusa.","","Kapı kapalı."]]}
+{"w":"pronto","t":"sıfat","m":"hazır","s":[],"a":[],"e":[["La cena è pronta.","","Akşam yemeği hazır."],["Sono pronto per uscire.","","Çıkmaya hazırım."]],"x":[["pronto?","","alo? (telefonda)","Pronto? Chi parla?","","Alo? Kim arıyor?"]]}
+{"w":"importante","t":"sıfat","m":"önemli","s":[],"a":[],"e":[["La famiglia è importante.","","Aile önemlidir."],["Ho un appuntamento importante.","","Önemli bir randevum var."]]}
+{"w":"simpatico","t":"sıfat","m":"sempatik, cana yakın","s":[],"a":["antipatico"],"e":[["Il tuo amico è simpatico.","","Arkadaşın sempatik biri."],["La nuova insegnante è simpatica.","","Yeni öğretmen cana yakın biri."]]}
+{"w":"gentile","t":"sıfat","m":"nazik","s":[],"a":[],"e":[["La signora è molto gentile.","","Hanımefendi çok nazik."],["Grazie, sei gentile!","","Teşekkürler, çok naziksin!"]]}
+{"w":"diverso","t":"sıfat","m":"farklı","s":[],"a":["stesso"],"e":[["Siamo molto diversi.","","Birbirimizden çok farklıyız."],["Questa città è diversa da Roma.","","Bu şehir Roma'dan farklı."]]}
+{"w":"ultimo","t":"sıfat","m":"son","s":[],"a":["primo"],"e":[["Questo è l'ultimo giorno.","","Bu son gün."],["Sono l'ultima della fila.","","Sıranın sonundayım."]]}
+{"w":"prossimo","t":"sıfat","m":"gelecek, sonraki","s":[],"a":[],"e":[["Il prossimo treno parte alle sei.","","Bir sonraki tren altıda kalkıyor."],["Ci vediamo la prossima settimana.","","Gelecek hafta görüşürüz."]]}
+{"w":"libero","t":"sıfat","m":"boş; serbest","s":[],"a":["occupato"],"e":[["Questo posto è libero?","","Bu yer boş mu?"],["Domenica sono libero.","","Pazar günü boşum."]],"x":[["tempo libero","","boş zaman","Nel tempo libero leggo.","","Boş zamanımda kitap okuyorum."]]}
+{"w":"tempo","t":"isim (eril)","m":"zaman; hava (durumu)","s":[],"a":[],"e":[["Non ho tempo oggi.","","Bugün vaktim yok."],["Che tempo fa domani?","","Yarın hava nasıl olacak?"]],"x":[["che tempo fa","","hava nasıl","Che tempo fa a Milano?","","Milano'da hava nasıl?"]]}
+{"w":"volta","t":"isim (dişil)","m":"kez, defa; sefer","s":[],"a":[],"e":[["Vado in palestra due volte a settimana.","","Haftada iki kez spor salonuna gidiyorum."],["Questa volta pago io.","","Bu sefer ben ödüyorum."]],"x":[["una volta","","bir kez; bir zamanlar","C'era una volta un re.","","Bir zamanlar bir kral vardı."]]}
+{"w":"cosa","t":"isim (dişil)","m":"şey; nesne","s":[],"a":[],"e":[["Che cosa è questa?","","Bu nedir?"],["Ho molte cose da fare.","","Yapacak çok şeyim var."]]}
+{"w":"abitare","t":"fiil","m":"oturmak, ikamet etmek","s":["vivere"],"a":[],"e":[["Abito a Milano.","","Milano'da oturuyorum."],["Dove abitate?","","Nerede oturuyorsunuz?"]]}
+{"w":"lavorare","t":"fiil","m":"çalışmak","s":[],"a":[],"e":[["Lavoro in una banca.","","Bir bankada çalışıyorum."],["Mio padre lavora molto.","","Babam çok çalışıyor."]]}
+{"w":"studiare","t":"fiil","m":"ders çalışmak; okumak (öğrenim)","s":[],"a":[],"e":[["Studio italiano ogni giorno.","","Her gün İtalyanca çalışıyorum."],["Mia sorella studia medicina.","","Ablam tıp okuyor."]]}
+{"w":"chiamarsi","t":"fiil","m":"adı ... olmak","s":[],"a":[],"e":[["Mi chiamo Anna.","","Benim adım Anna."],["Come ti chiami?","","Adın ne?"]]}
+{"w":"amare","t":"fiil","m":"sevmek; aşık olmak","s":[],"a":["odiare"],"e":[["Amo la mia famiglia.","","Ailemi seviyorum."],["Lui ama la musica.","","O müziği çok seviyor."]]}
+{"w":"piacere","t":"fiil","m":"hoşlanmak, beğenmek","s":[],"a":[],"e":[["Mi piace il gelato.","","Dondurmayı severim."],["Ti piacciono i film italiani?","","İtalyan filmlerini beğeniyor musun?"]],"x":[["piacere!","","memnun oldum!","Piacere, sono Marco.","","Memnun oldum, ben Marco."]]}
+{"w":"capire","t":"fiil","m":"anlamak","s":[],"a":[],"e":[["Non capisco questa parola.","","Bu kelimeyi anlamıyorum."],["Hai capito la domanda?","","Soruyu anladın mı?"]]}
+{"w":"pensare","t":"fiil","m":"düşünmek","s":[],"a":[],"e":[["Penso alla mia famiglia.","","Ailemi düşünüyorum."],["Che cosa pensi di questo film?","","Bu film hakkında ne düşünüyorsun?"]]}
+{"w":"prendere","t":"fiil","m":"almak; (taşıt) binmek","s":[],"a":[],"e":[["Prendo un caffè, e tu?","","Ben bir kahve alıyorum, sen?"],["Prendo l'autobus ogni mattina.","","Her sabah otobüse biniyorum."]]}
+{"w":"mettere","t":"fiil","m":"koymak; giymek","s":[],"a":[],"e":[["Metto il libro sul tavolo.","","Kitabı masanın üstüne koyuyorum."],["Oggi metto la giacca blu.","","Bugün lacivert ceketimi giyiyorum."]]}
+{"w":"trovare","t":"fiil","m":"bulmak","s":[],"a":["perdere"],"e":[["Non trovo le chiavi.","","Anahtarları bulamıyorum."],["Trovo il film molto bello.","","Filmi çok güzel buluyorum."]]}
+{"w":"lasciare","t":"fiil","m":"bırakmak; ayrılmak","s":[],"a":[],"e":[["Lascio la borsa a casa.","","Çantayı evde bırakıyorum."],["Lasciami in pace!","","Beni rahat bırak!"]]}
+{"w":"arrivare","t":"fiil","m":"varmak, gelmek","s":[],"a":["partire"],"e":[["Il treno arriva alle otto.","","Tren sekizde geliyor."],["Arrivo a casa tardi.","","Eve geç varıyorum."]]}
+{"w":"partire","t":"fiil","m":"yola çıkmak, hareket etmek","s":[],"a":["arrivare"],"e":[["Parto domani per Roma.","","Yarın Roma'ya gidiyorum."],["L'aereo parte alle dieci.","","Uçak saat onda kalkıyor."]]}
+{"w":"tornare","t":"fiil","m":"dönmek, geri gelmek","s":[],"a":["partire"],"e":[["Torno a casa alle sei.","","Saat altıda eve dönüyorum."],["Quando torni dall'ufficio?","","Ofisten ne zaman dönüyorsun?"]]}
+{"w":"uscire","t":"fiil","m":"çıkmak","s":[],"a":["entrare"],"e":[["Esco di casa alle otto.","","Saat sekizde evden çıkıyorum."],["Stasera usciamo con gli amici.","","Bu akşam arkadaşlarla çıkıyoruz."]]}
+{"w":"entrare","t":"fiil","m":"girmek","s":[],"a":["uscire"],"e":[["Entro in ufficio alle nove.","","Ofise dokuzda giriyorum."],["Posso entrare?","","Girebilir miyim?"]]}
+{"w":"comprare","t":"fiil","m":"satın almak","s":[],"a":["vendere"],"e":[["Compro il pane al mercato.","","Ekmeği pazardan alıyorum."],["Vogliamo comprare una macchina.","","Bir araba almak istiyoruz."]]}

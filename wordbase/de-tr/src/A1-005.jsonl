@@ -1,0 +1,50 @@
+{"w":"spielen","t":"fiil","m":"oynamak; çalmak","s":[],"a":[],"e":[["Die Kinder spielen im Garten.","","Çocuklar bahçede oynuyor."],["Er spielt gut Gitarre.","","O iyi gitar çalıyor."]]}
+{"w":"lesen","t":"fiil","m":"okumak","s":[],"a":["schreiben"],"e":[["Ich lese jeden Abend ein Buch.","","Her akşam bir kitap okuyorum."],["Liest du die Zeitung?","","Gazeteyi okuyor musun?"]]}
+{"w":"schreiben","t":"fiil","m":"yazmak","s":[],"a":["lesen"],"e":[["Ich schreibe einen Brief.","","Bir mektup yazıyorum."],["Schreib mir bitte eine E-Mail!","","Lütfen bana bir e-posta yaz!"]]}
+{"w":"sprechen","t":"fiil","m":"konuşmak","s":["reden"],"a":[],"e":[["Sprichst du Deutsch?","","Almanca konuşuyor musun?"],["Ich spreche mit meiner Mutter.","","Annemle konuşuyorum."]]}
+{"w":"hören","t":"fiil","m":"duymak; dinlemek","s":[],"a":[],"e":[["Ich höre ein Geräusch.","","Bir ses duyuyorum."],["Wir hören gern Musik.","","Müzik dinlemeyi severiz."]]}
+{"w":"fragen","t":"fiil","m":"sormak","s":[],"a":["antworten"],"e":[["Ich frage den Lehrer.","","Öğretmene soruyorum."],["Darf ich dich etwas fragen?","","Sana bir şey sorabilir miyim?"]]}
+{"w":"antworten","t":"fiil","m":"cevap vermek","s":[],"a":["fragen"],"e":[["Bitte antworten Sie schnell.","","Lütfen çabuk cevap verin."],["Er antwortet nicht auf die E-Mail.","","O e-postaya cevap vermiyor."]]}
+{"w":"verstehen","t":"fiil","m":"anlamak","s":[],"a":[],"e":[["Ich verstehe das nicht.","","Bunu anlamıyorum."],["Verstehst du mich?","","Beni anlıyor musun?"]]}
+{"w":"kaufen","t":"fiil","m":"satın almak; almak","s":[],"a":["verkaufen"],"e":[["Ich kaufe Brot und Milch.","","Ekmek ve süt alıyorum."],["Sie kauft eine neue Jacke.","","O yeni bir ceket alıyor."]]}
+{"w":"kosten","t":"fiil","m":"(fiyatı) olmak; eder","s":[],"a":[],"e":[["Was kostet das Buch?","","Kitap ne kadar?"],["Die Karte kostet zehn Euro.","","Bilet on avro."]]}
+{"w":"fahren","t":"fiil","m":"gitmek (araçla); sürmek","s":[],"a":[],"e":[["Wir fahren mit dem Zug nach Hamburg.","","Hamburg'a trenle gidiyoruz."],["Mein Bruder fährt schon Auto.","","Ağabeyim artık araba kullanıyor."]]}
+{"w":"laufen","t":"fiil","m":"koşmak; yürümek","s":[],"a":[],"e":[["Das Kind läuft zum Park.","","Çocuk parka koşuyor."],["Wir laufen zur Schule.","","Okula yürüyoruz."]]}
+{"w":"kochen","t":"fiil","m":"yemek pişirmek; kaynatmak","s":[],"a":[],"e":[["Meine Mutter kocht gern.","","Annem yemek pişirmeyi sever."],["Ich koche heute Suppe.","","Bugün çorba pişiriyorum."]]}
+{"w":"helfen","t":"fiil","m":"yardım etmek","s":[],"a":[],"e":[["Kannst du mir helfen?","","Bana yardım edebilir misin?"],["Er hilft seiner Oma.","","O, babaannesine yardım ediyor."]]}
+{"w":"lieben","t":"fiil","m":"sevmek; âşık olmak","s":["mögen"],"a":["hassen"],"e":[["Ich liebe dich.","","Seni seviyorum."],["Sie liebt ihre Katze.","","O kedisini seviyor."]]}
+{"w":"treffen","t":"fiil","m":"buluşmak; rastlamak","s":[],"a":[],"e":[["Ich treffe meine Freunde am Samstag.","","Cumartesi arkadaşlarımla buluşuyorum."],["Wir treffen uns um acht Uhr.","","Saat sekizde buluşuyoruz."]]}
+{"w":"besuchen","t":"fiil","m":"ziyaret etmek","s":[],"a":[],"e":[["Wir besuchen unsere Tante.","","Teyzemizi ziyaret ediyoruz."],["Er besucht einen Deutschkurs.","","O bir Almanca kursuna gidiyor."]]}
+{"w":"warten","t":"fiil","m":"beklemek","s":[],"a":[],"e":[["Ich warte auf den Bus.","","Otobüsü bekliyorum."],["Bitte warten Sie einen Moment.","","Lütfen bir dakika bekleyin."]]}
+{"w":"anrufen","t":"fiil","m":"telefon etmek; aramak","s":[],"a":[],"e":[["Ich rufe dich morgen an.","","Seni yarın arıyorum."],["Ruf mich bitte an!","","Lütfen beni ara!"]]}
+{"w":"aufstehen","t":"fiil","m":"kalkmak; uyanıp yataktan kalkmak","s":[],"a":["hinlegen"],"e":[["Ich stehe um sechs Uhr auf.","","Saat altıda kalkıyorum."],["Steh bitte auf!","","Lütfen kalk!"]]}
+{"w":"anfangen","t":"fiil","m":"başlamak","s":["beginnen"],"a":["aufhören"],"e":[["Der Kurs fängt um neun Uhr an.","","Kurs saat dokuzda başlıyor."],["Wir fangen jetzt an.","","Şimdi başlıyoruz."]]}
+{"w":"tun","t":"fiil","m":"yapmak; etmek","s":["machen"],"a":[],"e":[["Was tust du da?","","Orada ne yapıyorsun?"],["Mein Kopf tut weh.","","Başım ağrıyor."]],"x":[["weh tun","","acımak; canını yakmak","Mein Rücken tut sehr weh.","","Sırtım çok ağrıyor."]]}
+{"w":"sitzen","t":"fiil","m":"oturmak; oturuyor olmak","s":[],"a":["stehen"],"e":[["Wir sitzen am Tisch.","","Masada oturuyoruz."],["Die Katze sitzt auf dem Stuhl.","","Kedi sandalyenin üstünde oturuyor."]]}
+{"w":"stehen","t":"fiil","m":"ayakta durmak; durmak","s":[],"a":["sitzen"],"e":[["Der Mann steht an der Haltestelle.","","Adam durakta duruyor."],["Das Glas steht auf dem Tisch.","","Bardak masanın üstünde duruyor."]]}
+{"w":"liegen","t":"fiil","m":"yatmak; bulunmak","s":[],"a":[],"e":[["Das Buch liegt auf dem Tisch.","","Kitap masanın üstünde duruyor."],["Berlin liegt in Deutschland.","","Berlin Almanya'dadır."]]}
+{"w":"kennen","t":"fiil","m":"tanımak; bilmek","s":[],"a":[],"e":[["Ich kenne ihn gut.","","Onu iyi tanıyorum."],["Kennst du diese Stadt?","","Bu şehri biliyor musun?"]]}
+{"w":"zeigen","t":"fiil","m":"göstermek","s":[],"a":[],"e":[["Ich zeige dir mein Zimmer.","","Sana odamı gösteriyorum."],["Können Sie mir den Weg zeigen?","","Bana yolu gösterebilir misiniz?"]]}
+{"w":"bringen","t":"fiil","m":"getirmek; götürmek","s":[],"a":["holen"],"e":[["Ich bringe dir einen Tee.","","Sana bir çay getiriyorum."],["Er bringt die Kinder zur Schule.","","O, çocukları okula götürüyor."]]}
+{"w":"holen","t":"fiil","m":"gidip getirmek; almak","s":[],"a":["bringen"],"e":[["Ich hole schnell das Brot.","","Hemen gidip ekmeği getiriyorum."],["Wir holen die Kinder ab.","","Çocukları almaya gidiyoruz."]]}
+{"w":"suchen","t":"fiil","m":"aramak","s":[],"a":["finden"],"e":[["Ich suche meinen Schlüssel.","","Anahtarımı arıyorum."],["Sie sucht eine Wohnung.","","O bir daire arıyor."]]}
+{"w":"öffnen","t":"fiil","m":"açmak","s":["aufmachen"],"a":["schließen"],"e":[["Bitte öffnen Sie das Fenster.","","Lütfen pencereyi açın."],["Der Laden öffnet um acht Uhr.","","Dükkân saat sekizde açılıyor."]]}
+{"w":"tanzen","t":"fiil","m":"dans etmek","s":[],"a":[],"e":[["Wir tanzen auf der Party.","","Partide dans ediyoruz."],["Sie tanzt sehr gut.","","O çok iyi dans ediyor."]]}
+{"w":"singen","t":"fiil","m":"şarkı söylemek","s":[],"a":[],"e":[["Sie singt gern unter der Dusche.","","O duşta şarkı söylemeyi sever."],["Wir singen zusammen.","","Birlikte şarkı söylüyoruz."]]}
+{"w":"schwimmen","t":"fiil","m":"yüzmek","s":[],"a":[],"e":[["Ich schwimme jeden Samstag.","","Her cumartesi yüzüyorum."],["Kannst du schwimmen?","","Yüzebiliyor musun?"]]}
+{"w":"studieren","t":"fiil","m":"üniversitede okumak","s":[],"a":[],"e":[["Meine Schwester studiert in Wien.","","Kız kardeşim Viyana'da okuyor."],["Was studierst du?","","Hangi bölümde okuyorsun?"]]}
+{"w":"verkaufen","t":"fiil","m":"satmak","s":[],"a":["kaufen"],"e":[["Er verkauft sein altes Auto.","","O eski arabasını satıyor."],["Der Laden verkauft Obst.","","Dükkân meyve satıyor."]]}
+{"w":"bestellen","t":"fiil","m":"sipariş etmek","s":[],"a":[],"e":[["Ich bestelle einen Kaffee.","","Bir kahve sipariş ediyorum."],["Wir bestellen zwei Pizzen.","","İki pizza sipariş ediyoruz."]]}
+{"w":"einkaufen","t":"fiil","m":"alışveriş yapmak","s":[],"a":[],"e":[["Ich kaufe heute im Supermarkt ein.","","Bugün süpermarkette alışveriş yapıyorum."],["Wir kaufen jeden Samstag ein.","","Her cumartesi alışveriş yapıyoruz."]]}
+{"w":"mitkommen","t":"fiil","m":"birlikte gelmek","s":[],"a":[],"e":[["Kommst du mit ins Kino?","","Sinemaya birlikte geliyor musun?"],["Ich komme gern mit.","","Seve seve gelirim."]]}
+{"w":"mitnehmen","t":"fiil","m":"yanında götürmek; yanına almak","s":[],"a":[],"e":[["Ich nehme einen Schirm mit.","","Yanıma bir şemsiye alıyorum."],["Kannst du mich mitnehmen?","","Beni de götürebilir misin?"]]}
+{"w":"ankommen","t":"fiil","m":"varmak; gelmek","s":[],"a":["abfahren"],"e":[["Der Zug kommt um zehn Uhr an.","","Tren saat onda varıyor."],["Wir kommen bald in Berlin an.","","Yakında Berlin'e varıyoruz."]]}
+{"w":"abfahren","t":"fiil","m":"hareket etmek; yola çıkmak","s":[],"a":["ankommen"],"e":[["Der Bus fährt gleich ab.","","Otobüs hemen hareket ediyor."],["Wann fährt der Zug ab?","","Tren ne zaman kalkıyor?"]]}
+{"w":"einsteigen","t":"fiil","m":"binmek","s":[],"a":["aussteigen"],"e":[["Wir steigen in den Bus ein.","","Otobüse biniyoruz."],["Bitte einsteigen!","","Lütfen binin!"]]}
+{"w":"aussteigen","t":"fiil","m":"inmek","s":[],"a":["einsteigen"],"e":[["Ich steige am Bahnhof aus.","","Garda iniyorum."],["Wo müssen wir aussteigen?","","Nerede inmemiz gerekiyor?"]]}
+{"w":"aufmachen","t":"fiil","m":"açmak","s":["öffnen"],"a":["zumachen"],"e":[["Mach bitte die Tür auf!","","Lütfen kapıyı aç!"],["Ich mache das Fenster auf.","","Pencereyi açıyorum."]]}
+{"w":"zumachen","t":"fiil","m":"kapatmak","s":["schließen"],"a":["aufmachen"],"e":[["Mach bitte das Fenster zu!","","Lütfen pencereyi kapat!"],["Der Laden macht um sechs Uhr zu.","","Dükkân saat altıda kapanıyor."]]}
+{"w":"kennenlernen","t":"fiil","m":"tanışmak; tanımak","s":[],"a":[],"e":[["Ich möchte dich kennenlernen.","","Seninle tanışmak istiyorum."],["Wir lernen neue Leute kennen.","","Yeni insanlarla tanışıyoruz."]]}
+{"w":"buchstabieren","t":"fiil","m":"harf harf söylemek","s":[],"a":[],"e":[["Können Sie Ihren Namen buchstabieren?","","Adınızı harf harf söyleyebilir misiniz?"],["Ich buchstabiere das Wort langsam.","","Kelimeyi yavaşça hecelerim."]]}
+{"w":"schicken","t":"fiil","m":"göndermek","s":["senden"],"a":[],"e":[["Ich schicke dir ein Foto.","","Sana bir fotoğraf gönderiyorum."],["Er schickt einen Brief.","","O bir mektup gönderiyor."]]}
+{"w":"bekommen","t":"fiil","m":"almak; elde etmek","s":["erhalten"],"a":[],"e":[["Ich bekomme einen Brief.","","Bir mektup alıyorum."],["Was bekommen Sie?","","Ne alırdınız?"]]}

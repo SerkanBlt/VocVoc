@@ -1,0 +1,50 @@
+{"w":"rosso","t":"sıfat","m":"kırmızı","s":[],"a":[],"e":[["Mi piace la macchina rossa.","","Kırmızı arabayı beğeniyorum."],["Ho una borsa rossa.","","Kırmızı bir çantam var."]],"x":[["vino rosso","","kırmızı şarap","Preferisco il vino rosso.","","Kırmızı şarabı tercih ediyorum."]]}
+{"w":"blu","t":"sıfat","m":"mavi; lacivert","s":[],"a":[],"e":[["Il cielo è blu.","","Gökyüzü mavi."],["Porto una giacca blu.","","Lacivert bir ceket giyiyorum."]]}
+{"w":"giallo","t":"sıfat","m":"sarı","s":[],"a":[],"e":[["La banana è gialla.","","Muz sarı."],["Il sole è giallo.","","Güneş sarı."]]}
+{"w":"verde","t":"sıfat","m":"yeşil","s":[],"a":[],"e":[["L'albero è verde.","","Ağaç yeşil."],["Mi piace l'insalata verde.","","Yeşil salatayı seviyorum."]]}
+{"w":"bianco","t":"sıfat","m":"beyaz","s":[],"a":["nero"],"e":[["La neve è bianca.","","Kar beyaz."],["Prendo un vino bianco.","","Beyaz şarap alıyorum."]]}
+{"w":"nero","t":"sıfat","m":"siyah","s":[],"a":["bianco"],"e":[["Il mio gatto è nero.","","Kedim siyah."],["Bevo il caffè nero.","","Kahveyi sade içiyorum."]]}
+{"w":"grigio","t":"sıfat","m":"gri","s":[],"a":[],"e":[["Il cielo è grigio oggi.","","Gökyüzü bugün gri."],["Ho un cappello grigio.","","Gri bir şapkam var."]]}
+{"w":"marrone","t":"sıfat","m":"kahverengi","s":[],"a":[],"e":[["Ho le scarpe marroni.","","Kahverengi ayakkabılarım var."],["Il cane è marrone.","","Köpek kahverengi."]]}
+{"w":"arancione","t":"sıfat","m":"turuncu","s":[],"a":[],"e":[["La maglia arancione è nuova.","","Turuncu kazak yeni."],["Mi piace il colore arancione.","","Turuncu rengi seviyorum."]]}
+{"w":"rosa","t":"sıfat","m":"pembe","s":[],"a":[],"e":[["Lei porta un vestito rosa.","","O pembe bir elbise giyiyor."],["La camera della bambina è rosa.","","Küçük kızın odası pembe."]]}
+{"w":"colore","t":"isim (eril)","m":"renk","s":[],"a":[],"e":[["Che colore preferisci?","","Hangi rengi tercih ediyorsun?"],["Il mio colore preferito è il blu.","","En sevdiğim renk mavi."]]}
+{"w":"lunedì","t":"isim (eril)","m":"pazartesi","s":[],"a":[],"e":[["Lunedì lavoro in ufficio.","","Pazartesi ofiste çalışıyorum."],["Il lunedì studio italiano.","","Pazartesi günleri İtalyanca çalışıyorum."]]}
+{"w":"martedì","t":"isim (eril)","m":"salı","s":[],"a":[],"e":[["Martedì ho una lezione.","","Salı günü dersim var."],["Il martedì vado in piscina.","","Salı günleri yüzmeye gidiyorum."]]}
+{"w":"mercoledì","t":"isim (eril)","m":"çarşamba","s":[],"a":[],"e":[["Mercoledì incontro un amico.","","Çarşamba bir arkadaşımla buluşuyorum."],["Il negozio è chiuso il mercoledì.","","Mağaza çarşamba günleri kapalı."]]}
+{"w":"giovedì","t":"isim (eril)","m":"perşembe","s":[],"a":[],"e":[["Giovedì parto per Roma.","","Perşembe Roma'ya gidiyorum."],["Il giovedì cucino la pasta.","","Perşembe günleri makarna pişiriyorum."]]}
+{"w":"venerdì","t":"isim (eril)","m":"cuma","s":[],"a":[],"e":[["Venerdì sera esco con gli amici.","","Cuma akşamı arkadaşlarla çıkıyorum."],["Venerdì è l'ultimo giorno di lavoro.","","Cuma işin son günü."]]}
+{"w":"sabato","t":"isim (eril)","m":"cumartesi","s":[],"a":[],"e":[["Sabato faccio la spesa.","","Cumartesi alışveriş yapıyorum."],["Il sabato dormo fino a tardi.","","Cumartesi günleri geç saate kadar uyuyorum."]]}
+{"w":"domenica","t":"isim (dişil)","m":"pazar","s":[],"a":[],"e":[["Domenica pranzo dalla nonna.","","Pazar günü ninemde öğle yemeği yiyorum."],["La domenica è un giorno di festa.","","Pazar bir tatil günüdür."]]}
+{"w":"giorno","t":"isim (eril)","m":"gün","s":[],"a":["notte"],"e":[["Che giorno è oggi?","","Bugün günlerden ne?"],["Lavoro cinque giorni a settimana.","","Haftada beş gün çalışıyorum."]],"x":[["buon giorno","","günaydın; iyi günler","Buon giorno, signora!","","Günaydın, hanımefendi!"]]}
+{"w":"settimana","t":"isim (dişil)","m":"hafta","s":[],"a":[],"e":[["Una settimana ha sette giorni.","","Bir hafta yedi gündür."],["Vado in palestra due volte a settimana.","","Haftada iki kez spor salonuna gidiyorum."]]}
+{"w":"mese","t":"isim (eril)","m":"ay","s":[],"a":[],"e":[["Questo mese lavoro molto.","","Bu ay çok çalışıyorum."],["Il mese prossimo parto.","","Gelecek ay yola çıkıyorum."]]}
+{"w":"notte","t":"isim (dişil)","m":"gece","s":[],"a":["giorno"],"e":[["Di notte dormo bene.","","Geceleri iyi uyuyorum."],["Buona notte, a domani!","","İyi geceler, yarın görüşürüz!"]],"x":[["buona notte","","iyi geceler","Buona notte, mamma!","","İyi geceler, anne!"]]}
+{"w":"mattina","t":"isim (dişil)","m":"sabah","s":[],"a":["sera"],"e":[["La mattina bevo il caffè.","","Sabahları kahve içiyorum."],["Domani mattina ho una lezione.","","Yarın sabah dersim var."]]}
+{"w":"pomeriggio","t":"isim (eril)","m":"öğleden sonra","s":[],"a":[],"e":[["Nel pomeriggio studio.","","Öğleden sonra ders çalışıyorum."],["Il pomeriggio gioco a calcio.","","Öğleden sonraları futbol oynuyorum."]]}
+{"w":"sera","t":"isim (dişil)","m":"akşam","s":[],"a":["mattina"],"e":[["La sera guardo un film.","","Akşamları film izliyorum."],["Buona sera, signora!","","İyi akşamlar, hanımefendi!"]]}
+{"w":"gennaio","t":"isim (eril)","m":"ocak","s":[],"a":[],"e":[["A gennaio fa freddo.","","Ocakta hava soğuk."],["Il mio compleanno è in gennaio.","","Doğum günüm ocakta."]]}
+{"w":"febbraio","t":"isim (eril)","m":"şubat","s":[],"a":[],"e":[["Febbraio è il mese più corto.","","Şubat en kısa aydır."],["A febbraio vado in montagna.","","Şubatta dağa gidiyorum."]]}
+{"w":"marzo","t":"isim (eril)","m":"mart","s":[],"a":[],"e":[["A marzo comincia la primavera.","","Mart ayında bahar başlar."],["Parto il dieci marzo.","","On Mart'ta yola çıkıyorum."]]}
+{"w":"aprile","t":"isim (eril)","m":"nisan","s":[],"a":[],"e":[["Ad aprile piove spesso.","","Nisanda sık sık yağmur yağar."],["Il mio esame è in aprile.","","Sınavım nisanda."]]}
+{"w":"maggio","t":"isim (eril)","m":"mayıs","s":[],"a":[],"e":[["A maggio i fiori sono bellissimi.","","Mayısta çiçekler çok güzel."],["Il primo maggio è una festa.","","Bir Mayıs bir bayramdır."]]}
+{"w":"giugno","t":"isim (eril)","m":"haziran","s":[],"a":[],"e":[["A giugno finisce la scuola.","","Haziranda okul biter."],["Giugno è un mese caldo.","","Haziran sıcak bir aydır."]]}
+{"w":"luglio","t":"isim (eril)","m":"temmuz","s":[],"a":[],"e":[["A luglio vado al mare.","","Temmuzda denize gidiyorum."],["Luglio è molto caldo.","","Temmuz çok sıcak."]]}
+{"w":"agosto","t":"isim (eril)","m":"ağustos","s":[],"a":[],"e":[["Ad agosto siamo in vacanza.","","Ağustosta tatildeyiz."],["Molti negozi chiudono in agosto.","","Birçok mağaza ağustosta kapanıyor."]]}
+{"w":"settembre","t":"isim (eril)","m":"eylül","s":[],"a":[],"e":[["A settembre comincia la scuola.","","Eylülde okul başlıyor."],["Settembre è un bel mese.","","Eylül güzel bir ay."]]}
+{"w":"ottobre","t":"isim (eril)","m":"ekim","s":[],"a":[],"e":[["Ad ottobre piove di più.","","Ekimde daha çok yağmur yağar."],["Il mio compleanno è in ottobre.","","Doğum günüm ekimde."]]}
+{"w":"novembre","t":"isim (eril)","m":"kasım","s":[],"a":[],"e":[["A novembre fa freddo.","","Kasımda hava soğuk."],["Parto a novembre.","","Kasımda yola çıkıyorum."]]}
+{"w":"dicembre","t":"isim (eril)","m":"aralık","s":[],"a":[],"e":[["A dicembre c'è il Natale.","","Aralıkta Noel var."],["Dicembre è l'ultimo mese dell'anno.","","Aralık yılın son ayıdır."]]}
+{"w":"primavera","t":"isim (dişil)","m":"ilkbahar, bahar","s":[],"a":[],"e":[["In primavera i fiori sbocciano.","","İlkbaharda çiçekler açar."],["La primavera è la mia stagione preferita.","","İlkbahar en sevdiğim mevsim."]]}
+{"w":"estate","t":"isim (dişil)","m":"yaz","s":[],"a":["inverno"],"e":[["D'estate vado al mare.","","Yazın denize gidiyorum."],["L'estate è molto calda.","","Yaz çok sıcak."]]}
+{"w":"autunno","t":"isim (eril)","m":"sonbahar","s":[],"a":[],"e":[["In autunno cadono le foglie.","","Sonbaharda yapraklar dökülür."],["L'autunno è una stagione bella.","","Sonbahar güzel bir mevsim."]]}
+{"w":"inverno","t":"isim (eril)","m":"kış","s":[],"a":["estate"],"e":[["In inverno nevica.","","Kışın kar yağar."],["L'inverno è freddo in montagna.","","Kış dağda soğuktur."]]}
+{"w":"grande","t":"sıfat","m":"büyük","s":[],"a":["piccolo"],"e":[["Abito in una casa grande.","","Büyük bir evde oturuyorum."],["Roma è una città grande.","","Roma büyük bir şehir."]]}
+{"w":"piccolo","t":"sıfat","m":"küçük","s":[],"a":["grande"],"e":[["Ho un gatto piccolo.","","Küçük bir kedim var."],["La mia camera è piccola.","","Odam küçük."]]}
+{"w":"nuovo","t":"sıfat","m":"yeni","s":[],"a":["vecchio"],"e":[["Ho un telefono nuovo.","","Yeni bir telefonum var."],["Questa è la mia nuova scuola.","","Burası benim yeni okulum."]]}
+{"w":"vecchio","t":"sıfat","m":"eski; yaşlı","s":[],"a":["nuovo","giovane"],"e":[["La mia macchina è vecchia.","","Arabam eski."],["Il nonno è vecchio ma forte.","","Dede yaşlı ama güçlü."]]}
+{"w":"giovane","t":"sıfat","m":"genç","s":[],"a":["vecchio"],"e":[["Mia zia è ancora giovane.","","Teyzem hâlâ genç."],["Siamo giovani e felici.","","Gençiz ve mutluyuz."]]}
+{"w":"bello","t":"sıfat","m":"güzel; hoş","s":[],"a":["brutto"],"e":[["Che bella giornata!","","Ne güzel bir gün!"],["Roma è una città bellissima.","","Roma çok güzel bir şehir."]]}
+{"w":"brutto","t":"sıfat","m":"çirkin; kötü","s":[],"a":["bello"],"e":[["Oggi il tempo è brutto.","","Bugün hava kötü."],["Quel film è brutto.","","O film kötü."]]}
+{"w":"buono","t":"sıfat","m":"iyi; lezzetli","s":[],"a":["cattivo"],"e":[["Questa pizza è buona.","","Bu pizza lezzetli."],["Mia madre è una buona cuoca.","","Annem iyi bir aşçıdır."]],"x":[["buon appetito","","afiyet olsun","Buon appetito a tutti!","","Herkese afiyet olsun!"]]}
+{"w":"cattivo","t":"sıfat","m":"kötü; huysuz","s":[],"a":["buono"],"e":[["Il cane non è cattivo.","","Köpek kötü değil."],["C'è un cattivo odore in casa.","","Evde kötü bir koku var."]]}

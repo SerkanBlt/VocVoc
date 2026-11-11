@@ -1,0 +1,50 @@
+{"w":"schmutzig","t":"sıfat","m":"kirli","s":[],"a":["sauber"],"e":[["Meine Schuhe sind schmutzig.","","Ayakkabılarım kirli."],["Das Glas ist schmutzig.","","Bardak kirli."]]}
+{"w":"hell","t":"sıfat","m":"aydınlık; açık (renk)","s":[],"a":["dunkel"],"e":[["Das Zimmer ist schön hell.","","Oda güzel ve aydınlık."],["Sie trägt ein helles Kleid.","","O açık renkli bir elbise giyiyor."]]}
+{"w":"dunkel","t":"sıfat","m":"karanlık; koyu (renk)","s":[],"a":["hell"],"e":[["Im Winter ist es früh dunkel.","","Kışın hava erken kararır."],["Ich mag dunkle Farben.","","Koyu renkleri severim."]]}
+{"w":"stark","t":"sıfat","m":"güçlü; kuvvetli","s":[],"a":["schwach"],"e":[["Mein Bruder ist sehr stark.","","Ağabeyim çok güçlü."],["Der Kaffee ist stark.","","Kahve sert."]]}
+{"w":"arm","t":"sıfat","m":"fakir; yoksul","s":[],"a":["reich"],"e":[["Die Familie ist sehr arm.","","Aile çok fakir."],["Der arme Hund hat Hunger.","","Zavallı köpek aç."]]}
+{"w":"frei","t":"sıfat","m":"boş; serbest; özgür","s":[],"a":["besetzt"],"e":[["Ist dieser Platz frei?","","Bu yer boş mu?"],["Am Sonntag habe ich frei.","","Pazar günü iznim var."]]}
+{"w":"fertig","t":"sıfat","m":"hazır; bitmiş","s":[],"a":[],"e":[["Das Essen ist fertig.","","Yemek hazır."],["Bist du schon fertig?","","Çoktan bitirdin mi?"]]}
+{"w":"bekannt","t":"sıfat","m":"tanınmış; bilinen","s":[],"a":["unbekannt"],"e":[["Der Sänger ist sehr bekannt.","","Şarkıcı çok ünlü."],["Das Gesicht ist mir bekannt.","","Bu yüz bana tanıdık geliyor."]]}
+{"w":"anders","t":"sıfat","m":"farklı; başka türlü","s":[],"a":["gleich"],"e":[["Das ist ganz anders.","","Bu tamamen farklı."],["Er sieht heute anders aus.","","O bugün farklı görünüyor."]]}
+{"w":"nah","t":"sıfat","m":"yakın","s":[],"a":["weit"],"e":[["Der Bahnhof ist ganz nah.","","Gar çok yakın."],["Wir wohnen nah am Park.","","Parka yakın oturuyoruz."]]}
+{"w":"weit","t":"sıfat","m":"uzak; geniş","s":[],"a":["nah"],"e":[["Die Schule ist nicht weit.","","Okul uzak değil."],["Wie weit ist es bis zum Bahnhof?","","Gara kadar ne kadar var?"]]}
+{"w":"erst","t":"sıfat","m":"ilk; birinci","s":[],"a":["letzt"],"e":[["Das ist mein erster Tag.","","Bu benim ilk günüm."],["Der erste Zug fährt um fünf Uhr.","","İlk tren saat beşte kalkıyor."]]}
+{"w":"letzt","t":"sıfat","m":"son; geçen","s":[],"a":["erst"],"e":[["Das ist der letzte Bus.","","Bu son otobüs."],["Letzten Sommer waren wir in Spanien.","","Geçen yaz İspanya'daydık."]]}
+{"w":"nächst","t":"sıfat","m":"sonraki; gelecek; en yakın","s":[],"a":["letzt"],"e":[["Der nächste Bus kommt bald.","","Sonraki otobüs yakında geliyor."],["Nächste Woche habe ich Urlaub.","","Gelecek hafta iznim var."]]}
+{"w":"halb","t":"sıfat","m":"yarım","s":[],"a":["ganz"],"e":[["Ich nehme ein halbes Brot.","","Yarım ekmek alıyorum."],["Es ist halb acht.","","Saat yedi buçuk."]]}
+{"w":"genug","t":"sıfat","m":"yeterli; yeter","s":[],"a":[],"e":[["Ich habe genug Geld.","","Yeterli param var."],["Danke, das ist genug.","","Teşekkürler, bu yeter."]]}
+{"w":"toll","t":"sıfat","m":"harika; muhteşem","s":["super"],"a":[],"e":[["Das ist eine tolle Idee!","","Bu harika bir fikir!"],["Der Film war toll.","","Film harikaydı."]]}
+{"w":"super","t":"sıfat","m":"süper; harika","s":["toll"],"a":[],"e":[["Das Wetter ist super.","","Hava süper."],["Das war ein super Abend.","","Süper bir akşamdı."]]}
+{"w":"lecker","t":"sıfat","m":"lezzetli","s":[],"a":[],"e":[["Die Suppe ist sehr lecker.","","Çorba çok lezzetli."],["Das schmeckt lecker!","","Bu çok lezzetli!"]]}
+{"w":"verheiratet","t":"sıfat","m":"evli","s":[],"a":["ledig"],"e":[["Meine Schwester ist verheiratet.","","Kız kardeşim evli."],["Sind Sie verheiratet?","","Evli misiniz?"]]}
+{"w":"rot","t":"sıfat","m":"kırmızı","s":[],"a":[],"e":[["Das Auto ist rot.","","Araba kırmızı."],["Sie trägt einen roten Mantel.","","O kırmızı bir palto giyiyor."]]}
+{"w":"blau","t":"sıfat","m":"mavi","s":[],"a":[],"e":[["Der Himmel ist blau.","","Gökyüzü mavi."],["Ich habe eine blaue Jacke.","","Mavi bir ceketim var."]]}
+{"w":"grün","t":"sıfat","m":"yeşil","s":[],"a":[],"e":[["Der Baum ist grün.","","Ağaç yeşil."],["Ich trinke gern grünen Tee.","","Yeşil çay içmeyi severim."]]}
+{"w":"gelb","t":"sıfat","m":"sarı","s":[],"a":[],"e":[["Die Banane ist gelb.","","Muz sarı."],["Der Bus in Deutschland ist oft gelb.","","Almanya'da otobüs çoğu zaman sarıdır."]]}
+{"w":"schwarz","t":"sıfat","m":"siyah","s":[],"a":["weiß"],"e":[["Die Katze ist schwarz.","","Kedi siyah."],["Ich trinke den Kaffee schwarz.","","Kahveyi sade içerim."]]}
+{"w":"weiß","t":"sıfat","m":"beyaz","s":[],"a":["schwarz"],"e":[["Der Schnee ist weiß.","","Kar beyaz."],["Er trägt ein weißes Hemd.","","O beyaz bir gömlek giyiyor."]]}
+{"w":"braun","t":"sıfat","m":"kahverengi","s":[],"a":[],"e":[["Mein Hund ist braun.","","Köpeğim kahverengi."],["Sie hat braune Augen.","","Onun kahverengi gözleri var."]]}
+{"w":"grau","t":"sıfat","m":"gri","s":[],"a":[],"e":[["Der Himmel ist heute grau.","","Gökyüzü bugün gri."],["Mein Opa hat graue Haare.","","Dedemin gri saçları var."]]}
+{"w":"rosa","t":"sıfat","m":"pembe","s":[],"a":[],"e":[["Das Kleid ist rosa.","","Elbise pembe."],["Sie mag Rosa.","","O pembeyi sever."]]}
+{"w":"Familie","t":"isim (dişil)","m":"aile","s":[],"a":[],"e":[["Meine Familie wohnt in Köln.","","Ailem Köln'de oturuyor."],["Wir sind eine große Familie.","","Biz büyük bir aileyiz."]]}
+{"w":"Mutter","t":"isim (dişil)","m":"anne","s":[],"a":["Vater"],"e":[["Meine Mutter kocht gern.","","Annem yemek yapmayı sever."],["Die Mutter bringt das Kind zur Schule.","","Anne çocuğu okula götürüyor."]]}
+{"w":"Schwester","t":"isim (dişil)","m":"kız kardeş; abla","s":[],"a":["Bruder"],"e":[["Meine Schwester studiert in Berlin.","","Kız kardeşim Berlin'de okuyor."],["Ich habe zwei Schwestern.","","İki kız kardeşim var."]]}
+{"w":"Tochter","t":"isim (dişil)","m":"kız evlat; kız","s":[],"a":["Sohn"],"e":[["Ihre Tochter ist fünf Jahre alt.","","Kızı beş yaşında."],["Wir haben zwei Töchter.","","İki kızımız var."]]}
+{"w":"Oma","t":"isim (dişil)","m":"büyükanne; nine","s":[],"a":["Opa"],"e":[["Meine Oma backt oft Kuchen.","","Babaannem sık sık kek yapar."],["Am Sonntag besuchen wir Oma.","","Pazar günü büyükannemizi ziyaret ediyoruz."]]}
+{"w":"Tante","t":"isim (dişil)","m":"teyze; hala","s":[],"a":["Onkel"],"e":[["Meine Tante wohnt in Wien.","","Teyzem Viyana'da oturuyor."],["Die Tante schickt eine Karte.","","Teyze bir kart gönderiyor."]]}
+{"w":"Frau","t":"isim (dişil)","m":"kadın; hanım; eş","s":[],"a":["Mann"],"e":[["Die Frau wartet an der Haltestelle.","","Kadın durakta bekliyor."],["Das ist meine Frau.","","Bu benim eşim."]]}
+{"w":"Freundin","t":"isim (dişil)","m":"kız arkadaş; kadın arkadaş","s":[],"a":["Freund"],"e":[["Meine Freundin heißt Lisa.","","Kız arkadaşımın adı Lisa."],["Ich treffe meine Freundin im Park.","","Kız arkadaşımla parkta buluşuyorum."]]}
+{"w":"Person","t":"isim (dişil)","m":"kişi; şahıs","s":[],"a":[],"e":[["Wir sind vier Personen.","","Dört kişiyiz."],["Das ist eine nette Person.","","Bu hoş bir kişi."]]}
+{"w":"Adresse","t":"isim (dişil)","m":"adres","s":[],"a":[],"e":[["Wie ist Ihre Adresse?","","Adresiniz nedir?"],["Ich schreibe die Adresse auf.","","Adresi yazıyorum."]]}
+{"w":"Nummer","t":"isim (dişil)","m":"numara; sayı","s":[],"a":[],"e":[["Was ist deine Handynummer?","","Cep telefonu numaran nedir?"],["Die Nummer ist falsch.","","Numara yanlış."]]}
+{"w":"E-Mail","t":"isim (dişil)","m":"e-posta","s":[],"a":[],"e":[["Ich schreibe dir eine E-Mail.","","Sana bir e-posta yazıyorum."],["Hast du meine E-Mails bekommen?","","E-postalarımı aldın mı?"]]}
+{"w":"Zeitung","t":"isim (dişil)","m":"gazete","s":[],"a":[],"e":[["Mein Vater liest die Zeitung.","","Babam gazete okuyor."],["Die Zeitung kostet einen Euro.","","Gazete bir avro."]]}
+{"w":"Tasche","t":"isim (dişil)","m":"çanta; cep","s":[],"a":[],"e":[["Meine Tasche ist sehr schwer.","","Çantam çok ağır."],["Die Schlüssel sind in der Tasche.","","Anahtarlar çantada."]]}
+{"w":"Uhr","t":"isim (dişil)","m":"saat; saat (zaman)","s":[],"a":[],"e":[["Wie viel Uhr ist es?","","Saat kaç?"],["Meine Uhr ist neu.","","Saatim yeni."]],"x":[["um ... Uhr","","saat ...'de","Der Zug fährt um zehn Uhr ab.","","Tren saat onda kalkıyor."]]}
+{"w":"Brille","t":"isim (dişil)","m":"gözlük","s":[],"a":[],"e":[["Ich brauche eine neue Brille.","","Yeni bir gözlüğe ihtiyacım var."],["Wo ist meine Brille?","","Gözlüğüm nerede?"]]}
+{"w":"Tür","t":"isim (dişil)","m":"kapı","s":[],"a":[],"e":[["Bitte mach die Tür zu.","","Lütfen kapıyı kapat."],["Die Tür ist offen.","","Kapı açık."]]}
+{"w":"Wohnung","t":"isim (dişil)","m":"daire; apartman dairesi","s":[],"a":[],"e":[["Unsere Wohnung hat drei Zimmer.","","Dairemizde üç oda var."],["Sie sucht eine neue Wohnung.","","O yeni bir daire arıyor."]]}
+{"w":"Küche","t":"isim (dişil)","m":"mutfak","s":[],"a":[],"e":[["Die Küche ist klein.","","Mutfak küçük."],["Meine Mutter ist in der Küche.","","Annem mutfakta."]]}
+{"w":"Straße","t":"isim (dişil)","m":"sokak; cadde; yol","s":[],"a":[],"e":[["Die Straße ist sehr laut.","","Sokak çok gürültülü."],["Wir wohnen in einer ruhigen Straße.","","Sakin bir sokakta oturuyoruz."]]}
+{"w":"Stadt","t":"isim (dişil)","m":"şehir","s":[],"a":["Dorf"],"e":[["Berlin ist eine große Stadt.","","Berlin büyük bir şehir."],["Ich fahre in die Stadt.","","Şehre gidiyorum."]]}
