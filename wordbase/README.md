@@ -62,3 +62,12 @@ Seviyeler **yaklaşık**tır; resmî bir sınav listesiyle (DELF, Oxford, Cambri
 Yayınlanan içeriğin Hakkında sayfasında bu kaynağa atıf verilmelidir (kurs içeriği uygulamada yayımlanırken eklenir).
 
 C2 listesi (2.500 kelime) C1 ile aynı yöntemle çıkarıldı: sıklık listesinde C1'in bittiği yerden (yaklaşık 21.700. sıradan 32.000. sıraya kadar) çekimli biçimler ve zaten listede olan kelimeler elendi, kalanlardan gerçek Fransızca kökler seçildi (özel isimler, İngilizce sızıntılar, yazım hataları ve ünlemler dışarıda). C1 listesinden son anda çıkarılan 85 aday da C2'ye girdi. C2 kelimeleri `lemmas.tsv`'de sıklık sırasıyla durur; içerikleri `wordbase/fr-tr/src/C2-001…050.jsonl` dosyalarında yazıldı (kurs sürümü 8); yeni bir seviye eklenirken `check` henüz yazılmamış kelimeleri hata saymaz.
+
+## Okunuş motorları (`tools/respell/`)
+
+Okunuşu insanın ya da bir modelin yazması yavaş, pahalı ve tutarsız; bu yüzden bazı çiftlerin okunuşu **kuralla** üretilir (şu an `es-tr` ve `tr-fr`; hangi çiftlerin motoru olduğu `tools/respell/index.js`'te).
+
+- Motoru olan bir çiftin kaynaklarında okunuş alanı **boş (`""`)** bırakılır; `check`, `build`, `stats` ve `sample` boş okunuşu cümleden üretir. Yazılı bir okunuş olduğu gibi kalır.
+- `node tools/wordbase.js respell <çift>` boş okunuşları kaynak dosyalara yazar, `--overwrite` hepsini yeniden üretir (tek bir kural seti için).
+- `node tools/respell/compare.js <çift>` motoru mevcut okunuşlarla karşılaştırır ve en sık farkları listeler; motorun kuralları ilgili `STYLE-*.md` tablosunun koddaki halidir.
+- Yeni bir çifte motor eklemek: `tools/respell/<çift>.js` (cümleyi alıp okunuşu döndürür), `tools/respell/index.js`'e kayıt, `compare.js`'e satır.

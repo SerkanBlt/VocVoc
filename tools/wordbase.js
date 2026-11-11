@@ -12,6 +12,7 @@
 const fs=require('fs'),path=require('path');
 const Packs=require('../packs.js');
 const Build=require('./build-packs.js');
+const Respell=require('./respell/index.js');
 const repoRoot=path.resolve(__dirname,'..');
 
 const KEYS=new Set(['w','t','m','s','a','e','x']);
@@ -362,7 +363,19 @@ function readLemmas(root,target){
     return {word,pos,level,line:number};
   });
 }
-function readSources(root,pair){
+// A pair with a respelling engine (tools/respell) needs no respelling in its sources: an empty one ("") is made from the sentence.
+// With overwrite every respelling is made again (one convention for the whole course). Returns how many were made.
+const isBlank=value=>value===undefined||value===null||(typeof value==='string'&&!value.trim());
+function fillRespellings(raw,pair,{overwrite=false}={}){
+  const run=Respell.forPair(pair);
+  if(!run||!raw||typeof raw!=='object'||Array.isArray(raw))return 0;
+  let made=0;
+  const fill=(list,from,to)=>{if(Array.isArray(list)&&typeof list[from]==='string'&&list[from].trim()&&(overwrite||isBlank(list[to]))){list[to]=run(list[from]);made++;}};
+  if(Array.isArray(raw.e))raw.e.forEach(example=>fill(example,0,1));
+  if(Array.isArray(raw.x))raw.x.forEach(item=>{fill(item,0,1);fill(item,3,4);});
+  return made;
+}
+function readSources(root,pair,{fill=true}={}){
   const dir=path.join(root,'wordbase',pair,'src');
   if(!fs.existsSync(dir))return [];
   const out=[];
@@ -370,10 +383,29 @@ function readSources(root,pair){
     lf(fs.readFileSync(path.join(dir,name),'utf8')).split('\n').forEach((text,index)=>{
       if(!text.trim())return;
       let raw=null,broken=false;try{raw=JSON.parse(text);}catch(_){broken=true;}
+      if(fill&&raw)fillRespellings(raw,pair);
       out.push({file:name,line:index+1,raw,broken});
     });
   }
   return out;
+}
+// Write the respellings of the engine into the source files (empty ones, or all of them with overwrite). Returns {files, made}.
+function respellSources(root,pair,{overwrite=false}={}){
+  const dir=path.join(root,'wordbase',pair,'src');
+  if(!Respell.forPair(pair))return {error:`${pair} has no respelling engine (tools/respell)`,files:0,made:0};
+  let files=0,made=0;
+  for(const name of fs.readdirSync(dir).filter(name=>/\.jsonl$/.test(name)).sort()){
+    let changed=0;
+    const lines=lf(fs.readFileSync(path.join(dir,name),'utf8')).split('\n').map(text=>{
+      if(!text.trim())return text;
+      let raw;try{raw=JSON.parse(text);}catch(_){return text;}
+      const count=fillRespellings(raw,pair,{overwrite});
+      if(!count)return text;
+      changed+=count;return JSON.stringify(raw);
+    });
+    if(changed){fs.writeFileSync(path.join(dir,name),lines.join('\n'));files++;made+=changed;}
+  }
+  return {files,made};
 }
 const courseVersion=(root,pair)=>{
   const file=path.join(root,'wordbase',pair,'course.json');
@@ -494,13 +526,20 @@ function sampleOf(root,pair,{level=null,count=50}={}){
   return lines.join('\n');
 }
 
-module.exports={expand,usesWord,lintWord,checkCourse,chunkSizes,planCourse,buildCourse,statsOf,sampleOf,readLemmas,TYPE_PATTERN,RESPELLING};
+module.exports={expand,usesWord,lintWord,checkCourse,chunkSizes,planCourse,buildCourse,statsOf,sampleOf,readLemmas,fillRespellings,respellSources,TYPE_PATTERN,RESPELLING};
 
 if(require.main===module){
   const [command,only,levelArg,countArg]=process.argv.slice(2),pairs=pairsIn(repoRoot,only);
-  if(!['check','build','stats','sample'].includes(command)){console.error('usage: node tools/wordbase.js check|build|stats [pair]   or   sample <pair> [level] [count]');process.exit(2);}
+  if(!['check','build','stats','sample','respell'].includes(command)){console.error('usage: node tools/wordbase.js check|build|stats [pair]   or   sample <pair> [level] [count]   or   respell <pair> [--overwrite]');process.exit(2);}
   if(!pairs.length){console.log('No course sources in wordbase/ yet.');process.exit(0);}
   let failed=false;
+  if(command==='respell'){       // write the engine's respellings into the sources: the empty ones, or all with --overwrite
+    if(!only){console.error('respell needs a pair: node tools/wordbase.js respell <pair> [--overwrite]');process.exit(2);}
+    const result=respellSources(repoRoot,only,{overwrite:process.argv.includes('--overwrite')});
+    if(result.error){console.error(result.error);process.exit(1);}
+    console.log(`${only}: ${result.made} respellings written in ${result.files} files.`);
+    process.exit(0);
+  }
   for(const pair of pairs){
     if(command==='sample'){console.log(sampleOf(repoRoot,pair,{level:levelArg&&levelArg!=='all'?levelArg:null,count:+countArg||50}));continue;}
     if(command==='stats'){

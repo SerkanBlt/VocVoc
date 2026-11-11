@@ -173,6 +173,24 @@ describe('The compact form and its content rules',()=>{
   });
 });
 
+describe('Respelling engines (tools/respell)',()=>{
+  const Respell=require('../tools/respell/index.js');
+  it('has an engine for the pairs listed, and none for the others',()=>{
+    assert.deepEqual(Respell.pairs.slice().sort(),['es-tr','tr-fr']);
+    assert.equal(Respell.forPair('es-tr')('¿Cómo estás, señor?'),'komo estas, senyor?');
+    assert.equal(Respell.forPair('tr-fr')('Güzel bir gün.'),'guzèl bir gune.');
+    assert.equal(Respell.forPair('fr-tr'),null);
+  });
+  it('fills an empty respelling, keeps one that is written, and rewrites all with overwrite',()=>{
+    const raw={w:'hola',t:'ünlem',m:'merhaba',e:[['¡Hola, Ana!','','Merhaba Ana!'],['Hola, ¿qué tal?','özel yazım','Selam, nasılsın?']],x:[['decir hola','','merhaba demek','Digo hola.','','Merhaba derim.']]};
+    assert.equal(Wordbase.fillRespellings(raw,'es-tr'),3);
+    assert.deepEqual([raw.e[0][1],raw.e[1][1],raw.x[0][1],raw.x[0][4]],['ola, ana!','özel yazım','desir ola','digo ola.']);
+    assert.equal(Wordbase.fillRespellings(raw,'es-tr',{overwrite:true}),4);
+    assert.equal(raw.e[1][1],'ola, ke tal?');
+    assert.equal(Wordbase.fillRespellings({e:[['x','','y']]},'fr-tr'),0,'a pair without an engine is left alone');
+  });
+});
+
 describe('Building a course from its sources',()=>{
   let root;
   const lemmas=[['bonjour','A1'],['merci','A1'],['oui','A1'],['lire','A2'],['aimer','A2']];
