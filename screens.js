@@ -1030,7 +1030,7 @@
       if(word===flipLastWord)return;                                                                // the same card drawn again (a filter, memorizing)
       const first=flipLastWord===null;flipLastWord=word;
       if(first||!flipAuto||!VocVocPlan.has('speech'))return;
-      const button=overlay.querySelector('[data-flip-face="front"] > .v2-speak');
+      const button=overlay.querySelector('.flip-sound .v2-speak');
       if(button&&speak(button,word))announceSpoken(button);
       else if(button){flipAuto=false;document.querySelectorAll('.v2-flip-auto').forEach(syncAutoButton);}   // no voice: stop trying on every card
     }).observe(overlay,{childList:true});
@@ -1040,7 +1040,11 @@
     ['.main-word-card',host=>{const word=decodeDomText(host.dataset.word||'');if(!word)return;const button=speakButton(()=>word,{kind:'word',word});button.classList.add('v2-speak-corner');host.classList.add('v2-has-speak');host.append(button);}],
     ['.word-panel-fixed-header .word-title',host=>{const word=host.textContent.trim();if(word)host.after(speakButton(()=>word,{kind:'word',word}));}],
     ['.example-item .fr-text,.expression-item .fr-text',host=>{const text=host.textContent.trim();if(text)host.append(speakButton(()=>text,{kind:'sentence',word:()=>decodeDomText(host.closest('[data-study-word]')?.dataset.studyWord||'')}));}],
-    ['#flipOverlay .flip-panel',host=>host.append(speakButton(()=>document.querySelector('#flipOverlay [data-flip-face="front"] .flip-word-text')?.textContent||'',{kind:'word',word:()=>flipWord()}),autoReadButton(),playButton(),moreButton())]
+    // the buttons of the Flip: the word's panel on each card; under the cards the big sound button (like the one of the tests); at the bottom of the page the two smaller ones
+    ['#flipOverlay .flip-panel',host=>host.append(moreButton())],
+    ['#flipOverlay .flip-layout',host=>host.append(
+      h('div',{class:'flip-sound'},speakButton(()=>document.querySelector('#flipOverlay [data-flip-face="front"] .flip-word-text')?.textContent||'',{kind:'word',word:()=>flipWord()})),
+      h('div',{class:'flip-bottom'},autoReadButton(),playButton()))]
   ];
   function decorateSpeech(node){
     for(const [selector,decorate] of SPEECH_TARGETS){

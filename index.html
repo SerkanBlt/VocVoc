@@ -6,7 +6,7 @@
   <!-- No network destination besides this origin: the words come from the files in packs/. Inline script/style stay allowed: the page still uses inline event handlers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>VocVoc</title>
-  <meta name="vocvoc-shell" content="1.42.30">
+  <meta name="vocvoc-shell" content="1.42.31">
   <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="./screens.css">
   <meta name="mobile-web-app-capable" content="yes">
@@ -2216,8 +2216,14 @@ body{
 
 
 /* Flip rotates the complete shared panel, including its border and controls. */
-#flipOverlay{z-index:600}
-.flip-layout{width:min(620px,100%)}
+#flipOverlay{z-index:600;align-items:flex-start;overflow-y:auto}
+.flip-layout{display:flex;flex-direction:column;align-self:stretch;width:min(620px,100%);min-height:100%}
+.flip-close{position:absolute;top:max(10px,env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-right,0px));z-index:3;display:flex;align-items:center;justify-content:center;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:50%;background:transparent;color:var(--text-muted);cursor:pointer}
+.flip-close:hover{color:var(--text)}
+.flip-close:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.flip-close svg{display:block;width:28px;height:28px}
+.flip-sound{flex:1 1 auto;display:flex;align-items:center;justify-content:center;min-height:120px}
+.flip-bottom{flex:none;display:flex;justify-content:center;align-items:center;gap:24px;padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px))}
 .flip-filters{display:flex;justify-content:center;gap:var(--ui-panel-gap,12px);margin-bottom:var(--ui-panel-y)}
 .flip-filters .ui-pill{font-size:var(--font-sm);background:var(--card-bg)}
 .flip-filters [data-flip-filter="memorized"]{--flip-filter-tone:var(--success)}
@@ -2240,7 +2246,6 @@ body{
 .flip-panel .flip-nav{background:transparent}
 .flip-panel .flip-nav:hover{background:transparent;color:color-mix(in srgb,var(--flip-status-tone) 80%,var(--text))}   /* the arrow changes colour, the button's background does not */
 
-.flip-panel > .ui-panel-close{top:var(--ui-panel-y);transform:none;z-index:2}
 .flip-panel .word-panel-scroll-body{display:flex;flex-direction:column;padding:0}
 .flip-stage{flex:1;min-height:0;position:relative}
 .flip-stage .flip-nav{position:absolute;top:0;bottom:0;width:clamp(56px,18%,88px);min-width:0;max-width:none;height:100%;transform:none;border:0;border-radius:0;z-index:1;font-size:var(--font-2xl)}
@@ -2252,7 +2257,8 @@ body{
 .flip-word-text{display:block;white-space:nowrap}
 .flip-meaning{font-size:var(--font-xl);line-height:var(--line-body)}
 .flip-examples{flex:none;max-height:6.4em;overflow-y:auto;box-sizing:border-box;padding:2px var(--ui-panel-x) var(--ui-panel-y);text-align:center;font-size:var(--font-xs);line-height:1.4;color:color-mix(in srgb,var(--text) 84%,var(--card-bg))}
-.flip-examples p{margin:0 0 4px;cursor:pointer}
+.flip-examples p{margin:0 0 4px;cursor:pointer;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}      /* a tap on a sentence reads it and changes no colour */
+.flip-examples p:focus:not(:focus-visible){outline:none}
 .flip-examples p:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:6px}
 .flip-examples p:last-child{margin-bottom:0}
  .flip-drag-cue{position:absolute;bottom:var(--ui-panel-y);left:50%;transform:translateX(-50%);font-size:var(--font-sm);font-weight:700;color:var(--flip-drag-tone);pointer-events:none;opacity:0;z-index:3;white-space:nowrap}
@@ -2272,7 +2278,7 @@ body{
 .card-group-label:first-child{margin-top:4px}
 .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
 [role="dialog"] [tabindex="-1"]:focus,[role="dialog"][tabindex="-1"]:focus{outline:none;}
-.flip-rotator{height:min(360px,calc(100dvh - 170px));}
+.flip-rotator{height:clamp(220px,calc(100dvh - 400px),360px);}              /* room under the card for the sound button and the two buttons at the bottom */
 /* The headword in a popup header can be selected and copied; the rest of the header stays a swipe surface (see inHeaderChrome). */
 .word-panel-fixed-header .word-title,
 #historyDetails .history-detail-card > .word-panel-fixed-header.ui-panel-header .word-title{user-select:text!important;-webkit-user-select:text!important;}
@@ -2393,7 +2399,7 @@ body{
 </div>
 <div id="historyDetails" class="word-popup-overlay" role="dialog" aria-modal="true" onclick="if(event.target===this)closeHistoryDetail()"></div>
 <div id="relatedWordPopup" class="word-popup-overlay" role="dialog" aria-modal="true" onclick="if(event.target===this)closeRelatedWordPopup()"></div>
-<div id="flipOverlay" class="word-popup-overlay" role="dialog" aria-modal="true" aria-label="Flip" onclick="if(event.target===this)closeFlip()"></div>
+<div id="flipOverlay" class="word-popup-overlay" role="dialog" aria-modal="true" aria-label="Flip"></div>
 <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
   <div class="modal settings-modal ui-panel">
     <div class="settings-panel-header ui-panel-header">
@@ -4845,7 +4851,6 @@ function renderFlip(){
   // Under the card, in small type: the example sentences of the word (no meaning, no pronunciation). The same on both faces.
   const examplesHtml=(card.examples||[]).length?`<div class="flip-examples"${langAttr()}>${card.examples.map(text=>`<p role="button" tabindex="0">${esc(text)}</p>`).join("")}</div>`:"";
   const face=(back)=>`<div class="card word-detail-panel flip-panel ui-panel ${statusClass}${back?' flip-panel-back':''}" data-flip-face="${back?'back':'front'}" aria-hidden="${back?!flipped:flipped}" ${(back?!flipped:flipped)?'inert':''}>
-    <button type="button" class="word-popup-close ui-panel-close" onclick="closeFlip()" aria-label="${esc(t("close"))}">×</button>
     <div class="word-panel-scroll-body ui-panel-body">
       <div class="flip-stage">
         <button type="button" class="flip-nav ui-icon-button" onclick="moveFlip(-1)" data-flip-nav="-1" aria-label="${esc(t("previousCard"))}" ${cards.length<2?'disabled':''}>‹</button>
@@ -4855,7 +4860,7 @@ function renderFlip(){
       ${examplesHtml}
     </div>
   </div>`;
-  document.getElementById("flipOverlay").innerHTML=`<div class="flip-layout">
+  document.getElementById("flipOverlay").innerHTML=`<button type="button" class="flip-close" onclick="closeFlip()" aria-label="${esc(t("close"))}" title="${esc(t("close"))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button><div class="flip-layout">
     <div class="flip-filters" role="group">
       <button type="button" class="ui-pill" data-flip-filter="memorized" aria-pressed="${flipSession.includeMemorized}" onclick="toggleFlipFilter('includeMemorized')">${esc(t("memorized"))}</button>
       <button type="button" class="ui-pill" data-flip-filter="other" aria-pressed="${flipSession.includeOther}" onclick="toggleFlipFilter('includeOther')">${esc(t("flipOther"))}</button>

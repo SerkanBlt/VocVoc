@@ -212,7 +212,12 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
 .v2-speak-free{color:var(--text-muted)}
 .v2-speak-free .v2-speak-lock{display:inline-flex;position:absolute;right:-5px;bottom:-5px;width:16px;height:16px;align-items:center;justify-content:center;border-radius:50%;background:var(--card-bg);border:1px solid var(--border)}
 .v2-speak-free .v2-speak-lock svg{width:10px;height:10px}
-.flip-panel>.v2-speak{position:absolute;top:var(--ui-panel-y);left:var(--ui-panel-x);z-index:2;margin:0}
+/* the sound button of the Flip: the size and the look of the one under the questions of the tests */
+.flip-sound .v2-speak{width:96px;height:96px;margin:0;border-width:2px;color:var(--text-muted)}
+.flip-sound .v2-speak .v2-icon svg{width:48px;height:48px}
+.flip-sound .v2-speak[aria-pressed="true"]{color:var(--bg)}
+.flip-sound .v2-speak-free .v2-speak-lock{right:2px;bottom:2px;width:28px;height:28px}
+.flip-sound .v2-speak-free .v2-speak-lock svg{width:16px;height:16px}
 /* Flip: the lock to the right of the speaker (on = shut: every new card is read by itself), the word's panel from the lower left corner */
 .v2-flip-auto,.v2-flip-play,.v2-flip-more{position:relative;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;margin:0;padding:0;border:1px solid var(--border);border-radius:50%;background:var(--card-bg);color:var(--primary);cursor:pointer;flex:none}
 .v2-flip-auto .v2-icon svg,.v2-flip-play .v2-icon svg,.v2-flip-more .v2-icon svg{width:18px;height:18px}
@@ -220,8 +225,8 @@ body.v2 #flipOverlay.open{background:var(--bg);-webkit-backdrop-filter:none;back
 .v2-flip-auto[aria-pressed="true"],.v2-flip-play[aria-pressed="true"]{background:var(--primary);color:var(--bg)}
 .v2-flip-auto[aria-pressed="true"] .v2-icon-off,.v2-flip-auto[aria-pressed="false"] .v2-icon-on,.v2-flip-play[aria-pressed="true"] .v2-icon-off,.v2-flip-play[aria-pressed="false"] .v2-icon-on{display:none}
 .v2-flip-auto.v2-speak-free{color:var(--text-muted)}
-.flip-panel>.v2-flip-auto{position:absolute;top:var(--ui-panel-y);left:calc(var(--ui-panel-x) + 44px);z-index:2}
-.flip-panel>.v2-flip-play{position:absolute;top:var(--ui-panel-y);left:calc(var(--ui-panel-x) + 88px);z-index:2}
+.flip-bottom .v2-flip-auto,.flip-bottom .v2-flip-play{width:56px;height:56px}
+.flip-bottom .v2-flip-auto .v2-icon svg,.flip-bottom .v2-flip-play .v2-icon svg{width:28px;height:28px}
 .flip-panel>.v2-flip-more{position:absolute;bottom:var(--ui-panel-y);left:var(--ui-panel-x);z-index:2}
 body.v2 #historyDetails.open{z-index:610}      /* the word's panel opens above a Flip (both are overlays; the later one in the page would win otherwise) */
 body.v2 #relatedWordPopup.open{z-index:620}
