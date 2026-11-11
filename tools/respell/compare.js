@@ -1,12 +1,12 @@
 /* Compare a respelling engine with the respellings already in wordbase/<pair>/src (written by hand or by model agents).
-     node tools/respell/compare.js es-tr|tr-fr [how many differences to show]
+     node tools/respell/compare.js es-tr|tr-fr|it-tr|de-tr|en-tr [how many differences to show]
    Differences are counted per word (sentences with as many words as the source), so a hand-written habit the engine does not know shows up as a list. */
 'use strict';
 const fs=require('fs'),path=require('path');
 const root=path.resolve(__dirname,'..','..');
-const engines={'es-tr':require('./es-tr.js').respell,'tr-fr':require('./tr-fr.js').transcribe};
+const engines={'es-tr':require('./es-tr.js').respell,'tr-fr':require('./tr-fr.js').transcribe,'it-tr':require('./it-tr.js').respell,'de-tr':require('./de-tr.js').respell,'en-tr':require('./en-tr.js').respell};
 const pair=process.argv[2],show=+process.argv[3]||40;
-if(!engines[pair]){console.error('usage: node tools/respell/compare.js es-tr|tr-fr [n]');process.exit(2);}
+if(!engines[pair]){console.error('usage: node tools/respell/compare.js es-tr|tr-fr|it-tr|de-tr|en-tr [n]');process.exit(2);}
 const run=engines[pair];
 const dir=path.join(root,'wordbase',pair,'src');
 const tokens=text=>text.toLowerCase().split(/\s+/).map(t=>t.replace(/^[^\p{L}]+|[^\p{L}]+$/gu,'')).filter(Boolean);

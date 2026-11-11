@@ -3,7 +3,10 @@
 'use strict';
 const engines={
   'es-tr':()=>require('./es-tr.js').respell,
-  'tr-fr':()=>require('./tr-fr.js').transcribe
+  'tr-fr':()=>require('./tr-fr.js').transcribe,
+  'it-tr':()=>require('./it-tr.js').respell,
+  'de-tr':()=>require('./de-tr.js').respell,
+  'en-tr':()=>require('./en-tr.js').respell
 };
 // a respelling holds letters, digits and ordinary punctuation only (symbols of a grammar note such as "ir a + mastar" are dropped)
 const clean=text=>text.replace(/[^\p{L}\p{N} ,.;:!?'’\-–—()…\/"«»]/gu,'').replace(/\s+/g,' ').trim();

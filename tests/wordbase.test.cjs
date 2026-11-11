@@ -176,7 +176,10 @@ describe('The compact form and its content rules',()=>{
 describe('Respelling engines (tools/respell)',()=>{
   const Respell=require('../tools/respell/index.js');
   it('has an engine for the pairs listed, and none for the others',()=>{
-    assert.deepEqual(Respell.pairs.slice().sort(),['es-tr','tr-fr']);
+    assert.deepEqual(Respell.pairs.slice().sort(),['de-tr','en-tr','es-tr','it-tr','tr-fr']);
+    assert.equal(Respell.forPair('en-tr')('Thank you, I go to the park.'),'senk yu, ay go tı zı park.');
+    assert.equal(Respell.forPair('it-tr')('Buongiorno, come stai?'),'buoncorno, kome stay?');
+    assert.equal(Respell.forPair('de-tr')('Ich habe Hunger.'),'ih habı hungır.');
     assert.equal(Respell.forPair('es-tr')('¿Cómo estás, señor?'),'komo estas, senyor?');
     assert.equal(Respell.forPair('tr-fr')('Güzel bir gün.'),'guzèl bir gune.');
     assert.equal(Respell.forPair('fr-tr'),null);

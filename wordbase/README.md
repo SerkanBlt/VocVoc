@@ -65,9 +65,10 @@ C2 listesi (2.500 kelime) C1 ile aynı yöntemle çıkarıldı: sıklık listesi
 
 ## Okunuş motorları (`tools/respell/`)
 
-Okunuşu insanın ya da bir modelin yazması yavaş, pahalı ve tutarsız; bu yüzden bazı çiftlerin okunuşu **kuralla** üretilir (şu an `es-tr` ve `tr-fr`; hangi çiftlerin motoru olduğu `tools/respell/index.js`'te).
+Okunuşu insanın ya da bir modelin yazması yavaş, pahalı ve tutarsız; bu yüzden bazı çiftlerin okunuşu **kuralla** üretilir (şu an `es-tr`, `it-tr`, `de-tr`, `en-tr` ve `tr-fr`; hangi çiftlerin motoru olduğu `tools/respell/index.js`'te).
 
 - Motoru olan bir çiftin kaynaklarında okunuş alanı **boş (`""`)** bırakılır; `check`, `build`, `stats` ve `sample` boş okunuşu cümleden üretir. Yazılı bir okunuş olduğu gibi kalır.
 - `node tools/wordbase.js respell <çift>` boş okunuşları kaynak dosyalara yazar, `--overwrite` hepsini yeniden üretir (tek bir kural seti için).
 - `node tools/respell/compare.js <çift>` motoru mevcut okunuşlarla karşılaştırır ve en sık farkları listeler; motorun kuralları ilgili `STYLE-*.md` tablosunun koddaki halidir.
 - Yeni bir çifte motor eklemek: `tools/respell/<çift>.js` (cümleyi alıp okunuşu döndürür), `tools/respell/index.js`'e kayıt, `compare.js`'e satır.
+- **İngilizce** (`en-tr`) bir telaffuz sözlüğü kullanır: `tools/respell/data/en-pron.tsv` (CMUdict, Carnegie Mellon Üniversitesi, BSD türü lisans; sıklık listesinin ilk 30.000 kelimesi ve kurs kaynaklarındaki kelimeler). Yeniden üretmek: `node tools/respell/build-en-dict.js <cmudict.dict> [sıklık-listesi.txt] [n]`. Sözlükte olmayan kelimeler tabanından (çoğul, geçmiş, -ing) ya da harflerinden kabaca üretilir; `respellUnknown(metin)` bunların listesini verir.
