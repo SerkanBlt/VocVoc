@@ -176,11 +176,11 @@ describe('No AI and no API key (static guards)',()=>{
     assert(/const PACK_CACHE='vocvoc-packs-v1'/.test(wordbaseJs)&&!/vocvoc-packs/.test(sw),'the pack files live in their own cache that the worker never touches');
   });
   it('a language can be picked only when it makes a pair with words (swapping with the other box when needed); the others are visible and disabled',()=>{
-    assert(html.includes('const OPEN_PAIRS=Object.freeze(["fr-tr","en-tr","tr-fr"]);'));
+    assert(html.includes('const OPEN_PAIRS=Object.freeze(["fr-tr","en-tr","es-tr","tr-fr"]);'));
     assert(html.includes('const patch=languageChangePatch(field,value);\n  if(current===value||!patch){syncUiDropdown(dropdownId,current);return;}'),'a language that makes no open pair cannot be chosen even by calling the function');
     assert(html.includes('VocVocData.changeLanguage(change.patch)'),'the swap is committed in one change');
     // the markup is the state for French learned with Turkish as the original language: native Turkish or (swapping) French, learned French, English or (swapping) Turkish
-    for(const [list,open] of [['nativeLanguageDropdown',['tr','fr']],['targetLanguageDropdown',['fr','en','tr']]]){
+    for(const [list,open] of [['nativeLanguageDropdown',['tr','fr']],['targetLanguageDropdown',['fr','en','es','tr']]]){
       const body=html.slice(html.indexOf('id="'+list+'"'),html.indexOf('</div>',html.indexOf('id="'+list+'"')+300));
       const options=[...body.matchAll(/<button type="button" class="ui-dropdown-option([^"]*)" data-value="(\w+)"([^>]*)>/g)];
       assert.equal(options.length,6,list);

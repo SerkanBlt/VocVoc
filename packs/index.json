@@ -11,15 +11,6 @@
       "bytes": 25129
     },
     {
-      "id": "es-tr",
-      "target": "es",
-      "native": "tr",
-      "level": "A1-A2",
-      "version": 2,
-      "words": 40,
-      "bytes": 24316
-    },
-    {
       "id": "it-tr",
       "target": "it",
       "native": "tr",
@@ -90,6 +81,69 @@
           "level": "B1",
           "words": 392,
           "bytes": 154828
+        }
+      ]
+    },
+    {
+      "id": "es-tr",
+      "target": "es",
+      "native": "tr",
+      "version": 1,
+      "words": 3287,
+      "levels": {
+        "A1": 700,
+        "A2": 950,
+        "B1": 1637
+      },
+      "orderBytes": 34522,
+      "chunks": [
+        {
+          "id": "A1-01",
+          "level": "A1",
+          "words": 350,
+          "bytes": 121217
+        },
+        {
+          "id": "A1-02",
+          "level": "A1",
+          "words": 350,
+          "bytes": 128997
+        },
+        {
+          "id": "A2-01",
+          "level": "A2",
+          "words": 475,
+          "bytes": 165693
+        },
+        {
+          "id": "A2-02",
+          "level": "A2",
+          "words": 475,
+          "bytes": 170303
+        },
+        {
+          "id": "B1-01",
+          "level": "B1",
+          "words": 410,
+          "bytes": 170235
+        },
+        {
+          "id": "B1-02",
+          "level": "B1",
+          "words": 409,
+          "bytes": 157103
+        },
+        {
+          "id": "B1-03",
+          "level": "B1",
+          "words": 409,
+          "bytes": 160328
+        },
+        {
+          "id": "B1-04",
+          "level": "B1",
+          "words": 409,
+          "bytes": 155513
         }
       ]
     },
